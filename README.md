@@ -6,8 +6,10 @@
 - 支持国产模型：通义千问，文心一言
 - 支持文生图、图生图、超分辨率、黑白图片上色等功能，集成 Stable Diffusion 模型，支持 SDXL 1.0
 
-- 客户端代码：https://github.com/mylxsw/aidea
-- 服务端代码：https://github.com/mylxsw/aidea-server （即将开放）
+开源代码：
+
+- 客户端：https://github.com/mylxsw/aidea
+- 服务端：https://github.com/mylxsw/aidea-server （即将开放）
 
 ## 下载安装地址
 
@@ -21,13 +23,9 @@ Web 端：https://app.aicode.cc/
 
 ## APP 截图
 
-![images](resources/Xnip2023-08-30_11-32-34.png) 
-![images](resources/Xnip2023-08-30_11-32-42.png)
-![images](resources/Xnip2023-08-30_11-32-53.png) 
-![images](resources/Xnip2023-08-30_11-33-44.png) 
-![images](resources/Xnip2023-08-30_11-34-14.png) 
-![images](resources/Xnip2023-08-30_11-34-28.png) 
-![images](resources/Xnip2023-08-30_11-34-42.png) 
-![images](resources/Xnip2023-08-30_11-35-01.png) 
-![images](resources/Xnip2023-08-30_11-35-33.png) 
-![images](resources/Xnip2023-08-30_11-35-52.png)
+![images](resources/Xnip2023-08-30_11-32-34.png)  | ![images](resources/Xnip2023-08-30_11-32-42.png)
+:-------------------------:|:-------------------------:
+![images](resources/Xnip2023-08-30_11-32-53.png)  | ![images](resources/Xnip2023-08-30_11-33-44.png) 
+![images](resources/Xnip2023-08-30_11-34-14.png)  | ![images](resources/Xnip2023-08-30_11-34-28.png) 
+![images](resources/Xnip2023-08-30_11-34-42.png)  | ![images](resources/Xnip2023-08-30_11-35-01.png) 
+![images](resources/Xnip2023-08-30_11-35-33.png)  | ![images](resources/Xnip2023-08-30_11-35-52.png)
