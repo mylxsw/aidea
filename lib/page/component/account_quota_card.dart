@@ -120,7 +120,7 @@ class AccountQuotaCard extends StatelessWidget {
                   showBeautyDialog(
                     context,
                     type: QuickAlertType.info,
-                    text: '购买功能即将推出，敬请期待',
+                    text: 'Web 端购买功能暂未推出，敬请期待',
                   );
                   return;
                 }
