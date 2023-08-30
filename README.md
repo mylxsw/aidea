@@ -29,3 +29,14 @@ Web 端：https://app.aicode.cc/
 ![images](resources/Xnip2023-08-30_11-34-14.png)  | ![images](resources/Xnip2023-08-30_11-34-28.png) 
 ![images](resources/Xnip2023-08-30_11-34-42.png)  | ![images](resources/Xnip2023-08-30_11-35-01.png) 
 ![images](resources/Xnip2023-08-30_11-35-33.png)  | ![images](resources/Xnip2023-08-30_11-35-52.png)
+
+## Star History
+
+<a href="https://star-history.com/#mylxsw/aidea&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=mylxsw/aidea&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=mylxsw/aidea&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=mylxsw/aidea&type=Date" />
+  </picture>
+</a>
+
