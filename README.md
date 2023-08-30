@@ -13,11 +13,11 @@
 
 ## 下载安装地址
 
-Android/IOS：https://aidea.aicode.cc/
+Android/IOS APP：https://aidea.aicode.cc/
 
 > IOS 国区目前不可用，除此之外所有区域都可以下载。
 
-Mac 桌面端：
+Mac 桌面端：https://github.com/mylxsw/aidea/releases
 
 Web 端：https://app.aicode.cc/
 
