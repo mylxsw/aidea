@@ -1,5 +1,10 @@
 # AIdea - AI 聊天、协作、图像生成
 
+[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B39727%2Fgithub.com%2Fmylxsw%2Faidea.svg?type=shield&issueType=license)](https://app.fossa.com/projects/custom%2B39727%2Fgithub.com%2Fmylxsw%2Faidea?ref=badge_shield)
+![GitHub release (by tag)](https://img.shields.io/github/downloads/mylxsw/aidea/1.0.3/total)
+![GitHub](https://img.shields.io/github/license/mylxsw/aidea)
+
+
 一款集成了主流大语言模型以及绘图模型的 APP， 采用 Flutter 开发，代码完全开源，支持以下功能：
 
 - 支持 GPT-3.5/4 问答聊天
@@ -29,3 +34,21 @@ Web 端：https://app.aicode.cc/
 ![images](resources/Xnip2023-08-30_11-34-14.png)  | ![images](resources/Xnip2023-08-30_11-34-28.png) 
 ![images](resources/Xnip2023-08-30_11-34-42.png)  | ![images](resources/Xnip2023-08-30_11-35-01.png) 
 ![images](resources/Xnip2023-08-30_11-35-33.png)  | ![images](resources/Xnip2023-08-30_11-35-52.png)
+
+## Star History
+
+<a href="https://star-history.com/#mylxsw/aidea&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=mylxsw/aidea&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=mylxsw/aidea&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=mylxsw/aidea&type=Date" />
+  </picture>
+</a>
+
+## License
+
+MIT
+
+Copyright (c) 2023, mylxsw
+
+[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B39727%2Fgithub.com%2Fmylxsw%2Faidea.svg?type=large)](https://app.fossa.com/projects/custom%2B39727%2Fgithub.com%2Fmylxsw%2Faidea?ref=badge_large)
