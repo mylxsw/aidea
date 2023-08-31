@@ -404,7 +404,7 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
                                   margin:
                                       const EdgeInsets.only(top: 20, left: 15),
                                   child: Text(
-                                    '历史纪录',
+                                    '历史记录',
                                     style: TextStyle(
                                       color: customColors.weakTextColor
                                           ?.withAlpha(100),
