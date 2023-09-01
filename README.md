@@ -16,6 +16,10 @@
 - 客户端：https://github.com/mylxsw/aidea
 - 服务端：https://github.com/mylxsw/aidea-server （即将开放）
 
+微信技术交流群：
+
+<img src="https://github.com/mylxsw/aidea/assets/2330911/bff2b9a7-7c60-4471-be71-d3b6a825c8e6" width="600"/>
+
 ## 下载安装地址
 
 Android/IOS APP：https://aidea.aicode.cc/
