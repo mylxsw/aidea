@@ -20,6 +20,8 @@
 
 <img src="https://github.com/mylxsw/aidea/assets/2330911/bff2b9a7-7c60-4471-be71-d3b6a825c8e6" width="600"/>
 
+电报群：[点此加入](https://t.me/+Pl8P9rcpz7s2ZWE1)
+
 ## 下载安装地址
 
 Android/IOS APP：https://aidea.aicode.cc/
