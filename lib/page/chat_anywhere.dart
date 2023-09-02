@@ -287,12 +287,6 @@ class _ChatAnywhereScreenState extends State<ChatAnywhereScreen> {
                 onVoiceRecordTappedEvent: () {
                   _audioPlayerController.stop();
                 },
-                // toolbar: buildChatTools(
-                //   context,
-                //   room.room,
-                //   [], // 设置为空数组，不显示示例菜单项
-                //   _handleSubmit,
-                // ),
               ),
             ),
           ),

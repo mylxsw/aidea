@@ -149,12 +149,6 @@ class _ChatScreenState extends State<ChatScreen> {
                             onVoiceRecordTappedEvent: () {
                               _audioPlayerController.stop();
                             },
-                            // toolbar: buildChatTools(
-                            //   context,
-                            //   room.room,
-                            //   snapshot.data ?? [],
-                            //   _handleSubmit,
-                            // ),
                           ),
                   ),
                 ),

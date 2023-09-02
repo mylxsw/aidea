@@ -170,7 +170,7 @@ class _ChatInputState extends State<ChatInput> {
                           child: Row(
                             children: [
                               Expanded(
-                                child: TextField(
+                                child: TextFormField(
                                   enabled: widget.enableNotifier.value,
                                   keyboardType: TextInputType.multiline,
                                   textInputAction: TextInputAction.newline,
