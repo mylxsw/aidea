@@ -47,6 +47,21 @@ Web 端：https://web.aicode.cc/
 ![images](resources/Xnip2023-08-30_11-34-42.png)  | ![images](resources/Xnip2023-08-30_11-35-01.png) 
 ![images](resources/Xnip2023-08-30_11-35-33.png)  | ![images](resources/Xnip2023-08-30_11-35-52.png)
 
+## 常见问题
+
+### 1. Mac 桌面端应用无法打开，报错如下
+
+<img width="300" src="https://user-images.githubusercontent.com/15153075/264509300-426d70bd-fd1b-4078-9eb9-5588a917b023.png">
+
+临时解决方案，命令行执行
+
+```bash
+sudo codesign -f -s - /Applications/AIdea.app
+```
+
+<img width="1125" alt="image" src="https://github.com/mylxsw/aidea/assets/2330911/5ef3fbe1-6cb3-4a64-9c17-82dd8c864ac7">
+
+
 ## Star History
 
 <a href="https://star-history.com/#mylxsw/aidea&Date">
