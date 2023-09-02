@@ -18,7 +18,13 @@
 
 微信技术交流群：
 
-<img src="https://github.com/mylxsw/aidea/assets/2330911/bff2b9a7-7c60-4471-be71-d3b6a825c8e6" width="600"/>
+技术交流群 1 | 技术交流群 2
+:-------------------------:|:-------------------------:
+![images](https://github.com/mylxsw/aidea/assets/2330911/bff2b9a7-7c60-4471-be71-d3b6a825c8e6)  | ![images](https://github.com/mylxsw/aidea/assets/2330911/c3123fed-75f9-4e4f-b3a1-e76cf24499ee) 
+
+> 微信群满了加不进去的话，可以添加微信号 `x-prometheus` 为好友，把你拉进去哈。
+> 
+> <img src="https://github.com/mylxsw/aidea/assets/2330911/655601c1-9371-4460-9657-c58521260336" width="400"/>
 
 电报群：[点此加入](https://t.me/aideachat)
 
