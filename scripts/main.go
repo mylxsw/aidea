@@ -22,7 +22,7 @@ func main() {
 
 	for _, u := range fontRegex.FindAllString(data, -1) {
 		savePath := must.Must(download(u))
-		data = strings.ReplaceAll(data, u, "./fonts/"+savePath)
+		data = strings.ReplaceAll(data, u, "https://resources.aicode.cc/fonts/"+savePath)
 	}
 
 	must.NoError(os.WriteFile(mainDartJSPath, []byte(data), 0755))
