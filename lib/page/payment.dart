@@ -9,6 +9,7 @@ import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/chat/markdown.dart';
 import 'package:askaide/page/component/coin.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
+import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/dialog.dart';
 import 'package:askaide/page/theme/custom_size.dart';
@@ -23,6 +24,7 @@ import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:tobias/tobias.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class PaymentScreen extends StatefulWidget {
   final SettingRepository setting;
@@ -311,66 +313,38 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             return;
                           }
 
-                          _startPaymentLoading();
-                          try {
-                            if (PlatformTool.isIOS()) {
-                              // 创建支付，服务端保存支付信息，创建支付订单
-                              paymentId = await APIServer()
-                                  .createApplePay(selectedProduct!.id);
-                              // 发起 Apple 支付
-                              InAppPurchase.instance.buyConsumable(
-                                purchaseParam: PurchaseParam(
-                                    productDetails: selectedProduct!),
-                              );
-                            } else {
-                              // 支付宝支付
-                              final created = await APIServer().createAlipay(
-                                selectedProduct!.id,
-                              );
-                              paymentId = created.paymentId;
-
-                              // 调起支付宝支付
-                              final aliPayRes = await aliPay(
-                                created.params,
-                                evn: AliPayEvn.ONLINE,
-                              ).whenComplete(() => _closePaymentLoading());
-                              print("=================");
-                              print(aliPayRes);
-                              print(aliPayRes["resultStatus"]);
-                              if (aliPayRes['resultStatus'] == '9000') {
-                                await APIServer().alipayClientConfirm(
-                                  aliPayRes.map((key, value) =>
-                                      MapEntry(key.toString(), value)),
-                                );
-
-                                showSuccessMessage('购买成功');
+                          if (PlatformTool.isIOS() ||
+                              PlatformTool.isAndroid()) {
+                            _startPaymentLoading();
+                            try {
+                              if (PlatformTool.isAndroid()) {
+                                await createAppAlipay();
                               } else {
-                                switch (aliPayRes['resultStatus']) {
-                                  case 8000: // fall through
-                                  case 6004:
-                                    showErrorMessage('支付处理中，请稍后查看购买历史确认结果');
-                                    break;
-                                  case 4000:
-                                    showErrorMessage('支付失败');
-                                    break;
-                                  case 5000:
-                                    showErrorMessage('重复请求');
-                                    break;
-                                  case 6001:
-                                    showErrorMessage('支付已取消');
-                                    break;
-                                  case 6002:
-                                    showErrorMessage('网络连接出错');
-                                    break;
-                                  default:
-                                    showErrorMessage('支付失败');
-                                }
+                                await createAppApplePay();
                               }
-                              print("-----------------");
+                            } catch (e) {
+                              _closePaymentLoading();
+                              showErrorMessage(resolveError(context, e));
                             }
-                          } catch (e) {
-                            _closePaymentLoading();
-                            showErrorMessage(resolveError(context, e));
+                          } else {
+                            openListSelectDialog(
+                              context,
+                              <SelectorItem>[
+                                SelectorItem(const Text('支付宝（桌面端）'), 'web'),
+                                SelectorItem(const Text('支付宝（移动端）'), 'wap'),
+                              ],
+                              (value) {
+                                _startPaymentLoading();
+                                createWebOrWapAlipay(source: value.value)
+                                    .onError((error, stackTrace) {
+                                  _closePaymentLoading();
+                                  showErrorMessageEnhanced(context, error!);
+                                });
+
+                                return true;
+                              },
+                              heightFactor: 0.3,
+                            );
                           }
                         },
                       ),
@@ -411,6 +385,81 @@ class _PaymentScreenState extends State<PaymentScreen> {
         ),
       ),
     );
+  }
+
+  /// 创建苹果应用内支付
+  Future<void> createAppApplePay() async {
+    // 创建支付，服务端保存支付信息，创建支付订单
+    paymentId = await APIServer().createApplePay(selectedProduct!.id);
+    // 发起 Apple 支付
+    InAppPurchase.instance.buyConsumable(
+      purchaseParam: PurchaseParam(productDetails: selectedProduct!),
+    );
+  }
+
+  /// 创建支付宝付款（Web 或 Wap）
+  Future<void> createWebOrWapAlipay({required String source}) async {
+    final created = await APIServer().createAlipay(
+      selectedProduct!.id,
+      source: source,
+    );
+    paymentId = created.paymentId;
+
+    print(created.params);
+
+    // 调起支付宝支付
+    launchUrlString(created.params).then((value) {
+      _closePaymentLoading();
+      openConfirmDialog(context, '支付完成？', () => {print(value)});
+    });
+  }
+
+  /// 创建支付宝付款（App）
+  Future<void> createAppAlipay() async {
+    // 支付宝支付
+    final created = await APIServer().createAlipay(
+      selectedProduct!.id,
+      source: 'app',
+    );
+    paymentId = created.paymentId;
+
+    // 调起支付宝支付
+    final aliPayRes = await aliPay(
+      created.params,
+      evn: AliPayEvn.ONLINE,
+    ).whenComplete(() => _closePaymentLoading());
+    print("=================");
+    print(aliPayRes);
+    print(aliPayRes["resultStatus"]);
+    if (aliPayRes['resultStatus'] == '9000') {
+      await APIServer().alipayClientConfirm(
+        aliPayRes.map((key, value) => MapEntry(key.toString(), value)),
+      );
+
+      showSuccessMessage('购买成功');
+    } else {
+      switch (aliPayRes['resultStatus']) {
+        case 8000: // fall through
+        case 6004:
+          showErrorMessage('支付处理中，请稍后查看购买历史确认结果');
+          break;
+        case 4000:
+          showErrorMessage('支付失败');
+          break;
+        case 5000:
+          showErrorMessage('重复请求');
+          break;
+        case 6001:
+          showErrorMessage('支付已取消');
+          break;
+        case 6002:
+          showErrorMessage('网络连接出错');
+          break;
+        default:
+          showErrorMessage('支付失败');
+      }
+    }
+    print("-----------------");
   }
 }
 

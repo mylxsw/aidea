@@ -899,12 +899,14 @@ class APIServer {
   }
 
   /// 发起 Alipay
-  Future<AlipayCreatedReponse> createAlipay(String productId) async {
+  Future<AlipayCreatedReponse> createAlipay(String productId,
+      {required String source}) async {
     return sendPostRequest(
       '/v1/payment/alipay',
       (resp) => AlipayCreatedReponse.fromJson(resp.data),
       formData: Map<String, dynamic>.from({
         'product_id': productId,
+        'source': source,
       }),
     );
   }
