@@ -18,11 +18,9 @@
 
 微信技术交流群：
 
-技术交流群 1 | 技术交流群 2
-:-------------------------:|:-------------------------:
-![images](https://github.com/mylxsw/aidea/assets/2330911/bff2b9a7-7c60-4471-be71-d3b6a825c8e6)  | ![images](https://github.com/mylxsw/aidea/assets/2330911/c3123fed-75f9-4e4f-b3a1-e76cf24499ee) 
+<img src="https://github.com/mylxsw/aidea/assets/2330911/c3123fed-75f9-4e4f-b3a1-e76cf24499ee" width="400" />
 
-> 微信群满了加不进去的话，可以添加微信号 `x-prometheus` 为好友，把你拉进去哈。
+> 微信群满了加不进去的话，可以添加微信号 `x-prometheus` 为好友，拉你进群。
 > 
 > <img src="https://github.com/mylxsw/aidea/assets/2330911/655601c1-9371-4460-9657-c58521260336" width="400"/>
 
@@ -61,6 +59,13 @@ sudo codesign -f -s - /Applications/AIdea.app
 
 <img width="1125" alt="image" src="https://github.com/mylxsw/aidea/assets/2330911/5ef3fbe1-6cb3-4a64-9c17-82dd8c864ac7">
 
+### 2. Web 端使用 Nginx 部署后，`canvaskit.wasm` 文件响应的 `Content-Type`  是 `application/octet-stream`，而不是 `application/wasm` 
+
+在 Nginx 配置文件 `/etc/nginx/mime.types` 中，增加 wasm 支持
+
+```nginx
+application/wasm wasm;
+```
 
 ## Star History
 
