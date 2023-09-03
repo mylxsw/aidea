@@ -38,7 +38,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   @override
   void initState() {
-    if (PlatformTool.isIOS() || PlatformTool.isMacOS()) {
+    if (PlatformTool.isIOS()) {
       final purchaseUpdated = InAppPurchase.instance.purchaseStream;
       _subscription = purchaseUpdated.listen((purchaseDetailsList) {
         _listenToPurchaseUpdated(purchaseDetailsList);
@@ -313,8 +313,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
                           _startPaymentLoading();
                           try {
-                            if (PlatformTool.isIOS() ||
-                                PlatformTool.isMacOS()) {
+                            if (PlatformTool.isIOS()) {
                               // 创建支付，服务端保存支付信息，创建支付订单
                               paymentId = await APIServer()
                                   .createApplePay(selectedProduct!.id);

@@ -33,8 +33,15 @@ target 'Runner' do
   flutter_install_all_macos_pods File.dirname(File.realpath(__FILE__))
 end
 
+# bugfix for xcode15beta https://github.com/CocoaPods/CocoaPods/issues/12012
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_macos_build_settings(target)
+    target.build_configurations.each do |config|
+    xcconfig_path = config.base_configuration_reference.real_path
+    xcconfig = File.read(xcconfig_path)
+    xcconfig_mod = xcconfig.gsub(/DT_TOOLCHAIN_DIR/, "TOOLCHAIN_DIR")
+    File.open(xcconfig_path, "w") { |file| file << xcconfig_mod }
+    end
   end
 end

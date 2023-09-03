@@ -116,11 +116,11 @@ class AccountQuotaCard extends StatelessWidget {
             ),
             EnhancedButton(
               onPressed: () {
-                if (PlatformTool.isWeb()) {
+                if (PlatformTool.isWeb() || PlatformTool.isMacOS()) {
                   showBeautyDialog(
                     context,
                     type: QuickAlertType.info,
-                    text: 'Web 端购买功能暂未推出，敬请期待',
+                    text: 'Web 端、桌面端购买功能暂未推出，敬请期待',
                   );
                   return;
                 }
