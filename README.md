@@ -45,6 +45,13 @@ Web 端：https://web.aicode.cc/
 ![images](resources/Xnip2023-08-30_11-34-42.png)  | ![images](resources/Xnip2023-08-30_11-35-01.png) 
 ![images](resources/Xnip2023-08-30_11-35-33.png)  | ![images](resources/Xnip2023-08-30_11-35-52.png)
 
+## 开源不易，请我喝杯酒吧
+
+微信  | 支付宝
+:-------------------------:|:-------------------------:
+![image](https://github.com/mylxsw/aidea/assets/2330911/46e2242b-17bc-41ff-bebe-b5cc466b7f17) | ![image](https://github.com/mylxsw/aidea/assets/2330911/f3c85d4a-bea8-4a76-b582-c673613f76cb)
+
+
 ## 常见问题
 
 ### 1. Mac 桌面端应用无法打开，报错如下
