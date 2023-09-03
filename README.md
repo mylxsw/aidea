@@ -1,95 +1,13 @@
-# AIdea - AI 聊天、协作、图像生成
+# RSS Builder by B!Soft MarkBook RSS Feed
 
-[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B39727%2Fgithub.com%2Fmylxsw%2Faidea.svg?type=shield&issueType=license)](https://app.fossa.com/projects/custom%2B39727%2Fgithub.com%2Fmylxsw%2Faidea?ref=badge_shield)
-![GitHub release (by tag)](https://img.shields.io/github/downloads/mylxsw/aidea/1.0.3/total)
-![GitHub](https://img.shields.io/github/license/mylxsw/aidea)
-
-
-一款集成了主流大语言模型以及绘图模型的 APP， 采用 Flutter 开发，代码完全开源，支持以下功能：
-
-- 支持 GPT-3.5/4 问答聊天
-- 支持国产模型：通义千问，文心一言
-- 支持文生图、图生图、超分辨率、黑白图片上色等功能，集成 Stable Diffusion 模型，支持 SDXL 1.0
-
-开源代码：
-
-- 客户端：https://github.com/mylxsw/aidea
-- 服务端：https://github.com/mylxsw/aidea-server （即将开放）
-
-微信技术交流群：
-
-<img src="https://github.com/mylxsw/aidea/assets/2330911/c3123fed-75f9-4e4f-b3a1-e76cf24499ee" width="400" />
-
-> 微信群满了加不进去的话，可以添加微信号 `x-prometheus` 为好友，拉你进群。
-> 
-> <img src="https://github.com/mylxsw/aidea/assets/2330911/655601c1-9371-4460-9657-c58521260336" width="400"/>
-
-电报群：[点此加入](https://t.me/aideachat)
-
-## 下载安装地址
-
-Android/IOS APP：https://aidea.aicode.cc/
-
-> IOS 国区目前不可用，除此之外所有区域都可以下载。
->
-> 2023 年 9 月 4 日发现国区被下架后，非国区 IOS 版本无法完成应用内购（提示“你的购买无法完成”），暂时无法充值，最新进展在这里 [issue#16](https://github.com/mylxsw/aidea/issues/16)。
-
-Mac 桌面端：https://github.com/mylxsw/aidea/releases
-
-Web 端：https://web.aicode.cc/
-
-## APP 截图
-
-![images](resources/Xnip2023-08-30_11-32-34.png)  | ![images](resources/Xnip2023-08-30_11-32-42.png)
-:-------------------------:|:-------------------------:
-![images](resources/Xnip2023-08-30_11-32-53.png)  | ![images](resources/Xnip2023-08-30_11-33-44.png) 
-![images](resources/Xnip2023-08-30_11-34-14.png)  | ![images](resources/Xnip2023-08-30_11-34-28.png) 
-![images](resources/Xnip2023-08-30_11-34-42.png)  | ![images](resources/Xnip2023-08-30_11-35-01.png) 
-![images](resources/Xnip2023-08-30_11-35-33.png)  | ![images](resources/Xnip2023-08-30_11-35-52.png)
-
-## 如果对你有帮助，请我喝杯酒吧
-
-微信  | 支付宝
-:-------------------------:|:-------------------------:
-![image](https://github.com/mylxsw/aidea/assets/2330911/46e2242b-17bc-41ff-bebe-b5cc466b7f17) | ![image](https://github.com/mylxsw/aidea/assets/2330911/f3c85d4a-bea8-4a76-b582-c673613f76cb)
-
-
-## 常见问题
-
-### 1. Mac 桌面端应用无法打开，报错如下
-
-<img width="300" src="https://user-images.githubusercontent.com/15153075/264509300-426d70bd-fd1b-4078-9eb9-5588a917b023.png">
-
-临时解决方案，命令行执行
-
-```bash
-sudo codesign -f -s - /Applications/AIdea.app
-```
-
-<img width="1125" alt="image" src="https://github.com/mylxsw/aidea/assets/2330911/5ef3fbe1-6cb3-4a64-9c17-82dd8c864ac7">
-
-### 2. Web 端使用 Nginx 部署后，`canvaskit.wasm` 文件响应的 `Content-Type`  是 `application/octet-stream`，而不是 `application/wasm` 
-
-在 Nginx 配置文件 `/etc/nginx/mime.types` 中，增加 wasm 支持
-
-```nginx
-application/wasm wasm;
-```
-
-## Star History
-
-<a href="https://star-history.com/#mylxsw/aidea&Date">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=mylxsw/aidea&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=mylxsw/aidea&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=mylxsw/aidea&type=Date" />
-  </picture>
-</a>
-
-## License
-
-MIT
-
-Copyright (c) 2023, mylxsw
-
-[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B39727%2Fgithub.com%2Fmylxsw%2Faidea.svg?type=large)](https://app.fossa.com/projects/custom%2B39727%2Fgithub.com%2Fmylxsw%2Faidea?ref=badge_large)
+https://www.markbook.com MarkBook RSS Feed. Keep up to date on the latest news. en-us mrichardson@acadiemgroup.com The Acadiem Group 2020 NEW MarkBook HTML5 is Here! 10 Oct 2020 10:00:00 -0400 
+https://www.markbook.com mrichardson@acadiemgroup.com News Our ALL NEW MarkBook HTML5 Web Application is Here! Flash or Flex is no longer required. Many added features in a clean new look. Now you can use MarkBook on your Chromebook, Android or iPadOS tablet as well as Windows, macOS or Linux devices. (Select tablets only) A new version of the app, 1.1.0 22 Dec 2020 16:30:00 -0400 
+https://www.markbook.com mrichardson@acadiemgroup.com News A new version of the app, 1.1.0, has been launched. It contains a major security update. Please see the Release Notes for the details. A new version of the app, 1.2.0 26 Jan 2021 17:30:00 -0400 
+https://www.markbook.com mrichardson@acadiemgroup.com News A new version of the app, 1.2.0, has been launched. You can now Copy Comments to many students at once and easily input entries on tablets using Numeric Keypad. Please see the Release Notes for the details. A new version of the app, 1.3.0 25 Mar 2021 17:30:00 -0400 
+https://www.markbook.com mrichardson@acadiemgroup.com News A new version of the app, 1.3.0, has been launched. Please see the Release Notes for the details. A new version of the app, 1.4.0 30 Apr 2021 08:00:00 -0400 
+https://www.markbook.com mrichardson@acadiemgroup.com News A new version of the app, 1.4.0, has been launched. Please see the Release Notes for the details. For TDSB users 6 Aug 2021 08:00:00 -0400 http://tdsb.on.ca/ mrichardson@acadiemgroup.com News TDSB users: In preparation for Single Sign On service in September, all usernames now use your Toronto District School Board email address. TDSB-logo.png Attention TDSB Users 18 Sep 2021 01:00:00 -0400 
+https://www.markbook.com mrichardson@acadiemgroup.com News On Saturday September 18th, Single Sign On (SSO) will be implemented for TDSB MarkBook (Cloud) users. After the implementation is completed, teachers will be required to sign onto MarkBook using their TDSB e- mail address and password. Teachers that are already signing onto MarkBook with their TDSB email address will have their existing class data maintained. Teachers that are currently using personal email accounts will need to contact 
+support@markbookapp.com to request existing class data transfers, if required. TDSB-logo.png For TVDSB Users 09 Sep 2022 01:00:00 -0400 
+https://www.markbook.com News On Tuesday, September 6th, Single Sign On (SSO) was implemented for TVDSB MarkBook (Cloud) users. Teachers are now required to sign onto MarkBook using their TVDSB e-mail address and password in the Microsoft 365 Apps environment. Please follow the Information Guidesheet for "Transfer from Individual to Corporate Domain using SSO in MarkBook®”. Teachers that are already signing onto MarkBook with their TVDSB email address will have their existing class data maintained. Teachers that are currently using personal email accounts will need to contact 
+support@markbookapp.com to request existing class data transfers, if required. TVDSB-logo.webp WECDSB 31 Oct 2022 01:00:00 -0400 
+https://www.markbook.com News WECDSB users, please ensure that you have updated ALL of your courses with the most recent Aspen extract that has your first initial and last name in the file name (i.e. see below). Furthermore, please ensure you have submitted a copy (screenshots) of your updated courses to your school-issued Google form. WECDSB-logo.png
