@@ -45,7 +45,7 @@ Web 端：https://web.aicode.cc/
 ![images](resources/Xnip2023-08-30_11-34-42.png)  | ![images](resources/Xnip2023-08-30_11-35-01.png) 
 ![images](resources/Xnip2023-08-30_11-35-33.png)  | ![images](resources/Xnip2023-08-30_11-35-52.png)
 
-## 开源不易，请我喝杯酒吧
+## 如果对你有帮助，请我喝杯酒吧
 
 微信  | 支付宝
 :-------------------------:|:-------------------------:
