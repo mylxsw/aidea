@@ -17,8 +17,13 @@ build-macos:
 	flutter build macos --no-tree-shake-icons
 	open build/macos/Build/Products/Release/
 
-deploy-web:
-	flutter build web --web-renderer canvaskit --release --pwa-strategy none --dart2js-optimization O4
+build-web:
+	flutter build web --web-renderer canvaskit --release --pwa-strategy none --dart2js-optimization O4 --dart-define=FLUTTER_WEB_CANVASKIT_URL=./canvaskit/
+	cd scripts && go run main.go ../build/web/main.dart.js && cd ..
+	rm -fr build/web/fonts/ && mkdir build/web/fonts
+	cp -r scripts/s build/web/fonts/s
+
+deploy-web: build-web
 	cd build && tar -zcvf web.tar.gz web
 	scp build/web.tar.gz huawei-1:/data/webroot
 	ssh huawei-1 "cd /data/webroot && tar -zxvf web.tar.gz && rm -rf web.tar.gz app && mv web app"
