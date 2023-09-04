@@ -18,7 +18,7 @@
 
 微信技术交流群：
 
-<img src="https://github.com/mylxsw/aidea/assets/2330911/c3123fed-75f9-4e4f-b3a1-e76cf24499ee" width="400" />
+<img src="https://github.com/mylxsw/aidea/assets/2330911/36087479-36bb-4871-9e34-3bdf752a1188" width="400" />
 
 > 微信群满了加不进去的话，可以添加微信号 `x-prometheus` 为好友，拉你进群。
 > 
