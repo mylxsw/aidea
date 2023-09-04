@@ -32,7 +32,7 @@ Android/IOS APP：https://aidea.aicode.cc/
 
 > IOS 国区目前不可用，除此之外所有区域都可以下载。
 >
-> 2023 年 9 月 4 日发现国区被下架后，非国区 IOS 版本无法完成应用内购（提示“你的购买无法完成”），暂时无法充值，最新进展在这里 [issue#16](https://github.com/mylxsw/aidea/issues/16)。
+> 2023 年 9 月 4 日发现国区被下架后，非国区 IOS 版本可能无法完成应用内购（提示“你的购买无法完成”，但是也有人能够成功支付），暂时无法充值，最新进展在这里 [issue#16](https://github.com/mylxsw/aidea/issues/16)。
 
 Mac 桌面端：https://github.com/mylxsw/aidea/releases
 
