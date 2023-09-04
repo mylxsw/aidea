@@ -41,7 +41,7 @@
 			<key>NSAllowsArbitraryLoads</key>
 			<true/>
 			<key>NSAllowsArbitraryLoadsForMedia</key>
-   			<true/>
+			<true/>
 		</dict>
 		<key>NSCameraUsageDescription</key>
 		<string>Used to demonstrate image picker plugin</string>

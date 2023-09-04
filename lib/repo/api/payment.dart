@@ -85,3 +85,22 @@ class ApplePayProducts {
     );
   }
 }
+
+class PaymentStatus {
+  final bool success;
+  final String? note;
+
+  PaymentStatus(this.success, {this.note});
+
+  toJson() => {
+        'success': success,
+        'note': note,
+      };
+
+  static PaymentStatus fromJson(Map<String, dynamic> json) {
+    return PaymentStatus(
+      json['success'],
+      note: json['note'],
+    );
+  }
+}
