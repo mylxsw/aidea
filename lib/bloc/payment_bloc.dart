@@ -11,7 +11,7 @@ part 'payment_state.dart';
 class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   PaymentBloc() : super(PaymentInitial()) {
     on<PaymentLoadAppleProducts>((event, emit) async {
-      if (PlatformTool.isIOS() || PlatformTool.isMacOS()) {
+      if (PlatformTool.isIOS()) {
         final products = await APIServer().applePayProducts();
         if (products.consume.isEmpty) {
           emit(PaymentAppleProductsLoaded(
