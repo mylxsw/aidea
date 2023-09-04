@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const VERSION = '1.0.3';
+const VERSION = '1.0.4';
 const DB_VERSION = 23;
 
 const maxRoomNumForNonVIP = 50;

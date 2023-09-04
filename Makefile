@@ -14,7 +14,7 @@ build-android:
 	mv build/app/outputs/flutter-apk/app-release.apk /Users/mylxsw/ResilioSync/临时文件/
 
 build-macos:
-	flutter build macos --no-tree-shake-icons
+	flutter build macos --no-tree-shake-icons --release
 	open build/macos/Build/Products/Release/
 
 build-web:

@@ -1,0 +1,10 @@
+mv 16x16.png icon-16.png
+cp 32x32.png icon-16@2x.png
+mv 32x32.png icon-32.png
+mv 64x64.png icon-32@2x.png
+mv 128x128.png icon-128.png
+cp 256x256.png icon-128@2x.png
+mv 256x256.png icon-256.png
+cp 512x512.png icon-256@2x.png
+mv 512x512.png icon-512.png
+mv 1024x1024.png icon-512@2x.png

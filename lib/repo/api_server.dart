@@ -235,7 +235,7 @@ class APIServer {
         return Future.error(resp.data['error']);
       }
 
-      Logger.instance.d(resp.data);
+      // Logger.instance.d(resp.data);
 
       return parser(resp);
     } catch (e) {
