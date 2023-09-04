@@ -211,6 +211,8 @@ openConfirmDialog(
   Function() onConfirm, {
   Widget? title,
   bool danger = false,
+  String? confirmText,
+  String? cancelText,
 }) {
   HapticFeedbackHelper.mediumImpact();
   final customColors = Theme.of(context).extension<CustomColors>()!;
@@ -241,7 +243,7 @@ openConfirmDialog(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Button(
-                  title: AppLocale.ok.getString(context),
+                  title: confirmText ?? AppLocale.ok.getString(context),
                   onPressed: () {
                     onConfirm();
                     context.pop();
@@ -254,7 +256,7 @@ openConfirmDialog(
                 ),
                 const SizedBox(height: 10),
                 Button(
-                  title: AppLocale.cancel.getString(context),
+                  title: cancelText ?? AppLocale.cancel.getString(context),
                   backgroundColor: const Color.fromARGB(36, 222, 222, 222),
                   color: customColors.dialogDefaultTextColor?.withAlpha(150),
                   onPressed: () {

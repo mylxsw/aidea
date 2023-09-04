@@ -235,7 +235,7 @@ class APIServer {
         return Future.error(resp.data['error']);
       }
 
-      // Logger.instance.d(resp.data);
+      Logger.instance.d(resp.data);
 
       return parser(resp);
     } catch (e) {
@@ -917,6 +917,14 @@ class APIServer {
       '/v1/payment/alipay/client-confirm',
       (resp) => resp.data['status'],
       formData: params,
+    );
+  }
+
+  /// 查询支付状态
+  Future<PaymentStatus> queryPaymentStatus(String paymentId) async {
+    return sendGetRequest(
+      '/v1/payment/status/$paymentId',
+      (resp) => PaymentStatus.fromJson(resp.data),
     );
   }
 

@@ -314,13 +314,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           }
 
                           if (PlatformTool.isIOS() ||
-                              PlatformTool.isAndroid()) {
+                              PlatformTool.isAndroid() ||
+                              PlatformTool.isMacOS()) {
                             _startPaymentLoading();
                             try {
                               if (PlatformTool.isAndroid()) {
                                 await createAppAlipay();
-                              } else {
+                              } else if (PlatformTool.isIOS()) {
                                 await createAppApplePay();
+                              } else {
+                                await createWebOrWapAlipay(source: 'web');
                               }
                             } catch (e) {
                               _closePaymentLoading();
@@ -330,8 +333,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             openListSelectDialog(
                               context,
                               <SelectorItem>[
-                                SelectorItem(const Text('支付宝（桌面端）'), 'web'),
-                                SelectorItem(const Text('支付宝（移动端）'), 'wap'),
+                                SelectorItem(const Text('支付宝电脑端（扫码支付）'), 'web'),
+                                SelectorItem(const Text('支付宝手机端'), 'wap'),
                               ],
                               (value) {
                                 _startPaymentLoading();
@@ -343,7 +346,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
                                 return true;
                               },
-                              heightFactor: 0.3,
+                              title: '请选择支付方式',
+                              heightFactor: 0.25,
                             );
                           }
                         },
@@ -405,12 +409,47 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
     paymentId = created.paymentId;
 
-    print(created.params);
-
     // 调起支付宝支付
     launchUrlString(created.params).then((value) {
       _closePaymentLoading();
-      openConfirmDialog(context, '支付完成？', () => {print(value)});
+      openConfirmDialog(
+        context,
+        '请确认支付宝支付是否已完成',
+        () async {
+          _startPaymentLoading();
+          try {
+            final resp =
+                await APIServer().queryPaymentStatus(created.paymentId);
+            if (resp.success) {
+              showSuccessMessage(resp.note ?? '支付成功');
+              _closePaymentLoading();
+            } else {
+              // 支付失败，延迟 5s 再次查询支付状态
+              await Future.delayed(const Duration(seconds: 5), () async {
+                try {
+                  final value =
+                      await APIServer().queryPaymentStatus(created.paymentId);
+
+                  if (value.success) {
+                    showSuccessMessage(value.note ?? '支付成功');
+                  } else {
+                    showErrorMessage('支付未完成，我们接收到的状态为：${value.note}');
+                  }
+                  _closePaymentLoading();
+                } catch (e) {
+                  _closePaymentLoading();
+                  showErrorMessage(resolveError(context, e));
+                }
+              });
+            }
+          } catch (e) {
+            _closePaymentLoading();
+            showErrorMessage(resolveError(context, e));
+          }
+        },
+        confirmText: '已完成支付',
+        cancelText: '支付遇到问题，稍后继续',
+      );
     });
   }
 
