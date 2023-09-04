@@ -347,7 +347,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                 return true;
                               },
                               title: '请选择支付方式',
-                              heightFactor: 0.25,
+                              heightFactor: 0.3,
                             );
                           }
                         },
