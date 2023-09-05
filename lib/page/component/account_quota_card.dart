@@ -1,15 +1,12 @@
-import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/coin.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/image.dart';
-import 'package:askaide/page/dialog.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/repo/api/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
-import 'package:quickalert/models/quickalert_type.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AccountQuotaCard extends StatelessWidget {
