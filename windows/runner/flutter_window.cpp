@@ -27,11 +27,10 @@ bool FlutterWindow::OnCreate() {
   RegisterPlugins(flutter_controller_->engine());
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
-  // bugfix: https://github.com/flutter/flutter/issues/119415
-  // flutter_controller_->engine()->SetNextFrameCallback([&]() {
-  //   this->Show();
-  // });
-  this->Show();
+  flutter_controller_->engine()->SetNextFrameCallback([&]() {
+    this->Show();
+  });
+  flutter_controller_->ForceRedraw();
 
   return true;
 }
