@@ -145,7 +145,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
 
               final password = _passwordController.text.trim();
               if (password == '') {
-                showErrorMessage(AppLocale.passwordRequried.getString(context));
+                showErrorMessage(AppLocale.passwordRequired.getString(context));
                 return;
               }
 

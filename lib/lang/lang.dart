@@ -9,6 +9,7 @@ mixin AppLocale {
   static const String language = 'language';
   static const String themeMode = 'theme_mode';
   static const String accountInfo = 'account_info';
+  static const String accountSettings = 'account_settings';
   static const String usage = 'usage';
   static const String validBefore = 'valid_before';
   static const String custom = 'custom';
@@ -40,6 +41,8 @@ mixin AppLocale {
   static const String unselectAll = 'unselect-all';
   static const String share = 'share';
   static const String histories = 'histories';
+  static const String enable = 'enable';
+  static const String disable = 'disable';
 
   static const String newChat = 'new-chat';
   static const String clearChatHistory = 'clear-chat-history';
@@ -132,7 +135,7 @@ mixin AppLocale {
   static const String accountRequired = 'account-required';
   static const String accountFormatError = 'account-format-error';
   static const String phoneNumberFormatError = 'phone-number-format-error';
-  static const String passwordRequried = 'password-required';
+  static const String passwordRequired = 'password-required';
   static const String passwordFormatError = 'password-format-error';
   static const String accountCreated = 'account-created';
   static const String sendVerifyCode = 'send-verify-code';
@@ -152,6 +155,7 @@ mixin AppLocale {
   static const String inviteCode = 'invite-code';
   static const String inviteCodeInputTips = 'invite-code-input-tips';
   static const String inviteCodeFormatError = 'invite-code-format-error';
+  static const String enableCustomOpenAI = 'enable-custom-openai';
 
   static const String my = 'my';
   static const String coinsUsage = 'coins-usage';
@@ -178,6 +182,8 @@ mixin AppLocale {
     unselectAll: '取消全选',
     share: '分享',
     histories: '历史记录',
+    enable: '启用',
+    disable: '未启用',
     newChat: '新对话',
     clearChatHistory: '清空聊天记录',
     examples: '示例',
@@ -197,6 +203,7 @@ mixin AppLocale {
     language: '语言',
     themeMode: '主题外观',
     accountInfo: '账号信息',
+    accountSettings: '账号设置',
     usage: '智慧果',
     validBefore: '有效期至',
     custom: '自定义',
@@ -289,7 +296,7 @@ mixin AppLocale {
     accountRequired: '请输入账号',
     accountFormatError: '账号格式有误\n请输入手机号',
     phoneNumberFormatError: '手机号码格式有误',
-    passwordRequried: '请输入密码',
+    passwordRequired: '请输入密码',
     passwordFormatError: '密码格式有误\n必须为8-20位字母、数字、特殊符号组合',
     accountCreated: '账号创建成功',
     sendVerifyCode: '发送验证码',
@@ -309,6 +316,7 @@ mixin AppLocale {
     inviteCode: '邀请码',
     inviteCodeInputTips: '输入好友邀请码，获额外奖励（非必填）',
     inviteCodeFormatError: '邀请码格式有误',
+    enableCustomOpenAI: '启用后将使用您自己配置的 OpenAI 服务',
     my: '我的',
     coinsUsage: '使用明细',
     updateCheck: '检测更新',
@@ -335,6 +343,8 @@ mixin AppLocale {
     unselectAll: 'Cancel',
     share: 'Share',
     histories: 'Histories',
+    enable: 'Enable',
+    disable: 'Disable',
     newChat: 'New Chat',
     clearChatHistory: 'Clear Chat Histories',
     examples: 'Examples',
@@ -354,6 +364,7 @@ mixin AppLocale {
     language: 'Language',
     themeMode: 'Theme',
     accountInfo: 'Account Info',
+    accountSettings: 'Account Settings',
     usage: 'Coins',
     validBefore: 'Valid Before',
     custom: 'Custom',
@@ -451,7 +462,7 @@ mixin AppLocale {
     accountRequired: 'Please enter your account',
     accountFormatError: 'Account format error\nPlease enter your phone number',
     phoneNumberFormatError: 'Phone number format error',
-    passwordRequried: 'Please enter your password',
+    passwordRequired: 'Please enter your password',
     passwordFormatError:
         'Password format error\nMust be 8-20 digits, letters, special characters',
     accountCreated: 'Account created',
@@ -473,9 +484,10 @@ mixin AppLocale {
     inviteCodeInputTips:
         'Enter friend invite code, get extra rewards (optional)',
     inviteCodeFormatError: 'Invite code format error',
+    enableCustomOpenAI: 'Your custom OpenAI service will be used once enabled',
     my: 'My',
     coinsUsage: 'Usage',
-    updateCheck: 'Check update',
+    updateCheck: 'Check Update',
     buy: 'Buy',
     paymentHistory: 'Histories',
     buyCoins: 'Buy coins',
