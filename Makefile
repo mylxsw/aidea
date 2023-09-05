@@ -14,7 +14,9 @@ build-android:
 	mv build/app/outputs/flutter-apk/app-release.apk /Users/mylxsw/ResilioSync/临时文件/
 
 build-macos:
-	flutter build macos --no-tree-shake-icons
+	flutter build macos --no-tree-shake-icons --release
+	codesign -f -s "Developer ID Application: YIYAO  GUAN (N95437SZ2A)" build/macos/Build/Products/Release/AIdea.app
+	productbuild --component AIdea.app /Applications --sign "Developer ID Installer: YIYAO  GUAN (N95437SZ2A)" --product AIdea.app/Contents/Info.plist AIdea.pkg
 	open build/macos/Build/Products/Release/
 
 build-web:
