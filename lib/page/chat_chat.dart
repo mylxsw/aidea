@@ -59,18 +59,18 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
 
   ModelIndicatorInfo? currentModel;
 
-  List<ModelIndicatorInfo> models = [
+  List<ModelIndicatorInfo> get models => [
     ModelIndicatorInfo(
       modelId: "gpt-3.5-turbo",
       modelName: 'GPT-3.5',
-      description: '速度快，成本低',
+      description: AppLocale.fastAndCostEffective,
       icon: Icons.bolt,
       activeColor: Colors.green,
     ),
     ModelIndicatorInfo(
       modelId: "gpt-4",
       modelName: 'GPT-4',
-      description: '能力强，更精准',
+      description: AppLocale.powerfulAndPrecise,
       icon: Icons.auto_awesome,
       activeColor: const Color.fromARGB(255, 120, 73, 223),
     ),
@@ -243,7 +243,7 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
                                             if (currentModel != null)
                                               Padding(
                                                 padding: const EdgeInsets.only(
-                                                  top: 17,
+                                                  top: 12,
                                                   right: 4,
                                                 ),
                                                 child: Icon(
@@ -259,12 +259,14 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
                                                 customColors: customColors,
                                                 maxLines: 10,
                                                 minLines: 6,
-                                                hintText: '有问题尽管问我~',
+                                                hintText: AppLocale
+                                                    .askMeAnyQuestion
+                                                    .getString(context),
                                                 maxLength: 2000,
                                                 showCounter: false,
                                                 hintColor: customColors
                                                     .textfieldHintDeepColor,
-                                                hintTextSize: 16,
+                                                hintTextSize: 15,
                                               ),
                                             ),
                                           ],
@@ -307,7 +309,8 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
                                           ),
                                           const SizedBox(width: 5),
                                           Text(
-                                            '可以这样问我：',
+                                            AppLocale.askMeLikeThis
+                                                .getString(context),
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
@@ -375,7 +378,8 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
                                               ),
                                               const SizedBox(width: 3),
                                               Text(
-                                                '换一换',
+                                                AppLocale.refresh
+                                                    .getString(context),
                                                 style: TextStyle(
                                                   color: customColors
                                                       .weakTextColor,

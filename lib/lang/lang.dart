@@ -115,6 +115,11 @@ mixin AppLocale {
   static const String promptHint = 'prompt-hint';
   static const String confirmClearCache = 'confirm-clear-cache';
   static const String confirmSignOut = 'confirm-sign-out';
+  static const String askMeAnyQuestion = 'ask-me-any-question';
+  static const String askMeLikeThis = 'ask-me-like-this';
+  static const String refresh = 'refresh';
+  static const String fastAndCostEffective = 'fast-and-cost-effective';
+  static const String powerfulAndPrecise = 'powerful-and-precise';
 
   static const String followSystem = 'follow-system';
   static const String darkThemeMode = 'dark-theme-mode';
@@ -278,6 +283,11 @@ mixin AppLocale {
     promptHint: '设定该数字人的角色和技能，以便为你提供更精准有效的信息。',
     confirmClearCache: '确定要清除缓存吗？',
     confirmSignOut: '确定要退出登录吗？',
+    askMeAnyQuestion: '有问题尽管问我~',
+    askMeLikeThis: '可以这样问我:',
+    refresh: '换一换',
+    fastAndCostEffective: '速度快，成本低',
+    powerfulAndPrecise: '能力强，更精准',
     followSystem: '跟随系统',
     darkThemeMode: '深色模式',
     lightThemeMode: '浅色模式',
@@ -443,6 +453,11 @@ mixin AppLocale {
         'Set the role and skills of the character so that it can provide more accurate and effective information for you.',
     confirmClearCache: 'Confirm to clear cache?',
     confirmSignOut: 'Confirm to sign out?',
+    askMeAnyQuestion: 'Feel free to ask me any questions ~',
+    askMeLikeThis: 'You can ask me like this:',
+    refresh: 'Refresh',
+    fastAndCostEffective: 'Fast & Cost-Effective',
+    powerfulAndPrecise: 'Powerful & Precise',
     followSystem: 'Follow system',
     darkThemeMode: 'Dark mode',
     lightThemeMode: 'Light mode',
