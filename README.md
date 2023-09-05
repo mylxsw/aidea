@@ -38,14 +38,24 @@ Mac 桌面端：https://github.com/mylxsw/aidea/releases
 
 Web 端：https://web.aicode.cc/
 
+## 福利
+
+目前我的 OpenAI 账户还有大约 4900+ 美金的额度，为了感谢各位的关注，在满足以下几个条件之前（任意），GPT-4 使用价格调整为 10 个智慧果每 1K Token （约等于 1 毛钱，OpenAI 官方价格为输入 2 毛 1 ，输出 4 毛 2 ）：
+
+- 截止至 2023 年 11 月 1 日
+- 4900 美金额度消耗完
+
+> 本来想免费的，但是仔细想了想不敢这么干，万一有人滥用那不是全浪费掉了。
+
 ## APP 截图
 
-![images](resources/Xnip2023-08-30_11-32-34.png)  | ![images](resources/Xnip2023-08-30_11-32-42.png)
+
+![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-32-34.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-32-42.png-thumb)
 :-------------------------:|:-------------------------:
-![images](resources/Xnip2023-08-30_11-32-53.png)  | ![images](resources/Xnip2023-08-30_11-33-44.png) 
-![images](resources/Xnip2023-08-30_11-34-14.png)  | ![images](resources/Xnip2023-08-30_11-34-28.png) 
-![images](resources/Xnip2023-08-30_11-34-42.png)  | ![images](resources/Xnip2023-08-30_11-35-01.png) 
-![images](resources/Xnip2023-08-30_11-35-33.png)  | ![images](resources/Xnip2023-08-30_11-35-52.png)
+![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-32-53.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-33-44.png-thumb) 
+![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-34-14.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-34-28.png-thumb) 
+![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-34-42.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-35-01.png-thumb) 
+![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-35-33.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-35-52.png-thumb)
 
 ## 如果对你有帮助，请我喝杯酒吧
 
