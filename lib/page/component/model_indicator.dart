@@ -1,5 +1,6 @@
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 class ModelIndicatorInfo {
   final IconData icon;
@@ -35,7 +36,7 @@ class ModelIndicator extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
-          padding: EdgeInsets.only(top: 5),
+          padding: const EdgeInsets.only(top: 5),
           child: Icon(
             model.icon,
             color: selected ? Colors.white : customColors.weakLinkColor,
@@ -55,7 +56,7 @@ class ModelIndicator extends StatelessWidget {
               ),
             ),
             Text(
-              model.description,
+              model.description.getString(context),
               style: TextStyle(
                 fontSize: 10,
                 color: selected ? Colors.white : customColors.weakTextColor,

@@ -99,8 +99,8 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                const MessageBox(
-                  message: '启用后将使用您自己配置的 OpenAI 服务。',
+                MessageBox(
+                  message: AppLocale.enableCustomOpenAI.getString(context),
                   type: MessageBoxType.info,
                 ),
                 const SizedBox(height: 10),
@@ -113,7 +113,7 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '启用',
+                              AppLocale.enable.getString(context),
                               style: TextStyle(
                                 color: customColors.textfieldLabelColor,
                                 fontSize: 16,

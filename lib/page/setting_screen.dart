@@ -400,7 +400,7 @@ class _SettingScreenState extends State<SettingScreen> {
           ),
           trailing: Row(children: [
             Text(
-              '账号设置',
+              AppLocale.accountSettings.getString(context),
               style: TextStyle(
                 color: customColors.weakTextColor?.withAlpha(200),
                 fontSize: 13,
@@ -525,8 +525,8 @@ class _SettingScreenState extends State<SettingScreen> {
       title: const Text('OpenAI'),
       value: Text(
         widget.settings.boolDefault(settingOpenAISelfHosted, false)
-            ? '已启用'
-            : '未启用',
+            ? AppLocale.enable.getString(context)
+            : AppLocale.disable.getString(context),
         style: TextStyle(
           color: customColors.weakTextColor,
           fontSize: 13,

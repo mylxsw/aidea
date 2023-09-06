@@ -38,7 +38,7 @@ class MessageBox extends StatelessWidget {
           ),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             if (type.iconData != null)
               Icon(
