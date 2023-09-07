@@ -103,6 +103,11 @@ void main() async {
 
   if (kIsWeb) {
     databaseFactory = databaseFactoryFfiWeb;
+  } else {
+    if (PlatformTool.isWindows()) {
+      sqfliteFfiInit();
+      databaseFactory = databaseFactoryFfi;
+    }
   }
 
   // 数据库连接

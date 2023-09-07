@@ -5,6 +5,7 @@ import 'package:askaide/bloc/version_bloc.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/logger.dart';
+import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/dialog.dart';
@@ -318,15 +319,19 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Widget _buildThirdPartySignInButtons(
       BuildContext context, CustomColors customColors) {
-    // return SizedBox(
-    //   width: 250,
-    //   child: SignInWithAppleButton(
-    //     text: AppLocale.signInWithApple.getString(context),
-    //     borderRadius: BorderRadius.circular(8),
-    //     height: 40,
-    //     onPressed: onAppleSigninSubmit,
-    //   ),
-    // );
+    final signInItems = <Widget>[
+      if (PlatformTool.isIOS() || PlatformTool.isAndroid() || PlatformTool.isMacOS())
+      SignInButton(
+        Buttons.appleDark,
+        mini: true,
+        shape: const CircleBorder(),
+        onPressed: onAppleSigninSubmit,
+      ),
+    ];
+
+    if (signInItems.isEmpty) {
+      return Container();
+    }
 
     return Column(
       children: [
@@ -340,48 +345,7 @@ class _SignInScreenState extends State<SignInScreen> {
         const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Column(
-              children: [
-                SignInButton(
-                  Buttons.appleDark,
-                  mini: true,
-                  shape: const CircleBorder(),
-                  onPressed: onAppleSigninSubmit,
-                ),
-                // const Text(
-                //   '使用 Apple 账号登录',
-                //   style: TextStyle(fontSize: 12),
-                // )
-              ],
-            ),
-            // const SizedBox(width: 40),
-            // Column(
-            //   children: [
-            //     SignInButtonBuilder(
-            //       backgroundColor: Colors.white,
-            //       height: 25,
-            //       onPressed: () async {
-            //         await widget.settings.set(settingUsingGuestMode, "true");
-            //         if (context.mounted) {
-            //           context.push('/setting/openai-custom');
-            //         }
-            //       },
-            //       text: AppLocale.useAsClient.getString(context),
-            //       mini: true,
-            //       shape: const CircleBorder(),
-            //       image: ClipRRect(
-            //         borderRadius: BorderRadius.circular(100),
-            //         child: Image.asset('assets/openai.png'),
-            //       ),
-            //     ),
-            //     const Text(
-            //       '仅作为 OpenAI 客户端',
-            //       style: TextStyle(fontSize: 12),
-            //     ),
-            //   ],
-            // ),
-          ],
+          children: signInItems,
         ),
       ],
     );
