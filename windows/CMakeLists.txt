@@ -99,6 +99,3 @@ install(DIRECTORY "${PROJECT_BUILD_DIR}/${FLUTTER_ASSET_DIR_NAME}"
 install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"
   CONFIGURATIONS Profile;Release
   COMPONENT Runtime)
-
-# load sqlite3.dll to release directory
-#set(sqlite_bundled_libraries "${CMAKE_CURRENT_SOURCE_DIR}/sqlite3.dll" PARENT_SCOPE)
