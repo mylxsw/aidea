@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
+// 客户端应用版本号
 const VERSION = '1.0.4';
+// 本地数据库版本号
 const DB_VERSION = 23;
 
 const maxRoomNumForNonVIP = 50;
 const coinSign = '个';
 
+// API 服务器地址
 const apiServerURL = 'https://ai-api.aicode.cc';
 const settingAPIServerToken = 'api-token';
 const settingUserInfo = 'user-info';
