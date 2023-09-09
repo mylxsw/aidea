@@ -14,7 +14,7 @@
 开源代码：
 
 - 客户端：https://github.com/mylxsw/aidea
-- 服务端：https://github.com/mylxsw/aidea-server （即将开放）
+- 服务端：https://github.com/mylxsw/aidea-server
 
 微信技术交流群：3 个群都已满员，添加微信号 `x-prometheus` 为好友，拉你进群。
 
