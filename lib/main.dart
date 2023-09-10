@@ -526,7 +526,7 @@ class MyApp extends StatefulWidget {
                   ],
                   child: ImageEditDirectScreen(
                     setting: settingRepo,
-                    title: '超分辨率',
+                    title: AppLocale.superResolution.getString(context),
                     apiEndpoint: 'upscale',
                   ),
                 ),
@@ -542,7 +542,7 @@ class MyApp extends StatefulWidget {
                   ],
                   child: ImageEditDirectScreen(
                     setting: settingRepo,
-                    title: '图片上色',
+                    title: AppLocale.colorizeImage.getString(context),
                     apiEndpoint: 'colorize',
                   ),
                 ),
@@ -783,9 +783,9 @@ class _MyAppState extends State<MyApp> {
 
     widget.localization.init(
       mapLocales: [
-        const MapLocale('zh', AppLocale.ZH),
-        const MapLocale('zh-CHS', AppLocale.ZH),
-        const MapLocale('en', AppLocale.EN),
+        const MapLocale('zh', AppLocale.zh),
+        const MapLocale('zh-CHS', AppLocale.zh),
+        const MapLocale('en', AppLocale.en),
       ],
       // initLanguageCode: initLanguage == '' ? defaultLanguage : initLanguage,
       initLanguageCode: 'zh-CHS',

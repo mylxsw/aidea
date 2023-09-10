@@ -2,10 +2,12 @@ import 'dart:typed_data';
 
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/platform.dart';
+import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 class ImageSelector extends StatelessWidget {
   final String? title;
@@ -120,7 +122,7 @@ class ImageSelector extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 10),
                                   Text(
-                                    '选择图片',
+                                    AppLocale.selectImage.getString(context),
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,

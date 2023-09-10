@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/platform.dart';
+import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/column_block.dart';
 import 'package:askaide/page/dialog.dart';
 import 'package:askaide/page/draw/components/image_selector.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 import 'package:flutter_drawing_board/paint_contents.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 class DrawboardScreen extends StatefulWidget {
@@ -87,7 +89,7 @@ class _DrawboardScreenState extends State<DrawboardScreen> {
                   ),
                 );
               },
-              title: '参考图片',
+              title: AppLocale.referenceImage.getString(context),
             ),
           ],
         ),
