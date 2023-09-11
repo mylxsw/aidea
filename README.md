@@ -9,6 +9,7 @@
 
 - 支持 GPT-3.5/4 问答聊天
 - 支持国产模型：通义千问，文心一言、讯飞星火
+- 支持开源模型：Llama2 ，ChatGLM2 ，AquilaChat 7B ，Bloomz 7B 等，后续还将开放更多
 - 支持文生图、图生图、超分辨率、黑白图片上色等功能，集成 Stable Diffusion 模型，支持 SDXL 1.0
 
 开源代码：
