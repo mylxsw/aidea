@@ -17,11 +17,17 @@
 - 客户端：https://github.com/mylxsw/aidea
 - 服务端：https://github.com/mylxsw/aidea-server
 
-微信技术交流群：3 个群都已满员，添加微信号 `x-prometheus` 为好友，拉你进群。
+###技术交流
 
-<img src="https://github.com/mylxsw/aidea/assets/2330911/655601c1-9371-4460-9657-c58521260336" width="200"/>
+- 微信技术交流群：3 个群都已满员，添加微信号 `x-prometheus` 为好友，拉你进群
 
-电报群：[点此加入](https://t.me/aideachat)
+    <img src="https://github.com/mylxsw/aidea/assets/2330911/655601c1-9371-4460-9657-c58521260336" width="200"/>
+
+- 微信公众号
+
+    <img src="https://github.com/mylxsw/aidea-server/assets/2330911/376a3b9f-eacd-45c6-9630-39eb720ba097" width="500" />
+
+- 电报群：[点此加入](https://t.me/aideachat)
 
 ## 下载安装地址
 
