@@ -104,7 +104,7 @@ class _AppScaffoldState extends State<AppScaffold> {
                   icon: Icons.manage_accounts_outlined,
                   activatedIcon: Icons.manage_accounts,
                   activatedColor: customColors.linkColor,
-                  label: AppLocale.my.getString(context),
+                  label: AppLocale.me.getString(context),
                   activated: currentIndex == 4,
                 ),
               ],

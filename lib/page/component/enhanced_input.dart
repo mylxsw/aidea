@@ -80,7 +80,7 @@ class EnhancedInput extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(
-                  width: 80,
+                  width: 85,
                   child: title,
                 ),
                 Expanded(

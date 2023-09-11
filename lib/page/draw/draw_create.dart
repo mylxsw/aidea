@@ -170,7 +170,9 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.mode == 'image-to-image' ? '图生图' : '文生图',
+          widget.mode == 'image-to-image'
+              ? AppLocale.imageToImage.getString(context)
+              : AppLocale.textToImage.getString(context),
           style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
@@ -226,15 +228,15 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                   },
                   selectedImagePath: selectedImagePath,
                   selectedImageData: selectedImageData,
-                  title: '参考图片',
+                  title: AppLocale.referenceImage.getString(context),
                   height: _calImageSelectorHeight(context),
                   titleHelper: InkWell(
                     onTap: () {
                       showBeautyDialog(
                         context,
                         type: QuickAlertType.info,
-                        text: '参考图片\n\nAI 将会在该参考图片的基础上进行创作。',
-                        confirmBtnText: '知道了',
+                        text: AppLocale.referenceImageNote.getString(context),
+                        confirmBtnText: AppLocale.gotIt.getString(context),
                         showCancelBtn: false,
                       );
                     },
@@ -277,9 +279,9 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                   children: [
                     Row(
                       children: [
-                        const Text(
-                          '智能优化',
-                          style: TextStyle(fontSize: 16),
+                        Text(
+                          AppLocale.smartOptimization.getString(context),
+                          style: const TextStyle(fontSize: 16),
                         ),
                         const SizedBox(width: 5),
                         InkWell(
@@ -287,8 +289,10 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                             showBeautyDialog(
                               context,
                               type: QuickAlertType.info,
-                              text: '智能优化\n\n启用后，AI 将进一步完善优化你的想法。',
-                              confirmBtnText: '知道了',
+                              text: AppLocale.onceEnabledSmartOptimization
+                                  .getString(context),
+                              confirmBtnText:
+                                  AppLocale.gotIt.getString(context),
                               showCancelBtn: false,
                             );
                           },
@@ -332,7 +336,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                     customColors: customColors,
                     controller: negativePromptController,
                     textAlignVertical: TextAlignVertical.top,
-                    hintText: '画面中不希望出现的元素或效果，如 “汽车，毛茸茸，低分辨率，模糊” 等。',
+                    hintText: AppLocale.unwantedElements.getString(context),
                     maxLength: 500,
                     maxLines: 5,
                     minLines: 3,
@@ -346,7 +350,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                     children: [
                       Row(
                         children: [
-                          const Text('想象力'),
+                          Text(AppLocale.imagination.getString(context)),
                           const SizedBox(width: 5),
                           InkWell(
                             onTap: () {
@@ -355,7 +359,8 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                                 type: QuickAlertType.info,
                                 text:
                                     '想象力\n\n提高想象力，得到更有创造力的内容。降低想象力，效果与参考图更相似。',
-                                confirmBtnText: '知道了',
+                                confirmBtnText:
+                                    AppLocale.gotIt.getString(context),
                                 showCancelBtn: false,
                               );
                             },
@@ -628,8 +633,10 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
             children: [
               if (capacity != null)
                 EnhancedButton(
-                  title: showAdvancedOptions ? '简单模式' : '专业模式',
-                  width: 100,
+                  title: showAdvancedOptions
+                      ? AppLocale.simpleMode.getString(context)
+                      : AppLocale.professionalMode.getString(context),
+                  width: 120,
                   backgroundColor: Colors.transparent,
                   color: customColors.weakLinkColor,
                   fontSize: 15,
@@ -664,11 +671,11 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
     return [
       EnhancedTextField(
         labelPosition: LabelPosition.top,
-        labelText: '你的想法',
+        labelText: AppLocale.yourIdeas.getString(context),
         customColors: customColors,
         controller: promptController,
         textAlignVertical: TextAlignVertical.top,
-        hintText: '你想象画面的关键词，以逗号隔开。',
+        hintText: AppLocale.keywordsSeparatedByCommas.getString(context),
         maxLines: 10,
         minLines: 2,
         maxLength: 460,
@@ -730,7 +737,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
             ),
             const SizedBox(width: 5),
             Text(
-              '随机',
+              AppLocale.random.getString(context),
               style: TextStyle(
                 color: customColors.linkColor?.withAlpha(150),
                 fontSize: 13,
@@ -767,7 +774,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
     if (widget.mode == 'image-to-image' &&
         selectedImagePath == null &&
         selectedImageData == null) {
-      showErrorMessage('请选择参考图片');
+      showErrorMessage(AppLocale.selectReferenceImage.getString(context));
       return;
     }
 

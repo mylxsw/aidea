@@ -85,7 +85,7 @@ mixin AppLocale {
   static const String internalServerError = 'internal-server-error';
   static const String badGateway = 'bad-gateway';
   static const String modelNotValid = 'model-not-valid';
-  static const String signInRequred = 'sign-in-required';
+  static const String signInRequired = 'sign-in-required';
   static const String accountNeedReSignin = 'account-need-re-signin';
   static const String confirmToDeleteRoom = 'confirm-to-delete-room';
   static const String confirmSend = 'confirm-send';
@@ -120,6 +120,31 @@ mixin AppLocale {
   static const String refresh = 'refresh';
   static const String fastAndCostEffective = 'fast-and-cost-effective';
   static const String powerfulAndPrecise = 'powerful-and-precise';
+  static const String imageToImage = 'image-to-image';
+  static const String textToImage = 'text-to-image';
+  static const String yourIdeas = 'your-ideas';
+  static const String smartOptimization = 'smart-optimization';
+  static const String professionalMode = 'professional-mode';
+  static const String simpleMode = 'simple-mode';
+  static const String unwantedElements = 'unwanted-elements';
+  static const String referenceImage = 'reference-image';
+  static const String selectImage = 'select-image';
+  static const String imagination = 'imagination';
+  static const String keywordsSeparatedByCommas =
+      'keywords-separated-by-commas';
+  static const String originalImage = 'original-image';
+  static const String superResolution = 'super-resolution';
+  static const String colorizeImage = 'colorize-image';
+  static const String errorLog = 'error-log';
+  static const String report = 'report';
+  static const String latestVersion = 'latest-version';
+  static const String aIdeaApp = 'aidea-app';
+  static const String onceEnabledSmartOptimization =
+      'once-enabled-smart-optimization';
+  static const String gotIt = 'got-it';
+  static const String referenceImageNote = 'reference-image-note';
+  static const String selectReferenceImage = 'select-reference-image';
+  static const String random = 'random';
 
   static const String followSystem = 'follow-system';
   static const String darkThemeMode = 'dark-theme-mode';
@@ -162,7 +187,7 @@ mixin AppLocale {
   static const String inviteCodeFormatError = 'invite-code-format-error';
   static const String enableCustomOpenAI = 'enable-custom-openai';
 
-  static const String my = 'my';
+  static const String me = 'me';
   static const String coinsUsage = 'coins-usage';
   static const String updateCheck = 'update-check';
   static const String buy = 'buy';
@@ -172,7 +197,7 @@ mixin AppLocale {
   static const String toPay = 'to-pay';
   static const String discover = 'discover';
 
-  static const Map<String, dynamic> ZH = {
+  static const Map<String, dynamic> zh = {
     required: '必填',
     systemInfo: '系统信息',
     save: '保存',
@@ -258,7 +283,7 @@ mixin AppLocale {
     internalServerError: '服务器故障，请稍后再试',
     badGateway: '抱歉，我们的服务器目前无法处理您的请求。我们正在努力解决问题，请您稍后重试',
     modelNotValid: '当前模型暂未开放',
-    signInRequred: '您尚未登录，请先登录',
+    signInRequired: '您尚未登录，请先登录',
     accountNeedReSignin: '账号异常，请重新登录',
     openAIAuthFailed: '您启用了自定义 OpenAI 服务，请检查 API Key 是否正确',
     confirmToDeleteRoom: '确定删除该数字人?',
@@ -288,6 +313,29 @@ mixin AppLocale {
     refresh: '换一换',
     fastAndCostEffective: '速度快，成本低',
     powerfulAndPrecise: '能力强，更精准',
+    imageToImage: '图生图',
+    textToImage: '文生图',
+    yourIdeas: '你的想法',
+    smartOptimization: '智能优化',
+    professionalMode: '专业模式',
+    simpleMode: '简单模式',
+    unwantedElements: '''画面中不希望出现的元素或效果，如 “汽车，毛茸茸，低分辨率，模糊” 等。''',
+    referenceImage: '参考图片',
+    selectImage: '选择图片',
+    imagination: '想象力',
+    keywordsSeparatedByCommas: '你想象画面的关键词，以逗号隔开。',
+    originalImage: '原始图片',
+    superResolution: '超分辨率',
+    colorizeImage: '图片上色',
+    errorLog: '故障日志',
+    report: '上报',
+    latestVersion: '当前已是最新版本',
+    aIdeaApp: 'AIdea是一款能够让你与 AI 对话的应用',
+    onceEnabledSmartOptimization: '智能优化\n\n启用后，AI 将进一步完善优化你的想法。',
+    referenceImageNote: '参考图片\n\nAI 将会在该参考图片的基础上进行创作。',
+    gotIt: '知道了',
+    selectReferenceImage: '请选择参考图片',
+    random: '随机',
     followSystem: '跟随系统',
     darkThemeMode: '深色模式',
     lightThemeMode: '浅色模式',
@@ -327,7 +375,7 @@ mixin AppLocale {
     inviteCodeInputTips: '输入好友邀请码，获额外奖励（非必填）',
     inviteCodeFormatError: '邀请码格式有误',
     enableCustomOpenAI: '启用后将使用您自己配置的 OpenAI 服务',
-    my: '我的',
+    me: '我的',
     coinsUsage: '使用明细',
     updateCheck: '检测更新',
     buy: '购买',
@@ -338,7 +386,7 @@ mixin AppLocale {
     discover: '绘玩',
   };
 
-  static const Map<String, dynamic> EN = {
+  static const Map<String, dynamic> en = {
     required: 'Required',
     systemInfo: 'System',
     save: 'Save',
@@ -425,7 +473,7 @@ mixin AppLocale {
     badGateway:
         'Sorry, our server is currently unable to process your request. We are working to resolve the issue, please try again later',
     modelNotValid: 'The current model is not open',
-    signInRequred: 'You are not logged in, please log in first',
+    signInRequired: 'You are not logged in, please log in first',
     accountNeedReSignin: 'Account exception, please log in again',
     openAIAuthFailed:
         'You have enabled custom OpenAI service, please check if the API Key is correct',
@@ -458,7 +506,33 @@ mixin AppLocale {
     refresh: 'Refresh',
     fastAndCostEffective: 'Fast & Cost-Effective',
     powerfulAndPrecise: 'Powerful & Precise',
-    followSystem: 'Follow system',
+    imageToImage: 'Image to Image',
+    textToImage: 'Text to Image',
+    yourIdeas: 'Your Ideas',
+    smartOptimization: 'Smart Optimization',
+    professionalMode: 'Pro Mode',
+    simpleMode: 'Simple Mode',
+    unwantedElements:
+        '''Elements or effects you don't want to appear in the picture, such as 'cars, fluffy, low resolution, blurry,' etc.''',
+    referenceImage: 'Reference Image',
+    selectImage: 'Select Image',
+    imagination: 'Imagination',
+    keywordsSeparatedByCommas:
+        'Keywords of the scene you imagine, separated by commas',
+    originalImage: 'Original Image',
+    superResolution: 'Super-Resolution',
+    colorizeImage: 'Colorize Image',
+    errorLog: 'Error Log',
+    report: 'Report',
+    latestVersion: 'You are currently on the latest version',
+    aIdeaApp: 'AIdea is an app that allows you to converse with AI',
+    onceEnabledSmartOptimization:
+        'Smart Optimization\n\nOnce enabled, AI will further refine and optimize your ideas.',
+    gotIt: 'Got it',
+    referenceImageNote:
+        'Reference Image\n\nAI will create based on the reference image provided.',
+    selectReferenceImage: 'Please select a reference image',
+    random: 'Random',
     darkThemeMode: 'Dark mode',
     lightThemeMode: 'Light mode',
     forgotPassword: 'Forgot password',
@@ -500,7 +574,7 @@ mixin AppLocale {
         'Enter friend invite code, get extra rewards (optional)',
     inviteCodeFormatError: 'Invite code format error',
     enableCustomOpenAI: 'Your custom OpenAI service will be used once enabled',
-    my: 'My',
+    me: 'Me',
     coinsUsage: 'Usage',
     updateCheck: 'Check Update',
     buy: 'Buy',

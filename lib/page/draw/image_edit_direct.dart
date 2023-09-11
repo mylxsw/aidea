@@ -102,7 +102,7 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
                 },
                 selectedImagePath: selectedImagePath,
                 selectedImageData: selectedImageData,
-                title: '原始图片',
+                title: AppLocale.originalImage.getString(context),
                 height: _calImageSelectorHeight(context),
               ),
             ],

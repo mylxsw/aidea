@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
 import 'package:askaide/page/dialog.dart';
@@ -8,6 +9,7 @@ import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 class DiagnosisScreen extends StatefulWidget {
   final SettingRepository setting;
@@ -62,9 +64,9 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: CustomSize.toolbarHeight,
-          title: const Text(
-            '故障日志',
-            style: TextStyle(
+          title: Text(
+            AppLocale.errorLog.getString(context),
+            style: const TextStyle(
               fontSize: CustomSize.appBarTitleSize,
             ),
           ),
@@ -90,7 +92,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                   });
                 },
                 child: Text(
-                  '上报',
+                  AppLocale.report.getString(context),
                   style: TextStyle(
                     color: isUploaded
                         ? customColors.weakTextColor?.withAlpha(100)

@@ -54,7 +54,7 @@ class _SettingScreenState extends State<SettingScreen> {
         backgroundColor: Colors.transparent,
         body: SliverComponent(
           title: Text(
-            AppLocale.my.getString(context),
+            AppLocale.me.getString(context),
             style: TextStyle(
               fontSize: CustomSize.appBarTitleSize,
               color: customColors.backgroundInvertedColor,
@@ -142,7 +142,8 @@ class _SettingScreenState extends State<SettingScreen> {
                                 showCancelBtn: true,
                               );
                             } else {
-                              showSuccessMessage('当前已是最新版本');
+                              showSuccessMessage(
+                                  AppLocale.latestVersion.getString(context));
                             }
                           });
                         },
@@ -189,9 +190,10 @@ class _SettingScreenState extends State<SettingScreen> {
                           applicationVersion: VERSION,
                           applicationLegalese: 'mylxsw©2023 aicode.cc',
                           children: [
-                            const Padding(
-                              padding: EdgeInsets.only(top: 15),
-                              child: Text('AIdea是一款能够让你与 AI 对话的应用。'),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 15),
+                              child:
+                                  Text(AppLocale.aIdeaApp.getString(context)),
                             ),
                           ],
                         );

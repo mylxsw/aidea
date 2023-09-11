@@ -298,7 +298,8 @@ class _CreativeIslandCreatePageState extends State<CreativeIslandCreatePage>
                                                   ),
                                                   const SizedBox(width: 10),
                                                   Text(
-                                                    '选择图片',
+                                                    AppLocale.selectImage
+                                                        .getString(context),
                                                     style: TextStyle(
                                                       fontSize: 14,
                                                       fontWeight:
@@ -388,7 +389,7 @@ class _CreativeIslandCreatePageState extends State<CreativeIslandCreatePage>
                                 ),
                                 const SizedBox(width: 5),
                                 Text(
-                                  '随机',
+                                  AppLocale.random.getString(context),
                                   style: TextStyle(
                                     color:
                                         customColors.linkColor?.withAlpha(150),

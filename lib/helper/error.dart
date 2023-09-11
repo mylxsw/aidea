@@ -28,7 +28,7 @@ Object? resolveHTTPStatusCode(int statusCode) {
         return const LanguageText(AppLocale.accountNeedReSignin,
             action: 're-signin');
       }
-      return const LanguageText(AppLocale.signInRequred, action: 'sign-in');
+      return const LanguageText(AppLocale.signInRequired, action: 'sign-in');
 
     case 451:
       return const LanguageText(AppLocale.modelNotValid);
