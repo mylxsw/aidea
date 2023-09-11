@@ -17,7 +17,7 @@
 - 客户端：https://github.com/mylxsw/aidea
 - 服务端：https://github.com/mylxsw/aidea-server
 
-###技术交流
+### 技术交流
 
 - 微信技术交流群：3 个群都已满员，添加微信号 `x-prometheus` 为好友，拉你进群
 
