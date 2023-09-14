@@ -50,10 +50,11 @@ Web 端：https://web.aicode.cc/
 ## APP 截图
 
 
-![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-32-34.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-32-42.png-thumb)
+![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-32-34.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-09-14_10-20-28.jpg-thumb)
 :-------------------------:|:-------------------------:
+![images](https://ssl.aicode.cc/ai-server/article/2023-09-14_10-23-30.jpg-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/2023-09-14_10-24-58.jpg-thumb) 
 ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-32-53.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-33-44.png-thumb) 
-![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-34-14.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-34-28.png-thumb) 
+![images](https://ssl.aicode.cc/ai-server/article/2023-09-14_10-22-55.jpg-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-09-14_10-21-31.jpg-thumb) 
 ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-34-42.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-35-01.png-thumb) 
 ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-35-33.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-35-52.png-thumb)
 
