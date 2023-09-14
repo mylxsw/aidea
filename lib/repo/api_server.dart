@@ -7,6 +7,7 @@ import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/repo/api/creative.dart';
 import 'package:askaide/repo/api/image_model.dart';
+import 'package:askaide/repo/api/info.dart';
 import 'package:askaide/repo/api/page.dart';
 import 'package:askaide/repo/api/payment.dart';
 import 'package:askaide/repo/api/quota.dart';
@@ -1423,6 +1424,14 @@ class APIServer {
         HttpClient.cacheManager
             .deleteByPrimaryKey('$url/v1/users/current', requestMethod: 'GET');
       },
+    );
+  }
+
+  /// 服务器支持的能力
+  Future<Capabilities> capabilities() async {
+    return sendGetRequest(
+      '/public/info/capabilities',
+      (resp) => Capabilities.fromJson(resp.data),
     );
   }
 }

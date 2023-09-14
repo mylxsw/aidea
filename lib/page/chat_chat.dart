@@ -1,4 +1,6 @@
 import 'package:askaide/bloc/chat_chat_bloc.dart';
+import 'package:askaide/helper/ability.dart';
+import 'package:askaide/helper/color.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/lang/lang.dart';
@@ -19,6 +21,7 @@ import 'package:custom_sliding_segmented_control/custom_sliding_segmented_contro
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:flutter_native_splash/cli_commands.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:go_router/go_router.dart';
@@ -59,18 +62,18 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
 
   ModelIndicatorInfo? currentModel;
 
-  List<ModelIndicatorInfo> get models => [
+  List<ModelIndicatorInfo> models = [
     ModelIndicatorInfo(
       modelId: "gpt-3.5-turbo",
       modelName: 'GPT-3.5',
-      description: AppLocale.fastAndCostEffective,
+      description: '速度快，成本低',
       icon: Icons.bolt,
       activeColor: Colors.green,
     ),
     ModelIndicatorInfo(
       modelId: "gpt-4",
       modelName: 'GPT-4',
-      description: AppLocale.powerfulAndPrecise,
+      description: '能力强，更精准',
       icon: Icons.auto_awesome,
       activeColor: const Color.fromARGB(255, 120, 73, 223),
     ),
@@ -85,6 +88,19 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
   @override
   void initState() {
     context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
+
+    if (Ability().homeModels.isNotEmpty) {
+      models = Ability()
+          .homeModels
+          .map((e) => ModelIndicatorInfo(
+                modelId: e.modelId,
+                modelName: e.name,
+                description: e.desc,
+                icon: e.powerful ? Icons.auto_awesome : Icons.bolt,
+                activeColor: stringToColor(e.color),
+              ))
+          .toList();
+    }
 
     _textController.addListener(() {
       setState(() {});

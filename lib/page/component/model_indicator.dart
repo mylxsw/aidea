@@ -56,7 +56,7 @@ class ModelIndicator extends StatelessWidget {
               ),
             ),
             Text(
-              model.description.getString(context),
+              model.description,
               style: TextStyle(
                 fontSize: 10,
                 color: selected ? Colors.white : customColors.weakTextColor,

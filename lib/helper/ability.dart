@@ -1,11 +1,15 @@
 import 'package:askaide/helper/constant.dart';
+import 'package:askaide/helper/platform.dart';
+import 'package:askaide/repo/api/info.dart';
 import 'package:askaide/repo/settings_repo.dart';
 
 class Ability {
   late final SettingRepository setting;
+  late final Capabilities capabilities;
 
-  init(SettingRepository setting) {
+  init(SettingRepository setting, Capabilities capabilities) {
     this.setting = setting;
+    this.capabilities = capabilities;
   }
 
   /// 单例
@@ -14,6 +18,39 @@ class Ability {
 
   factory Ability() {
     return _instance;
+  }
+
+  /// 首页支持的模型列表
+  List<HomeModel> get homeModels {
+    return capabilities.homeModels;
+  }
+
+  /// 是否支持 OpenAI
+  bool get enableOpenAI {
+    return capabilities.openaiEnabled;
+  }
+
+  /// 是否支持支付宝
+  bool get enableAlipay {
+    return capabilities.alipayEnabled;
+  }
+
+  /// 是否支持 ApplePay
+  bool get enableApplePay {
+    return capabilities.applePayEnabled;
+  }
+
+  /// 是否支持支付功能
+  bool get enablePayment {
+    if (!enableApplePay && !enableAlipay) {
+      return false;
+    }
+
+    if (PlatformTool.isIOS() && enableApplePay) {
+      return true;
+    }
+
+    return enableAlipay;
   }
 
   /// 是否支持API Server

@@ -399,8 +399,7 @@ class _ChatRoomCreateScreenState extends State<ChatRoomCreateScreen> {
                 value: _selectedModel.name,
               ),
               // 提示语
-              if (_selectedModel.category == modelTypeOpenAI &&
-                  _selectedModel.isChatModel)
+              if (_selectedModel.isChatModel)
                 EnhancedTextField(
                   customColors: customColors,
                   controller: _promptController,

@@ -158,7 +158,10 @@ void main() async {
 
   ModelAggregate.init(settingRepo);
   APIServer().init(settingRepo);
-  Ability().init(settingRepo);
+
+  // 从服务器获取客户端支持的能力清单
+  final capabilities = await APIServer().capabilities();
+  Ability().init(settingRepo, capabilities);
 
   // 初始化聊天室 Bloc 管理器
   final m = ChatBlocManager();
