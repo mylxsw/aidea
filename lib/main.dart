@@ -114,12 +114,12 @@ void main() async {
   final db = await databaseFactory.openDatabase(
     'system.db',
     options: OpenDatabaseOptions(
-      version: DB_VERSION,
+      version: databaseVersion,
       onUpgrade: (db, oldVersion, newVersion) async {
         try {
           await migrate(db, oldVersion, newVersion);
         } catch (e) {
-          Logger.instance.e('数据库升级失败', e);
+          Logger.instance.e('数据库升级失败', error: e);
         }
       },
       onCreate: initDatabase,
@@ -257,7 +257,7 @@ class MyApp extends StatefulWidget {
                   ],
                   child: SignInScreen(
                     settings: settingRepo,
-                    username: state.queryParams['username'],
+                    username: state.uri.queryParameters['username'],
                   ),
                 ),
               ),
@@ -271,9 +271,9 @@ class MyApp extends StatefulWidget {
                   ],
                   child: SigninOrSignupScreen(
                     settings: settingRepo,
-                    username: state.queryParams['username']!,
-                    isSignup: state.queryParams['is_signup'] == 'true',
-                    signInMethod: state.queryParams['sign_in_method']!,
+                    username: state.uri.queryParameters['username']!,
+                    isSignup: state.uri.queryParameters['is_signup'] == 'true',
+                    signInMethod: state.uri.queryParameters['sign_in_method']!,
                   ),
                 ),
               ),
@@ -295,7 +295,7 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) => transitionResolver(
                 SignupScreen(
                   settings: settingRepo,
-                  username: state.queryParams['username'],
+                  username: state.uri.queryParameters['username'],
                 ),
               ),
             ),
@@ -303,7 +303,7 @@ class MyApp extends StatefulWidget {
               path: '/retrieve-password',
               pageBuilder: (context, state) => transitionResolver(
                 RetrievePasswordScreen(
-                  username: state.queryParams['username'],
+                  username: state.uri.queryParameters['username'],
                   setting: settingRepo,
                 ),
               ),
@@ -317,8 +317,8 @@ class MyApp extends StatefulWidget {
                     BlocProvider.value(
                       value: ChatBlocManager().getBloc(
                         chatAnywhereRoomId,
-                        chatHistoryId:
-                            int.tryParse(state.queryParams['chat_id'] ?? ''),
+                        chatHistoryId: int.tryParse(
+                            state.uri.queryParameters['chat_id'] ?? ''),
                       ),
                     ),
                     BlocProvider.value(value: chatRoomBloc),
@@ -329,9 +329,10 @@ class MyApp extends StatefulWidget {
                   child: ChatAnywhereScreen(
                     stateManager: messageStateManager,
                     setting: settingRepo,
-                    chatId: int.tryParse(state.queryParams['chat_id'] ?? '0'),
-                    initialMessage: state.queryParams['init_message'],
-                    model: state.queryParams['model'],
+                    chatId: int.tryParse(
+                        state.uri.queryParameters['chat_id'] ?? '0'),
+                    initialMessage: state.uri.queryParameters['init_message'],
+                    model: state.uri.queryParameters['model'],
                   ),
                 ),
               ),
@@ -348,8 +349,10 @@ class MyApp extends StatefulWidget {
                   child: ChatChatScreen(
                     setting: settingRepo,
                     showInitialDialog:
-                        state.queryParams['show_initial_dialog'] == 'true',
-                    reward: int.tryParse(state.queryParams['reward'] ?? '0'),
+                        state.uri.queryParameters['show_initial_dialog'] ==
+                            'true',
+                    reward: int.tryParse(
+                        state.uri.queryParameters['reward'] ?? '0'),
                   ),
                 ),
               ),
@@ -390,7 +393,7 @@ class MyApp extends StatefulWidget {
               name: 'chat',
               path: '/room/:room_id/chat',
               pageBuilder: (context, state) {
-                final roomId = int.parse(state.params['room_id']!);
+                final roomId = int.parse(state.pathParameters['room_id']!);
                 return transitionResolver(
                   MultiBlocProvider(
                     providers: [
@@ -415,7 +418,7 @@ class MyApp extends StatefulWidget {
               name: 'room_setting',
               path: '/room/:room_id/setting',
               pageBuilder: (context, state) {
-                final roomId = int.parse(state.params['room_id']!);
+                final roomId = int.parse(state.pathParameters['room_id']!);
                 return transitionResolver(
                   MultiBlocProvider(
                     providers: [
@@ -487,7 +490,7 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) => transitionResolver(
                 OpenAISettingScreen(
                   settings: settingRepo,
-                  source: state.queryParams['source'],
+                  source: state.uri.queryParameters['source'],
                 ),
               ),
             ),
@@ -561,7 +564,7 @@ class MyApp extends StatefulWidget {
                   ],
                   child: GalleryItemScreen(
                     setting: settingRepo,
-                    galleryId: int.parse(state.params['id']!),
+                    galleryId: int.parse(state.pathParameters['id']!),
                   ),
                 ),
               ),
@@ -577,10 +580,10 @@ class MyApp extends StatefulWidget {
                   child: DrawCreateScreen(
                     setting: settingRepo,
                     galleryCopyId: int.tryParse(
-                      state.queryParams['gallery_copy_id'] ?? '',
+                      state.uri.queryParameters['gallery_copy_id'] ?? '',
                     ),
-                    mode: state.queryParams['mode']!,
-                    id: state.queryParams['id']!,
+                    mode: state.uri.queryParameters['mode']!,
+                    id: state.uri.queryParameters['id']!,
                   ),
                 ),
               ),
@@ -589,7 +592,7 @@ class MyApp extends StatefulWidget {
               name: 'creative-island-create',
               path: '/creative-island/:id/create',
               pageBuilder: (context, state) {
-                final id = state.params['id']!;
+                final id = state.pathParameters['id']!;
                 return transitionResolver(
                   MultiBlocProvider(
                     providers: [
@@ -615,7 +618,7 @@ class MyApp extends StatefulWidget {
                     ],
                     child: CreativeIslandHistoriesAllScreen(
                       setting: settingRepo,
-                      mode: state.queryParams['mode'] ?? '',
+                      mode: state.uri.queryParameters['mode'] ?? '',
                     ),
                   ),
                 );
@@ -653,7 +656,7 @@ class MyApp extends StatefulWidget {
               name: 'creative-island-history',
               path: '/creative-island/:id/history',
               pageBuilder: (context, state) {
-                final id = state.params['id']!;
+                final id = state.pathParameters['id']!;
                 return transitionResolver(
                   MultiBlocProvider(
                     providers: [
@@ -672,8 +675,8 @@ class MyApp extends StatefulWidget {
               name: 'creative-island-history-item',
               path: '/creative-island/:id/history/:item_id',
               pageBuilder: (context, state) {
-                final id = state.params['id']!;
-                final itemId = int.tryParse(state.params['item_id']!);
+                final id = state.pathParameters['id']!;
+                final itemId = int.tryParse(state.pathParameters['item_id']!);
                 return transitionResolver(
                   MultiBlocProvider(
                     providers: [
@@ -706,7 +709,7 @@ class MyApp extends StatefulWidget {
               name: 'prompt-editor',
               path: '/prompt-editor',
               pageBuilder: (context, state) {
-                var prompt = state.queryParams['prompt'] ?? '';
+                var prompt = state.uri.queryParameters['prompt'] ?? '';
                 return transitionResolver(PromptScreen(prompt: prompt));
               },
             ),
@@ -735,7 +738,8 @@ class MyApp extends StatefulWidget {
                     ],
                     child: BindPhoneScreen(
                       setting: settingRepo,
-                      isSignIn: state.queryParams['is_signin'] != 'false',
+                      isSignIn:
+                          state.uri.queryParameters['is_signin'] != 'false',
                     ),
                   ),
                 );

@@ -189,7 +189,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           applicationName: 'AIdea',
                           applicationIcon:
                               Image.asset('assets/app.png', width: 40),
-                          applicationVersion: VERSION,
+                          applicationVersion: clientVersion,
                           applicationLegalese: 'mylxsw©2023 aicode.cc',
                           children: [
                             Padding(

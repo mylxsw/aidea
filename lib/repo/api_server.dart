@@ -92,7 +92,7 @@ class APIServer {
 
   Map<String, dynamic> _buildAuthHeaders() {
     final headers = <String, dynamic>{
-      'X-CLIENT-VERSION': VERSION,
+      'X-CLIENT-VERSION': clientVersion,
       'X-PLATFORM': PlatformTool.operatingSystem(),
       'X-PLATFORM-VERSION': PlatformTool.operatingSystemVersion(),
       'X-LANGUAGE': language,
@@ -865,7 +865,7 @@ class APIServer {
       '/public/info/version-check',
       (resp) => VersionCheckResp.fromJson(resp.data),
       formData: Map<String, dynamic>.from({
-        'version': VERSION,
+        'version': clientVersion,
         'os': PlatformTool.operatingSystem(),
         'os_version': PlatformTool.operatingSystemVersion(),
       }),

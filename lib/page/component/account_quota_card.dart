@@ -1,5 +1,4 @@
 import 'package:askaide/helper/ability.dart';
-import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/coin.dart';
 import 'package:askaide/page/component/enhanced_button.dart';

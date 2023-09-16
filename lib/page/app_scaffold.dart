@@ -114,8 +114,8 @@ class _AppScaffoldState extends State<AppScaffold> {
   }
 
   int _calculateSelectedIndex(BuildContext context) {
-    final GoRouter route = GoRouter.of(context);
-    final String location = route.location.split('?').first;
+    final String location =
+        GoRouterState.of(context).uri.toString().split('?').first;
 
     if (location == '/chat-chat') return 0;
     if (location == '/') return 1;
