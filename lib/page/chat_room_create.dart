@@ -66,13 +66,7 @@ class _ChatRoomCreateScreenState extends State<ChatRoomCreateScreen> {
 
   bool showAdvancedOptions = false;
 
-  var _selectedModel = mm.Model(
-    defaultChatModel,
-    defaultChatModelName,
-    'openai',
-    category: modelTypeOpenAI,
-    isChatModel: true,
-  );
+  mm.Model? _selectedModel;
 
   List<RoomGallery> selectedSuggestions = [];
   List<String> tags = [];
@@ -367,7 +361,7 @@ class _ChatRoomCreateScreenState extends State<ChatRoomCreateScreen> {
           ColumnBlock(
             innerPanding: 10,
             children: [
-              if (!_selectedModel.isChatModel)
+              if (_selectedModel != null && !_selectedModel!.isChatModel)
                 Container(
                   margin: const EdgeInsets.only(top: 10),
                   width: double.infinity,
@@ -384,7 +378,7 @@ class _ChatRoomCreateScreenState extends State<ChatRoomCreateScreen> {
               // 模型
               EnhancedInputSimple(
                 title: AppLocale.model.getString(context),
-                padding: const EdgeInsets.only(top: 12, bottom: 5),
+                padding: const EdgeInsets.only(top: 10, bottom: 10),
                 onPressed: () {
                   openSelectModelDialog(
                     context,
@@ -393,13 +387,15 @@ class _ChatRoomCreateScreenState extends State<ChatRoomCreateScreen> {
                         _selectedModel = selected;
                       });
                     },
-                    initValue: _selectedModel.uid(),
+                    initValue: _selectedModel?.uid(),
                   );
                 },
-                value: _selectedModel.name,
+                value: _selectedModel != null
+                    ? _selectedModel!.name
+                    : AppLocale.select.getString(context),
               ),
               // 提示语
-              if (_selectedModel.isChatModel)
+              if (_selectedModel != null && _selectedModel!.isChatModel)
                 EnhancedTextField(
                   customColors: customColors,
                   controller: _promptController,
@@ -438,6 +434,9 @@ class _ChatRoomCreateScreenState extends State<ChatRoomCreateScreen> {
           ),
           if (showAdvancedOptions)
             ColumnBlock(
+              innerPanding: 10,
+              padding: const EdgeInsets.only(
+                  top: 15, left: 15, right: 15, bottom: 5),
               children: [
                 EnhancedTextField(
                   customColors: customColors,
@@ -506,26 +505,24 @@ class _ChatRoomCreateScreenState extends State<ChatRoomCreateScreen> {
           const SizedBox(height: 20),
           Row(
             children: [
-              // EnhancedButton(
-              //   title: showAdvancedOptions ? '收起选项' : '高级选项',
-              //   width: 100,
-              //   backgroundColor: Colors.transparent,
-              //   color: customColors.weakLinkColor,
-              //   fontSize: 15,
-              //   icon: Icon(
-              //     showAdvancedOptions
-              //         ? Icons.unfold_less
-              //         : Icons.unfold_more,
-              //     color: customColors.weakLinkColor,
-              //     size: 15,
-              //   ),
-              //   onPressed: () {
-              //     setState(() {
-              //       showAdvancedOptions = !showAdvancedOptions;
-              //     });
-              //   },
-              // ),
-              // const SizedBox(width: 10),
+              EnhancedButton(
+                title: showAdvancedOptions ? '收起选项' : '高级选项',
+                width: 100,
+                backgroundColor: Colors.transparent,
+                color: customColors.weakLinkColor,
+                fontSize: 15,
+                icon: Icon(
+                  showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
+                  color: customColors.weakLinkColor,
+                  size: 15,
+                ),
+                onPressed: () {
+                  setState(() {
+                    showAdvancedOptions = !showAdvancedOptions;
+                  });
+                },
+              ),
+              const SizedBox(width: 10),
               Expanded(
                 child: EnhancedButton(
                   title: AppLocale.ok.getString(context),
@@ -539,6 +536,12 @@ class _ChatRoomCreateScreenState extends State<ChatRoomCreateScreen> {
                     if (_promptController.text.length > 1000) {
                       showErrorMessage(
                           AppLocale.promptFormatError.getString(context));
+                      return;
+                    }
+
+                    if (_selectedModel == null) {
+                      showErrorMessage(
+                          AppLocale.modelRequiredMessage.getString(context));
                       return;
                     }
 
@@ -566,7 +569,7 @@ class _ChatRoomCreateScreenState extends State<ChatRoomCreateScreen> {
                       context.read<RoomBloc>().add(
                             RoomCreateEvent(
                               _nameController.text,
-                              _selectedModel.uid(),
+                              _selectedModel!.uid(),
                               _promptController.text,
                               avatarId: _avatarId,
                               avatarUrl: _avatarUrl,

@@ -66,13 +66,7 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
 
   bool showAdvancedOptions = false;
 
-  var _selectedModel = mm.Model(
-    defaultChatModel,
-    defaultChatModel,
-    'openai',
-    category: modelTypeOpenAI,
-    isChatModel: true,
-  );
+  mm.Model? _selectedModel;
 
   @override
   void initState() {
@@ -279,11 +273,14 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
                                     _selectedModel = selected;
                                   });
                                 },
-                                initValue: _selectedModel.uid(),
+                                initValue: _selectedModel?.uid(),
                               );
                             },
-                            value: _selectedModel.name,
-                            description: !_selectedModel.isChatModel
+                            value: _selectedModel != null
+                                ? _selectedModel!.name
+                                : AppLocale.select.getString(context),
+                            description: _selectedModel != null &&
+                                    !_selectedModel!.isChatModel
                                 ? SizedBox(
                                     width: double.infinity,
                                     child: Text(
@@ -300,7 +297,8 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
                                 : null,
                           ),
                           // 提示语
-                          if (_selectedModel.isChatModel)
+                          if (_selectedModel != null &&
+                              _selectedModel!.isChatModel)
                             EnhancedTextField(
                               customColors: customColors,
                               controller: _promptController,
@@ -341,6 +339,9 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
                       ),
                       if (showAdvancedOptions)
                         ColumnBlock(
+                          innerPanding: 10,
+                          padding: const EdgeInsets.only(
+                              top: 15, left: 15, right: 15, bottom: 5),
                           children: [
                             EnhancedTextField(
                               customColors: customColors,
@@ -411,25 +412,25 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
                       const SizedBox(height: 20),
                       Row(
                         children: [
-                          // EnhancedButton(
-                          //   title: showAdvancedOptions ? '收起选项' : '高级选项',
-                          //   width: 100,
-                          //   backgroundColor: Colors.transparent,
-                          //   color: customColors.weakLinkColor,
-                          //   fontSize: 15,
-                          //   icon: Icon(
-                          //     showAdvancedOptions
-                          //         ? Icons.unfold_less
-                          //         : Icons.unfold_more,
-                          //     color: customColors.weakLinkColor,
-                          //     size: 15,
-                          //   ),
-                          //   onPressed: () {
-                          //     setState(() {
-                          //       showAdvancedOptions = !showAdvancedOptions;
-                          //     });
-                          //   },
-                          // ),
+                          EnhancedButton(
+                            title: showAdvancedOptions ? '收起选项' : '高级选项',
+                            width: 100,
+                            backgroundColor: Colors.transparent,
+                            color: customColors.weakLinkColor,
+                            fontSize: 15,
+                            icon: Icon(
+                              showAdvancedOptions
+                                  ? Icons.unfold_less
+                                  : Icons.unfold_more,
+                              color: customColors.weakLinkColor,
+                              size: 15,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                showAdvancedOptions = !showAdvancedOptions;
+                              });
+                            },
+                          ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: EnhancedButton(
@@ -437,6 +438,13 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
                               onPressed: () async {
                                 if (_nameController.text == '') {
                                   showErrorMessage(AppLocale.nameRequiredMessage
+                                      .getString(context));
+                                  return;
+                                }
+
+                                if (_selectedModel == null) {
+                                  showErrorMessage(AppLocale
+                                      .modelRequiredMessage
                                       .getString(context));
                                   return;
                                 }
@@ -474,7 +482,7 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
                                         RoomUpdateEvent(
                                           widget.roomId,
                                           name: _nameController.text,
-                                          model: _selectedModel.uid(),
+                                          model: _selectedModel!.uid(),
                                           prompt: _promptController.text,
                                           avatarUrl: _avatarUrl,
                                           avatarId: _avatarId,

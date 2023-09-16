@@ -257,7 +257,7 @@ class MyApp extends StatefulWidget {
                   ],
                   child: SignInScreen(
                     settings: settingRepo,
-                    username: state.uri.queryParameters['username'],
+                    username: state.queryParameters['username'],
                   ),
                 ),
               ),
@@ -271,9 +271,9 @@ class MyApp extends StatefulWidget {
                   ],
                   child: SigninOrSignupScreen(
                     settings: settingRepo,
-                    username: state.uri.queryParameters['username']!,
-                    isSignup: state.uri.queryParameters['is_signup'] == 'true',
-                    signInMethod: state.uri.queryParameters['sign_in_method']!,
+                    username: state.queryParameters['username']!,
+                    isSignup: state.queryParameters['is_signup'] == 'true',
+                    signInMethod: state.queryParameters['sign_in_method']!,
                   ),
                 ),
               ),
@@ -295,7 +295,7 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) => transitionResolver(
                 SignupScreen(
                   settings: settingRepo,
-                  username: state.uri.queryParameters['username'],
+                  username: state.queryParameters['username'],
                 ),
               ),
             ),
@@ -303,7 +303,7 @@ class MyApp extends StatefulWidget {
               path: '/retrieve-password',
               pageBuilder: (context, state) => transitionResolver(
                 RetrievePasswordScreen(
-                  username: state.uri.queryParameters['username'],
+                  username: state.queryParameters['username'],
                   setting: settingRepo,
                 ),
               ),
@@ -318,7 +318,7 @@ class MyApp extends StatefulWidget {
                       value: ChatBlocManager().getBloc(
                         chatAnywhereRoomId,
                         chatHistoryId: int.tryParse(
-                            state.uri.queryParameters['chat_id'] ?? ''),
+                            state.queryParameters['chat_id'] ?? ''),
                       ),
                     ),
                     BlocProvider.value(value: chatRoomBloc),
@@ -329,10 +329,10 @@ class MyApp extends StatefulWidget {
                   child: ChatAnywhereScreen(
                     stateManager: messageStateManager,
                     setting: settingRepo,
-                    chatId: int.tryParse(
-                        state.uri.queryParameters['chat_id'] ?? '0'),
-                    initialMessage: state.uri.queryParameters['init_message'],
-                    model: state.uri.queryParameters['model'],
+                    chatId:
+                        int.tryParse(state.queryParameters['chat_id'] ?? '0'),
+                    initialMessage: state.queryParameters['init_message'],
+                    model: state.queryParameters['model'],
                   ),
                 ),
               ),
@@ -349,10 +349,9 @@ class MyApp extends StatefulWidget {
                   child: ChatChatScreen(
                     setting: settingRepo,
                     showInitialDialog:
-                        state.uri.queryParameters['show_initial_dialog'] ==
-                            'true',
-                    reward: int.tryParse(
-                        state.uri.queryParameters['reward'] ?? '0'),
+                        state.queryParameters['show_initial_dialog'] == 'true',
+                    reward:
+                        int.tryParse(state.queryParameters['reward'] ?? '0'),
                   ),
                 ),
               ),
@@ -490,7 +489,7 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) => transitionResolver(
                 OpenAISettingScreen(
                   settings: settingRepo,
-                  source: state.uri.queryParameters['source'],
+                  source: state.queryParameters['source'],
                 ),
               ),
             ),
@@ -580,10 +579,10 @@ class MyApp extends StatefulWidget {
                   child: DrawCreateScreen(
                     setting: settingRepo,
                     galleryCopyId: int.tryParse(
-                      state.uri.queryParameters['gallery_copy_id'] ?? '',
+                      state.queryParameters['gallery_copy_id'] ?? '',
                     ),
-                    mode: state.uri.queryParameters['mode']!,
-                    id: state.uri.queryParameters['id']!,
+                    mode: state.queryParameters['mode']!,
+                    id: state.queryParameters['id']!,
                   ),
                 ),
               ),
@@ -618,7 +617,7 @@ class MyApp extends StatefulWidget {
                     ],
                     child: CreativeIslandHistoriesAllScreen(
                       setting: settingRepo,
-                      mode: state.uri.queryParameters['mode'] ?? '',
+                      mode: state.queryParameters['mode'] ?? '',
                     ),
                   ),
                 );
@@ -709,7 +708,7 @@ class MyApp extends StatefulWidget {
               name: 'prompt-editor',
               path: '/prompt-editor',
               pageBuilder: (context, state) {
-                var prompt = state.uri.queryParameters['prompt'] ?? '';
+                var prompt = state.queryParameters['prompt'] ?? '';
                 return transitionResolver(PromptScreen(prompt: prompt));
               },
             ),
@@ -738,8 +737,7 @@ class MyApp extends StatefulWidget {
                     ],
                     child: BindPhoneScreen(
                       setting: settingRepo,
-                      isSignIn:
-                          state.uri.queryParameters['is_signin'] != 'false',
+                      isSignIn: state.queryParameters['is_signin'] != 'false',
                     ),
                   ),
                 );

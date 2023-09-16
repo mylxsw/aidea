@@ -93,6 +93,7 @@ mixin AppLocale {
 
   static const String nameRequiredMessage = 'name-required-message';
   static const String promptFormatError = 'prompt-format-error';
+  static const String modelRequiredMessage = 'model-required-message';
 
   static const String writeYourIdeas = 'write-your-ideas';
   static const String describeYourImages = 'describe-your-images';
@@ -274,6 +275,7 @@ mixin AppLocale {
     promptUsage: '领域设定用于设置 AI 数字人的行为',
     nameRequiredMessage: '请输入数字人名称',
     promptFormatError: '角色设定不能超过1000字',
+    modelRequiredMessage: '请选择 AI 模型',
     operateSuccess: '操作成功',
     operateFailed: '操作失败',
     confirmDelete: '确定要删除这些项目？',
@@ -463,6 +465,7 @@ mixin AppLocale {
     promptUsage: 'Prompt is used to set the behavior of the AI character',
     nameRequiredMessage: 'Please enter the name of the character',
     promptFormatError: 'Prompt cannot exceed 1000 words',
+    modelRequiredMessage: 'Please select AI model',
     operateSuccess: 'Success',
     operateFailed: 'Failed',
     confirmDelete: 'Confirm to delete?',
