@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
@@ -245,7 +246,9 @@ class OpenAIRepository {
         temperature: temperature,
         user: user,
         maxTokens: maxTokens,
-        n: roomId, // n 参数暂时用不到，复用作为 roomId
+        n: Ability().supportLocalOpenAI()
+            ? null
+            : roomId, // n 参数暂时用不到，复用作为 roomId
       );
 
       chatStream.listen(
