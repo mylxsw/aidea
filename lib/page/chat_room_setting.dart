@@ -264,7 +264,7 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
                           // 模型
                           EnhancedInputSimple(
                             title: AppLocale.model.getString(context),
-                            padding: const EdgeInsets.only(top: 12, bottom: 5),
+                            padding: const EdgeInsets.only(top: 10, bottom: 10),
                             onPressed: () {
                               openSelectModelDialog(
                                 context,
@@ -279,26 +279,11 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
                             value: _selectedModel != null
                                 ? _selectedModel!.name
                                 : AppLocale.select.getString(context),
-                            description: _selectedModel != null &&
-                                    !_selectedModel!.isChatModel
-                                ? SizedBox(
-                                    width: double.infinity,
-                                    child: Text(
-                                      defaultModelNotChatDesc,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.copyWith(
-                                              fontSize: 14,
-                                              color: const Color.fromARGB(
-                                                  255, 244, 155, 54)),
-                                    ),
-                                  )
-                                : null,
                           ),
                           // 提示语
-                          if (_selectedModel != null &&
-                              _selectedModel!.isChatModel)
+                          if ((_selectedModel != null &&
+                                  _selectedModel!.isChatModel) ||
+                              _promptController.text != '')
                             EnhancedTextField(
                               customColors: customColors,
                               controller: _promptController,

@@ -213,9 +213,12 @@ class _ChatScreenState extends State<ChatScreen> {
           }
 
           if (loadedMessages.isEmpty) {
-            return EmptyPreview(
-              examples: room.examples ?? [],
-              onSubmit: _handleSubmit,
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: EmptyPreview(
+                examples: room.examples ?? [],
+                onSubmit: _handleSubmit,
+              ),
             );
           }
 

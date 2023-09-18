@@ -69,6 +69,12 @@ class _CreativeIslandHistoryPreviewState
                 icon: const Icon(Icons.close),
                 onPressed: () => Navigator.of(context).pop(),
               ),
+              title: Text(
+                state.item!.showBetaFeature ? '#${state.item!.id}' : '',
+                style: TextStyle(
+                  color: customColors.weakTextColor,
+                ),
+              ),
               actions: [
                 if (state.item!.isSuccessful && state.item!.showBetaFeature)
                   TextButton(

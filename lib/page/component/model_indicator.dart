@@ -30,41 +30,46 @@ class ModelIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: Icon(
-            model.icon,
-            color: selected ? Colors.white : customColors.weakLinkColor,
-            size: 20,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: Icon(
+              model.icon,
+              color: selected ? Colors.white : customColors.weakLinkColor,
+              size: 20,
+            ),
           ),
-        ),
-        const SizedBox(width: 6),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              model.modelName,
-              style: TextStyle(
-                fontSize: 16,
-                color: selected ? Colors.white : customColors.weakLinkColor,
-                fontWeight: FontWeight.w600,
-              ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  model.modelName,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: selected ? Colors.white : customColors.weakLinkColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  model.description,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: selected ? Colors.white : customColors.weakTextColor,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
-            Text(
-              model.description,
-              style: TextStyle(
-                fontSize: 10,
-                color: selected ? Colors.white : customColors.weakTextColor,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(width: 15),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }
