@@ -153,7 +153,7 @@ class _VerifyCodeInputState extends State<VerifyCodeInput> {
                         });
 
                         showSuccessMessage(
-                            '${AppLocale.verifyCodeSendSuccess.getString(context)}${AppLocale.phone.getString(context)}');
+                            AppLocale.verifyCodeSendSuccess.getString(context));
                       }).onError((error, stackTrace) {
                         setState(() {
                           verifyCodeWaitSeconds = 0;
