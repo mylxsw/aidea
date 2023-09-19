@@ -3,6 +3,7 @@ import 'package:askaide/lang/lang.dart';
 import 'package:dart_openai/openai.dart';
 
 Object resolveErrorMessage(dynamic e) {
+  // TODO
   if (e is RequestFailedException) {
     final msg = resolveHTTPStatusCode(e.statusCode);
     if (msg != null) {
