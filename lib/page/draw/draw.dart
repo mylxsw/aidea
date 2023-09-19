@@ -95,6 +95,7 @@ class _DrawScreenState extends State<DrawScreen> {
                         imageURL: e.previewImage,
                         title: e.title,
                         titleColor: stringToColor(e.titleColor),
+                        tag: e.tag,
                         onTap: () {
                           if (userSignedIn) {
                             context.push(e.routeUri);
