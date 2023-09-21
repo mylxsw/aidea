@@ -44,27 +44,36 @@ class ModelIndicator extends StatelessWidget {
               size: 20,
             ),
           ),
-          const SizedBox(width: 6),
           Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  model.modelName,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: selected ? Colors.white : customColors.weakLinkColor,
-                    fontWeight: FontWeight.w600,
-                  ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      model.modelName,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: selected
+                            ? Colors.white
+                            : customColors.weakLinkColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      model.description,
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: selected
+                            ? Colors.white
+                            : customColors.weakTextColor,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  model.description,
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: selected ? Colors.white : customColors.weakTextColor,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
+                const SizedBox(width: 15),
               ],
             ),
           ),
