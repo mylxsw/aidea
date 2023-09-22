@@ -107,6 +107,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
                       case IndicatorStatus.error:
                         msg = '加载失败，请稍后再试';
                         break;
+                      case IndicatorStatus.empty:
+                        msg = '暂无数据';
                       default:
                         return const Center(child: LoadingIndicator());
                     }
