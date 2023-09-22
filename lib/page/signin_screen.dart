@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:askaide/bloc/version_bloc.dart';
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/logger.dart';
@@ -321,9 +322,10 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget _buildThirdPartySignInButtons(
       BuildContext context, CustomColors customColors) {
     final signInItems = <Widget>[
-      if (PlatformTool.isIOS() ||
-          PlatformTool.isAndroid() ||
-          PlatformTool.isMacOS())
+      if (Ability().enableApplePay &&
+          (PlatformTool.isIOS() ||
+              PlatformTool.isAndroid() ||
+              PlatformTool.isMacOS()))
         SignInButton(
           Buttons.appleDark,
           mini: true,
