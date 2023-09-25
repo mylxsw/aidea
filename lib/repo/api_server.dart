@@ -7,6 +7,7 @@ import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/repo/api/creative.dart';
 import 'package:askaide/repo/api/image_model.dart';
+import 'package:askaide/repo/api/info.dart';
 import 'package:askaide/repo/api/page.dart';
 import 'package:askaide/repo/api/payment.dart';
 import 'package:askaide/repo/api/quota.dart';
@@ -91,7 +92,7 @@ class APIServer {
 
   Map<String, dynamic> _buildAuthHeaders() {
     final headers = <String, dynamic>{
-      'X-CLIENT-VERSION': VERSION,
+      'X-CLIENT-VERSION': clientVersion,
       'X-PLATFORM': PlatformTool.operatingSystem(),
       'X-PLATFORM-VERSION': PlatformTool.operatingSystemVersion(),
       'X-LANGUAGE': language,
@@ -864,7 +865,7 @@ class APIServer {
       '/public/info/version-check',
       (resp) => VersionCheckResp.fromJson(resp.data),
       formData: Map<String, dynamic>.from({
-        'version': VERSION,
+        'version': clientVersion,
         'os': PlatformTool.operatingSystem(),
         'os_version': PlatformTool.operatingSystemVersion(),
       }),
@@ -1423,6 +1424,14 @@ class APIServer {
         HttpClient.cacheManager
             .deleteByPrimaryKey('$url/v1/users/current', requestMethod: 'GET');
       },
+    );
+  }
+
+  /// 服务器支持的能力
+  Future<Capabilities> capabilities() async {
+    return sendGetRequest(
+      '/public/info/capabilities',
+      (resp) => Capabilities.fromJson(resp.data),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:askaide/bloc/creative_island_bloc.dart';
 import 'package:askaide/helper/constant.dart';
+import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/image.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
@@ -18,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
 
 class CreativeModelScreen extends StatefulWidget {
@@ -239,7 +241,7 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                     if (state is CreativeIslandGalleryLoaded) {
                       return GridView.count(
                         padding: const EdgeInsets.all(10),
-                        crossAxisCount: _calCrossAxisCount(),
+                        crossAxisCount: _calCrossAxisCount(context),
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
                         children:
@@ -259,12 +261,39 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                                       width: 2,
                                     ),
                                   ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: CachedNetworkImageEnhanced(
-                                      imageUrl: e.firstImagePreview,
-                                      fit: BoxFit.cover,
-                                    ),
+                                  child: Stack(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: CachedNetworkImageEnhanced(
+                                          imageUrl: e.firstImagePreview,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      Positioned(
+                                        right: 10,
+                                        bottom: 10,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 5,
+                                            vertical: 3,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: customColors.backgroundColor
+                                                ?.withAlpha(200),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          child: Text(
+                                            '${DateFormat('MM/dd HH:mm').format(e.createdAt!)}#${e.id}',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: customColors.weakTextColor,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
                                   ),
                                 ),
                               );
@@ -294,17 +323,11 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
     );
   }
 
-  int _calCrossAxisCount() {
-    if (SizerUtil.deviceType == DeviceType.tablet) {
-      if (SizerUtil.orientation == Orientation.landscape) {
-        return 5;
-      }
-      return 3;
+  int _calCrossAxisCount(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    if (width > CustomSize.maxWindowSize) {
+      width = CustomSize.maxWindowSize;
     }
-
-    if (SizerUtil.orientation == Orientation.landscape) {
-      return 3;
-    }
-    return 2;
+    return (width / 220).round();
   }
 }

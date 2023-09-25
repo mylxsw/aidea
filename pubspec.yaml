@@ -17,10 +17,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
 # 应用正式发布时，需要同步修改 lib/helper/constant.dart 中的 VERSION 值
-version: 1.0.4+1
+version: 1.0.5+1
 
 environment:
-  sdk: '>=2.19.5 <3.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -57,7 +57,7 @@ dependencies:
       url: https://github.com/mylxsw/FlutterIconPicker
       ref: hotfix
   share_plus: ^6.3.1
-  go_router: ^6.5.5
+  go_router: ^8.2.0
   sqflite: ^2.2.6
   file_picker: ^5.2.8
   http: ^1.1.0
@@ -111,7 +111,7 @@ dependencies:
   widgets_to_image: ^0.0.2
   custom_sliding_segmented_control: ^1.7.5
   sqflite_common_ffi: ^2.2.5
-  sqflite_common_ffi_web: ^0.3.5+1
+  sqflite_common_ffi_web: ^0.4.0
   
 dev_dependencies:
   flutter_test:

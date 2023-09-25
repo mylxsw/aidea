@@ -16,11 +16,10 @@ build-android:
 build-macos:
 	flutter build macos --no-tree-shake-icons --release
 	codesign -f -s "Developer ID Application: YIYAO  GUAN (N95437SZ2A)" build/macos/Build/Products/Release/AIdea.app
-	productbuild --component AIdea.app /Applications --sign "Developer ID Installer: YIYAO  GUAN (N95437SZ2A)" --product AIdea.app/Contents/Info.plist AIdea.pkg
 	open build/macos/Build/Products/Release/
 
 build-web:
-	flutter build web --web-renderer canvaskit --release --pwa-strategy none --dart2js-optimization O4 --dart-define=FLUTTER_WEB_CANVASKIT_URL=https://resources.aicode.cc/canvaskit/
+	flutter build web --web-renderer canvaskit --release --dart-define=FLUTTER_WEB_CANVASKIT_URL=https://resources.aicode.cc/canvaskit/
 	cd scripts && go run main.go ../build/web/main.dart.js && cd ..
 	rm -fr build/web/fonts/ && mkdir build/web/fonts
 	cp -r scripts/s build/web/fonts/s

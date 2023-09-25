@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:askaide/bloc/account_bloc.dart';
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/http.dart';
 import 'package:askaide/helper/platform.dart';
@@ -79,7 +80,8 @@ class _SettingScreenState extends State<SettingScreen> {
                   tiles: [
                     _buildCommonThemeSetting(customColors),
                     _buildCommonLanguageSetting(),
-                    _buildOpenAISelfHostedSetting(customColors),
+                    if (Ability().enableOpenAI)
+                      _buildOpenAISelfHostedSetting(customColors),
                   ],
                 ),
 
@@ -187,7 +189,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           applicationName: 'AIdea',
                           applicationIcon:
                               Image.asset('assets/app.png', width: 40),
-                          applicationVersion: VERSION,
+                          applicationVersion: clientVersion,
                           applicationLegalese: 'mylxsw©2023 aicode.cc',
                           children: [
                             Padding(

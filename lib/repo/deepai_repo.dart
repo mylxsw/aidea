@@ -39,7 +39,7 @@ class DeepAIRepository {
       serverURL = apiServerURL;
 
       _headers = {
-        'X-CLIENT-VERSION': VERSION,
+        'X-CLIENT-VERSION': clientVersion,
         'X-PLATFORM': PlatformTool.operatingSystem(),
         'X-PLATFORM-VERSION': PlatformTool.operatingSystemVersion(),
         'X-LANGUAGE': language,

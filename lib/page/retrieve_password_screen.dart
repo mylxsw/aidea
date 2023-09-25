@@ -34,6 +34,8 @@ class _RetrievePasswordScreenState extends State<RetrievePasswordScreen> {
   String verifyCodeId = '';
 
   final phoneNumberValidator = RegExp(r"^1[3456789]\d{9}$");
+  final emailValidator = RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 
   @override
   void initState() {
@@ -122,12 +124,16 @@ class _RetrievePasswordScreenState extends State<RetrievePasswordScreen> {
                 sendVerifyCode: () {
                   return APIServer().sendResetPasswordCode(
                     _usernameController.text.trim(),
-                    verifyType: 'sms',
+                    verifyType:
+                        phoneNumberValidator.hasMatch(_usernameController.text)
+                            ? 'sms'
+                            : 'email',
                   );
                 },
                 sendCheck: () {
                   final username = _usernameController.text.trim();
                   final isPhoneNumber = phoneNumberValidator.hasMatch(username);
+                  final isEmail = emailValidator.hasMatch(username);
 
                   if (username == '') {
                     showErrorMessage(
@@ -135,7 +141,7 @@ class _RetrievePasswordScreenState extends State<RetrievePasswordScreen> {
                     return false;
                   }
 
-                  if (!isPhoneNumber) {
+                  if (!isPhoneNumber && !isEmail) {
                     showErrorMessage(
                         AppLocale.accountFormatError.getString(context));
                     return false;
@@ -175,7 +181,8 @@ class _RetrievePasswordScreenState extends State<RetrievePasswordScreen> {
       return;
     }
 
-    if (!phoneNumberValidator.hasMatch(username)) {
+    if (!phoneNumberValidator.hasMatch(username) &&
+        !emailValidator.hasMatch(username)) {
       showErrorMessage(AppLocale.accountFormatError.getString(context));
       return;
     }

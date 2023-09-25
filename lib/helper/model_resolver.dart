@@ -1,9 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/error.dart';
 import 'package:askaide/helper/helper.dart';
-import 'package:askaide/helper/model.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/deepai_repo.dart';
 import 'package:askaide/repo/model/message.dart';
@@ -166,24 +166,24 @@ class ModelResolver {
     }
 
     // 聊天模型
-    if ((await ModelAggregate.model(room.model)).isChatModel) {
-      var chatContext = _buildRobotRequestContext(room, contextMessages);
-      return await openAIRepo.chatStream(
-        chatContext,
-        onMessage,
-        model: room.modelName(),
-        maxTokens: maxTokens,
-        roomId: room.isLocalRoom ? null : room.id,
-      );
-    }
-
-    // 非聊天模型
-    return await openAIRepo.completionStream(
-      room.modelName(),
-      message.text,
-      maxTokens: maxTokens,
+    // if ((await ModelAggregate.model(room.model)).isChatModel) {
+    var chatContext = _buildRobotRequestContext(room, contextMessages);
+    return await openAIRepo.chatStream(
+      chatContext,
       onMessage,
+      model: room.modelName(),
+      maxTokens: maxTokens,
+      roomId: room.isLocalRoom ? null : room.id,
     );
+    // }
+
+    // // 非聊天模型
+    // return await openAIRepo.completionStream(
+    //   room.modelName(),
+    //   message.text,
+    //   maxTokens: maxTokens,
+    //   onMessage,
+    // );
   }
 
   /// 构建机器人请求上下文
@@ -205,7 +205,7 @@ class ModelResolver {
 
     var contextMessages = recentMessages
         .where((e) => !e.isSystem() && !e.isInitMessage())
-        .map((e) => e.user == 'robot'
+        .map((e) => e.role == Role.receiver
             ? OpenAIChatCompletionChoiceMessageModel(
                 role: OpenAIChatMessageRole.assistant, content: e.text)
             : OpenAIChatCompletionChoiceMessageModel(

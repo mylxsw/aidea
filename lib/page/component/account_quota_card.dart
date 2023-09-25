@@ -1,3 +1,4 @@
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/coin.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
@@ -111,29 +112,30 @@ class AccountQuotaCard extends StatelessWidget {
                 )
               ],
             ),
-            EnhancedButton(
-              onPressed: () {
-                // if (PlatformTool.isWeb() || PlatformTool.isMacOS()) {
-                //   showBeautyDialog(
-                //     context,
-                //     type: QuickAlertType.info,
-                //     text: 'Web、桌面端购买功能暂未推出，敬请期待',
-                //   );
-                //   return;
-                // }
+            if (Ability().enablePayment)
+              EnhancedButton(
+                onPressed: () {
+                  // if (PlatformTool.isWeb() || PlatformTool.isMacOS()) {
+                  //   showBeautyDialog(
+                  //     context,
+                  //     type: QuickAlertType.info,
+                  //     text: 'Web、桌面端购买功能暂未推出，敬请期待',
+                  //   );
+                  //   return;
+                  // }
 
-                context.push('/payment').whenComplete(() {
-                  if (onPaymentReturn != null) {
-                    onPaymentReturn!();
-                  }
-                });
-              },
-              title: AppLocale.buy.getString(context),
-              backgroundColor: customColors.linkColor,
-              width: 70,
-              height: 35,
-              fontSize: 14,
-            ),
+                  context.push('/payment').whenComplete(() {
+                    if (onPaymentReturn != null) {
+                      onPaymentReturn!();
+                    }
+                  });
+                },
+                title: AppLocale.buy.getString(context),
+                backgroundColor: customColors.linkColor,
+                width: 70,
+                height: 35,
+                fontSize: 14,
+              ),
           ],
         ),
       ),

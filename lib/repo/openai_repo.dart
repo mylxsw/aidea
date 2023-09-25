@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
@@ -40,14 +41,14 @@ class OpenAIRepository {
       OpenAI.baseUrl = apiServerURL;
       OpenAI.organization = "";
       OpenAI.externalHeaders = {
-        'X-CLIENT-VERSION': VERSION,
+        'X-CLIENT-VERSION': clientVersion,
         'X-PLATFORM': PlatformTool.operatingSystem(),
         'X-PLATFORM-VERSION': PlatformTool.operatingSystemVersion(),
         'X-LANGUAGE': language,
       };
     }
 
-    OpenAI.showLogs = false;
+    OpenAI.showLogs = true;
   }
 
   /// 基于 prompt 生成图片
@@ -61,7 +62,7 @@ class OpenAIRepository {
         n: n,
         size: size,
         responseFormat: OpenAIImageResponseFormat.url);
-    return model.data.map((e) => e.url).toList();
+    return model.data.map((e) => e.url ?? '').toList();
   }
 
   /// 判断模型是否支持聊天
@@ -245,7 +246,9 @@ class OpenAIRepository {
         temperature: temperature,
         user: user,
         maxTokens: maxTokens,
-        n: roomId, // n 参数暂时用不到，复用作为 roomId
+        n: Ability().supportLocalOpenAI()
+            ? null
+            : roomId, // n 参数暂时用不到，复用作为 roomId
       );
 
       chatStream.listen(

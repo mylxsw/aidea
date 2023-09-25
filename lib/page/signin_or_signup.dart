@@ -90,8 +90,10 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 400),
             child: SingleChildScrollView(
-                child: widget.isSignup || signInMethod == 'sms_code'
-                    ? signInOrSignUpWithSMSCode(customColors, context)
+                child: widget.isSignup ||
+                        signInMethod == 'sms_code' ||
+                        signInMethod == 'email_code'
+                    ? signInOrSignUpWithSMSOrEmailCode(customColors, context)
                     : signInWithPassword(customColors, context)),
           ),
         ),
@@ -184,11 +186,14 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
               TextButton(
                 onPressed: () {
                   setState(() {
-                    signInMethod = 'sms_code';
+                    signInMethod =
+                        phoneNumberValidator.hasMatch(widget.username)
+                            ? 'sms_code'
+                            : 'email_code';
                   });
                 },
                 child: Text(
-                  '短信验证码登录',
+                  '验证码登录',
                   style: TextStyle(
                     color: customColors.weakLinkColor?.withAlpha(120),
                     fontSize: 14,
@@ -215,7 +220,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
     );
   }
 
-  Widget signInOrSignUpWithSMSCode(
+  Widget signInOrSignUpWithSMSOrEmailCode(
     CustomColors customColors,
     BuildContext context,
   ) {
@@ -246,7 +251,9 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
             sendVerifyCode: () {
               return APIServer().sendSigninOrSignupVerifyCode(
                 widget.username,
-                verifyType: 'sms',
+                verifyType: phoneNumberValidator.hasMatch(widget.username)
+                    ? 'sms'
+                    : 'email',
                 isSignup: widget.isSignup,
               );
             },

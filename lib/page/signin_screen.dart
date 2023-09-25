@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:askaide/bloc/version_bloc.dart';
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/logger.dart';
@@ -38,6 +39,8 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _usernameController = TextEditingController();
 
   final phoneNumberValidator = RegExp(r"^1[3456789]\d{9}$");
+  final emailValidator = RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 
   var agreeProtocol = false;
 
@@ -120,7 +123,6 @@ class _SignInScreenState extends State<SignInScreen> {
                       inputFormatters: [
                         FilteringTextInputFormatter.singleLineFormatter
                       ],
-                      keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         enabledBorder: const OutlineInputBorder(
@@ -152,7 +154,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: Text(
-                      '未注册的手机号验证成功后将自动注册',
+                      '未注册的账号验证成功后将自动注册',
                       style: TextStyle(
                         color: customColors.weakTextColor?.withAlpha(80),
                         fontSize: 14,
@@ -320,13 +322,16 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget _buildThirdPartySignInButtons(
       BuildContext context, CustomColors customColors) {
     final signInItems = <Widget>[
-      if (PlatformTool.isIOS() || PlatformTool.isAndroid() || PlatformTool.isMacOS())
-      SignInButton(
-        Buttons.appleDark,
-        mini: true,
-        shape: const CircleBorder(),
-        onPressed: onAppleSigninSubmit,
-      ),
+      if (Ability().enableApplePay &&
+          (PlatformTool.isIOS() ||
+              PlatformTool.isAndroid() ||
+              PlatformTool.isMacOS()))
+        SignInButton(
+          Buttons.appleDark,
+          mini: true,
+          shape: const CircleBorder(),
+          onPressed: onAppleSigninSubmit,
+        ),
     ];
 
     if (signInItems.isEmpty) {
@@ -432,7 +437,8 @@ class _SignInScreenState extends State<SignInScreen> {
       return;
     }
 
-    if (!phoneNumberValidator.hasMatch(username)) {
+    if (!phoneNumberValidator.hasMatch(username) &&
+        !emailValidator.hasMatch(username)) {
       showErrorMessage(AppLocale.accountFormatError.getString(context));
       return;
     }

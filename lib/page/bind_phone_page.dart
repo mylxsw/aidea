@@ -86,12 +86,19 @@ class _BindPhoneScreenState extends State<BindPhoneScreen> {
         leading: IconButton(
           onPressed: () {
             if (widget.isSignIn) {
-              context.pop('logout');
+              context.go('/chat-chat?show_initial_dialog=false&reward=0');
             } else {
               context.pop();
             }
+
+            // 当返回值为 logout 时，表示需要退出登录
+            // if (widget.isSignIn) {
+            //   context.pop('logout');
+            // } else {
+            //   context.pop();
+            // }
           },
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: Icon(widget.isSignIn ? Icons.close : Icons.arrow_back_ios),
         ),
       ),
       backgroundColor: customColors.backgroundColor,

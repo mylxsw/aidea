@@ -66,13 +66,7 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
 
   bool showAdvancedOptions = false;
 
-  var _selectedModel = mm.Model(
-    defaultChatModel,
-    defaultChatModel,
-    'openai',
-    category: modelTypeOpenAI,
-    isChatModel: true,
-  );
+  mm.Model? _selectedModel;
 
   @override
   void initState() {
@@ -270,7 +264,7 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
                           // 模型
                           EnhancedInputSimple(
                             title: AppLocale.model.getString(context),
-                            padding: const EdgeInsets.only(top: 12, bottom: 5),
+                            padding: const EdgeInsets.only(top: 10, bottom: 10),
                             onPressed: () {
                               openSelectModelDialog(
                                 context,
@@ -279,28 +273,17 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
                                     _selectedModel = selected;
                                   });
                                 },
-                                initValue: _selectedModel.uid(),
+                                initValue: _selectedModel?.uid(),
                               );
                             },
-                            value: _selectedModel.name,
-                            description: !_selectedModel.isChatModel
-                                ? SizedBox(
-                                    width: double.infinity,
-                                    child: Text(
-                                      defaultModelNotChatDesc,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.copyWith(
-                                              fontSize: 14,
-                                              color: const Color.fromARGB(
-                                                  255, 244, 155, 54)),
-                                    ),
-                                  )
-                                : null,
+                            value: _selectedModel != null
+                                ? _selectedModel!.name
+                                : AppLocale.select.getString(context),
                           ),
                           // 提示语
-                          if (_selectedModel.isChatModel)
+                          if ((_selectedModel != null &&
+                                  _selectedModel!.isChatModel) ||
+                              _promptController.text != '')
                             EnhancedTextField(
                               customColors: customColors,
                               controller: _promptController,
@@ -341,6 +324,9 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
                       ),
                       if (showAdvancedOptions)
                         ColumnBlock(
+                          innerPanding: 10,
+                          padding: const EdgeInsets.only(
+                              top: 15, left: 15, right: 15, bottom: 5),
                           children: [
                             EnhancedTextField(
                               customColors: customColors,
@@ -411,25 +397,25 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
                       const SizedBox(height: 20),
                       Row(
                         children: [
-                          // EnhancedButton(
-                          //   title: showAdvancedOptions ? '收起选项' : '高级选项',
-                          //   width: 100,
-                          //   backgroundColor: Colors.transparent,
-                          //   color: customColors.weakLinkColor,
-                          //   fontSize: 15,
-                          //   icon: Icon(
-                          //     showAdvancedOptions
-                          //         ? Icons.unfold_less
-                          //         : Icons.unfold_more,
-                          //     color: customColors.weakLinkColor,
-                          //     size: 15,
-                          //   ),
-                          //   onPressed: () {
-                          //     setState(() {
-                          //       showAdvancedOptions = !showAdvancedOptions;
-                          //     });
-                          //   },
-                          // ),
+                          EnhancedButton(
+                            title: showAdvancedOptions ? '收起选项' : '高级选项',
+                            width: 100,
+                            backgroundColor: Colors.transparent,
+                            color: customColors.weakLinkColor,
+                            fontSize: 15,
+                            icon: Icon(
+                              showAdvancedOptions
+                                  ? Icons.unfold_less
+                                  : Icons.unfold_more,
+                              color: customColors.weakLinkColor,
+                              size: 15,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                showAdvancedOptions = !showAdvancedOptions;
+                              });
+                            },
+                          ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: EnhancedButton(
@@ -437,6 +423,13 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
                               onPressed: () async {
                                 if (_nameController.text == '') {
                                   showErrorMessage(AppLocale.nameRequiredMessage
+                                      .getString(context));
+                                  return;
+                                }
+
+                                if (_selectedModel == null) {
+                                  showErrorMessage(AppLocale
+                                      .modelRequiredMessage
                                       .getString(context));
                                   return;
                                 }
@@ -474,7 +467,7 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
                                         RoomUpdateEvent(
                                           widget.roomId,
                                           name: _nameController.text,
-                                          model: _selectedModel.uid(),
+                                          model: _selectedModel!.uid(),
                                           prompt: _promptController.text,
                                           avatarUrl: _avatarUrl,
                                           avatarId: _avatarId,

@@ -356,8 +356,9 @@ void openImagePreviewDialog(
                     });
                   }
                 } catch (e) {
+                  // ignore: use_build_context_synchronously
                   showErrorMessageEnhanced(context, '图片保存失败，请稍后再试');
-                  Logger.instance.e('下载图片原图失败', e);
+                  Logger.instance.e('下载图片原图失败', error: e);
                 } finally {
                   cancel();
                 }

@@ -93,6 +93,7 @@ mixin AppLocale {
 
   static const String nameRequiredMessage = 'name-required-message';
   static const String promptFormatError = 'prompt-format-error';
+  static const String modelRequiredMessage = 'model-required-message';
 
   static const String writeYourIdeas = 'write-your-ideas';
   static const String describeYourImages = 'describe-your-images';
@@ -274,6 +275,7 @@ mixin AppLocale {
     promptUsage: '领域设定用于设置 AI 数字人的行为',
     nameRequiredMessage: '请输入数字人名称',
     promptFormatError: '角色设定不能超过1000字',
+    modelRequiredMessage: '请选择 AI 模型',
     operateSuccess: '操作成功',
     operateFailed: '操作失败',
     confirmDelete: '确定要删除这些项目？',
@@ -345,14 +347,14 @@ mixin AppLocale {
     signInWithApple: '使用 Apple 账号登录',
     readAndAgree: '已阅读并同意',
     andWord: '和',
-    accountInputTips: '输入您的手机号',
+    accountInputTips: '输入您的手机或邮箱账号',
     phoneInputTips: '输入您的手机号',
     passwordInputTips: '输入您的密码',
     pleaseReadAgreeProtocol: '请先阅读并同意用户协议和隐私条款',
     signInSuccess: '登录成功',
     signInFailed: '登录失败',
     accountRequired: '请输入账号',
-    accountFormatError: '账号格式有误\n请输入手机号',
+    accountFormatError: '账号格式有误\n请输入手机号或邮箱账号',
     phoneNumberFormatError: '手机号码格式有误',
     passwordRequired: '请输入密码',
     passwordFormatError: '密码格式有误\n必须为8-20位字母、数字、特殊符号组合',
@@ -361,7 +363,7 @@ mixin AppLocale {
     verifyCode: '验证码',
     verifyCodeInputTips: '输入验证码',
     retryInSeconds: '秒后重试',
-    verifyCodeSendSuccess: '验证码已发送至您的',
+    verifyCodeSendSuccess: '验证码已发送',
     pleaseGetVerifyCodeFirst: '请先获取验证码',
     verifyCodeRequired: '请输入验证码',
     verifyCodeFormatError: '验证码格式有误',
@@ -463,6 +465,7 @@ mixin AppLocale {
     promptUsage: 'Prompt is used to set the behavior of the AI character',
     nameRequiredMessage: 'Please enter the name of the character',
     promptFormatError: 'Prompt cannot exceed 1000 words',
+    modelRequiredMessage: 'Please select AI model',
     operateSuccess: 'Success',
     operateFailed: 'Failed',
     confirmDelete: 'Confirm to delete?',
@@ -541,7 +544,7 @@ mixin AppLocale {
     signInWithApple: 'Sign in with Apple',
     readAndAgree: 'Read and agree',
     andWord: 'and',
-    accountInputTips: 'Enter your phone number',
+    accountInputTips: 'Enter your phone number or email',
     phoneInputTips: 'Enter your phone number',
     passwordInputTips: 'Enter your password',
     pleaseReadAgreeProtocol:
@@ -549,7 +552,8 @@ mixin AppLocale {
     signInSuccess: 'Sign in success',
     signInFailed: 'Sign in failed',
     accountRequired: 'Please enter your account',
-    accountFormatError: 'Account format error\nPlease enter your phone number',
+    accountFormatError:
+        'Account format error\nPlease enter your phone number or email',
     phoneNumberFormatError: 'Phone number format error',
     passwordRequired: 'Please enter your password',
     passwordFormatError:
@@ -559,7 +563,7 @@ mixin AppLocale {
     verifyCode: 'Verify code',
     verifyCodeInputTips: 'Enter verify code',
     retryInSeconds: 'Retry in',
-    verifyCodeSendSuccess: 'Verify code has been sent to your',
+    verifyCodeSendSuccess: 'Verify code has been sent',
     pleaseGetVerifyCodeFirst: 'Please get the verification code first',
     verifyCodeRequired: 'Please enter the verification code',
     verifyCodeFormatError: 'Verification code format error',
