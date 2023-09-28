@@ -678,6 +678,8 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) {
                 final id = state.pathParameters['id']!;
                 final itemId = int.tryParse(state.pathParameters['item_id']!);
+                final showErrorMessage =
+                    state.queryParameters['show_error'] == 'true';
                 return transitionResolver(
                   MultiBlocProvider(
                     providers: [
@@ -687,6 +689,7 @@ class MyApp extends StatefulWidget {
                       setting: settingRepo,
                       islandId: id,
                       itemId: itemId!,
+                      showErrorMessage: showErrorMessage,
                     ),
                   ),
                 );

@@ -1203,6 +1203,14 @@ class APIServer {
     );
   }
 
+  /// 封禁创作岛历史记录
+  Future<void> forbidCreativeHistoryItem({required int historyId}) {
+    return sendPutRequest(
+      '/v1/admin/creative-island/histories/$historyId/forbid',
+      (resp) {},
+    );
+  }
+
   /// 创作岛历史记录
   Future<List<CreativeItemInServer>> creativeItemHistories(String islandId,
       {bool cache = true}) async {

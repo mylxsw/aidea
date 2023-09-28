@@ -246,68 +246,76 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                         crossAxisCount: _calCrossAxisCount(context),
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
-                        children:
-                            state.items.where((e) => e.images.isNotEmpty).map(
+                        children: state.items.map(
                           (e) {
-                            if (e.userId != null && e.userId! > 0) {
-                              return GestureDetector(
-                                onTap: () {
-                                  context.push(
-                                      '/creative-island/${e.islandId}/history/${e.id}');
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                      color: Colors.amber,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: Stack(
-                                    children: [
+                            return GestureDetector(
+                              onTap: () {
+                                context.push(
+                                    '/creative-island/${e.islandId}/history/${e.id}?show_error=true');
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    if (e.firstImagePreview
+                                            .startsWith('http://') ||
+                                        e.firstImagePreview
+                                            .startsWith('https://'))
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(10),
                                         child: CachedNetworkImageEnhanced(
                                           imageUrl: e.firstImagePreview,
                                           fit: BoxFit.cover,
                                         ),
-                                      ),
-                                      Positioned(
-                                        right: 10,
-                                        bottom: 10,
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 5,
-                                            vertical: 3,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: customColors.backgroundColor
-                                                ?.withAlpha(200),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
+                                      )
+                                    else
+                                      Container(
+                                        padding: const EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          color: Colors.amber,
+                                        ),
+                                        child: Center(
                                           child: Text(
-                                            '${DateFormat('HH:mm').format(e.createdAt!.toLocal())}@${e.userId}#${e.id}',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: customColors.weakTextColor,
+                                            e.answer ?? '',
+                                            textAlign: TextAlign.center,
+                                            maxLines: 4,
+                                            style: const TextStyle(
+                                              color: Colors.red,
+                                              fontSize: 10,
+                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                         ),
-                                      )
-                                    ],
-                                  ),
+                                      ),
+                                    Positioned(
+                                      right: 10,
+                                      bottom: 10,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 5,
+                                          vertical: 3,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: customColors.backgroundColor
+                                              ?.withAlpha(200),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          '${DateFormat('HH:mm').format(e.createdAt!.toLocal())}@${e.userId}#${e.id}',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: customColors.weakTextColor,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
                                 ),
-                              );
-                            }
-
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: NetworkImagePreviewer(
-                                url: e.images.first,
-                                preview: imageURL(
-                                    e.images.first, qiniuImageTypeThumb),
-                                hidePreviewButton: true,
                               ),
                             );
                           },
