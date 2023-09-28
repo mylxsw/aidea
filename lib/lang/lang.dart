@@ -327,7 +327,7 @@ mixin AppLocale {
     imagination: '想象力',
     keywordsSeparatedByCommas: '你想象画面的关键词，以逗号隔开。',
     originalImage: '原始图片',
-    superResolution: '超分辨率',
+    superResolution: '高清修复',
     colorizeImage: '图片上色',
     errorLog: '故障日志',
     report: '上报',
