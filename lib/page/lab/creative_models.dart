@@ -224,6 +224,7 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                       .add(CreativeIslandGalleryLoadEvent(
                         forceRefresh: true,
                         mode: "all",
+                        model: selectedModel?.realModel,
                       ));
                 },
                 child: BlocConsumer<CreativeIslandBloc, CreativeIslandState>(
@@ -286,7 +287,7 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                                                 BorderRadius.circular(8),
                                           ),
                                           child: Text(
-                                            '${DateFormat('MM/dd HH:mm').format(e.createdAt!)}#${e.id}',
+                                            '${DateFormat('HH:mm').format(e.createdAt!.toLocal())}@${e.userId}#${e.id}',
                                             style: TextStyle(
                                               fontSize: 12,
                                               color: customColors.weakTextColor,
