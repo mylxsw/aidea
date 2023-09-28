@@ -1434,6 +1434,29 @@ class APIServer {
       (resp) => Capabilities.fromJson(resp.data),
     );
   }
+
+  /// 用户免费聊天次数统计
+  Future<List<FreeModelCount>> userFreeStatistics() async {
+    return sendGetRequest(
+      '/v1/users/stat/free-chat-counts',
+      (resp) {
+        var items = <FreeModelCount>[];
+        for (var item in resp.data['data']) {
+          items.add(FreeModelCount.fromJson(item));
+        }
+        return items;
+      },
+    );
+  }
+
+  /// 用户免费聊天次数统计(单个模型)
+  Future<FreeModelCount> userFreeStatisticsForModel(
+      {required String model}) async {
+    return sendGetRequest(
+      '/v1/users/stat/free-chat-counts/$model',
+      (resp) => FreeModelCount.fromJson(resp.data),
+    );
+  }
 }
 
 class ShareInfo {
@@ -1950,6 +1973,36 @@ class PromptTag {
     return PromptTag(
       json['name'],
       json['value'],
+    );
+  }
+}
+
+class FreeModelCount {
+  String model;
+  String name;
+  int leftCount;
+  int maxCount;
+
+  FreeModelCount({
+    required this.model,
+    required this.name,
+    required this.leftCount,
+    required this.maxCount,
+  });
+
+  toJson() => {
+        'model': model,
+        'name': name,
+        'left_count': leftCount,
+        'max_count': maxCount,
+      };
+
+  static FreeModelCount fromJson(Map<String, dynamic> json) {
+    return FreeModelCount(
+      model: json['model'],
+      name: json['name'],
+      leftCount: json['left_count'],
+      maxCount: json['max_count'],
     );
   }
 }

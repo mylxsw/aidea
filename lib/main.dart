@@ -2,6 +2,7 @@ import 'package:askaide/bloc/account_bloc.dart';
 import 'package:askaide/bloc/background_image_bloc.dart';
 import 'package:askaide/bloc/chat_chat_bloc.dart';
 import 'package:askaide/bloc/creative_island_bloc.dart';
+import 'package:askaide/bloc/free_statistics_bloc.dart';
 import 'package:askaide/bloc/gallery_bloc.dart';
 import 'package:askaide/bloc/payment_bloc.dart';
 import 'package:askaide/bloc/version_bloc.dart';
@@ -29,6 +30,7 @@ import 'package:askaide/page/creative_island/creative_island_gallery.dart';
 import 'package:askaide/page/creative_island/creative_island_history.dart';
 import 'package:askaide/page/creative_island/creative_island_history_all.dart';
 import 'package:askaide/page/creative_island/creative_island_history_preview.dart';
+import 'package:askaide/page/free_statistics.dart';
 import 'package:askaide/page/lab/creative_models.dart';
 import 'package:askaide/page/destroy_account.dart';
 import 'package:askaide/page/diagnosis.dart';
@@ -760,6 +762,18 @@ class MyApp extends StatefulWidget {
               path: '/diagnosis',
               pageBuilder: (context, state) => transitionResolver(
                 DiagnosisScreen(setting: settingRepo),
+              ),
+            ),
+            GoRoute(
+              name: 'free-statistics',
+              path: '/free-statistics',
+              pageBuilder: (context, state) => transitionResolver(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider(create: ((context) => FreeStatisticsBloc())),
+                  ],
+                  child: FreeStatisticsPage(setting: settingRepo),
+                ),
               ),
             ),
           ],

@@ -332,7 +332,7 @@ mixin AppLocale {
     errorLog: '故障日志',
     report: '上报',
     latestVersion: '当前已是最新版本',
-    aIdeaApp: 'AIdea是一款能够让你与 AI 对话的应用',
+    aIdeaApp: 'AIdea是一款能够让你与 AI 对话的应用，应用代码完全开源。',
     onceEnabledSmartOptimization: '智能优化\n\n启用后，AI 将进一步完善优化你的想法。',
     referenceImageNote: '参考图片\n\nAI 将会在该参考图片的基础上进行创作。',
     gotIt: '知道了',
@@ -528,7 +528,8 @@ mixin AppLocale {
     errorLog: 'Error Log',
     report: 'Report',
     latestVersion: 'You are currently on the latest version',
-    aIdeaApp: 'AIdea is an app that allows you to converse with AI',
+    aIdeaApp:
+        'AIdea is an app that allows you to converse with AI, and the app code is completely open source.',
     onceEnabledSmartOptimization:
         'Smart Optimization\n\nOnce enabled, AI will further refine and optimize your ideas.',
     gotIt: 'Got it',

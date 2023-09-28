@@ -11,6 +11,7 @@ import 'package:askaide/page/component/account_quota_card.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/invite_card.dart';
 import 'package:askaide/page/component/sliver_component.dart';
+import 'package:askaide/page/component/social_icon.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/page/theme/theme.dart';
@@ -138,7 +139,10 @@ class _SettingScreenState extends State<SettingScreen> {
                                 text: resp.message,
                                 confirmBtnText: '去更新',
                                 onConfirmBtnTap: () {
-                                  launchUrlString(resp.url);
+                                  launchUrlString(
+                                    resp.url,
+                                    mode: LaunchMode.externalApplication,
+                                  );
                                 },
                                 cancelBtnText: '暂不更新',
                                 showCancelBtn: true,
@@ -190,12 +194,53 @@ class _SettingScreenState extends State<SettingScreen> {
                           applicationIcon:
                               Image.asset('assets/app.png', width: 40),
                           applicationVersion: clientVersion,
-                          applicationLegalese: 'mylxsw©2023 aicode.cc',
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 15),
-                              child:
-                                  Text(AppLocale.aIdeaApp.getString(context)),
+                            Text(AppLocale.aIdeaApp.getString(context)),
+                            const SizedBox(height: 15),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                SocialIcon(
+                                  image: 'assets/weibo.png',
+                                  name: '官方微博',
+                                  onTap: () {
+                                    launchUrlString(
+                                      'https://weibo.com/code404',
+                                      mode: LaunchMode.externalApplication,
+                                    );
+                                  },
+                                ),
+                                SocialIcon(
+                                  image: 'assets/wechat.png',
+                                  name: '微信公众号',
+                                  onTap: () {
+                                    launchUrlString(
+                                      'https://mp.weixin.qq.com/s/4CHh_rKxBqi-npDEnmLWmA',
+                                      mode: LaunchMode.externalApplication,
+                                    );
+                                  },
+                                ),
+                                SocialIcon(
+                                  image: 'assets/x.png',
+                                  name: 'Twitter(X)',
+                                  onTap: () {
+                                    launchUrlString(
+                                      'https://twitter.com/mylxsw',
+                                      mode: LaunchMode.externalApplication,
+                                    );
+                                  },
+                                ),
+                                SocialIcon(
+                                  image: 'assets/github.png',
+                                  name: 'Github',
+                                  onTap: () {
+                                    launchUrlString(
+                                      'http://github.com/mylxsw/aidea',
+                                      mode: LaunchMode.externalApplication,
+                                    );
+                                  },
+                                ),
+                              ],
                             ),
                           ],
                         );
@@ -418,6 +463,17 @@ class _SettingScreenState extends State<SettingScreen> {
           ]),
           onPressed: (context) {
             context.push('/setting/account-security');
+          },
+        ),
+        SettingsTile(
+          title: const Text('我的免费额度'),
+          trailing: Icon(
+            CupertinoIcons.chevron_forward,
+            size: MediaQuery.of(context).textScaleFactor * 18,
+            color: Colors.grey,
+          ),
+          onPressed: (context) {
+            context.push('/free-statistics');
           },
         ),
       ];

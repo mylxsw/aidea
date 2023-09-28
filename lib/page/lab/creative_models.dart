@@ -63,6 +63,7 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
           '模型 Gallery',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),

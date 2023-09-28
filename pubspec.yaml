@@ -170,6 +170,9 @@ flutter:
     - assets/background-discovery.png
     - assets/background-discovery-dark.webp
     - assets/transport.png
+    - assets/weibo.png
+    - assets/github.png
+    - assets/x.png
 
   
   #   - images/a_dot_ham.jpeg
