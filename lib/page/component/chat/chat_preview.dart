@@ -11,6 +11,7 @@ import 'package:askaide/page/component/chat/chat_bubble.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/share.dart';
 import 'package:askaide/page/dialog.dart';
+import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
@@ -30,6 +31,7 @@ class ChatPreview extends StatefulWidget {
   final List<Widget>? helpWidgets;
   final Widget? robotAvatar;
   final void Function(Message message)? onSpeakEvent;
+  final void Function(Message message)? onResentEvent;
 
   const ChatPreview({
     super.key,
@@ -41,6 +43,7 @@ class ChatPreview extends StatefulWidget {
     this.robotAvatar,
     this.helpWidgets,
     this.onSpeakEvent,
+    this.onResentEvent,
   });
 
   @override
@@ -325,9 +328,9 @@ class _ChatPreviewState extends State<ChatPreview> {
                                         color: customColors.chatRoomSenderText,
                                       ),
                                     ),
-                              Row(
+                              const Row(
                                 mainAxisSize: MainAxisSize.min,
-                                children: const [
+                                children: [
                                   Icon(
                                     Icons.check_circle,
                                     size: 12,
@@ -364,7 +367,7 @@ class _ChatPreviewState extends State<ChatPreview> {
     Message message,
     MessageState state,
   ) {
-    if (widget.controller.selectMode) {
+    if (widget.controller.selectMode || message.isSystem()) {
       return;
     }
 
@@ -427,9 +430,9 @@ class _ChatPreviewState extends State<ChatPreview> {
               cancel();
             },
             label: const Text(''),
-            icon: Column(
+            icon: const Column(
               mainAxisSize: MainAxisSize.min,
-              children: const [
+              children: [
                 Icon(
                   Icons.copy,
                   color: Color.fromARGB(255, 255, 255, 255),
@@ -507,26 +510,49 @@ class _ChatPreviewState extends State<ChatPreview> {
                     )
                   ],
                 )),
-          TextButton.icon(
-              onPressed: () async {
+          if (message.role == Role.sender && widget.onResentEvent != null)
+            TextButton.icon(
+              onPressed: () {
+                widget.onResentEvent!(message);
                 cancel();
-                await shareTo(context, content: message.text, title: '聊天记录');
               },
               label: const Text(''),
-              icon: Column(
+              icon: const Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
-                    Icons.share,
+                  Icon(
+                    Icons.restore,
                     color: Color.fromARGB(255, 255, 255, 255),
                     size: 14,
                   ),
                   Text(
-                    AppLocale.share.getString(context),
-                    style: const TextStyle(fontSize: 12, color: Colors.white),
-                  )
+                    '重发',
+                    style: TextStyle(fontSize: 12, color: Colors.white),
+                  ),
                 ],
-              )),
+              ),
+            )
+          else
+            TextButton.icon(
+                onPressed: () async {
+                  cancel();
+                  await shareTo(context, content: message.text, title: '聊天记录');
+                },
+                label: const Text(''),
+                icon: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.share,
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      size: 14,
+                    ),
+                    Text(
+                      AppLocale.share.getString(context),
+                      style: const TextStyle(fontSize: 12, color: Colors.white),
+                    )
+                  ],
+                )),
           TextButton.icon(
               onPressed: () {
                 widget.controller.enterSelectMode();
@@ -576,9 +602,9 @@ class _ChatPreviewState extends State<ChatPreview> {
                   widget.onSpeakEvent!(message);
                 },
                 label: const Text(''),
-                icon: Column(
+                icon: const Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
+                  children: [
                     Icon(
                       Icons.record_voice_over,
                       color: Color.fromARGB(255, 255, 255, 255),
@@ -598,8 +624,8 @@ class _ChatPreviewState extends State<ChatPreview> {
   /// 获取聊天框的最大宽度
   double _chatBoxMaxWidth(BuildContext context) {
     var screenWidth = MediaQuery.of(context).size.width;
-    if (screenWidth > 600) {
-      return 600;
+    if (screenWidth >= CustomSize.maxWindowSize) {
+      return CustomSize.maxWindowSize;
     }
 
     return screenWidth;

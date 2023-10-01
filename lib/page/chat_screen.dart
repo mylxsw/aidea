@@ -245,6 +245,12 @@ class _ChatScreenState extends State<ChatScreen> {
             onSpeakEvent: (message) {
               _audioPlayerController.playAudio(message.text);
             },
+            onResentEvent: (message) {
+              _scrollController.animateTo(0,
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeOut);
+              _handleSubmit(message.text, messagetType: message.type);
+            },
             helpWidgets: state.processing || loadedMessages.last.isInitMessage()
                 ? null
                 : [
