@@ -100,6 +100,16 @@ class ChatMessageRepository {
     return await _chatMsgDataProvider.updateMessage(roomId, id, message);
   }
 
+  /// 部分更新消息
+  Future<void> updateMessagePart(
+    int roomId,
+    int id,
+    String key,
+    dynamic value,
+  ) async {
+    return await _chatMsgDataProvider.updateMessagePart(roomId, id, key, value);
+  }
+
   /// 删除消息
   Future<void> removeMessage(int roomId, List<int> ids) async {
     return await _chatMsgDataProvider.removeMessage(roomId, ids);

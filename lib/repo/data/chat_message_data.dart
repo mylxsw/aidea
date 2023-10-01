@@ -70,6 +70,22 @@ class ChatMessageDataProvider {
     });
   }
 
+  Future<void> updateMessagePart(
+    int roomId,
+    int id,
+    String key,
+    dynamic value,
+  ) async {
+    return conn.transaction((txn) async {
+      await txn.update(
+        'chat_message',
+        {key: value},
+        where: 'id = ? AND room_id = ?',
+        whereArgs: [id, roomId],
+      );
+    });
+  }
+
   Future<void> removeMessage(int roomId, List<int> ids) async {
     var placeholders = List.generate(ids.length, (index) => '?').join(',');
     ids.add(roomId);

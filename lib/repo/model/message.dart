@@ -40,6 +40,9 @@ class Message {
   /// 关联消息ID（问题 ID）
   int? refId;
 
+  /// 服务端 ID
+  int? serverId;
+
   /// 消息消耗的配额
   int? quotaConsumed;
 
@@ -62,6 +65,7 @@ class Message {
     this.roomId,
     this.extra,
     this.refId,
+    this.serverId,
     this.quotaConsumed,
     this.tokenConsumed,
   });
@@ -116,6 +120,7 @@ class Message {
       'ts': ts?.millisecondsSinceEpoch,
       'room_id': roomId,
       'ref_id': refId,
+      'server_id': serverId,
       'token_consumed': tokenConsumed,
       'quota_consumed': quotaConsumed,
     };
@@ -132,6 +137,7 @@ class Message {
         type = MessageType.getTypeFromText(map['type'] as String),
         user = map['user'] as String?,
         refId = map['ref_id'] as int?,
+        serverId = map['server_id'] as int?,
         tokenConsumed = map['token_consumed'] as int?,
         quotaConsumed = map['quota_consumed'] as int?,
         ts = map['ts'] == null

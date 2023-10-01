@@ -125,6 +125,9 @@ void main() async {
         }
       },
       onCreate: initDatabase,
+      onOpen: (db) {
+        Logger.instance.i('数据库存储路径：${db.path}');
+      },
     ),
   );
 

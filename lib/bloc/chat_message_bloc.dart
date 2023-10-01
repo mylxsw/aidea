@@ -313,6 +313,10 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
           for (var element in systemCmds) {
             try {
               final cmd = jsonDecode(element.content);
+
+              message.serverId = cmd['question_id'];
+              waitMessage.serverId = cmd['answer_id'];
+
               final quotaConsumed = cmd['quota_consumed'] ?? 0;
               final tokenConsumed = cmd['token'] ?? 0;
 
@@ -350,6 +354,12 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       // 机器人应答完成，将以后一条机器人应答消息更新到数据库，替换掉思考中消息
       waitMessage.isReady = true;
       await chatMsgRepo.updateMessage(roomId, waitMessage.id!, waitMessage);
+
+      // 更新聊天问题的服务端 ID
+      if (message.serverId != null && message.serverId! > 0) {
+        await chatMsgRepo.updateMessagePart(
+            roomId, sentMessageId, 'server_id', message.serverId);
+      }
 
       if (room.id == chatAnywhereRoomId &&
           localChatHistoryId != null &&
