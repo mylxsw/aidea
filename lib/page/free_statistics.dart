@@ -1,13 +1,17 @@
-import 'package:askaide/bloc/free_statistics_bloc.dart';
+import 'package:askaide/bloc/free_count_bloc.dart';
+import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/message_box.dart';
+import 'package:askaide/page/dialog.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localization/flutter_localization.dart';
+import 'package:quickalert/models/quickalert_type.dart';
 
 class FreeStatisticsPage extends StatefulWidget {
   final SettingRepository setting;
@@ -23,7 +27,7 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
   void initState() {
     super.initState();
 
-    context.read<FreeStatisticsBloc>().add(FreeStatisticsLoadEvent());
+    context.read<FreeCountBloc>().add(FreeCountReloadAllEvent());
   }
 
   @override
@@ -46,12 +50,12 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
         child: SingleChildScrollView(
           child: RefreshIndicator(
             onRefresh: () async {
-              context.read<FreeStatisticsBloc>().add(FreeStatisticsLoadEvent());
+              context.read<FreeCountBloc>().add(FreeCountReloadAllEvent());
             },
-            child: BlocBuilder<FreeStatisticsBloc, FreeStatisticsState>(
+            child: BlocBuilder<FreeCountBloc, FreeCountState>(
               builder: (context, state) {
-                if (state is FreeStatisticsLoaded) {
-                  if (state.freeStatistics.isEmpty) {
+                if (state is FreeCountLoadedState) {
+                  if (state.counts.isEmpty) {
                     return const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       child: Center(
@@ -87,17 +91,7 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
                                   Row(
                                     children: [
                                       Text(
-                                        '剩余',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      Text(
-                                        ' / ',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      Text(
-                                        '总量',
+                                        '免费次数',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold),
                                       ),
@@ -106,22 +100,45 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
                                 ],
                               ),
                             ),
-                            ...state.freeStatistics.map((e) {
+                            ...state.counts.map((e) {
                               return Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 5),
                                 child: Row(
                                   children: [
-                                    Expanded(child: Text(e.name)),
-                                    Row(
-                                      children: [
-                                        buildLeftCountWidget(
-                                          leftCount: e.leftCount,
-                                          maxCount: e.maxCount,
-                                        ),
-                                        const Text(' / '),
-                                        Text(e.maxCount.toString()),
-                                      ],
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          Text(e.name),
+                                          if (e.info != null && e.info != '')
+                                            const SizedBox(width: 5),
+                                          if (e.info != null && e.info != '')
+                                            InkWell(
+                                              onTap: () {
+                                                showBeautyDialog(
+                                                  context,
+                                                  type: QuickAlertType.info,
+                                                  text: e.info ?? '',
+                                                  confirmBtnText: AppLocale
+                                                      .gotIt
+                                                      .getString(context),
+                                                  showCancelBtn: false,
+                                                );
+                                              },
+                                              child: Icon(
+                                                Icons.help_outline,
+                                                size: 16,
+                                                color: customColors
+                                                    .weakLinkColor
+                                                    ?.withAlpha(150),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                    buildLeftCountWidget(
+                                      leftCount: e.leftCount,
+                                      maxCount: e.maxCount,
                                     ),
                                   ],
                                 ),

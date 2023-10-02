@@ -71,7 +71,8 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
   void initState() {
     super.initState();
 
-    BlocProvider.of<RoomBloc>(context).add(RoomLoadEvent(widget.roomId));
+    BlocProvider.of<RoomBloc>(context)
+        .add(RoomLoadEvent(widget.roomId, cascading: false));
 
     // 获取预设头像
     if (Ability().supportAPIServer()) {

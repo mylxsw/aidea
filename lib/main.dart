@@ -2,7 +2,7 @@ import 'package:askaide/bloc/account_bloc.dart';
 import 'package:askaide/bloc/background_image_bloc.dart';
 import 'package:askaide/bloc/chat_chat_bloc.dart';
 import 'package:askaide/bloc/creative_island_bloc.dart';
-import 'package:askaide/bloc/free_statistics_bloc.dart';
+import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/bloc/gallery_bloc.dart';
 import 'package:askaide/bloc/payment_bloc.dart';
 import 'package:askaide/bloc/version_bloc.dart';
@@ -199,6 +199,7 @@ class MyApp extends StatefulWidget {
   late final GalleryBloc galleryBloc;
   late final AccountBloc accountBloc;
   late final VersionBloc versionBloc;
+  late final FreeCountBloc freeCountBloc;
 
   final _rootNavigatorKey = GlobalKey<NavigatorState>();
   final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -220,6 +221,7 @@ class MyApp extends StatefulWidget {
     accountBloc = AccountBloc(settingRepo);
     versionBloc = VersionBloc();
     galleryBloc = GalleryBloc();
+    freeCountBloc = FreeCountBloc();
 
     var apiServerToken = settingRepo.get(settingAPIServerToken);
     var usingGuestMode = settingRepo.boolDefault(settingUsingGuestMode, false);
@@ -327,9 +329,8 @@ class MyApp extends StatefulWidget {
                       ),
                     ),
                     BlocProvider.value(value: chatRoomBloc),
-                    BlocProvider(
-                      create: (context) => NotifyBloc(),
-                    ),
+                    BlocProvider(create: (context) => NotifyBloc()),
+                    BlocProvider.value(value: freeCountBloc),
                   ],
                   child: ChatAnywhereScreen(
                     stateManager: messageStateManager,
@@ -350,6 +351,7 @@ class MyApp extends StatefulWidget {
                   providers: [
                     BlocProvider(
                         create: (context) => ChatChatBloc(chatMsgRepo)),
+                    BlocProvider.value(value: freeCountBloc),
                   ],
                   child: ChatChatScreen(
                     setting: settingRepo,
@@ -405,9 +407,8 @@ class MyApp extends StatefulWidget {
                         value: ChatBlocManager().getBloc(roomId),
                       ),
                       BlocProvider.value(value: chatRoomBloc),
-                      BlocProvider(
-                        create: (context) => NotifyBloc(),
-                      ),
+                      BlocProvider(create: (context) => NotifyBloc()),
+                      BlocProvider.value(value: freeCountBloc),
                     ],
                     child: ChatScreen(
                       roomId: roomId,
@@ -775,9 +776,7 @@ class MyApp extends StatefulWidget {
               path: '/free-statistics',
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
-                  providers: [
-                    BlocProvider(create: ((context) => FreeStatisticsBloc())),
-                  ],
+                  providers: [BlocProvider.value(value: freeCountBloc)],
                   child: FreeStatisticsPage(setting: settingRepo),
                 ),
               ),

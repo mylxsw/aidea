@@ -401,7 +401,9 @@ class _ChatPreviewState extends State<ChatPreview> {
                   .setState(message.roomId!, message.id!, state)
                   .then((value) {
                 setState(() {});
-                context.read<RoomBloc>().add(RoomLoadEvent(message.roomId!));
+                context
+                    .read<RoomBloc>()
+                    .add(RoomLoadEvent(message.roomId!, cascading: false));
               });
 
               cancel();
@@ -456,9 +458,8 @@ class _ChatPreviewState extends State<ChatPreview> {
                             state..showTranslate = false)
                         .then((value) {
                       setState(() {});
-                      context
-                          .read<RoomBloc>()
-                          .add(RoomLoadEvent(message.roomId!));
+                      context.read<RoomBloc>().add(
+                          RoomLoadEvent(message.roomId!, cascading: false));
                     });
                   } else {
                     if (state.translateText != null &&
@@ -468,9 +469,8 @@ class _ChatPreviewState extends State<ChatPreview> {
                               state..showTranslate = true)
                           .then((value) {
                         setState(() {});
-                        context
-                            .read<RoomBloc>()
-                            .add(RoomLoadEvent(message.roomId!));
+                        context.read<RoomBloc>().add(
+                            RoomLoadEvent(message.roomId!, cascading: false));
                       });
                       return;
                     }
@@ -486,9 +486,8 @@ class _ChatPreviewState extends State<ChatPreview> {
                       )
                           .then((value) {
                         setState(() {});
-                        context
-                            .read<RoomBloc>()
-                            .add(RoomLoadEvent(message.roomId!));
+                        context.read<RoomBloc>().add(
+                            RoomLoadEvent(message.roomId!, cascading: false));
                       });
                     }).onError((error, stackTrace) {
                       showErrorMessage(resolveError(context, error!));

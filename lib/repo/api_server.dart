@@ -1990,12 +1990,14 @@ class FreeModelCount {
   String name;
   int leftCount;
   int maxCount;
+  String? info;
 
   FreeModelCount({
     required this.model,
     required this.name,
     required this.leftCount,
     required this.maxCount,
+    this.info,
   });
 
   toJson() => {
@@ -2003,6 +2005,7 @@ class FreeModelCount {
         'name': name,
         'left_count': leftCount,
         'max_count': maxCount,
+        'info': info,
       };
 
   static FreeModelCount fromJson(Map<String, dynamic> json) {
@@ -2011,6 +2014,7 @@ class FreeModelCount {
       name: json['name'],
       leftCount: json['left_count'],
       maxCount: json['max_count'],
+      info: json['info'],
     );
   }
 }

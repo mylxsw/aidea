@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:askaide/bloc/bloc_manager.dart';
+import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/error.dart';
@@ -351,7 +352,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
       await listener;
 
-      // 机器人应答完成，将以后一条机器人应答消息更新到数据库，替换掉思考中消息
+      // 机器人应答完成，将最后一条机器人应答消息更新到数据库，替换掉思考中消息
       waitMessage.isReady = true;
       await chatMsgRepo.updateMessage(roomId, waitMessage.id!, waitMessage);
 

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
@@ -63,7 +64,7 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
 
     context.read<ChatMessageBloc>().add(ChatMessageGetRecentEvent());
-    context.read<RoomBloc>().add(RoomLoadEvent(widget.roomId));
+    context.read<RoomBloc>().add(RoomLoadEvent(widget.roomId, cascading: true));
 
     _chatPreviewController.addListener(() {
       setState(() {});
@@ -103,9 +104,17 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  BlocBuilder<RoomBloc, RoomState> _buildChatComponents(
-      CustomColors customColors) {
-    return BlocBuilder<RoomBloc, RoomState>(
+  Widget _buildChatComponents(CustomColors customColors) {
+    return BlocConsumer<RoomBloc, RoomState>(
+      listenWhen: (previous, current) => current is RoomLoaded,
+      listener: (context, state) {
+        if (state is RoomLoaded && state.cascading) {
+          // 加载免费使用次数
+          context
+              .read<FreeCountBloc>()
+              .add(FreeCountReloadEvent(model: state.room.model));
+        }
+      },
       buildWhen: (previous, current) => current is RoomLoaded,
       builder: (context, room) {
         if (room is RoomLoaded) {
@@ -144,8 +153,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             enableImageUpload: false,
                             onSubmit: _handleSubmit,
                             onNewChat: () => handleResetContext(context),
-                            hintText:
-                                inputTips[Random().nextInt(inputTips.length)],
+                            hintText: '有问题尽管问我...',
                             onVoiceRecordTappedEvent: () {
                               _audioPlayerController.stop();
                             },
@@ -188,6 +196,11 @@ class _ChatScreenState extends State<ChatScreen> {
               _inputEnabled.value = false;
             });
           } else if (!state.processing && !_inputEnabled.value) {
+            // 更新免费使用次数
+            context
+                .read<FreeCountBloc>()
+                .add(FreeCountReloadEvent(model: room.room.model));
+
             // 聊天回复完成时，取消输入框的禁止编辑状态
             setState(() {
               _inputEnabled.value = true;
@@ -303,6 +316,27 @@ class _ChatScreenState extends State<ChatScreen> {
                         state.room.name,
                         style: const TextStyle(fontSize: 16),
                       ),
+                      BlocBuilder<FreeCountBloc, FreeCountState>(
+                        buildWhen: (previous, current) =>
+                            current is FreeCountLoadedState,
+                        builder: (context, freeState) {
+                          if (freeState is FreeCountLoadedState) {
+                            final matched = freeState.model(state.room.model);
+                            if (matched != null &&
+                                matched.leftCount > 0 &&
+                                matched.maxCount > 0) {
+                              return Text(
+                                '今日剩余免费 ${matched.leftCount} 次',
+                                style: TextStyle(
+                                  color: customColors.weakTextColor,
+                                  fontSize: 12,
+                                ),
+                              );
+                            }
+                          }
+                          return const SizedBox();
+                        },
+                      ),
                       // 模型名称
                       // Text(
                       //   state.room.model.split(':').last,
@@ -360,7 +394,9 @@ class _ChatScreenState extends State<ChatScreen> {
         );
 
     context.read<NotifyBloc>().add(NotifyResetEvent());
-    context.read<RoomBloc>().add(RoomLoadEvent(widget.roomId));
+    context
+        .read<RoomBloc>()
+        .add(RoomLoadEvent(widget.roomId, cascading: false));
   }
 }
 

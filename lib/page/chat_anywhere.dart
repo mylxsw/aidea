@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:askaide/bloc/chat_message_bloc.dart';
+import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/bloc/notify_bloc.dart';
 import 'package:askaide/bloc/room_bloc.dart';
 import 'package:askaide/helper/constant.dart';
@@ -59,7 +62,11 @@ class _ChatAnywhereScreenState extends State<ChatAnywhereScreen> {
   void initState() {
     chatId = widget.chatId;
 
-    context.read<RoomBloc>().add(RoomLoadEvent(chatAnywhereRoomId));
+    context.read<RoomBloc>().add(RoomLoadEvent(
+          chatAnywhereRoomId,
+          chatHistoryId: chatId,
+          cascading: true,
+        ));
     context
         .read<ChatMessageBloc>()
         .add(ChatMessageGetRecentEvent(chatHistoryId: widget.chatId));
@@ -108,7 +115,16 @@ class _ChatAnywhereScreenState extends State<ChatAnywhereScreen> {
         appBar: _buildAppBar(context, customColors),
         backgroundColor: Colors.transparent,
         // 聊天内容窗口
-        body: BlocBuilder<RoomBloc, RoomState>(
+        body: BlocConsumer<RoomBloc, RoomState>(
+          listenWhen: (previous, current) => current is RoomLoaded,
+          listener: (context, state) {
+            if (state is RoomLoaded && state.cascading) {
+              // 加载免费使用次数
+              context
+                  .read<FreeCountBloc>()
+                  .add(FreeCountReloadEvent(model: state.room.model));
+            }
+          },
           buildWhen: (previous, current) => current is RoomLoaded,
           builder: (context, room) {
             // 加载聊天室
@@ -163,6 +179,35 @@ class _ChatAnywhereScreenState extends State<ChatAnywhereScreen> {
                 Text(
                   AppLocale.chatAnywhere.getString(context),
                   style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+                ),
+                BlocBuilder<RoomBloc, RoomState>(
+                  buildWhen: (previous, current) => current is RoomLoaded,
+                  builder: (context, state) {
+                    if (state is RoomLoaded) {
+                      return BlocBuilder<FreeCountBloc, FreeCountState>(
+                        buildWhen: (previous, current) =>
+                            current is FreeCountLoadedState,
+                        builder: (context, freeState) {
+                          if (freeState is FreeCountLoadedState) {
+                            final matched = freeState.model(state.room.model);
+                            if (matched != null &&
+                                matched.leftCount > 0 &&
+                                matched.maxCount > 0) {
+                              return Text(
+                                '今日剩余免费 ${matched.leftCount} 次',
+                                style: TextStyle(
+                                  color: customColors.weakTextColor,
+                                  fontSize: 12,
+                                ),
+                              );
+                            }
+                          }
+                          return const SizedBox();
+                        },
+                      );
+                    }
+                    return const SizedBox();
+                  },
                 ),
                 // if (state.chatHistory != null &&
                 //     state.chatHistory!.model != null)
@@ -385,7 +430,9 @@ class _ChatAnywhereScreenState extends State<ChatAnywhereScreen> {
         );
 
     context.read<NotifyBloc>().add(NotifyResetEvent());
-    context.read<RoomBloc>().add(RoomLoadEvent(chatAnywhereRoomId));
+    context
+        .read<RoomBloc>()
+        .add(RoomLoadEvent(chatAnywhereRoomId, cascading: false));
   }
 
   Widget _buildAvatar(Room room) {

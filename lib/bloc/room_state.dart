@@ -20,8 +20,15 @@ class RoomLoaded extends RoomState {
   final List<ChatExample>? examples;
   final Object? error;
   final Map<String, MessageState> states;
+  final bool cascading;
 
-  RoomLoaded(this.room, this.states, {this.error, this.examples});
+  RoomLoaded(
+    this.room,
+    this.states, {
+    this.error,
+    this.examples,
+    required this.cascading,
+  });
 }
 
 class RoomCreateError extends RoomState {

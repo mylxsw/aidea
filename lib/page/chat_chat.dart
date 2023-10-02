@@ -1,4 +1,5 @@
 import 'package:askaide/bloc/chat_chat_bloc.dart';
+import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/color.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
@@ -108,6 +109,13 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
     setState(() {
       currentModel = models[0];
     });
+
+    // 加载免费模型剩余使用次数
+    if (currentModel != null) {
+      context
+          .read<FreeCountBloc>()
+          .add(FreeCountReloadEvent(model: currentModel!.modelId));
+    }
 
     if (widget.showInitialDialog) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -228,6 +236,10 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
                                   onValueChanged: (value) {
                                     currentModel = models.firstWhere(
                                         (element) => element.modelId == value);
+
+                                    // 重新读取模型的免费使用次数
+                                    context.read<FreeCountBloc>().add(
+                                        FreeCountReloadEvent(model: value));
 
                                     setState(() {});
                                   },
@@ -480,7 +492,7 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
   ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         InkWell(
           onTap: () {
@@ -506,6 +518,28 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
             color: customColors.chatInputPanelText,
             size: 28,
           ),
+        ),
+        BlocBuilder<FreeCountBloc, FreeCountState>(
+          buildWhen: (previous, current) => current is FreeCountLoadedState,
+          builder: (context, state) {
+            if (state is FreeCountLoadedState) {
+              if (currentModel != null) {
+                final matched = state.model(currentModel!.modelId);
+                if (matched != null &&
+                    matched.leftCount > 0 &&
+                    matched.maxCount > 0) {
+                  return Text(
+                    '今日剩余免费 ${matched.leftCount} 次',
+                    style: TextStyle(
+                      color: customColors.weakTextColor?.withAlpha(150),
+                      fontSize: 12,
+                    ),
+                  );
+                }
+              }
+            }
+            return const SizedBox();
+          },
         ),
         InkWell(
           onTap: () {
