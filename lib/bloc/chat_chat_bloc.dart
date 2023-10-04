@@ -19,9 +19,13 @@ class ChatChatBloc extends Bloc<ChatChatEvent, ChatChatState> {
         userId: APIServer().localUserID(),
       );
 
+      var examples = await APIServer().example('openai:$defaultChatModel');
+      // examples 随机排序
+      examples.shuffle();
+
       emit(ChatChatRecentHistoriesLoaded(
         histories: histories,
-        examples: await APIServer().example('openai:$defaultChatModel'),
+        examples: examples,
       ));
     });
 

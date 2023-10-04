@@ -38,7 +38,7 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          '我的免费额度',
+          '免费畅享额度',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
@@ -47,112 +47,127 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
-        child: SingleChildScrollView(
-          child: RefreshIndicator(
-            onRefresh: () async {
-              context.read<FreeCountBloc>().add(FreeCountReloadAllEvent());
-            },
-            child: BlocBuilder<FreeCountBloc, FreeCountState>(
-              builder: (context, state) {
-                if (state is FreeCountLoadedState) {
-                  if (state.counts.isEmpty) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Center(
-                        child: MessageBox(
-                          message: '当前无可用的免费模型。',
-                          type: MessageBoxType.warning,
+        child: RefreshIndicator(
+          displacement: 20,
+          color: customColors.linkColor,
+          onRefresh: () async {
+            context.read<FreeCountBloc>().add(FreeCountReloadAllEvent());
+          },
+          child: SizedBox(
+            height: double.infinity,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: BlocBuilder<FreeCountBloc, FreeCountState>(
+                builder: (context, state) {
+                  if (state is FreeCountLoadedState) {
+                    if (state.counts.isEmpty) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Center(
+                          child: MessageBox(
+                            message: '当前无可用的免费模型。',
+                            type: MessageBoxType.warning,
+                          ),
                         ),
-                      ),
-                    );
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Column(
-                      children: [
-                        const MessageBox(
-                          message: '免费额度是指模型每天可以免费使用的次数，每天 00:00 自动重置（北京时间）。',
-                          type: MessageBoxType.info,
-                        ),
-                        const SizedBox(height: 10),
-                        ColumnBlock(
-                          innerPanding: 5,
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 5),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                      child: Text(
-                                    '模型名称',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  )),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        '免费次数',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            ...state.counts.map((e) {
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 5),
+                      );
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Column(
+                        children: [
+                          const MessageBox(
+                            message: '以下模型享有每日免费额度。',
+                            type: MessageBoxType.info,
+                          ),
+                          const SizedBox(height: 10),
+                          ColumnBlock(
+                            innerPanding: 5,
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 5),
                                 child: Row(
                                   children: [
                                     Expanded(
-                                      child: Row(
-                                        children: [
-                                          Text(e.name),
-                                          if (e.info != null && e.info != '')
-                                            const SizedBox(width: 5),
-                                          if (e.info != null && e.info != '')
-                                            InkWell(
-                                              onTap: () {
-                                                showBeautyDialog(
-                                                  context,
-                                                  type: QuickAlertType.info,
-                                                  text: e.info ?? '',
-                                                  confirmBtnText: AppLocale
-                                                      .gotIt
-                                                      .getString(context),
-                                                  showCancelBtn: false,
-                                                );
-                                              },
-                                              child: Icon(
-                                                Icons.help_outline,
-                                                size: 16,
-                                                color: customColors
-                                                    .weakLinkColor
-                                                    ?.withAlpha(150),
-                                              ),
-                                            ),
-                                        ],
+                                        child: Text(
+                                      '模型',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
                                       ),
-                                    ),
-                                    buildLeftCountWidget(
-                                      leftCount: e.leftCount,
-                                      maxCount: e.maxCount,
+                                    )),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          '今日可用',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
-                              );
-                            }),
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
-                }
+                              ),
+                              ...state.counts.map((e) {
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 5),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              e.name,
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                            if (e.info != null && e.info != '')
+                                              const SizedBox(width: 5),
+                                            if (e.info != null && e.info != '')
+                                              InkWell(
+                                                onTap: () {
+                                                  showBeautyDialog(
+                                                    context,
+                                                    type: QuickAlertType.info,
+                                                    text: e.info ?? '',
+                                                    confirmBtnText: AppLocale
+                                                        .gotIt
+                                                        .getString(context),
+                                                    showCancelBtn: false,
+                                                  );
+                                                },
+                                                child: Icon(
+                                                  Icons.help_outline,
+                                                  size: 16,
+                                                  color: customColors
+                                                      .weakLinkColor
+                                                      ?.withAlpha(150),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                      buildLeftCountWidget(
+                                        leftCount: e.leftCount,
+                                        maxCount: e.maxCount,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }
 
-                return const Center(child: LoadingIndicator());
-              },
+                  return const Center(child: LoadingIndicator());
+                },
+              ),
             ),
           ),
         ),
@@ -161,13 +176,11 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
   }
 
   Widget buildLeftCountWidget({required int leftCount, required int maxCount}) {
-    if (leftCount <= 0 && maxCount > 0) {
-      return Text(
-        leftCount.toString(),
-        style: const TextStyle(color: Colors.red),
-      );
-    }
-
-    return Text(leftCount.toString());
+    return Text(
+      '$leftCount 次',
+      style: const TextStyle(
+        fontSize: 14,
+      ),
+    );
   }
 }

@@ -66,70 +66,70 @@ class _CharactersScreenState extends State<CharactersScreen> {
                 return EnhancedErrorWidget(error: state.error);
               }
 
-              return RefreshIndicator(
-                color: customColors.linkColor,
-                onRefresh: () async {
-                  context
-                      .read<RoomBloc>()
-                      .add(RoomsLoadEvent(forceRefresh: true));
-                },
-                displacement: 100,
-                child: SliverComponent(
-                  actions: [
-                    if (selectedSuggestions.isEmpty)
-                      IconButton(
-                        onPressed: () {
-                          context.push('/create-room').whenComplete(() {
-                            context.read<RoomBloc>().add(RoomsLoadEvent());
-                          });
-                        },
-                        icon: const Icon(Icons.add_circle_outline),
-                      ),
-                  ],
-                  centerTitle: state.suggests.isEmpty,
-                  titlePadding: state.suggests.isEmpty
-                      ? null
-                      : const EdgeInsets.only(left: 0),
-                  title: state.suggests.isEmpty
-                      ? Text(
-                          AppLocale.homeTitle.getString(context),
-                          style: TextStyle(
-                            fontSize: CustomSize.appBarTitleSize,
-                            color: customColors.backgroundInvertedColor,
-                          ),
-                        )
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(top: 10, left: 10),
-                              child: Text(
-                                '热门推荐',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                  color: customColors.backgroundInvertedColor,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.only(
-                                  top: 0, left: 10, bottom: 10),
-                              child: Text(
-                                '挑选你的专属伙伴',
-                                style: TextStyle(
-                                  color: customColors.weakTextColorPlus,
-                                  fontSize: 11,
-                                ),
-                              ),
-                            ),
-                          ],
+              return SliverComponent(
+                actions: [
+                  if (selectedSuggestions.isEmpty)
+                    IconButton(
+                      onPressed: () {
+                        context.push('/create-room').whenComplete(() {
+                          context.read<RoomBloc>().add(RoomsLoadEvent());
+                        });
+                      },
+                      icon: const Icon(Icons.add_circle_outline),
+                    ),
+                ],
+                centerTitle: state.suggests.isEmpty,
+                titlePadding: state.suggests.isEmpty
+                    ? null
+                    : const EdgeInsets.only(left: 0),
+                title: state.suggests.isEmpty
+                    ? Text(
+                        AppLocale.homeTitle.getString(context),
+                        style: TextStyle(
+                          fontSize: CustomSize.appBarTitleSize,
+                          color: customColors.backgroundInvertedColor,
                         ),
-                  backgroundImage: Image.asset(
-                    customColors.appBarBackgroundImageForRoom!,
-                    fit: BoxFit.cover,
-                  ),
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(top: 10, left: 10),
+                            child: Text(
+                              '热门推荐',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                color: customColors.backgroundInvertedColor,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(
+                                top: 0, left: 10, bottom: 10),
+                            child: Text(
+                              '挑选你的专属伙伴',
+                              style: TextStyle(
+                                color: customColors.weakTextColorPlus,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                backgroundImage: Image.asset(
+                  customColors.appBarBackgroundImageForRoom!,
+                  fit: BoxFit.cover,
+                ),
+                child: RefreshIndicator(
+                  color: customColors.linkColor,
+                  onRefresh: () async {
+                    context
+                        .read<RoomBloc>()
+                        .add(RoomsLoadEvent(forceRefresh: true));
+                  },
+                  displacement: 20,
                   child: buildBody(customColors, state, context),
                 ),
               );

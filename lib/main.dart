@@ -7,6 +7,7 @@ import 'package:askaide/bloc/gallery_bloc.dart';
 import 'package:askaide/bloc/payment_bloc.dart';
 import 'package:askaide/bloc/version_bloc.dart';
 import 'package:askaide/helper/ability.dart';
+import 'package:askaide/helper/cache.dart';
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/model.dart';
 import 'package:askaide/helper/model_resolver.dart';
@@ -163,6 +164,7 @@ void main() async {
 
   ModelAggregate.init(settingRepo);
   APIServer().init(settingRepo);
+  Cache().init(settingRepo, cacheRepo);
 
   // 从服务器获取客户端支持的能力清单
   final capabilities = await APIServer().capabilities();

@@ -860,15 +860,17 @@ class APIServer {
   }
 
   /// 版本检查
-  Future<VersionCheckResp> versionCheck() async {
-    return sendPostRequest(
+  Future<VersionCheckResp> versionCheck({bool cache = true}) async {
+    return sendCachedGetRequest(
       '/public/info/version-check',
       (resp) => VersionCheckResp.fromJson(resp.data),
-      formData: Map<String, dynamic>.from({
+      queryParameters: Map<String, dynamic>.from({
         'version': clientVersion,
         'os': PlatformTool.operatingSystem(),
         'os_version': PlatformTool.operatingSystemVersion(),
       }),
+      duration: const Duration(minutes: 180),
+      forceRefresh: !cache,
     );
   }
 
@@ -1463,6 +1465,110 @@ class APIServer {
     return sendGetRequest(
       '/v1/users/stat/free-chat-counts/$model',
       (resp) => FreeModelCount.fromJson(resp.data),
+    );
+  }
+
+  /// 通知信息（促销事件）
+  Future<Map<String, List<PromotionEvent>>> notificationPromotionEvents(
+      {bool cache = true}) async {
+    return sendCachedGetRequest(
+      '/v1/notifications/promotions',
+      (value) {
+        var res = <String, List<PromotionEvent>>{};
+        for (var item in value.data['data']) {
+          if (res[item['id']] == null) {
+            res[item['id']] = [];
+          }
+
+          res[item['id']] = [
+            ...res[item['id']]!,
+            PromotionEvent.fromJson(item),
+          ];
+        }
+
+        return res;
+      },
+      subKey: _cacheSubKey(),
+      forceRefresh: !cache,
+    );
+  }
+}
+
+enum PromotionEventClickButtonType {
+  none,
+  url,
+  inAppRoute;
+
+  static PromotionEventClickButtonType fromName(String typeName) {
+    switch (typeName) {
+      case 'url':
+        return PromotionEventClickButtonType.url;
+      case 'in_app_route':
+        return PromotionEventClickButtonType.inAppRoute;
+      default:
+        return PromotionEventClickButtonType.none;
+    }
+  }
+
+  String toName() {
+    switch (this) {
+      case PromotionEventClickButtonType.url:
+        return 'url';
+      case PromotionEventClickButtonType.inAppRoute:
+        return 'in_app_route';
+      default:
+        return 'none';
+    }
+  }
+}
+
+class PromotionEvent {
+  String? title;
+  String content;
+  PromotionEventClickButtonType clickButtonType;
+  String? clickValue;
+  String? clickButtonColor;
+  String? backgroundImage;
+  String? textColor;
+  bool closeable;
+  int? maxCloseDurationInDays;
+
+  PromotionEvent({
+    this.title,
+    required this.content,
+    required this.clickButtonType,
+    this.clickValue,
+    this.clickButtonColor,
+    this.backgroundImage,
+    this.textColor,
+    required this.closeable,
+    this.maxCloseDurationInDays,
+  });
+
+  toJson() => {
+        'title': title,
+        'content': content,
+        'click_button_type': clickButtonType.toName(),
+        'click_value': clickValue,
+        'click_button_color': clickButtonColor,
+        'background_image': backgroundImage,
+        'text_color': textColor,
+        'closeable': closeable,
+        'max_close_duration_in_days': maxCloseDurationInDays,
+      };
+
+  static PromotionEvent fromJson(Map<String, dynamic> json) {
+    return PromotionEvent(
+      title: json['title'],
+      content: json['content'],
+      clickButtonType: PromotionEventClickButtonType.fromName(
+          json['click_button_type'] ?? ''),
+      clickValue: json['click_value'],
+      clickButtonColor: json['click_button_color'],
+      backgroundImage: json['background_image'],
+      textColor: json['text_color'],
+      closeable: json['closeable'] ?? false,
+      maxCloseDurationInDays: json['max_close_duration_in_days'],
     );
   }
 }

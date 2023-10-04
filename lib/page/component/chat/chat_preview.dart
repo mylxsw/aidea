@@ -7,7 +7,6 @@ import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/attached_button_panel.dart';
-import 'package:askaide/page/component/chat/chat_bubble.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/share.dart';
 import 'package:askaide/page/dialog.dart';
@@ -242,64 +241,56 @@ class _ChatPreviewState extends State<ChatPreview> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomPaint(
-                    painter: SpecialChatBubbleOne(
-                      alignment: message.role == Role.sender
-                          ? Alignment.topRight
-                          : Alignment.topLeft,
-                      color: (message.role == Role.receiver
+                  Container(
+                    margin: message.role == Role.sender
+                        ? const EdgeInsets.fromLTRB(0, 0, 10, 7)
+                        : const EdgeInsets.fromLTRB(10, 0, 0, 7),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: message.role == Role.receiver
                           ? customColors.chatRoomReplyBackground
-                          : customColors.chatRoomSenderBackground)!,
-                      tail: false,
+                          : customColors.chatRoomSenderBackground,
                     ),
-                    child: Container(
-                      margin: message.role == Role.sender
-                          ? const EdgeInsets.fromLTRB(7, 7, 14, 7)
-                          : const EdgeInsets.fromLTRB(17, 7, 7, 7),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: message.role == Role.receiver
-                            ? customColors.chatRoomReplyBackground
-                            : customColors.chatRoomSenderBackground,
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      child: Builder(
-                        builder: (context) {
-                          var text = message.text;
-                          if (!message.isReady && text != '') {
-                            text += ' ▌';
-                          }
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              state.showMarkdown
-                                  ? Markdown(data: text)
-                                  : SelectableText(
-                                      text,
-                                      style: TextStyle(
-                                        color: customColors.chatRoomSenderText,
-                                      ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 13,
+                      vertical: 13,
+                    ),
+                    child: Builder(
+                      builder: (context) {
+                        var text = message.text;
+                        if (!message.isReady && text != '') {
+                          text += ' ▌';
+                        }
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            state.showMarkdown
+                                ? Markdown(data: text)
+                                : SelectableText(
+                                    text,
+                                    style: TextStyle(
+                                      color: customColors.chatRoomSenderText,
                                     ),
-                              if (message.quotaConsumed != null &&
-                                  message.quotaConsumed! > 0)
-                                Row(
-                                  children: [
-                                    const Icon(Icons.check_circle,
-                                        size: 12, color: Colors.green),
-                                    const SizedBox(width: 5),
-                                    Text(
-                                      '共 ${message.tokenConsumed} 个 Token， 消耗 ${message.quotaConsumed} 个智慧果',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: customColors.weakTextColor,
-                                      ),
+                                  ),
+                            if (message.quotaConsumed != null &&
+                                message.quotaConsumed! > 0)
+                              Row(
+                                children: [
+                                  const Icon(Icons.check_circle,
+                                      size: 12, color: Colors.green),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    '共 ${message.tokenConsumed} 个 Token， 消耗 ${message.quotaConsumed} 个智慧果',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: customColors.weakTextColor,
                                     ),
-                                  ],
-                                )
-                            ],
-                          );
-                        },
-                      ),
+                                  ),
+                                ],
+                              )
+                          ],
+                        );
+                      },
                     ),
                   ),
                   if (showTranslate)

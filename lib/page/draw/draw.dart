@@ -88,6 +88,7 @@ class _DrawScreenState extends State<DrawScreen> {
         builder: (context, state) {
           if (state is CreativeIslandItemsV2Loaded) {
             return GridView.count(
+              padding: const EdgeInsets.only(top: 0),
               crossAxisCount: _calCrossAxisCount(context),
               childAspectRatio: 2,
               children: state.items

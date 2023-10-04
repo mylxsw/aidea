@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:askaide/bloc/chat_message_bloc.dart';
 import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/bloc/notify_bloc.dart';
@@ -180,35 +178,35 @@ class _ChatAnywhereScreenState extends State<ChatAnywhereScreen> {
                   AppLocale.chatAnywhere.getString(context),
                   style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
                 ),
-                BlocBuilder<RoomBloc, RoomState>(
-                  buildWhen: (previous, current) => current is RoomLoaded,
-                  builder: (context, state) {
-                    if (state is RoomLoaded) {
-                      return BlocBuilder<FreeCountBloc, FreeCountState>(
-                        buildWhen: (previous, current) =>
-                            current is FreeCountLoadedState,
-                        builder: (context, freeState) {
-                          if (freeState is FreeCountLoadedState) {
-                            final matched = freeState.model(state.room.model);
-                            if (matched != null &&
-                                matched.leftCount > 0 &&
-                                matched.maxCount > 0) {
-                              return Text(
-                                '今日剩余免费 ${matched.leftCount} 次',
-                                style: TextStyle(
-                                  color: customColors.weakTextColor,
-                                  fontSize: 12,
-                                ),
-                              );
-                            }
-                          }
-                          return const SizedBox();
-                        },
-                      );
-                    }
-                    return const SizedBox();
-                  },
-                ),
+                // BlocBuilder<RoomBloc, RoomState>(
+                //   buildWhen: (previous, current) => current is RoomLoaded,
+                //   builder: (context, state) {
+                //     if (state is RoomLoaded) {
+                //       return BlocBuilder<FreeCountBloc, FreeCountState>(
+                //         buildWhen: (previous, current) =>
+                //             current is FreeCountLoadedState,
+                //         builder: (context, freeState) {
+                //           if (freeState is FreeCountLoadedState) {
+                //             final matched = freeState.model(state.room.model);
+                //             if (matched != null &&
+                //                 matched.leftCount > 0 &&
+                //                 matched.maxCount > 0) {
+                //               return Text(
+                //                 '今日剩余免费 ${matched.leftCount} 次',
+                //                 style: TextStyle(
+                //                   color: customColors.weakTextColor,
+                //                   fontSize: 12,
+                //                 ),
+                //               );
+                //             }
+                //           }
+                //           return const SizedBox();
+                //         },
+                //       );
+                //     }
+                //     return const SizedBox();
+                //   },
+                // ),
                 // if (state.chatHistory != null &&
                 //     state.chatHistory!.model != null)
                 //   Text(
@@ -323,16 +321,29 @@ class _ChatAnywhereScreenState extends State<ChatAnywhereScreen> {
               ),
               color: customColors.chatInputPanelBackground,
             ),
-            child: SafeArea(
-              child: ChatInput(
-                enableNotifier: _inputEnabled,
-                onSubmit: _handleSubmit,
-                enableImageUpload: false,
-                hintText: '有问题尽管问我...',
-                onVoiceRecordTappedEvent: () {
-                  _audioPlayerController.stop();
-                },
-              ),
+            child: BlocBuilder<FreeCountBloc, FreeCountState>(
+              builder: (context, freeState) {
+                var hintText = '有问题尽管问我';
+                if (freeState is FreeCountLoadedState) {
+                  final matched = freeState.model(room.room.model);
+                  if (matched != null &&
+                      matched.leftCount > 0 &&
+                      matched.maxCount > 0) {
+                    hintText += '（今日还可免费畅享${matched.leftCount}次）';
+                  }
+                }
+                return SafeArea(
+                  child: ChatInput(
+                    enableNotifier: _inputEnabled,
+                    onSubmit: _handleSubmit,
+                    enableImageUpload: false,
+                    hintText: hintText,
+                    onVoiceRecordTappedEvent: () {
+                      _audioPlayerController.stop();
+                    },
+                  ),
+                );
+              },
             ),
           ),
 

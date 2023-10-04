@@ -131,7 +131,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           color: Colors.grey,
                         ),
                         onPressed: (_) {
-                          APIServer().versionCheck().then((resp) {
+                          APIServer().versionCheck(cache: false).then((resp) {
                             if (resp.hasUpdate) {
                               showBeautyDialog(
                                 context,
@@ -466,7 +466,7 @@ class _SettingScreenState extends State<SettingScreen> {
           },
         ),
         SettingsTile(
-          title: const Text('我的免费额度'),
+          title: const Text('免费畅享额度'),
           trailing: Icon(
             CupertinoIcons.chevron_forward,
             size: MediaQuery.of(context).textScaleFactor * 18,

@@ -1,11 +1,8 @@
-import 'dart:math';
-
 import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/image.dart';
-import 'package:askaide/helper/tips.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/background_container.dart';
@@ -141,23 +138,37 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     color: customColors.chatInputPanelBackground,
                   ),
-                  child: SafeArea(
-                    child: _chatPreviewController.selectMode
-                        ? buildSelectModeToolbars(
-                            context,
-                            _chatPreviewController,
-                            customColors,
-                          )
-                        : ChatInput(
-                            enableNotifier: _inputEnabled,
-                            enableImageUpload: false,
-                            onSubmit: _handleSubmit,
-                            onNewChat: () => handleResetContext(context),
-                            hintText: '有问题尽管问我...',
-                            onVoiceRecordTappedEvent: () {
-                              _audioPlayerController.stop();
-                            },
-                          ),
+                  child: BlocBuilder<FreeCountBloc, FreeCountState>(
+                    builder: (context, freeState) {
+                      var hintText = '有问题尽管问我';
+                      if (freeState is FreeCountLoadedState) {
+                        final matched = freeState.model(room.room.model);
+                        if (matched != null &&
+                            matched.leftCount > 0 &&
+                            matched.maxCount > 0) {
+                          hintText += '（今日还可免费畅享${matched.leftCount}次）';
+                        }
+                      }
+
+                      return SafeArea(
+                        child: _chatPreviewController.selectMode
+                            ? buildSelectModeToolbars(
+                                context,
+                                _chatPreviewController,
+                                customColors,
+                              )
+                            : ChatInput(
+                                enableNotifier: _inputEnabled,
+                                enableImageUpload: false,
+                                onSubmit: _handleSubmit,
+                                onNewChat: () => handleResetContext(context),
+                                hintText: hintText,
+                                onVoiceRecordTappedEvent: () {
+                                  _audioPlayerController.stop();
+                                },
+                              ),
+                      );
+                    },
                   ),
                 ),
               ],
@@ -316,27 +327,27 @@ class _ChatScreenState extends State<ChatScreen> {
                         state.room.name,
                         style: const TextStyle(fontSize: 16),
                       ),
-                      BlocBuilder<FreeCountBloc, FreeCountState>(
-                        buildWhen: (previous, current) =>
-                            current is FreeCountLoadedState,
-                        builder: (context, freeState) {
-                          if (freeState is FreeCountLoadedState) {
-                            final matched = freeState.model(state.room.model);
-                            if (matched != null &&
-                                matched.leftCount > 0 &&
-                                matched.maxCount > 0) {
-                              return Text(
-                                '今日剩余免费 ${matched.leftCount} 次',
-                                style: TextStyle(
-                                  color: customColors.weakTextColor,
-                                  fontSize: 12,
-                                ),
-                              );
-                            }
-                          }
-                          return const SizedBox();
-                        },
-                      ),
+                      // BlocBuilder<FreeCountBloc, FreeCountState>(
+                      //   buildWhen: (previous, current) =>
+                      //       current is FreeCountLoadedState,
+                      //   builder: (context, freeState) {
+                      //     if (freeState is FreeCountLoadedState) {
+                      //       final matched = freeState.model(state.room.model);
+                      //       if (matched != null &&
+                      //           matched.leftCount > 0 &&
+                      //           matched.maxCount > 0) {
+                      //         return Text(
+                      //           '今日剩余免费 ${matched.leftCount} 次',
+                      //           style: TextStyle(
+                      //             color: customColors.weakTextColor,
+                      //             fontSize: 12,
+                      //           ),
+                      //         );
+                      //       }
+                      //     }
+                      //     return const SizedBox();
+                      //   },
+                      // ),
                       // 模型名称
                       // Text(
                       //   state.room.model.split(':').last,

@@ -86,7 +86,7 @@ class _CreativeIslandHistoriesAllScreenState
                       borderRadius: BorderRadius.circular(10),
                       onTap: () {
                         context.push(
-                            '/creative-island/${item.islandId}/history/${item.id}');
+                            '/creative-island/${item.islandId}/history/${item.id}?show_error=true');
                       },
                       onLongPress: () {
                         openModalBottomSheet(
@@ -104,7 +104,7 @@ class _CreativeIslandHistoriesAllScreenState
                                       title: '查看作品',
                                       onPressed: () {
                                         context.push(
-                                            '/creative-island/${item.islandId}/history/${item.id}');
+                                            '/creative-island/${item.islandId}/history/${item.id}?show_error=true');
                                         context.pop();
                                       },
                                       size: const ButtonSize.full(),

@@ -45,6 +45,7 @@ class MessageBox extends StatelessWidget {
               Icon(
                 type.iconData,
                 color: type.textColor,
+                size: 16,
               ),
             if (type.iconData != null) const SizedBox(width: 8),
             Expanded(
