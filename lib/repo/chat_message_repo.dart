@@ -95,6 +95,11 @@ class ChatMessageRepository {
     return await _chatMsgDataProvider.sendMessage(roomId, message);
   }
 
+  /// 修复所有消息的状态（pending -> failed）
+  Future<void> fixMessageStatus(int roomId) async {
+    return await _chatMsgDataProvider.fixMessageStatus(roomId);
+  }
+
   /// 更新消息
   Future<void> updateMessage(int roomId, int id, Message message) async {
     return await _chatMsgDataProvider.updateMessage(roomId, id, message);
@@ -104,10 +109,9 @@ class ChatMessageRepository {
   Future<void> updateMessagePart(
     int roomId,
     int id,
-    String key,
-    dynamic value,
+    List<MessagePart> parts,
   ) async {
-    return await _chatMsgDataProvider.updateMessagePart(roomId, id, key, value);
+    return await _chatMsgDataProvider.updateMessagePart(roomId, id, parts);
   }
 
   /// 删除消息

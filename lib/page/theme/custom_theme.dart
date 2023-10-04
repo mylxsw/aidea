@@ -15,6 +15,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     this.chatRoomReplyText,
     this.chatRoomSenderBackground,
     this.chatRoomSenderBackgroundSecondary,
+    this.chatRoomSenderBackgroundWarning,
     this.chatRoomSenderText,
     this.tagsBackground,
     this.tagsBackgroundHover,
@@ -72,6 +73,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
   final Color? chatRoomReplyText;
   final Color? chatRoomSenderBackground;
   final Color? chatRoomSenderBackgroundSecondary;
+  final Color? chatRoomSenderBackgroundWarning;
   final Color? chatRoomSenderText;
   final Color? tagsBackground;
   final Color? tagsBackgroundHover;
@@ -157,6 +159,10 @@ class CustomColors extends ThemeExtension<CustomColors> {
       chatRoomSenderBackgroundSecondary: Color.lerp(
           chatRoomSenderBackgroundSecondary,
           other.chatRoomSenderBackgroundSecondary,
+          t),
+      chatRoomSenderBackgroundWarning: Color.lerp(
+          chatRoomSenderBackgroundWarning,
+          other.chatRoomSenderBackgroundWarning,
           t),
       chatRoomSenderText:
           Color.lerp(chatRoomSenderText, other.chatRoomSenderText, t),
@@ -248,6 +254,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     chatRoomReplyText: Color(0xFF000000),
     chatRoomSenderBackground: Color.fromARGB(255, 133, 238, 94),
     chatRoomSenderBackgroundSecondary: Color.fromARGB(255, 133, 238, 94),
+    chatRoomSenderBackgroundWarning: Color.fromARGB(255, 255, 176, 131),
     chatRoomSenderText: Color(0xFF000000),
     tagsBackground: Color.fromARGB(255, 238, 238, 238),
     tagsBackgroundHover: Color.fromARGB(255, 237, 237, 237),
@@ -305,6 +312,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     chatRoomReplyText: Color(0xFFECEFF1),
     chatRoomSenderBackground: Color.fromARGB(255, 36, 172, 86),
     chatRoomSenderBackgroundSecondary: Color.fromARGB(181, 36, 172, 86),
+    chatRoomSenderBackgroundWarning: Color.fromARGB(255, 255, 176, 131),
     chatRoomSenderText: Color(0xFFECEFF1),
     tagsBackground: Color.fromARGB(255, 69, 69, 69),
     tagsBackgroundHover: Color.fromARGB(255, 106, 106, 106),
@@ -362,6 +370,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     Color? chatRoomReplyText,
     Color? chatRoomSenderBackground,
     Color? chatRoomSenderBackgroundSecondary,
+    Color? chatRoomSenderBackgroundWarning,
     Color? chatRoomSenderText,
     Color? tagsBackground,
     Color? tagsBackgroundHover,
@@ -426,6 +435,8 @@ class CustomColors extends ThemeExtension<CustomColors> {
           chatRoomSenderBackground ?? this.chatRoomSenderBackground,
       chatRoomSenderBackgroundSecondary: chatRoomSenderBackgroundSecondary ??
           this.chatRoomSenderBackgroundSecondary,
+      chatRoomSenderBackgroundWarning: chatRoomSenderBackgroundWarning ??
+          this.chatRoomSenderBackgroundWarning,
       chatRoomSenderText: chatRoomSenderText ?? this.chatRoomSenderText,
       tagsBackground: tagsBackground ?? this.tagsBackground,
       tagsBackgroundHover: tagsBackgroundHover ?? this.tagsBackgroundHover,

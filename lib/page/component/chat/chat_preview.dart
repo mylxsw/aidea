@@ -108,45 +108,16 @@ class _ChatPreviewState extends State<ChatPreview> {
                           (current is ChatMessageUpdated &&
                               current.message.id == message.message.id),
                       builder: (context, state) {
-                        return GestureDetector(
-                          // 选择模式下，单击切换选择与否
-                          // 非选择模式下，单击隐藏键盘
-                          onTap: () {
-                            if (widget.controller.selectMode) {
-                              widget.controller
-                                  .toggleMessageSelected(message.message.id!);
-                            }
-                            FocusScope.of(context).requestFocus(FocusNode());
-                          },
-                          // 长按或者双击显示上下文菜单
-                          onLongPressStart: (detail) {
-                            _handleMessageTapControl(
-                              context,
-                              detail.globalPosition,
-                              message.message,
-                              message.state,
-                            );
-                          },
-                          onDoubleTapDown: (details) {
-                            _handleMessageTapControl(
-                              context,
-                              details.globalPosition,
-                              message.message,
-                              message.state,
-                            );
-                          },
-                          // 构建消息主体
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 10,
-                            ),
-                            child: _buildMessageBox(
-                              context,
-                              customColors,
-                              _resolveMessage(state, message),
-                              message.state,
-                            ),
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 10,
+                          ),
+                          child: _buildMessageBox(
+                            context,
+                            customColors,
+                            _resolveMessage(state, message),
+                            message.state,
                           ),
                         );
                       },
@@ -241,57 +212,94 @@ class _ChatPreviewState extends State<ChatPreview> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    margin: message.role == Role.sender
-                        ? const EdgeInsets.fromLTRB(0, 0, 10, 7)
-                        : const EdgeInsets.fromLTRB(10, 0, 0, 7),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: message.role == Role.receiver
-                          ? customColors.chatRoomReplyBackground
-                          : customColors.chatRoomSenderBackground,
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 13,
-                      vertical: 13,
-                    ),
-                    child: Builder(
-                      builder: (context) {
-                        var text = message.text;
-                        if (!message.isReady && text != '') {
-                          text += ' ▌';
-                        }
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            state.showMarkdown
-                                ? Markdown(data: text)
-                                : SelectableText(
-                                    text,
-                                    style: TextStyle(
-                                      color: customColors.chatRoomSenderText,
-                                    ),
-                                  ),
-                            if (message.quotaConsumed != null &&
-                                message.quotaConsumed! > 0)
-                              Row(
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.end,
+                    children: [
+                      if (message.role == Role.sender &&
+                          message.statusIsFailed())
+                        buildErrorIndicator(message, state, context),
+                      GestureDetector(
+                        // 选择模式下，单击切换选择与否
+                        // 非选择模式下，单击隐藏键盘
+                        onTap: () {
+                          if (widget.controller.selectMode) {
+                            widget.controller
+                                .toggleMessageSelected(message.id!);
+                          }
+                          FocusScope.of(context).requestFocus(FocusNode());
+                        },
+                        // 长按或者双击显示上下文菜单
+                        onLongPressStart: (detail) {
+                          _handleMessageTapControl(
+                            context,
+                            detail.globalPosition,
+                            message,
+                            state,
+                          );
+                        },
+                        onDoubleTapDown: (details) {
+                          _handleMessageTapControl(
+                            context,
+                            details.globalPosition,
+                            message,
+                            state,
+                          );
+                        },
+                        child: Container(
+                          margin: message.role == Role.sender
+                              ? const EdgeInsets.fromLTRB(0, 0, 10, 7)
+                              : const EdgeInsets.fromLTRB(10, 0, 0, 7),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: message.role == Role.receiver
+                                ? customColors.chatRoomReplyBackground
+                                : customColors.chatRoomSenderBackground,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 13,
+                            vertical: 13,
+                          ),
+                          child: Builder(
+                            builder: (context) {
+                              var text = message.text;
+                              if (!message.isReady && text != '') {
+                                text += ' ▌';
+                              }
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(Icons.check_circle,
-                                      size: 12, color: Colors.green),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                    '共 ${message.tokenConsumed} 个 Token， 消耗 ${message.quotaConsumed} 个智慧果',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: customColors.weakTextColor,
-                                    ),
-                                  ),
+                                  state.showMarkdown
+                                      ? Markdown(data: text)
+                                      : SelectableText(
+                                          text,
+                                          style: TextStyle(
+                                            color:
+                                                customColors.chatRoomSenderText,
+                                          ),
+                                        ),
+                                  if (message.quotaConsumed != null &&
+                                      message.quotaConsumed! > 0)
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.check_circle,
+                                            size: 12, color: Colors.green),
+                                        const SizedBox(width: 5),
+                                        Text(
+                                          '共 ${message.tokenConsumed} 个 Token， 消耗 ${message.quotaConsumed} 个智慧果',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: customColors.weakTextColor,
+                                          ),
+                                        ),
+                                      ],
+                                    )
                                 ],
-                              )
-                          ],
-                        );
-                      },
-                    ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   if (showTranslate)
                     Container(
@@ -347,6 +355,36 @@ class _ChatPreviewState extends State<ChatPreview> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildErrorIndicator(
+    Message message,
+    MessageState state,
+    BuildContext context,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(right: 5, bottom: 10),
+      child: GestureDetector(
+        onTapUp: (details) {
+          if (widget.controller.selectMode || message.isSystem()) {
+            return;
+          }
+
+          HapticFeedbackHelper.mediumImpact();
+
+          openConfirmDialog(
+            context,
+            AppLocale.robotHasSomeError.getString(context),
+            () {
+              widget.onResentEvent!(message);
+            },
+            confirmText: '重新发送',
+            danger: true,
+          );
+        },
+        child: const Icon(Icons.error, color: Colors.red, size: 20),
       ),
     );
   }

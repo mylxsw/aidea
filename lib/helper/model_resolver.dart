@@ -44,7 +44,6 @@ class ModelResolver {
   /// 发起聊天请求
   Future request({
     required Room room,
-    required Message message,
     required List<Message> contextMessages,
     required Function(ChatStreamRespData value) onMessage,
     int? maxTokens,
@@ -52,7 +51,7 @@ class ModelResolver {
     if (room.modelCategory() == modelTypeDeepAI) {
       return await _deepAIModel(
         room: room,
-        message: message,
+        message: contextMessages.last,
         contextMessages: contextMessages,
         onMessage: (value) {
           onMessage(ChatStreamRespData(content: value));
@@ -61,7 +60,7 @@ class ModelResolver {
     } else if (room.modelCategory() == modelTypeStabilityAI) {
       return await _stabilityAIModel(
         room: room,
-        message: message,
+        message: contextMessages.last,
         contextMessages: contextMessages,
         onMessage: (value) {
           onMessage(ChatStreamRespData(content: value));
@@ -70,7 +69,6 @@ class ModelResolver {
     } else {
       return await _openAIModel(
         room: room,
-        message: message,
         contextMessages: contextMessages,
         onMessage: onMessage,
         maxTokens: maxTokens,
@@ -150,14 +148,13 @@ class ModelResolver {
   /// 调用 OpenAI API
   Future<void> _openAIModel({
     required Room room,
-    required Message message,
     required List<Message> contextMessages,
     required Function(ChatStreamRespData value) onMessage,
     int? maxTokens,
   }) async {
     // 图像模式
     if (OpenAIRepository.isImageModel(room.modelName())) {
-      var res = await openAIRepo.createImage(message.text, n: 2);
+      var res = await openAIRepo.createImage(contextMessages.last.text, n: 2);
       for (var url in res) {
         onMessage(ChatStreamRespData(content: '\n![image]($url)\n'));
       }
@@ -166,28 +163,17 @@ class ModelResolver {
     }
 
     // 聊天模型
-    // if ((await ModelAggregate.model(room.model)).isChatModel) {
-    var chatContext = _buildRobotRequestContext(room, contextMessages);
     return await openAIRepo.chatStream(
-      chatContext,
+      _buildRequestContext(room, contextMessages),
       onMessage,
       model: room.modelName(),
       maxTokens: maxTokens,
       roomId: room.isLocalRoom ? null : room.id,
     );
-    // }
-
-    // // 非聊天模型
-    // return await openAIRepo.completionStream(
-    //   room.modelName(),
-    //   message.text,
-    //   maxTokens: maxTokens,
-    //   onMessage,
-    // );
   }
 
   /// 构建机器人请求上下文
-  List<OpenAIChatCompletionChoiceMessageModel> _buildRobotRequestContext(
+  List<OpenAIChatCompletionChoiceMessageModel> _buildRequestContext(
     Room room,
     List<Message> messages,
   ) {
@@ -205,6 +191,7 @@ class ModelResolver {
 
     var contextMessages = recentMessages
         .where((e) => !e.isSystem() && !e.isInitMessage())
+        .where((e) => !e.statusIsFailed())
         .map((e) => e.role == Role.receiver
             ? OpenAIChatCompletionChoiceMessageModel(
                 role: OpenAIChatMessageRole.assistant, content: e.text)
@@ -212,9 +199,9 @@ class ModelResolver {
                 role: OpenAIChatMessageRole.user, content: e.text))
         .toList();
 
-    if (contextMessages.length > room.maxContext) {
+    if (contextMessages.length > room.maxContext * 2) {
       contextMessages =
-          contextMessages.sublist(contextMessages.length - room.maxContext);
+          contextMessages.sublist(contextMessages.length - room.maxContext * 2);
     }
 
     if (room.systemPrompt != null && room.systemPrompt != '') {

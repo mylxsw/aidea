@@ -43,6 +43,9 @@ class Message {
   /// 服务端 ID
   int? serverId;
 
+  /// 消息状态: 1-成功 0-等待应答 2-失败
+  int status;
+
   /// 消息消耗的配额
   int? quotaConsumed;
 
@@ -66,6 +69,7 @@ class Message {
     this.extra,
     this.refId,
     this.serverId,
+    this.status = 1,
     this.quotaConsumed,
     this.tokenConsumed,
   });
@@ -106,6 +110,21 @@ class Message {
     return humanTime(ts);
   }
 
+  /// 是否已失败
+  bool statusIsFailed() {
+    return status == 2;
+  }
+
+  /// 是否已成功
+  bool statusIsSucceed() {
+    return status == 1;
+  }
+
+  /// 是否等待应答
+  bool statusPending() {
+    return status == 0;
+  }
+
   Map<String, Object?> toMap() {
     return {
       'id': id,
@@ -121,6 +140,7 @@ class Message {
       'room_id': roomId,
       'ref_id': refId,
       'server_id': serverId,
+      'status': status,
       'token_consumed': tokenConsumed,
       'quota_consumed': quotaConsumed,
     };
@@ -138,6 +158,7 @@ class Message {
         user = map['user'] as String?,
         refId = map['ref_id'] as int?,
         serverId = map['server_id'] as int?,
+        status = (map['status'] ?? 1) as int,
         tokenConsumed = map['token_consumed'] as int?,
         quotaConsumed = map['quota_consumed'] as int?,
         ts = map['ts'] == null
