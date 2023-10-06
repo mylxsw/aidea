@@ -69,4 +69,9 @@ class CacheDataProvider {
       whereArgs: [DateTime.now().millisecondsSinceEpoch],
     );
   }
+
+  /// 清空所有缓存
+  Future<void> clearAll() async {
+    await conn.delete('cache');
+  }
 }

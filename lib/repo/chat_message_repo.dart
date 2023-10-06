@@ -53,10 +53,13 @@ class ChatMessageRepository {
     await _chatMsgDataProvider.clearMessages(roomId);
   }
 
-  /// 返回 room 中最后 30 条消息，如果不足则全部返回
-  Future<List<Message>> getRecentMessages(int roomId, int lastAliveTime,
-      {int? userId, int? chatHistoryId}) async {
-    final recentMessages = (await _chatMsgDataProvider.getRecentMessages(
+  /// 返回 room 中最近的消息
+  Future<List<Message>> getRecentMessages(
+    int roomId, {
+    int? userId,
+    int? chatHistoryId,
+  }) async {
+    return (await _chatMsgDataProvider.getRecentMessages(
       roomId,
       chatMessagePerPage,
       userId: userId,
@@ -64,30 +67,6 @@ class ChatMessageRepository {
     ))
         .reversed
         .toList();
-    if (recentMessages.isEmpty) {
-      return recentMessages;
-    }
-
-    var lastAliveIndex = recentMessages.lastIndexWhere((element) {
-      return !element.isSystem() &&
-          (element.ts == null ||
-              element.ts!.millisecondsSinceEpoch < lastAliveTime);
-    });
-    if (lastAliveIndex > -1 && !recentMessages[lastAliveIndex].isSystem()) {
-      recentMessages.insert(
-        lastAliveIndex + 1,
-        Message(
-          Role.receiver,
-          AppLocale.contextBreakMessage,
-          ts: DateTime.now(),
-          type: MessageType.system,
-          roomId: roomId,
-          userId: userId,
-          id: -1,
-        ),
-      );
-    }
-    return recentMessages;
   }
 
   /// 发送消息到 room

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:askaide/bloc/account_bloc.dart';
 import 'package:askaide/helper/ability.dart';
+import 'package:askaide/helper/cache.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/http.dart';
 import 'package:askaide/helper/platform.dart';
@@ -101,11 +102,13 @@ class _SettingScreenState extends State<SettingScreen> {
                         openConfirmDialog(
                           context,
                           AppLocale.confirmClearCache.getString(context),
-                          () {
-                            HttpClient.cacheManager.clearAll().then((value) {
-                              showSuccessMessage(
-                                  AppLocale.operateSuccess.getString(context));
-                            });
+                          () async {
+                            await Cache().clearAll();
+                            await HttpClient.cacheManager.clearAll();
+                            showSuccessMessage(
+                              // ignore: use_build_context_synchronously
+                              AppLocale.operateSuccess.getString(context),
+                            );
                           },
                           danger: true,
                         );

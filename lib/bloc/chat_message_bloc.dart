@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:askaide/bloc/bloc_manager.dart';
-import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/error.dart';
@@ -52,7 +51,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     emit(ChatMessagesLoaded(
       await chatMsgRepo.getRecentMessages(
         roomId,
-        lastAliveTime(),
         userId: APIServer().localUserID(),
         chatHistoryId: event.chatHistoryId,
       ),
@@ -68,7 +66,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       emit(ChatMessagesLoaded(
         await chatMsgRepo.getRecentMessages(
           roomId,
-          lastAliveTime(),
           userId: APIServer().localUserID(),
         ),
         error: '选择的数字人不存在',
@@ -115,7 +112,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
     final messages = await chatMsgRepo.getRecentMessages(
       roomId,
-      lastAliveTime(),
       userId: APIServer().localUserID(),
     );
     emit(ChatMessagesLoaded(messages));
@@ -130,7 +126,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       emit(ChatMessagesLoaded(
         await chatMsgRepo.getRecentMessages(
           roomId,
-          lastAliveTime(),
           userId: APIServer().localUserID(),
         ),
         error: '选择的数字人不存在',
@@ -159,7 +154,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
     emit(ChatMessagesLoaded(await chatMsgRepo.getRecentMessages(
       roomId,
-      lastAliveTime(),
       userId: APIServer().localUserID(),
     )));
   }
@@ -174,7 +168,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     emit(ChatMessagesLoaded(
       await chatMsgRepo.getRecentMessages(
         roomId,
-        lastAliveTime(),
         userId: APIServer().localUserID(),
         chatHistoryId: event.chatHistoryId,
       ),
@@ -216,7 +209,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       emit(ChatMessagesLoaded(
         await chatMsgRepo.getRecentMessages(
           roomId,
-          lastAliveTime(),
           userId: APIServer().localUserID(),
           chatHistoryId: localChatHistoryId,
         ),
@@ -283,7 +275,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     // 重新查询消息列表，此时包含了刚刚发送的消息+机器人思考中消息
     final messages = await chatMsgRepo.getRecentMessages(
       roomId,
-      lastAliveTime(),
       userId: APIServer().localUserID(),
       chatHistoryId: localChatHistoryId,
     );
@@ -391,7 +382,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       emit(ChatMessagesLoaded(
         await chatMsgRepo.getRecentMessages(
           roomId,
-          lastAliveTime(),
           userId: APIServer().localUserID(),
           chatHistoryId: localChatHistoryId,
         ),
@@ -430,7 +420,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       emit(ChatMessagesLoaded(
         await chatMsgRepo.getRecentMessages(
           roomId,
-          lastAliveTime(),
           userId: APIServer().localUserID(),
           chatHistoryId: localChatHistoryId,
         ),
@@ -445,11 +434,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
     emit(ChatMessageUpdated(waitMessage));
   }
-}
-
-/// 计算当前上下文允许的最大活跃时间: 24 小时
-int lastAliveTime() {
-  return DateTime.now().millisecondsSinceEpoch - 1000 * 60 * 60 * 24;
 }
 
 Future<Room?> queryRoomById(

@@ -5,6 +5,7 @@ import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/loading.dart';
+import 'package:askaide/page/component/message_box.dart';
 import 'package:askaide/page/creative_island/content_preview.dart';
 import 'package:askaide/page/creative_island/creative_island_result.dart';
 import 'package:askaide/page/dialog.dart';
@@ -23,11 +24,13 @@ class ImageEditDirectScreen extends StatefulWidget {
   final SettingRepository setting;
   final String title;
   final String apiEndpoint;
+  final String? note;
   const ImageEditDirectScreen({
     super.key,
     required this.setting,
     required this.title,
     required this.apiEndpoint,
+    this.note,
   });
 
   @override
@@ -81,6 +84,12 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (widget.note != null && widget.note != '')
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child:
+                  MessageBox(message: widget.note!, type: MessageBoxType.info),
+            ),
           ColumnBlock(
             innerPanding: 10,
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),

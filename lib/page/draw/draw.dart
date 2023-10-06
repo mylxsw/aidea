@@ -99,7 +99,15 @@ class _DrawScreenState extends State<DrawScreen> {
                         tag: e.tag,
                         onTap: () {
                           if (userSignedIn) {
-                            context.push(e.routeUri);
+                            var uri = Uri.tryParse(e.routeUri);
+                            if (e.note != null && e.note != '') {
+                              uri = uri!.replace(
+                                  queryParameters: <String, String>{
+                                'note': e.note!,
+                              }..addAll(uri.queryParameters));
+                            }
+
+                            context.push(uri.toString());
                           } else {
                             context.push('/login');
                           }

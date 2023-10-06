@@ -27,6 +27,14 @@ class Cache {
     return false;
   }
 
+  Future<void> remove({required String key}) async {
+    await cacheRepo.remove(key);
+  }
+
+  Future<void> clearAll() async {
+    await cacheRepo.clearAll();
+  }
+
   Future<void> setBool({
     required String key,
     required bool value,

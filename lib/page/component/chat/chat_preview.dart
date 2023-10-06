@@ -381,7 +381,6 @@ class _ChatPreviewState extends State<ChatPreview> {
               widget.onResentEvent!(message);
             },
             confirmText: '重新发送',
-            danger: true,
           );
         },
         child: const Icon(Icons.error, color: Colors.red, size: 20),

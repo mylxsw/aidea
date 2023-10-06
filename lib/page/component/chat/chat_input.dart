@@ -59,7 +59,7 @@ class _ChatInputState extends State<ChatInput> {
     },
   );
 
-  final maxLength = 2000;
+  final maxLength = 150000;
 
   @override
   void initState() {

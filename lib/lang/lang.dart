@@ -225,7 +225,7 @@ mixin AppLocale {
     send: '发送',
     uploading: '上传中...',
     robotIsThinkingMessage: '数字人正在思考中...',
-    robotHasSomeError: '❗️数字人貌似出了点问题',
+    robotHasSomeError: '发送失败，重发该消息？',
     appName: 'AIdea',
     chatAnywhere: '聊一聊',
     homeTitle: '数字人',
@@ -415,7 +415,8 @@ mixin AppLocale {
     send: 'Send',
     uploading: 'Uploading...',
     robotIsThinkingMessage: 'Thinking...',
-    robotHasSomeError: '❗️There are some error',
+    robotHasSomeError:
+        'There seems to be something wrong, Do you want to resend the message?',
     appName: 'AIdea',
     chatAnywhere: 'Chat',
     homeTitle: 'Characters',

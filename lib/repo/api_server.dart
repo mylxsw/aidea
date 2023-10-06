@@ -236,7 +236,7 @@ class APIServer {
         return Future.error(resp.data['error']);
       }
 
-      // Logger.instance.d(resp.data);
+      // Logger.instance.d("API Response: ${resp.data}");
 
       return parser(resp);
     } catch (e) {
@@ -2117,9 +2117,9 @@ class FreeModelCount {
   static FreeModelCount fromJson(Map<String, dynamic> json) {
     return FreeModelCount(
       model: json['model'],
-      name: json['name'],
-      leftCount: json['left_count'],
-      maxCount: json['max_count'],
+      name: json['name'] ?? json['model'],
+      leftCount: json['left_count'] ?? 0,
+      maxCount: json['max_count'] ?? 0,
       info: json['info'],
     );
   }

@@ -34,4 +34,8 @@ class CacheRepository {
   Future<void> remove(String key) async {
     return cacheProvider.remove(key);
   }
+
+  Future<void> clearAll() async {
+    return cacheProvider.clearAll();
+  }
 }

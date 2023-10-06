@@ -386,7 +386,7 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
                             minLines: 6,
                             hintText:
                                 AppLocale.askMeAnyQuestion.getString(context),
-                            maxLength: 2000,
+                            maxLength: 150000,
                             showCounter: false,
                             hintColor: customColors.textfieldHintDeepColor,
                             hintTextSize: 15,
