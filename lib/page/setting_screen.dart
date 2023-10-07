@@ -200,51 +200,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           children: [
                             Text(AppLocale.aIdeaApp.getString(context)),
                             const SizedBox(height: 15),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                SocialIcon(
-                                  image: 'assets/weibo.png',
-                                  name: '官方微博',
-                                  onTap: () {
-                                    launchUrlString(
-                                      'https://weibo.com/code404',
-                                      mode: LaunchMode.externalApplication,
-                                    );
-                                  },
-                                ),
-                                SocialIcon(
-                                  image: 'assets/wechat.png',
-                                  name: '微信公众号',
-                                  onTap: () {
-                                    launchUrlString(
-                                      'https://mp.weixin.qq.com/s/4CHh_rKxBqi-npDEnmLWmA',
-                                      mode: LaunchMode.externalApplication,
-                                    );
-                                  },
-                                ),
-                                SocialIcon(
-                                  image: 'assets/x.png',
-                                  name: 'Twitter(X)',
-                                  onTap: () {
-                                    launchUrlString(
-                                      'https://twitter.com/mylxsw',
-                                      mode: LaunchMode.externalApplication,
-                                    );
-                                  },
-                                ),
-                                SocialIcon(
-                                  image: 'assets/github.png',
-                                  name: 'Github',
-                                  onTap: () {
-                                    launchUrlString(
-                                      'http://github.com/mylxsw/aidea',
-                                      mode: LaunchMode.externalApplication,
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
+                            const SocialIconGroup(),
                           ],
                         );
                       },
@@ -294,6 +250,8 @@ class _SettingScreenState extends State<SettingScreen> {
                       ),
                     ],
                   ),
+                // 社交媒体图标
+                _buildSocialIcons(context),
               ]);
             },
           ),
@@ -876,6 +834,15 @@ class _SettingScreenState extends State<SettingScreen> {
       onPressed: (_) {
         context.push('/setting/background-selector');
       },
+    );
+  }
+
+  CustomSettingsSection _buildSocialIcons(BuildContext context) {
+    return CustomSettingsSection(
+      child: Container(
+        padding: EdgeInsets.only(bottom: 20, left: 10, right: 10),
+        child: const SocialIconGroup(),
+      ),
     );
   }
 }

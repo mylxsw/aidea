@@ -40,7 +40,7 @@ class InviteCard extends StatelessWidget {
         //   transform: GradientRotation(0.5),
         // ),
       ),
-      height: 140,
+      height: 150,
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: 20,
@@ -67,6 +67,8 @@ class InviteCard extends StatelessWidget {
                   Text(
                     userInfo.control.inviteCardSlogan ?? '邀请好友注册，双方都可获得奖励',
                     strutStyle: const StrutStyle(height: 1.3),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 4,
                     style: TextStyle(
                       fontSize: 13,
                       color: userInfo.control.inviteCardColor != null

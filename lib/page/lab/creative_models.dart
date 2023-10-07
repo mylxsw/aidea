@@ -270,6 +270,28 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                                           fit: BoxFit.cover,
                                         ),
                                       )
+                                    else if (e.isProcessing)
+                                      Container(
+                                        padding: const EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          color: const Color.fromARGB(
+                                              255, 148, 124, 245),
+                                        ),
+                                        child: const Center(
+                                          child: Text(
+                                            '正在处理中...',
+                                            textAlign: TextAlign.center,
+                                            maxLines: 4,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ),
+                                      )
                                     else
                                       Container(
                                         padding: const EdgeInsets.all(5),
