@@ -38,7 +38,7 @@ class OpenAIRepository {
     } else {
       // 使用公共服务器
       OpenAI.apiKey = settings.getDefault(settingAPIServerToken, '');
-      OpenAI.baseUrl = apiServerURL;
+      OpenAI.baseUrl = settings.getDefault(settingServerURL, apiServerURL);
       OpenAI.organization = "";
       OpenAI.externalHeaders = {
         'X-CLIENT-VERSION': clientVersion,
