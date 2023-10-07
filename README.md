@@ -55,12 +55,6 @@ Web 端：https://web.aicode.cc/
 ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-34-42.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-35-01.png-thumb) 
 ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-35-33.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-35-52.png-thumb)
 
-## 如果对你有帮助，请我喝杯酒吧
-
-微信  | 支付宝
-:-------------------------:|:-------------------------:
-![image](https://github.com/mylxsw/aidea/assets/2330911/46e2242b-17bc-41ff-bebe-b5cc466b7f17) | ![image](https://github.com/mylxsw/aidea/assets/2330911/f3c85d4a-bea8-4a76-b582-c673613f76cb)
-
 ## Star History
 
 <a href="https://star-history.com/#mylxsw/aidea&Date">
