@@ -18,8 +18,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class APIServer {
-  static const String url = apiServerURL;
-
   /// 单例
   static final APIServer _instance = APIServer._internal();
   APIServer._internal();
@@ -28,12 +26,15 @@ class APIServer {
     return _instance;
   }
 
+  late String url;
   late String apiToken;
   late String language;
 
   init(SettingRepository setting) {
     apiToken = setting.stringDefault(settingAPIServerToken, '');
     language = setting.stringDefault(settingLanguage, 'zh');
+    url = setting.stringDefault(settingServerURL, apiServerURL);
+
     setting.listen((settings, key, value) {
       if (key == settingAPIServerToken) {
         apiToken = settings.getDefault(settingAPIServerToken, '');
@@ -41,6 +42,10 @@ class APIServer {
 
       if (key == settingLanguage) {
         language = settings.getDefault(settingLanguage, 'zh');
+      }
+
+      if (key == settingServerURL) {
+        url = settings.getDefault(settingServerURL, apiServerURL);
       }
     });
   }
@@ -81,12 +86,12 @@ class APIServer {
     return e.toString();
   }
 
-  Options _buildRequestOptions() {
+  Options _buildRequestOptions({int? requestTimeout = 10000}) {
     return Options(
       headers: _buildAuthHeaders(),
       receiveDataWhenStatusError: true,
-      sendTimeout: 10000,
-      receiveTimeout: 10000,
+      sendTimeout: requestTimeout,
+      receiveTimeout: requestTimeout,
     );
   }
 
@@ -130,12 +135,13 @@ class APIServer {
     String endpoint,
     T Function(dynamic) parser, {
     Map<String, dynamic>? queryParameters,
+    int? requestTimeout = 10000,
   }) async {
     return request(
       HttpClient.get(
         '$url$endpoint',
         queryParameters: queryParameters,
-        options: _buildRequestOptions(),
+        options: _buildRequestOptions(requestTimeout: requestTimeout),
       ),
       parser,
     );
@@ -1442,6 +1448,7 @@ class APIServer {
     return sendGetRequest(
       '/public/info/capabilities',
       (resp) => Capabilities.fromJson(resp.data),
+      requestTimeout: 5000,
     );
   }
 

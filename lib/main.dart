@@ -52,6 +52,7 @@ import 'package:askaide/page/quota_detail_screen.dart';
 import 'package:askaide/page/retrieve_password_screen.dart';
 import 'package:askaide/page/signup_screen.dart';
 import 'package:askaide/page/lab/user_center.dart';
+import 'package:askaide/repo/api/info.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/cache_repo.dart';
 import 'package:askaide/repo/creative_island_repo.dart';
@@ -162,13 +163,28 @@ void main() async {
     stabilityAIRepo: stabilityAIRepo,
   );
 
-  ModelAggregate.init(settingRepo);
   APIServer().init(settingRepo);
+  ModelAggregate.init(settingRepo);
   Cache().init(settingRepo, cacheRepo);
 
   // 从服务器获取客户端支持的能力清单
-  final capabilities = await APIServer().capabilities();
-  Ability().init(settingRepo, capabilities);
+  try {
+    final capabilities = await APIServer().capabilities();
+    Ability().init(settingRepo, capabilities);
+  } catch (e) {
+    Logger.instance.e('获取客户端能力清单失败', error: e);
+    Ability().init(
+      settingRepo,
+      Capabilities(
+        applePayEnabled: true,
+        alipayEnabled: true,
+        translateEnabled: true,
+        mailEnabled: true,
+        openaiEnabled: true,
+        homeModels: [],
+      ),
+    );
+  }
 
   // 初始化聊天室 Bloc 管理器
   final m = ChatBlocManager();

@@ -31,6 +31,7 @@ const creativeIslandCompletionTypeURLImage = 'url-images';
 // 只有在第一次安装的时候才会加载引导页
 const settingOnBoardingLoaded = 'on-boarding-loaded';
 const settingLanguage = 'language';
+const settingServerURL = 'server-url';
 // 背景图片
 const settingBackgroundImage = 'background-image';
 const settingBackgroundImageBlur = 'background-image-blur';
