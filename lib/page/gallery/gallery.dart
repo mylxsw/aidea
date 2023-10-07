@@ -111,6 +111,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                         break;
                       case IndicatorStatus.empty:
                         msg = '暂无数据';
+                        break;
                       default:
                         return const Center(child: LoadingIndicator());
                     }
