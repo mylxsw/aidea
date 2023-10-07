@@ -199,8 +199,6 @@ class _SettingScreenState extends State<SettingScreen> {
                           applicationVersion: clientVersion,
                           children: [
                             Text(AppLocale.aIdeaApp.getString(context)),
-                            const SizedBox(height: 15),
-                            const SocialIconGroup(),
                           ],
                         );
                       },
@@ -839,9 +837,8 @@ class _SettingScreenState extends State<SettingScreen> {
 
   CustomSettingsSection _buildSocialIcons(BuildContext context) {
     return CustomSettingsSection(
-      child: Container(
-        padding: EdgeInsets.only(bottom: 20, left: 10, right: 10),
-        child: const SocialIconGroup(),
+      child: SocialIconGroup(
+        isSettingTiles: true,
       ),
     );
   }
