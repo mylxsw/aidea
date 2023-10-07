@@ -37,8 +37,9 @@ class RoomDeleteEvent extends RoomEvent {
 
 class RoomLoadEvent extends RoomEvent {
   final int roomId;
-
-  RoomLoadEvent(this.roomId);
+  final int? chatHistoryId;
+  final bool cascading;
+  RoomLoadEvent(this.roomId, {this.chatHistoryId, required this.cascading});
 }
 
 class RoomUpdateEvent extends RoomEvent {

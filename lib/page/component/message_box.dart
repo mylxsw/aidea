@@ -16,6 +16,7 @@ class MessageBox extends StatelessWidget {
           width: 1,
         ),
       ),
+      margin: const EdgeInsets.symmetric(horizontal: 5),
       padding: const EdgeInsets.symmetric(
         vertical: 8,
         horizontal: 16,
@@ -44,6 +45,7 @@ class MessageBox extends StatelessWidget {
               Icon(
                 type.iconData,
                 color: type.textColor,
+                size: 16,
               ),
             if (type.iconData != null) const SizedBox(width: 8),
             Expanded(

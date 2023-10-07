@@ -32,11 +32,19 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
               id: event.roomId,
             ),
             const <String, MessageState>{},
+            cascading: event.cascading,
           ));
         }
 
         if (Ability().supportAPIServer()) {
           final room = await APIServer().room(roomId: event.roomId);
+          if (event.chatHistoryId != null && event.chatHistoryId! > 0) {
+            final chatHistory =
+                await chatMsgRepo.getChatHistory(event.chatHistoryId!);
+            if (chatHistory != null && chatHistory.model != null) {
+              room.model = chatHistory.model!;
+            }
+          }
           emit(RoomLoaded(
             Room(
               room.name,
@@ -55,6 +63,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
               avatarUrl: room.avatarUrl,
             ),
             const <String, MessageState>{},
+            cascading: event.cascading,
           ));
 
           final states = await stateManager.loadRoomStates(event.roomId);
@@ -77,6 +86,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
             ),
             states,
             examples: await APIServer().example('${room.vendor}:${room.model}'),
+            cascading: event.cascading,
           ));
           return;
         }
@@ -88,10 +98,16 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
             room,
             states,
             examples: await APIServer().example(room.model),
+            cascading: event.cascading,
           ));
         }
       } catch (e) {
-        emit(RoomLoaded(Room('-', '-'), const {}, error: e));
+        emit(RoomLoaded(
+          Room('-', '-'),
+          const {},
+          error: e,
+          cascading: event.cascading,
+        ));
       }
     });
 
@@ -191,6 +207,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
             ),
             states,
             examples: await APIServer().example(room.model),
+            cascading: false,
           ),
         );
       } else {
@@ -219,6 +236,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
             room,
             states,
             examples: await APIServer().examples(),
+            cascading: false,
           ));
         }
       }

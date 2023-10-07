@@ -7,10 +7,10 @@ import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/attached_button_panel.dart';
-import 'package:askaide/page/component/chat/chat_bubble.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/share.dart';
 import 'package:askaide/page/dialog.dart';
+import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
@@ -30,6 +30,7 @@ class ChatPreview extends StatefulWidget {
   final List<Widget>? helpWidgets;
   final Widget? robotAvatar;
   final void Function(Message message)? onSpeakEvent;
+  final void Function(Message message)? onResentEvent;
 
   const ChatPreview({
     super.key,
@@ -41,6 +42,7 @@ class ChatPreview extends StatefulWidget {
     this.robotAvatar,
     this.helpWidgets,
     this.onSpeakEvent,
+    this.onResentEvent,
   });
 
   @override
@@ -106,45 +108,16 @@ class _ChatPreviewState extends State<ChatPreview> {
                           (current is ChatMessageUpdated &&
                               current.message.id == message.message.id),
                       builder: (context, state) {
-                        return GestureDetector(
-                          // 选择模式下，单击切换选择与否
-                          // 非选择模式下，单击隐藏键盘
-                          onTap: () {
-                            if (widget.controller.selectMode) {
-                              widget.controller
-                                  .toggleMessageSelected(message.message.id!);
-                            }
-                            FocusScope.of(context).requestFocus(FocusNode());
-                          },
-                          // 长按或者双击显示上下文菜单
-                          onLongPressStart: (detail) {
-                            _handleMessageTapControl(
-                              context,
-                              detail.globalPosition,
-                              message.message,
-                              message.state,
-                            );
-                          },
-                          onDoubleTapDown: (details) {
-                            _handleMessageTapControl(
-                              context,
-                              details.globalPosition,
-                              message.message,
-                              message.state,
-                            );
-                          },
-                          // 构建消息主体
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 10,
-                            ),
-                            child: _buildMessageBox(
-                              context,
-                              customColors,
-                              _resolveMessage(state, message),
-                              message.state,
-                            ),
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 10,
+                          ),
+                          child: _buildMessageBox(
+                            context,
+                            customColors,
+                            _resolveMessage(state, message),
+                            message.state,
                           ),
                         );
                       },
@@ -239,65 +212,94 @@ class _ChatPreviewState extends State<ChatPreview> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomPaint(
-                    painter: SpecialChatBubbleOne(
-                      alignment: message.role == Role.sender
-                          ? Alignment.topRight
-                          : Alignment.topLeft,
-                      color: (message.role == Role.receiver
-                          ? customColors.chatRoomReplyBackground
-                          : customColors.chatRoomSenderBackground)!,
-                      tail: false,
-                    ),
-                    child: Container(
-                      margin: message.role == Role.sender
-                          ? const EdgeInsets.fromLTRB(7, 7, 14, 7)
-                          : const EdgeInsets.fromLTRB(17, 7, 7, 7),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: message.role == Role.receiver
-                            ? customColors.chatRoomReplyBackground
-                            : customColors.chatRoomSenderBackground,
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      child: Builder(
-                        builder: (context) {
-                          var text = message.text;
-                          if (!message.isReady && text != '') {
-                            text += ' ▌';
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.end,
+                    children: [
+                      if (message.role == Role.sender &&
+                          message.statusIsFailed())
+                        buildErrorIndicator(message, state, context),
+                      GestureDetector(
+                        // 选择模式下，单击切换选择与否
+                        // 非选择模式下，单击隐藏键盘
+                        onTap: () {
+                          if (widget.controller.selectMode) {
+                            widget.controller
+                                .toggleMessageSelected(message.id!);
                           }
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              state.showMarkdown
-                                  ? Markdown(data: text)
-                                  : SelectableText(
-                                      text,
-                                      style: TextStyle(
-                                        color: customColors.chatRoomSenderText,
-                                      ),
-                                    ),
-                              if (message.quotaConsumed != null &&
-                                  message.quotaConsumed! > 0)
-                                Row(
-                                  children: [
-                                    const Icon(Icons.check_circle,
-                                        size: 12, color: Colors.green),
-                                    const SizedBox(width: 5),
-                                    Text(
-                                      '共 ${message.tokenConsumed} 个 Token， 消耗 ${message.quotaConsumed} 个智慧果',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: customColors.weakTextColor,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                            ],
+                          FocusScope.of(context).requestFocus(FocusNode());
+                        },
+                        // 长按或者双击显示上下文菜单
+                        onLongPressStart: (detail) {
+                          _handleMessageTapControl(
+                            context,
+                            detail.globalPosition,
+                            message,
+                            state,
                           );
                         },
+                        onDoubleTapDown: (details) {
+                          _handleMessageTapControl(
+                            context,
+                            details.globalPosition,
+                            message,
+                            state,
+                          );
+                        },
+                        child: Container(
+                          margin: message.role == Role.sender
+                              ? const EdgeInsets.fromLTRB(0, 0, 10, 7)
+                              : const EdgeInsets.fromLTRB(10, 0, 0, 7),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: message.role == Role.receiver
+                                ? customColors.chatRoomReplyBackground
+                                : customColors.chatRoomSenderBackground,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 13,
+                            vertical: 13,
+                          ),
+                          child: Builder(
+                            builder: (context) {
+                              var text = message.text;
+                              if (!message.isReady && text != '') {
+                                text += ' ▌';
+                              }
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  state.showMarkdown
+                                      ? Markdown(data: text)
+                                      : SelectableText(
+                                          text,
+                                          style: TextStyle(
+                                            color:
+                                                customColors.chatRoomSenderText,
+                                          ),
+                                        ),
+                                  if (message.quotaConsumed != null &&
+                                      message.quotaConsumed! > 0)
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.check_circle,
+                                            size: 12, color: Colors.green),
+                                        const SizedBox(width: 5),
+                                        Text(
+                                          '共 ${message.tokenConsumed} 个 Token， 消耗 ${message.quotaConsumed} 个智慧果',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: customColors.weakTextColor,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                ],
+                              );
+                            },
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                   if (showTranslate)
                     Container(
@@ -325,9 +327,9 @@ class _ChatPreviewState extends State<ChatPreview> {
                                         color: customColors.chatRoomSenderText,
                                       ),
                                     ),
-                              Row(
+                              const Row(
                                 mainAxisSize: MainAxisSize.min,
-                                children: const [
+                                children: [
                                   Icon(
                                     Icons.check_circle,
                                     size: 12,
@@ -357,6 +359,35 @@ class _ChatPreviewState extends State<ChatPreview> {
     );
   }
 
+  Widget buildErrorIndicator(
+    Message message,
+    MessageState state,
+    BuildContext context,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(right: 5, bottom: 10),
+      child: GestureDetector(
+        onTapUp: (details) {
+          if (widget.controller.selectMode || message.isSystem()) {
+            return;
+          }
+
+          HapticFeedbackHelper.mediumImpact();
+
+          openConfirmDialog(
+            context,
+            AppLocale.robotHasSomeError.getString(context),
+            () {
+              widget.onResentEvent!(message);
+            },
+            confirmText: '重新发送',
+          );
+        },
+        child: const Icon(Icons.error, color: Colors.red, size: 20),
+      ),
+    );
+  }
+
   /// 点击消息后控制操作弹窗菜单
   void _handleMessageTapControl(
     BuildContext context,
@@ -364,7 +395,7 @@ class _ChatPreviewState extends State<ChatPreview> {
     Message message,
     MessageState state,
   ) {
-    if (widget.controller.selectMode) {
+    if (widget.controller.selectMode || message.isSystem()) {
       return;
     }
 
@@ -398,7 +429,9 @@ class _ChatPreviewState extends State<ChatPreview> {
                   .setState(message.roomId!, message.id!, state)
                   .then((value) {
                 setState(() {});
-                context.read<RoomBloc>().add(RoomLoadEvent(message.roomId!));
+                context
+                    .read<RoomBloc>()
+                    .add(RoomLoadEvent(message.roomId!, cascading: false));
               });
 
               cancel();
@@ -427,9 +460,9 @@ class _ChatPreviewState extends State<ChatPreview> {
               cancel();
             },
             label: const Text(''),
-            icon: Column(
+            icon: const Column(
               mainAxisSize: MainAxisSize.min,
-              children: const [
+              children: [
                 Icon(
                   Icons.copy,
                   color: Color.fromARGB(255, 255, 255, 255),
@@ -453,9 +486,8 @@ class _ChatPreviewState extends State<ChatPreview> {
                             state..showTranslate = false)
                         .then((value) {
                       setState(() {});
-                      context
-                          .read<RoomBloc>()
-                          .add(RoomLoadEvent(message.roomId!));
+                      context.read<RoomBloc>().add(
+                          RoomLoadEvent(message.roomId!, cascading: false));
                     });
                   } else {
                     if (state.translateText != null &&
@@ -465,9 +497,8 @@ class _ChatPreviewState extends State<ChatPreview> {
                               state..showTranslate = true)
                           .then((value) {
                         setState(() {});
-                        context
-                            .read<RoomBloc>()
-                            .add(RoomLoadEvent(message.roomId!));
+                        context.read<RoomBloc>().add(
+                            RoomLoadEvent(message.roomId!, cascading: false));
                       });
                       return;
                     }
@@ -483,9 +514,8 @@ class _ChatPreviewState extends State<ChatPreview> {
                       )
                           .then((value) {
                         setState(() {});
-                        context
-                            .read<RoomBloc>()
-                            .add(RoomLoadEvent(message.roomId!));
+                        context.read<RoomBloc>().add(
+                            RoomLoadEvent(message.roomId!, cascading: false));
                       });
                     }).onError((error, stackTrace) {
                       showErrorMessage(resolveError(context, error!));
@@ -507,26 +537,49 @@ class _ChatPreviewState extends State<ChatPreview> {
                     )
                   ],
                 )),
-          TextButton.icon(
-              onPressed: () async {
+          if (message.role == Role.sender && widget.onResentEvent != null)
+            TextButton.icon(
+              onPressed: () {
+                widget.onResentEvent!(message);
                 cancel();
-                await shareTo(context, content: message.text, title: '聊天记录');
               },
               label: const Text(''),
-              icon: Column(
+              icon: const Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
-                    Icons.share,
+                  Icon(
+                    Icons.restore,
                     color: Color.fromARGB(255, 255, 255, 255),
                     size: 14,
                   ),
                   Text(
-                    AppLocale.share.getString(context),
-                    style: const TextStyle(fontSize: 12, color: Colors.white),
-                  )
+                    '重发',
+                    style: TextStyle(fontSize: 12, color: Colors.white),
+                  ),
                 ],
-              )),
+              ),
+            )
+          else
+            TextButton.icon(
+                onPressed: () async {
+                  cancel();
+                  await shareTo(context, content: message.text, title: '聊天记录');
+                },
+                label: const Text(''),
+                icon: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.share,
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      size: 14,
+                    ),
+                    Text(
+                      AppLocale.share.getString(context),
+                      style: const TextStyle(fontSize: 12, color: Colors.white),
+                    )
+                  ],
+                )),
           TextButton.icon(
               onPressed: () {
                 widget.controller.enterSelectMode();
@@ -576,9 +629,9 @@ class _ChatPreviewState extends State<ChatPreview> {
                   widget.onSpeakEvent!(message);
                 },
                 label: const Text(''),
-                icon: Column(
+                icon: const Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
+                  children: [
                     Icon(
                       Icons.record_voice_over,
                       color: Color.fromARGB(255, 255, 255, 255),
@@ -598,8 +651,8 @@ class _ChatPreviewState extends State<ChatPreview> {
   /// 获取聊天框的最大宽度
   double _chatBoxMaxWidth(BuildContext context) {
     var screenWidth = MediaQuery.of(context).size.width;
-    if (screenWidth > 600) {
-      return 600;
+    if (screenWidth >= CustomSize.maxWindowSize) {
+      return CustomSize.maxWindowSize;
     }
 
     return screenWidth;

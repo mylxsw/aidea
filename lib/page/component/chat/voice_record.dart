@@ -189,15 +189,17 @@ class _VoiceRecordState extends State<VoiceRecord> {
     );
 
     try {
-      widget.onFinished(await ModelResolver.instance
-          .audioToText(File.fromUri(Uri.parse(resPath))));
+      final audioFile = File.fromUri(Uri.parse(resPath));
+      widget.onFinished(await ModelResolver.instance.audioToText(audioFile));
     } catch (e) {
       // ignore: use_build_context_synchronously
       showErrorMessageEnhanced(context, e);
     } finally {
       cancel();
       // 删除临时文件
-      File.fromUri(Uri.parse(resPath)).delete();
+      if (!resPath.startsWith('blob:')) {
+        File.fromUri(Uri.parse(resPath)).delete();
+      }
     }
   }
 }

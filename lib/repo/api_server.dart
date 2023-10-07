@@ -18,8 +18,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class APIServer {
-  static const String url = apiServerURL;
-
   /// 单例
   static final APIServer _instance = APIServer._internal();
   APIServer._internal();
@@ -28,12 +26,15 @@ class APIServer {
     return _instance;
   }
 
+  late String url;
   late String apiToken;
   late String language;
 
   init(SettingRepository setting) {
     apiToken = setting.stringDefault(settingAPIServerToken, '');
     language = setting.stringDefault(settingLanguage, 'zh');
+    url = setting.stringDefault(settingServerURL, apiServerURL);
+
     setting.listen((settings, key, value) {
       if (key == settingAPIServerToken) {
         apiToken = settings.getDefault(settingAPIServerToken, '');
@@ -41,6 +42,10 @@ class APIServer {
 
       if (key == settingLanguage) {
         language = settings.getDefault(settingLanguage, 'zh');
+      }
+
+      if (key == settingServerURL) {
+        url = settings.getDefault(settingServerURL, apiServerURL);
       }
     });
   }
@@ -81,12 +86,12 @@ class APIServer {
     return e.toString();
   }
 
-  Options _buildRequestOptions() {
+  Options _buildRequestOptions({int? requestTimeout = 10000}) {
     return Options(
       headers: _buildAuthHeaders(),
       receiveDataWhenStatusError: true,
-      sendTimeout: 10000,
-      receiveTimeout: 10000,
+      sendTimeout: requestTimeout,
+      receiveTimeout: requestTimeout,
     );
   }
 
@@ -130,12 +135,13 @@ class APIServer {
     String endpoint,
     T Function(dynamic) parser, {
     Map<String, dynamic>? queryParameters,
+    int? requestTimeout = 10000,
   }) async {
     return request(
       HttpClient.get(
         '$url$endpoint',
         queryParameters: queryParameters,
-        options: _buildRequestOptions(),
+        options: _buildRequestOptions(requestTimeout: requestTimeout),
       ),
       parser,
     );
@@ -236,7 +242,7 @@ class APIServer {
         return Future.error(resp.data['error']);
       }
 
-      // Logger.instance.d(resp.data);
+      // Logger.instance.d("API Response: ${resp.data}");
 
       return parser(resp);
     } catch (e) {
@@ -860,15 +866,17 @@ class APIServer {
   }
 
   /// 版本检查
-  Future<VersionCheckResp> versionCheck() async {
-    return sendPostRequest(
+  Future<VersionCheckResp> versionCheck({bool cache = true}) async {
+    return sendCachedGetRequest(
       '/public/info/version-check',
       (resp) => VersionCheckResp.fromJson(resp.data),
-      formData: Map<String, dynamic>.from({
+      queryParameters: Map<String, dynamic>.from({
         'version': clientVersion,
         'os': PlatformTool.operatingSystem(),
         'os_version': PlatformTool.operatingSystemVersion(),
       }),
+      duration: const Duration(minutes: 180),
+      forceRefresh: !cache,
     );
   }
 
@@ -1203,6 +1211,14 @@ class APIServer {
     );
   }
 
+  /// 封禁创作岛历史记录
+  Future<void> forbidCreativeHistoryItem({required int historyId}) {
+    return sendPutRequest(
+      '/v1/admin/creative-island/histories/$historyId/forbid',
+      (resp) {},
+    );
+  }
+
   /// 创作岛历史记录
   Future<List<CreativeItemInServer>> creativeItemHistories(String islandId,
       {bool cache = true}) async {
@@ -1432,6 +1448,134 @@ class APIServer {
     return sendGetRequest(
       '/public/info/capabilities',
       (resp) => Capabilities.fromJson(resp.data),
+      requestTimeout: 5000,
+    );
+  }
+
+  /// 用户免费聊天次数统计
+  Future<List<FreeModelCount>> userFreeStatistics() async {
+    return sendGetRequest(
+      '/v1/users/stat/free-chat-counts',
+      (resp) {
+        var items = <FreeModelCount>[];
+        for (var item in resp.data['data']) {
+          items.add(FreeModelCount.fromJson(item));
+        }
+        return items;
+      },
+    );
+  }
+
+  /// 用户免费聊天次数统计(单个模型)
+  Future<FreeModelCount> userFreeStatisticsForModel(
+      {required String model}) async {
+    return sendGetRequest(
+      '/v1/users/stat/free-chat-counts/$model',
+      (resp) => FreeModelCount.fromJson(resp.data),
+    );
+  }
+
+  /// 通知信息（促销事件）
+  Future<Map<String, List<PromotionEvent>>> notificationPromotionEvents(
+      {bool cache = true}) async {
+    return sendCachedGetRequest(
+      '/v1/notifications/promotions',
+      (value) {
+        var res = <String, List<PromotionEvent>>{};
+        for (var item in value.data['data']) {
+          if (res[item['id']] == null) {
+            res[item['id']] = [];
+          }
+
+          res[item['id']] = [
+            ...res[item['id']]!,
+            PromotionEvent.fromJson(item),
+          ];
+        }
+
+        return res;
+      },
+      subKey: _cacheSubKey(),
+      forceRefresh: !cache,
+    );
+  }
+}
+
+enum PromotionEventClickButtonType {
+  none,
+  url,
+  inAppRoute;
+
+  static PromotionEventClickButtonType fromName(String typeName) {
+    switch (typeName) {
+      case 'url':
+        return PromotionEventClickButtonType.url;
+      case 'in_app_route':
+        return PromotionEventClickButtonType.inAppRoute;
+      default:
+        return PromotionEventClickButtonType.none;
+    }
+  }
+
+  String toName() {
+    switch (this) {
+      case PromotionEventClickButtonType.url:
+        return 'url';
+      case PromotionEventClickButtonType.inAppRoute:
+        return 'in_app_route';
+      default:
+        return 'none';
+    }
+  }
+}
+
+class PromotionEvent {
+  String? title;
+  String content;
+  PromotionEventClickButtonType clickButtonType;
+  String? clickValue;
+  String? clickButtonColor;
+  String? backgroundImage;
+  String? textColor;
+  bool closeable;
+  int? maxCloseDurationInDays;
+
+  PromotionEvent({
+    this.title,
+    required this.content,
+    required this.clickButtonType,
+    this.clickValue,
+    this.clickButtonColor,
+    this.backgroundImage,
+    this.textColor,
+    required this.closeable,
+    this.maxCloseDurationInDays,
+  });
+
+  toJson() => {
+        'title': title,
+        'content': content,
+        'click_button_type': clickButtonType.toName(),
+        'click_value': clickValue,
+        'click_button_color': clickButtonColor,
+        'background_image': backgroundImage,
+        'text_color': textColor,
+        'closeable': closeable,
+        'max_close_duration_in_days': maxCloseDurationInDays,
+      };
+
+  static PromotionEvent fromJson(Map<String, dynamic> json) {
+    return PromotionEvent(
+      title: json['title'],
+      content: json['content'],
+      clickButtonType: PromotionEventClickButtonType.fromName(
+          json['click_button_type'] ?? ''),
+      clickValue: json['click_value'],
+      clickButtonColor: json['click_button_color'],
+      backgroundImage: json['background_image'],
+      textColor: json['text_color'],
+      closeable: json['closeable'] ?? false,
+      maxCloseDurationInDays: json['max_close_duration_in_days'],
     );
   }
 }
@@ -1950,6 +2094,40 @@ class PromptTag {
     return PromptTag(
       json['name'],
       json['value'],
+    );
+  }
+}
+
+class FreeModelCount {
+  String model;
+  String name;
+  int leftCount;
+  int maxCount;
+  String? info;
+
+  FreeModelCount({
+    required this.model,
+    required this.name,
+    required this.leftCount,
+    required this.maxCount,
+    this.info,
+  });
+
+  toJson() => {
+        'model': model,
+        'name': name,
+        'left_count': leftCount,
+        'max_count': maxCount,
+        'info': info,
+      };
+
+  static FreeModelCount fromJson(Map<String, dynamic> json) {
+    return FreeModelCount(
+      model: json['model'],
+      name: json['name'] ?? json['model'],
+      leftCount: json['left_count'] ?? 0,
+      maxCount: json['max_count'] ?? 0,
+      info: json['info'],
     );
   }
 }

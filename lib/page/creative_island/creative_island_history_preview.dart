@@ -17,12 +17,14 @@ class CreativeIslandHistoryPreview extends StatefulWidget {
   final String islandId;
   final int itemId;
   final SettingRepository setting;
+  final bool showErrorMessage;
 
   const CreativeIslandHistoryPreview({
     super.key,
     required this.setting,
     required this.islandId,
     required this.itemId,
+    required this.showErrorMessage,
   });
 
   @override
@@ -75,51 +77,7 @@ class _CreativeIslandHistoryPreviewState
                   color: customColors.weakTextColor,
                 ),
               ),
-              actions: [
-                if (state.item!.isSuccessful && state.item!.showBetaFeature)
-                  TextButton(
-                    onPressed: () {
-                      if (state.item!.isShared) {
-                        APIServer()
-                            .cancelShareCreativeHistoryToGallery(
-                                historyId: state.item!.id)
-                            .then((value) {
-                          showSuccessMessage(
-                              AppLocale.operateSuccess.getString(context));
-
-                          context
-                              .read<CreativeIslandBloc>()
-                              .add(CreativeIslandHistoryItemLoadEvent(
-                                widget.itemId,
-                                forceRefresh: true,
-                              ));
-                        });
-                      } else {
-                        APIServer()
-                            .shareCreativeHistoryToGallery(
-                                historyId: state.item!.id)
-                            .then((value) {
-                          showSuccessMessage(
-                              AppLocale.operateSuccess.getString(context));
-
-                          context
-                              .read<CreativeIslandBloc>()
-                              .add(CreativeIslandHistoryItemLoadEvent(
-                                widget.itemId,
-                                forceRefresh: true,
-                              ));
-                        });
-                      }
-                    },
-                    child: Text(
-                      state.item!.isShared ? '设为私有' : '设为公开',
-                      style: TextStyle(
-                        color: customColors.weakLinkColor,
-                        fontSize: 12,
-                      ),
-                    ),
-                  )
-              ],
+              actions: buildActions(state, context, customColors),
             ),
             backgroundColor: customColors.backgroundContainerColor,
             body: BackgroundContainer(
@@ -193,6 +151,96 @@ class _CreativeIslandHistoryPreviewState
     );
   }
 
+  List<Widget> buildActions(
+    CreativeIslandHistoryItemLoaded state,
+    BuildContext context,
+    CustomColors customColors,
+  ) {
+    if (state.item!.userId != APIServer().localUserID() &&
+        state.item!.isSuccessful) {
+      return [
+        TextButton(
+          onPressed: () {
+            openConfirmDialog(context, '确定封禁该项目？', () {
+              APIServer()
+                  .forbidCreativeHistoryItem(historyId: state.item!.id)
+                  .then((value) {
+                showSuccessMessage(AppLocale.operateSuccess.getString(context));
+
+                context
+                    .read<CreativeIslandBloc>()
+                    .add(CreativeIslandHistoryItemLoadEvent(
+                      widget.itemId,
+                      forceRefresh: true,
+                    ));
+              });
+            });
+          },
+          child: Row(
+            children: [
+              const Icon(
+                Icons.block,
+                color: Colors.amber,
+                size: 14,
+              ),
+              const SizedBox(width: 5),
+              Text(
+                '封禁',
+                style: TextStyle(
+                  color: customColors.weakLinkColor,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ];
+    }
+
+    return [
+      if (state.item!.isSuccessful && state.item!.showBetaFeature)
+        TextButton(
+          onPressed: () {
+            if (state.item!.isShared) {
+              APIServer()
+                  .cancelShareCreativeHistoryToGallery(
+                      historyId: state.item!.id)
+                  .then((value) {
+                showSuccessMessage(AppLocale.operateSuccess.getString(context));
+
+                context
+                    .read<CreativeIslandBloc>()
+                    .add(CreativeIslandHistoryItemLoadEvent(
+                      widget.itemId,
+                      forceRefresh: true,
+                    ));
+              });
+            } else {
+              APIServer()
+                  .shareCreativeHistoryToGallery(historyId: state.item!.id)
+                  .then((value) {
+                showSuccessMessage(AppLocale.operateSuccess.getString(context));
+
+                context
+                    .read<CreativeIslandBloc>()
+                    .add(CreativeIslandHistoryItemLoadEvent(
+                      widget.itemId,
+                      forceRefresh: true,
+                    ));
+              });
+            }
+          },
+          child: Text(
+            state.item!.isShared ? '设为私有' : '设为公开',
+            style: TextStyle(
+              color: customColors.weakLinkColor,
+              fontSize: 12,
+            ),
+          ),
+        )
+    ];
+  }
+
   Widget _buildNotSuccessBox(
     CreativeIslandHistoryItemLoaded state,
     CustomColors customColors,
@@ -214,8 +262,11 @@ class _CreativeIslandHistoryPreviewState
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
-            Text(
-              '错误代码：${state.item!.errorCode}',
+            SelectableText(
+              widget.showErrorMessage
+                  ? '${state.item!.answer}'
+                  : '错误代码：${state.item!.errorCode}',
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 10,
                 color: customColors.weakTextColor,

@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:askaide/helper/ability.dart';
-import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/model.dart';
 import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
@@ -72,7 +71,8 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
   void initState() {
     super.initState();
 
-    BlocProvider.of<RoomBloc>(context).add(RoomLoadEvent(widget.roomId));
+    BlocProvider.of<RoomBloc>(context)
+        .add(RoomLoadEvent(widget.roomId, cascading: false));
 
     // 获取预设头像
     if (Ability().supportAPIServer()) {

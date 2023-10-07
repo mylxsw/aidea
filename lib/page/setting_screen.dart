@@ -2,15 +2,19 @@ import 'dart:io';
 
 import 'package:askaide/bloc/account_bloc.dart';
 import 'package:askaide/helper/ability.dart';
+import 'package:askaide/helper/cache.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/http.dart';
+import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/account_security.dart';
 import 'package:askaide/page/component/account_quota_card.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/invite_card.dart';
+import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/sliver_component.dart';
+import 'package:askaide/page/component/social_icon.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/page/theme/theme.dart';
@@ -19,8 +23,8 @@ import 'package:askaide/page/dialog.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
@@ -64,22 +68,29 @@ class _SettingScreenState extends State<SettingScreen> {
           child: BlocBuilder<AccountBloc, AccountState>(
             builder: (_, state) {
               return buildSettingsList([
+                // 智慧果信息、充值入口
                 if (state is AccountLoaded && state.user != null)
                   _buildAccountQuotaCard(context, state),
 
+                // 账号信息
                 SettingsSection(
                   title: Text(AppLocale.accountInfo.getString(context)),
                   tiles: _buildAccountSetting(state, customColors),
                 ),
 
+                // 邀请卡片
                 if (state is AccountLoaded && state.user != null)
                   _buildInviteCard(context, state),
 
+                // 自定义设置
                 SettingsSection(
                   title: Text(AppLocale.custom.getString(context)),
                   tiles: [
+                    // 主题设置
                     _buildCommonThemeSetting(customColors),
+                    // 语言设置
                     _buildCommonLanguageSetting(),
+                    // OpenAI 自定义配置
                     if (Ability().enableOpenAI)
                       _buildOpenAISelfHostedSetting(customColors),
                   ],
@@ -89,6 +100,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 SettingsSection(
                   title: Text(AppLocale.systemInfo.getString(context)),
                   tiles: [
+                    // 清空缓存
                     SettingsTile(
                       title: Text(AppLocale.clearCache.getString(context)),
                       trailing: Icon(
@@ -100,16 +112,19 @@ class _SettingScreenState extends State<SettingScreen> {
                         openConfirmDialog(
                           context,
                           AppLocale.confirmClearCache.getString(context),
-                          () {
-                            HttpClient.cacheManager.clearAll().then((value) {
-                              showSuccessMessage(
-                                  AppLocale.operateSuccess.getString(context));
-                            });
+                          () async {
+                            await Cache().clearAll();
+                            await HttpClient.cacheManager.clearAll();
+                            showSuccessMessage(
+                              // ignore: use_build_context_synchronously
+                              AppLocale.operateSuccess.getString(context),
+                            );
                           },
                           danger: true,
                         );
                       },
                     ),
+                    // 诊断
                     SettingsTile(
                       title: Text(AppLocale.diagnostic.getString(context)),
                       trailing: Icon(
@@ -121,6 +136,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         context.push('/diagnosis');
                       },
                     ),
+                    // 检查更新
                     if (!PlatformTool.isIOS())
                       SettingsTile(
                         title: Text(AppLocale.updateCheck.getString(context)),
@@ -130,7 +146,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           color: Colors.grey,
                         ),
                         onPressed: (_) {
-                          APIServer().versionCheck().then((resp) {
+                          APIServer().versionCheck(cache: false).then((resp) {
                             if (resp.hasUpdate) {
                               showBeautyDialog(
                                 context,
@@ -138,7 +154,10 @@ class _SettingScreenState extends State<SettingScreen> {
                                 text: resp.message,
                                 confirmBtnText: '去更新',
                                 onConfirmBtnTap: () {
-                                  launchUrlString(resp.url);
+                                  launchUrlString(
+                                    resp.url,
+                                    mode: LaunchMode.externalApplication,
+                                  );
                                 },
                                 cancelBtnText: '暂不更新',
                                 showCancelBtn: true,
@@ -163,6 +182,7 @@ class _SettingScreenState extends State<SettingScreen> {
                             Uri.parse('https://ai.aicode.cc/terms-user.html'));
                       },
                     ),
+                    // 隐私政策
                     SettingsTile(
                       title: Text(AppLocale.privacyPolicy.getString(context)),
                       trailing: Icon(
@@ -176,6 +196,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       },
                     ),
 
+                    // 关于
                     SettingsTile(
                       title: Text(AppLocale.about.getString(context)),
                       trailing: Icon(
@@ -190,13 +211,8 @@ class _SettingScreenState extends State<SettingScreen> {
                           applicationIcon:
                               Image.asset('assets/app.png', width: 40),
                           applicationVersion: clientVersion,
-                          applicationLegalese: 'mylxsw©2023 aicode.cc',
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 15),
-                              child:
-                                  Text(AppLocale.aIdeaApp.getString(context)),
-                            ),
+                            Text(AppLocale.aIdeaApp.getString(context)),
                           ],
                         );
                       },
@@ -233,19 +249,24 @@ class _SettingScreenState extends State<SettingScreen> {
                           context.push('/lab/draw-board');
                         },
                       ),
-                      SettingsTile(
-                        title: const Text('用户中心'),
-                        trailing: Icon(
-                          CupertinoIcons.chevron_forward,
-                          size: MediaQuery.of(context).textScaleFactor * 18,
-                          color: Colors.grey,
-                        ),
-                        onPressed: (context) {
-                          context.push('/lab/user-center');
-                        },
-                      ),
+                      // SettingsTile(
+                      //   title: const Text('用户中心'),
+                      //   trailing: Icon(
+                      //     CupertinoIcons.chevron_forward,
+                      //     size: MediaQuery.of(context).textScaleFactor * 18,
+                      //     color: Colors.grey,
+                      //   ),
+                      //   onPressed: (context) {
+                      //     context.push('/lab/user-center');
+                      //   },
+                      // ),
+
+                      // 自定义服务器
+                      _buildServerSelfHostedSetting(customColors),
                     ],
                   ),
+                // 社交媒体图标
+                _buildSocialIcons(context),
               ]);
             },
           ),
@@ -364,18 +385,11 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  // Future<List<SelectorItem<String>>> _futureDataSources(
-  //     String modelType) async {
-  //   final servers = await APIServer().proxyServers(modelType);
-  //   return servers
-  //       .map((e) => SelectorItem(
-  //           Text(
-  //             e,
-  //             overflow: TextOverflow.ellipsis,
-  //           ),
-  //           e))
-  //       .toList();
-  // }
+  Future<List<SelectorItem<String>>> _defaultServerList() async {
+    return [
+      SelectorItem(const Text('默认服务器'), apiServerURL),
+    ];
+  }
 
   List<SettingsTile> _buildAccountSetting(
       AccountState state, CustomColors customColors) {
@@ -418,6 +432,17 @@ class _SettingScreenState extends State<SettingScreen> {
           ]),
           onPressed: (context) {
             context.push('/setting/account-security');
+          },
+        ),
+        SettingsTile(
+          title: const Text('免费畅享额度'),
+          trailing: Icon(
+            CupertinoIcons.chevron_forward,
+            size: MediaQuery.of(context).textScaleFactor * 18,
+            color: Colors.grey,
+          ),
+          onPressed: (context) {
+            context.push('/free-statistics');
           },
         ),
       ];
@@ -542,106 +567,41 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  SettingsTile _buildDeepAISelfHostedSetting(CustomColors customColors) {
-    return SettingsTile.switchTile(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(AppLocale.custom.getString(context)),
-          Text(
-            '启用后，将使用您配置的 DeepAI 服务',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        ],
-      ),
-      activeSwitchColor: customColors.linkColor,
-      initialValue: widget.settings.boolDefault(settingDeepAISelfHosted, false),
-      onToggle: (value) {
-        widget.settings.set(settingDeepAISelfHosted, value ? 'true' : 'false');
-        setState(() {});
-      },
-    );
-  }
-
-  SettingsTile _buildStabilityAISelfHostedSetting(CustomColors customColors) {
-    return SettingsTile.switchTile(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(AppLocale.custom.getString(context)),
-          Text(
-            '启用后，将使用您配置的 StabilityAI 服务',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        ],
-      ),
-      activeSwitchColor: customColors.linkColor,
-      initialValue:
-          widget.settings.boolDefault(settingStabilityAISelfHosted, false),
-      onToggle: (value) {
-        widget.settings
-            .set(settingStabilityAISelfHosted, value ? 'true' : 'false');
-        setState(() {});
-      },
-    );
-  }
-
-  SettingsTile _buildImageManagerSelfHostedSetting() {
-    return SettingsTile.switchTile(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(AppLocale.custom.getString(context)),
-          Text(
-            '启用后，上传文件将使用您配置的图床',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        ],
-      ),
-      initialValue:
-          widget.settings.boolDefault(settingImageManagerSelfHosted, false),
-      onToggle: (value) {
-        widget.settings
-            .set(settingImageManagerSelfHosted, value ? 'true' : 'false');
-        setState(() {});
-      },
-    );
-  }
-
-  SettingsTile _buildCommonImglocKeySetting(CustomColors customColors) {
+  SettingsTile _buildServerSelfHostedSetting(CustomColors customColors) {
     return SettingsTile(
-      title: const Text('Imgloc 图床'),
-      description: RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: '使用 Imgloc 图床上传图片，需要先注册账号并获取密钥，地址 ',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            TextSpan(
-              text: 'https://imgloc.com',
-              style: TextStyle(color: customColors.linkColor),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () {
-                  launchUrl(Uri.parse('https://imgloc.com'));
+      title: const Text('自定义服务器'),
+      trailing: Icon(
+        CupertinoIcons.chevron_forward,
+        size: MediaQuery.of(context).textScaleFactor * 18,
+        color: Colors.grey,
+      ),
+      onPressed: (_) {
+        openTextFieldDialog(
+          context,
+          title: '服务器地址',
+          defaultValue:
+              widget.settings.stringDefault(settingServerURL, apiServerURL),
+          withSuffixIcon: true,
+          enableSearch: false,
+          futureDataSources: _defaultServerList(),
+          onSubmit: (value) {
+            widget.settings.set(settingServerURL, value.trim()).then((value) {
+              openConfirmDialog(
+                context,
+                '设置成功，应用重启后生效',
+                () {
+                  try {
+                    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                  } catch (e) {
+                    Logger.instance.e(e);
+                    showErrorMessage('应用重启失败，请手动重启');
+                  }
                 },
-            ),
-          ],
-        ),
-      ),
-      trailing: Icon(
-        CupertinoIcons.chevron_forward,
-        size: MediaQuery.of(context).textScaleFactor * 18,
-        color: Colors.grey,
-      ),
-      onPressed: (_) {
-        openTextFieldDialog(
-          context,
-          title: 'Key',
-          obscureText: true,
-          defaultValue: widget.settings.stringDefault(settingImglocToken, ''),
-          onSubmit: (value) {
-            widget.settings.set(settingImglocToken, value.trim());
+                danger: true,
+                confirmText: '立即重启',
+                cancelText: '稍后我自己重启',
+              );
+            });
             return true;
           },
         );
@@ -649,174 +609,11 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  SettingsTile _buildDeepAIAPIURLSetting() {
-    return SettingsTile(
-      title: const Text('API Server URL'),
-      trailing: Icon(
-        CupertinoIcons.chevron_forward,
-        size: MediaQuery.of(context).textScaleFactor * 18,
-        color: Colors.grey,
+  CustomSettingsSection _buildSocialIcons(BuildContext context) {
+    return CustomSettingsSection(
+      child: SocialIconGroup(
+        isSettingTiles: true,
       ),
-      onPressed: (_) {
-        openTextFieldDialog(
-          context,
-          title: 'API Server URL',
-          defaultValue: widget.settings
-              .stringDefault(settingDeepAIURL, defaultDeepAIServerURL),
-          // withSuffixIcon: true,
-          enableSearch: false,
-          // futureDataSources: _futureDataSources(modelTypeDeepAI),
-          onSubmit: (value) {
-            widget.settings.set(settingDeepAIURL, value.trim());
-            return true;
-          },
-        );
-      },
-    );
-  }
-
-  SettingsTile _buildDeepAIAPIKeySetting() {
-    return SettingsTile(
-      title: const Text('API Key'),
-      description: RichText(
-        text: TextSpan(children: [
-          TextSpan(
-            text: 'DeepAI secret API key: ',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          TextSpan(
-            text: 'https://deepai.org/dashboard/profile',
-            style: Theme.of(context).textTheme.bodySmall,
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                launchUrl(Uri.parse('https://deepai.org/dashboard/profile'));
-              },
-          ),
-        ]),
-      ),
-      trailing: Icon(
-        CupertinoIcons.chevron_forward,
-        size: MediaQuery.of(context).textScaleFactor * 18,
-        color: Colors.grey,
-      ),
-      onPressed: (_) {
-        openTextFieldDialog(
-          context,
-          title: 'API key',
-          obscureText: true,
-          defaultValue:
-              widget.settings.stringDefault(settingDeepAIAPIToken, ''),
-          onSubmit: (value) {
-            widget.settings.set(settingDeepAIAPIToken, value.trim());
-            return true;
-          },
-        );
-      },
-    );
-  }
-
-  SettingsTile _buildStabilityAIAPIURLSetting() {
-    return SettingsTile(
-      title: const Text('API Server URL'),
-      trailing: Icon(
-        CupertinoIcons.chevron_forward,
-        size: MediaQuery.of(context).textScaleFactor * 18,
-        color: Colors.grey,
-      ),
-      onPressed: (_) {
-        openTextFieldDialog(
-          context,
-          title: 'API Server URL',
-          defaultValue: widget.settings
-              .stringDefault(settingStabilityAIURL, defaultStabilityAIURL),
-          // withSuffixIcon: true,
-          enableSearch: false,
-          // futureDataSources: _futureDataSources(modelTypeStabilityAI),
-          onSubmit: (value) {
-            widget.settings.set(settingStabilityAIURL, value.trim());
-            return true;
-          },
-        );
-      },
-    );
-  }
-
-  SettingsTile _buildStabilityAIAPIKeySetting() {
-    return SettingsTile(
-      title: const Text('API Key'),
-      description: RichText(
-        text: TextSpan(children: [
-          TextSpan(
-            text: 'StabilityAI secret API key: ',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          TextSpan(
-            text: 'https://beta.dreamstudio.ai/account',
-            style: Theme.of(context).textTheme.bodySmall,
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                launchUrl(Uri.parse('https://beta.dreamstudio.ai/account'));
-              },
-          ),
-        ]),
-      ),
-      trailing: Icon(
-        CupertinoIcons.chevron_forward,
-        size: MediaQuery.of(context).textScaleFactor * 18,
-        color: Colors.grey,
-      ),
-      onPressed: (_) {
-        openTextFieldDialog(
-          context,
-          title: 'API key',
-          obscureText: true,
-          defaultValue:
-              widget.settings.stringDefault(settingStabilityAIAPIToken, ''),
-          onSubmit: (value) {
-            widget.settings.set(settingStabilityAIAPIToken, value.trim());
-            return true;
-          },
-        );
-      },
-    );
-  }
-
-  SettingsTile _buildStabilityAIOrganizationSetting() {
-    return SettingsTile(
-      title: const Text('Organization ID'),
-      trailing: Icon(
-        CupertinoIcons.chevron_forward,
-        size: MediaQuery.of(context).textScaleFactor * 18,
-        color: Colors.grey,
-      ),
-      value: Text(
-          widget.settings.stringDefault(settingStabilityAIOrganization, '')),
-      onPressed: (_) {
-        openTextFieldDialog(
-          context,
-          title: 'Organization ID',
-          defaultValue:
-              widget.settings.stringDefault(settingStabilityAIOrganization, ''),
-          onSubmit: (value) {
-            widget.settings.set(settingStabilityAIOrganization, value.trim());
-            return true;
-          },
-        );
-      },
-    );
-  }
-
-  SettingsTile _buildBackgroundImageSetting() {
-    return SettingsTile(
-      title: Text(AppLocale.backgroundSetting.getString(context)),
-      trailing: Icon(
-        CupertinoIcons.chevron_forward,
-        size: MediaQuery.of(context).textScaleFactor * 18,
-        color: Colors.grey,
-      ),
-      onPressed: (_) {
-        context.push('/setting/background-selector');
-      },
     );
   }
 }

@@ -487,6 +487,7 @@
 					"\"url_launcher_ios\"",
 					"-weak_framework",
 					"\"LinkPresentation\"",
+					"-ld64",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = cc.aicode.flutter.askaide.askaide;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -715,6 +716,7 @@
 					"\"url_launcher_ios\"",
 					"-weak_framework",
 					"\"LinkPresentation\"",
+					"-ld64",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = cc.aicode.flutter.askaide.askaide;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -837,6 +839,7 @@
 					"\"url_launcher_ios\"",
 					"-weak_framework",
 					"\"LinkPresentation\"",
+					"-ld64",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = cc.aicode.flutter.askaide.askaide;
 				PRODUCT_NAME = "$(TARGET_NAME)";

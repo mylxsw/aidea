@@ -2,10 +2,12 @@ import 'package:askaide/bloc/account_bloc.dart';
 import 'package:askaide/bloc/background_image_bloc.dart';
 import 'package:askaide/bloc/chat_chat_bloc.dart';
 import 'package:askaide/bloc/creative_island_bloc.dart';
+import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/bloc/gallery_bloc.dart';
 import 'package:askaide/bloc/payment_bloc.dart';
 import 'package:askaide/bloc/version_bloc.dart';
 import 'package:askaide/helper/ability.dart';
+import 'package:askaide/helper/cache.dart';
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/model.dart';
 import 'package:askaide/helper/model_resolver.dart';
@@ -29,6 +31,7 @@ import 'package:askaide/page/creative_island/creative_island_gallery.dart';
 import 'package:askaide/page/creative_island/creative_island_history.dart';
 import 'package:askaide/page/creative_island/creative_island_history_all.dart';
 import 'package:askaide/page/creative_island/creative_island_history_preview.dart';
+import 'package:askaide/page/free_statistics.dart';
 import 'package:askaide/page/lab/creative_models.dart';
 import 'package:askaide/page/destroy_account.dart';
 import 'package:askaide/page/diagnosis.dart';
@@ -49,6 +52,7 @@ import 'package:askaide/page/quota_detail_screen.dart';
 import 'package:askaide/page/retrieve_password_screen.dart';
 import 'package:askaide/page/signup_screen.dart';
 import 'package:askaide/page/lab/user_center.dart';
+import 'package:askaide/repo/api/info.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/cache_repo.dart';
 import 'package:askaide/repo/creative_island_repo.dart';
@@ -123,6 +127,9 @@ void main() async {
         }
       },
       onCreate: initDatabase,
+      onOpen: (db) {
+        Logger.instance.i('数据库存储路径：${db.path}');
+      },
     ),
   );
 
@@ -156,12 +163,28 @@ void main() async {
     stabilityAIRepo: stabilityAIRepo,
   );
 
-  ModelAggregate.init(settingRepo);
   APIServer().init(settingRepo);
+  ModelAggregate.init(settingRepo);
+  Cache().init(settingRepo, cacheRepo);
 
   // 从服务器获取客户端支持的能力清单
-  final capabilities = await APIServer().capabilities();
-  Ability().init(settingRepo, capabilities);
+  try {
+    final capabilities = await APIServer().capabilities();
+    Ability().init(settingRepo, capabilities);
+  } catch (e) {
+    Logger.instance.e('获取客户端能力清单失败', error: e);
+    Ability().init(
+      settingRepo,
+      Capabilities(
+        applePayEnabled: true,
+        alipayEnabled: true,
+        translateEnabled: true,
+        mailEnabled: true,
+        openaiEnabled: true,
+        homeModels: [],
+      ),
+    );
+  }
 
   // 初始化聊天室 Bloc 管理器
   final m = ChatBlocManager();
@@ -194,6 +217,7 @@ class MyApp extends StatefulWidget {
   late final GalleryBloc galleryBloc;
   late final AccountBloc accountBloc;
   late final VersionBloc versionBloc;
+  late final FreeCountBloc freeCountBloc;
 
   final _rootNavigatorKey = GlobalKey<NavigatorState>();
   final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -215,6 +239,7 @@ class MyApp extends StatefulWidget {
     accountBloc = AccountBloc(settingRepo);
     versionBloc = VersionBloc();
     galleryBloc = GalleryBloc();
+    freeCountBloc = FreeCountBloc();
 
     var apiServerToken = settingRepo.get(settingAPIServerToken);
     var usingGuestMode = settingRepo.boolDefault(settingUsingGuestMode, false);
@@ -322,9 +347,8 @@ class MyApp extends StatefulWidget {
                       ),
                     ),
                     BlocProvider.value(value: chatRoomBloc),
-                    BlocProvider(
-                      create: (context) => NotifyBloc(),
-                    ),
+                    BlocProvider(create: (context) => NotifyBloc()),
+                    BlocProvider.value(value: freeCountBloc),
                   ],
                   child: ChatAnywhereScreen(
                     stateManager: messageStateManager,
@@ -345,6 +369,7 @@ class MyApp extends StatefulWidget {
                   providers: [
                     BlocProvider(
                         create: (context) => ChatChatBloc(chatMsgRepo)),
+                    BlocProvider.value(value: freeCountBloc),
                   ],
                   child: ChatChatScreen(
                     setting: settingRepo,
@@ -400,9 +425,8 @@ class MyApp extends StatefulWidget {
                         value: ChatBlocManager().getBloc(roomId),
                       ),
                       BlocProvider.value(value: chatRoomBloc),
-                      BlocProvider(
-                        create: (context) => NotifyBloc(),
-                      ),
+                      BlocProvider(create: (context) => NotifyBloc()),
+                      BlocProvider.value(value: freeCountBloc),
                     ],
                     child: ChatScreen(
                       roomId: roomId,
@@ -533,6 +557,7 @@ class MyApp extends StatefulWidget {
                     setting: settingRepo,
                     title: AppLocale.superResolution.getString(context),
                     apiEndpoint: 'upscale',
+                    note: state.queryParameters['note'],
                   ),
                 ),
               ),
@@ -549,6 +574,7 @@ class MyApp extends StatefulWidget {
                     setting: settingRepo,
                     title: AppLocale.colorizeImage.getString(context),
                     apiEndpoint: 'colorize',
+                    note: state.queryParameters['note'],
                   ),
                 ),
               ),
@@ -676,6 +702,8 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) {
                 final id = state.pathParameters['id']!;
                 final itemId = int.tryParse(state.pathParameters['item_id']!);
+                final showErrorMessage =
+                    state.queryParameters['show_error'] == 'true';
                 return transitionResolver(
                   MultiBlocProvider(
                     providers: [
@@ -685,6 +713,7 @@ class MyApp extends StatefulWidget {
                       setting: settingRepo,
                       islandId: id,
                       itemId: itemId!,
+                      showErrorMessage: showErrorMessage,
                     ),
                   ),
                 );
@@ -760,6 +789,16 @@ class MyApp extends StatefulWidget {
               path: '/diagnosis',
               pageBuilder: (context, state) => transitionResolver(
                 DiagnosisScreen(setting: settingRepo),
+              ),
+            ),
+            GoRoute(
+              name: 'free-statistics',
+              path: '/free-statistics',
+              pageBuilder: (context, state) => transitionResolver(
+                MultiBlocProvider(
+                  providers: [BlocProvider.value(value: freeCountBloc)],
+                  child: FreeStatisticsPage(setting: settingRepo),
+                ),
               ),
             ),
           ],

@@ -1,6 +1,13 @@
 import 'package:askaide/repo/model/message.dart';
 import 'package:sqflite/sqlite_api.dart';
 
+class MessagePart {
+  final String key;
+  final dynamic value;
+
+  MessagePart(this.key, this.value);
+}
+
 class ChatMessageDataProvider {
   Database conn;
   ChatMessageDataProvider(this.conn);
@@ -59,11 +66,42 @@ class ChatMessageDataProvider {
     return conn.insert('chat_message', message.toMap());
   }
 
+  Future<void> fixMessageStatus(int roomId) async {
+    return conn.transaction((txn) async {
+      await txn.update(
+        'chat_message',
+        {'status': 2},
+        where: 'room_id = ? AND status = 0',
+        whereArgs: [roomId],
+      );
+    });
+  }
+
   Future<void> updateMessage(int roomId, int id, Message message) async {
     return conn.transaction((txn) async {
       await txn.update(
         'chat_message',
         message.toMap(),
+        where: 'id = ? AND room_id = ?',
+        whereArgs: [id, roomId],
+      );
+    });
+  }
+
+  Future<void> updateMessagePart(
+    int roomId,
+    int id,
+    List<MessagePart> parts,
+  ) async {
+    var kvs = <String, Object?>{};
+    for (var element in parts) {
+      kvs[element.key] = element.value;
+    }
+
+    return conn.transaction((txn) async {
+      await txn.update(
+        'chat_message',
+        kvs,
         where: 'id = ? AND room_id = ?',
         whereArgs: [id, roomId],
       );

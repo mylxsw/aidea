@@ -62,7 +62,7 @@ class OpenAIRepository {
         n: n,
         size: size,
         responseFormat: OpenAIImageResponseFormat.url);
-    return model.data.map((e) => e.url ?? '').toList();
+    return model.data.map((e) => e.url).toList();
   }
 
   /// 判断模型是否支持聊天

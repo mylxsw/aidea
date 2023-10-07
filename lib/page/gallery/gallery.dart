@@ -72,6 +72,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
           // ),
           Expanded(
             child: RefreshIndicator(
+              color: customColors.linkColor,
+              displacement: 20,
               onRefresh: () {
                 return datasource.refresh();
               },

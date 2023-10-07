@@ -9,6 +9,7 @@ import 'package:askaide/helper/queue.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/chat_message_repo.dart';
+import 'package:askaide/repo/data/chat_message_data.dart';
 import 'package:askaide/repo/model/chat_history.dart';
 import 'package:askaide/repo/model/message.dart';
 import 'package:askaide/repo/model/room.dart';
@@ -50,7 +51,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     emit(ChatMessagesLoaded(
       await chatMsgRepo.getRecentMessages(
         roomId,
-        lastAliveTime(),
         userId: APIServer().localUserID(),
         chatHistoryId: event.chatHistoryId,
       ),
@@ -66,7 +66,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       emit(ChatMessagesLoaded(
         await chatMsgRepo.getRecentMessages(
           roomId,
-          lastAliveTime(),
           userId: APIServer().localUserID(),
         ),
         error: '选择的数字人不存在',
@@ -113,7 +112,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
     final messages = await chatMsgRepo.getRecentMessages(
       roomId,
-      lastAliveTime(),
       userId: APIServer().localUserID(),
     );
     emit(ChatMessagesLoaded(messages));
@@ -128,7 +126,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       emit(ChatMessagesLoaded(
         await chatMsgRepo.getRecentMessages(
           roomId,
-          lastAliveTime(),
           userId: APIServer().localUserID(),
         ),
         error: '选择的数字人不存在',
@@ -157,7 +154,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
     emit(ChatMessagesLoaded(await chatMsgRepo.getRecentMessages(
       roomId,
-      lastAliveTime(),
       userId: APIServer().localUserID(),
     )));
   }
@@ -172,7 +168,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     emit(ChatMessagesLoaded(
       await chatMsgRepo.getRecentMessages(
         roomId,
-        lastAliveTime(),
         userId: APIServer().localUserID(),
         chatHistoryId: event.chatHistoryId,
       ),
@@ -214,7 +209,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       emit(ChatMessagesLoaded(
         await chatMsgRepo.getRecentMessages(
           roomId,
-          lastAliveTime(),
           userId: APIServer().localUserID(),
           chatHistoryId: localChatHistoryId,
         ),
@@ -264,7 +258,12 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     // 发送当前用户消息
     message.model = room.model;
     message.userId = APIServer().localUserID();
+    message.status = 0;
 
+    // 聊天历史记录中，所有发送状态为 pending 状态的消息，全部设置为失败
+    await chatMsgRepo.fixMessageStatus(roomId);
+
+    // 记录当前消息
     final sentMessageId = await chatMsgRepo.sendMessage(roomId, message);
 
     // 更新 Room 最后活跃时间
@@ -276,7 +275,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     // 重新查询消息列表，此时包含了刚刚发送的消息+机器人思考中消息
     final messages = await chatMsgRepo.getRecentMessages(
       roomId,
-      lastAliveTime(),
       userId: APIServer().localUserID(),
       chatHistoryId: localChatHistoryId,
     );
@@ -313,6 +311,10 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
           for (var element in systemCmds) {
             try {
               final cmd = jsonDecode(element.content);
+
+              message.serverId = cmd['question_id'];
+              waitMessage.serverId = cmd['answer_id'];
+
               final quotaConsumed = cmd['quota_consumed'] ?? 0;
               final tokenConsumed = cmd['token'] ?? 0;
 
@@ -339,7 +341,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
           .request(
             room: room,
             contextMessages: messages.sublist(0, messages.length - 1),
-            message: message,
             onMessage: queue.add,
             maxTokens: room.maxTokens,
           )
@@ -347,9 +348,22 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
       await listener;
 
-      // 机器人应答完成，将以后一条机器人应答消息更新到数据库，替换掉思考中消息
+      // 机器人应答完成，将最后一条机器人应答消息更新到数据库，替换掉思考中消息
       waitMessage.isReady = true;
       await chatMsgRepo.updateMessage(roomId, waitMessage.id!, waitMessage);
+
+      // 更新聊天问题的服务端 ID 和消息状态
+      var sentMessageParts = <MessagePart>[];
+      sentMessageParts.add(MessagePart('status', 1));
+      if (message.serverId != null && message.serverId! > 0) {
+        sentMessageParts.add(MessagePart('server_id', message.serverId));
+      }
+
+      await chatMsgRepo.updateMessagePart(
+        roomId,
+        sentMessageId,
+        sentMessageParts,
+      );
 
       if (room.id == chatAnywhereRoomId &&
           localChatHistoryId != null &&
@@ -368,34 +382,44 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       emit(ChatMessagesLoaded(
         await chatMsgRepo.getRecentMessages(
           roomId,
-          lastAliveTime(),
           userId: APIServer().localUserID(),
           chatHistoryId: localChatHistoryId,
         ),
         chatHistory: localChatHistory,
       ));
     } catch (e) {
+      await chatMsgRepo.updateMessagePart(
+        roomId,
+        sentMessageId,
+        [
+          MessagePart('status', 2),
+        ],
+      );
+
       if (waitMessage.id != null) {
-        await chatMsgRepo.updateMessage(
-          roomId,
-          waitMessage.id!,
-          Message(
-            Role.receiver,
-            AppLocale.robotHasSomeError,
-            id: waitMessage.id,
-            ts: DateTime.now(),
-            type: MessageType.system,
-            roomId: roomId,
-            userId: APIServer().localUserID(),
-            chatHistoryId: localChatHistoryId,
-          ),
-        );
+        if (waitMessage.isReady) {
+          await chatMsgRepo.updateMessage(
+            roomId,
+            waitMessage.id!,
+            Message(
+              Role.receiver,
+              AppLocale.robotHasSomeError,
+              id: waitMessage.id,
+              ts: DateTime.now(),
+              type: MessageType.system,
+              roomId: roomId,
+              userId: APIServer().localUserID(),
+              chatHistoryId: localChatHistoryId,
+            ),
+          );
+        } else {
+          await chatMsgRepo.removeMessage(roomId, [waitMessage.id!]);
+        }
       }
 
       emit(ChatMessagesLoaded(
         await chatMsgRepo.getRecentMessages(
           roomId,
-          lastAliveTime(),
           userId: APIServer().localUserID(),
           chatHistoryId: localChatHistoryId,
         ),
@@ -410,11 +434,6 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
     emit(ChatMessageUpdated(waitMessage));
   }
-}
-
-/// 计算当前上下文允许的最大活跃时间: 24 小时
-int lastAliveTime() {
-  return DateTime.now().millisecondsSinceEpoch - 1000 * 60 * 60 * 24;
 }
 
 Future<Room?> queryRoomById(

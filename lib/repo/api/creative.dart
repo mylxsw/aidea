@@ -737,6 +737,7 @@ class CreativeIslandItemV2 {
   String previewImage;
   String routeUri;
   String tag;
+  String? note;
 
   CreativeIslandItemV2({
     required this.id,
@@ -745,6 +746,7 @@ class CreativeIslandItemV2 {
     required this.previewImage,
     required this.routeUri,
     this.tag = '',
+    this.note,
   });
 
   toJson() => {
@@ -754,6 +756,7 @@ class CreativeIslandItemV2 {
         'preview_image': previewImage,
         'route_uri': routeUri,
         'tag': tag,
+        'note': note,
       };
 
   static CreativeIslandItemV2 fromJson(Map<String, dynamic> json) {
@@ -764,6 +767,7 @@ class CreativeIslandItemV2 {
       previewImage: json['preview_image'],
       routeUri: json['route_uri'],
       tag: json['tag'] ?? '',
+      note: json['note'],
     );
   }
 }
