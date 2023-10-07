@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:askaide/helper/constant.dart';
-import 'package:askaide/lang/lang.dart';
 import 'package:askaide/repo/data/chat_history.dart';
 import 'package:askaide/repo/data/room_data.dart';
 import 'package:askaide/repo/model/chat_history.dart';
