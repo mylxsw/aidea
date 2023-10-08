@@ -330,25 +330,36 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               showErrorMessage(resolveError(context, e));
                             }
                           } else {
-                            openListSelectDialog(
+                            openConfirmDialog(
                               context,
-                              <SelectorItem>[
-                                SelectorItem(const Text('支付宝电脑端（扫码支付）'), 'web'),
-                                SelectorItem(const Text('支付宝手机端'), 'wap'),
-                              ],
-                              (value) {
-                                _startPaymentLoading();
-                                createWebOrWapAlipay(source: value.value)
-                                    .onError((error, stackTrace) {
-                                  _closePaymentLoading();
-                                  showErrorMessageEnhanced(context, error!);
-                                });
-
-                                return true;
+                              '当前终端在线支付暂不可用，预计最晚 2023 年 10 月 15 日恢复，如需充值，请使用移动端 APP（支持 Android 手机、Apple 手机）。',
+                              () {
+                                launchUrlString(
+                                  'https://aidea.aicode.cc',
+                                  mode: LaunchMode.externalApplication,
+                                );
                               },
-                              title: '请选择支付方式',
-                              heightFactor: 0.3,
+                              confirmText: '前往下载移动端 APP',
                             );
+                            // openListSelectDialog(
+                            //   context,
+                            //   <SelectorItem>[
+                            //     SelectorItem(const Text('支付宝电脑端（扫码支付）'), 'web'),
+                            //     SelectorItem(const Text('支付宝手机端'), 'wap'),
+                            //   ],
+                            //   (value) {
+                            //     _startPaymentLoading();
+                            //     createWebOrWapAlipay(source: value.value)
+                            //         .onError((error, stackTrace) {
+                            //       _closePaymentLoading();
+                            //       showErrorMessageEnhanced(context, error!);
+                            //     });
+
+                            //     return true;
+                            //   },
+                            //   title: '请选择支付方式',
+                            //   heightFactor: 0.3,
+                            // );
                           }
                         },
                       ),
