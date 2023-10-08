@@ -1,50 +1,49 @@
-# AIdea - AI 聊天、协作、图像生成
+# AIdea - AI Chat, Collaboration, Image Generation
 
 [![FOSSA Status](https://app.fossa.com/api/projects/custom%2B39727%2Fgithub.com%2Fmylxsw%2Faidea.svg?type=shield&issueType=license)](https://app.fossa.com/projects/custom%2B39727%2Fgithub.com%2Fmylxsw%2Faidea?ref=badge_shield)
 ![GitHub release (by tag)](https://img.shields.io/github/downloads/mylxsw/aidea/1.0.4/total)
 ![GitHub](https://img.shields.io/github/license/mylxsw/aidea)
 
+An app that integrates popular language models and drawing models, developed using Flutter. The code is completely open source and supports the following features:
 
-一款集成了主流大语言模型以及绘图模型的 APP， 采用 Flutter 开发，代码完全开源，支持以下功能：
+- Supports OpenAI's GPT-3.5, GPT-4 language models
+- Supports Anthropic's Claude instant, Claude 2.0 language models
+- Supports Chinese models: Tongyi Qianwen, Wenxin Yiyuan, Xunfei Xinghuo, Shangtang Ririxin, Tencent Hunyuan language models
+- Supports open source large models: Llama2, ChatGLM2, AquilaChat 7B, Bloomz 7B, and more will be opened in the future
+- Supports text-to-image, image-to-image, super-resolution, black and white image colorization, and integrates Stable Diffusion model, supports SDXL 1.0
 
-- 支持 OpenAI 的 GPT-3.5，GPT-4 大语言模型
-- 支持 Anthropic 的 Claude instant，Claude 2.0 大语言模型
-- 支持国产模型：通义千问，文心一言，讯飞星火，商汤日日新，腾讯混元大语言模型
-- 支持开源大模型：Llama2，ChatGLM2，AquilaChat 7B，Bloomz 7B 等，后续还将开放更多
-- 支持文生图、图生图、超分辨率、黑白图片上色等功能，集成 Stable Diffusion 模型，支持 SDXL 1.0
+Open source code:
 
-开源代码：
+- Client: https://github.com/mylxsw/aidea
+- Server: https://github.com/mylxsw/aidea-server
 
-- 客户端：https://github.com/mylxsw/aidea
-- 服务端：https://github.com/mylxsw/aidea-server
+## Technical Communication
 
-## 技术交流
-
-- 微信技术交流群：3 个群都已满员，添加微信号 `x-prometheus` 为好友，拉你进群
+- WeChat technical communication group: All 3 groups are full, add WeChat ID `x-prometheus` as a friend and I will add you to the group
 
     <img src="https://github.com/mylxsw/aidea/assets/2330911/655601c1-9371-4460-9657-c58521260336" width="200"/>
 
-- 微信公众号
+- WeChat Official Account
 
     <img src="https://github.com/mylxsw/aidea-server/assets/2330911/376a3b9f-eacd-45c6-9630-39eb720ba097" width="500" />
 
-- 电报群：[点此加入](https://t.me/aideachat)
+- Telegram group: [Join here](https://t.me/aideachat)
 
-## 下载安装地址
+## Download and Installation
 
-Android/IOS APP：https://aidea.aicode.cc/
+Android/IOS APP: https://aidea.aicode.cc/
 
-Mac/Windows 桌面端：https://github.com/mylxsw/aidea/releases
+Mac/Windows desktop: https://github.com/mylxsw/aidea/releases
 
-Web 端：https://web.aicode.cc/
+Web: https://web.aicode.cc/
 
-## 福利
+## Benefits
 
-目前我的 OpenAI 账户还有大约 4900+ 美金的额度，为了感谢各位的关注，在 2023 年 11 月 1 日前（4900 美金额度消耗完为止），GPT-4 使用价格低至 每 1K Token 只需要 10 个智慧果。
+Currently, my OpenAI account has a remaining balance of approximately $4900+. To thank you for your support, until November 1, 2023 (or until the $4900 balance is exhausted), the price for using GPT-4 will be as low as 10 Wisdom Fruits per 1K Token.
 
-> 相当于 0.1 元 / 1000 Token，OpenAI 官方价格为输入 0.21 元，输出 0.42 元。
+> Equivalent to 0.1 yuan / 1000 Token, OpenAI official price is 0.21 yuan for input and 0.42 yuan for output.
 
-## APP 截图
+## APP Screenshots
 
 
 ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-32-34.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-09-14_10-20-28.jpg-thumb)
