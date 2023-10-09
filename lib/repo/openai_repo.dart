@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
+import 'package:askaide/helper/env.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
 import 'package:dart_openai/openai.dart';

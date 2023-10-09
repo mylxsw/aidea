@@ -8,10 +8,6 @@ const databaseVersion = 25;
 const maxRoomNumForNonVIP = 50;
 const coinSign = '个';
 
-// API 服务器地址
-const apiServerURL = 'https://ai-api.aicode.cc';
-// const apiServerURL = 'http://localhost';
-
 const settingAPIServerToken = 'api-token';
 const settingUserInfo = 'user-info';
 const settingUsingGuestMode = 'using-guest-mode';

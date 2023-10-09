@@ -24,10 +24,16 @@ build-web:
 	rm -fr build/web/fonts/ && mkdir build/web/fonts
 	cp -r scripts/s build/web/fonts/s
 
+build-web-samehost:
+	flutter build web --web-renderer canvaskit --release --dart-define=API_SERVER_URL=/
+	cd scripts && go run main.go ../build/web/main.dart.js && cd ..
+	rm -fr build/web/fonts/ && mkdir build/web/fonts
+	cp -r scripts/s build/web/fonts/s
+
 deploy-web: build-web
 	cd build && tar -zcvf web.tar.gz web
 	scp build/web.tar.gz huawei-1:/data/webroot
 	ssh huawei-1 "cd /data/webroot && tar -zxvf web.tar.gz && rm -rf web.tar.gz app && mv web app"
 	rm -fr build/web.tar.gz
 
-.PHONY: run build-android build-macos ipa
+.PHONY: run build-android build-macos ipa build-web-samehost build-web deploy-web
