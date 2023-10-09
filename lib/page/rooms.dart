@@ -132,7 +132,7 @@ class RoomItem extends StatelessWidget {
                                       ?.withAlpha(150),
                                   fontSize: 13,
                                 ),
-                                maxLines: 2,
+                                maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             // if (room.description != null)
