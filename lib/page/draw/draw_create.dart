@@ -59,7 +59,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
   String selectedImageSize = '1:1';
   bool showAdvancedOptions = false;
   CreativeIslandImageFilter? selectedStyle;
-  double? imageStrength = 0.5;
+  double? imageStrength = 0.65;
 
   /// 是否停止周期性查询任务执行状态
   var stopPeriodQuery = false;
@@ -375,7 +375,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Slider(
-                          value: imageStrength ?? 0,
+                          value: imageStrength ?? 0.65,
                           min: 0,
                           max: 1,
                           divisions: 20,
@@ -910,20 +910,21 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
       }
     } catch (e) {
       cancel();
+      // ignore: use_build_context_synchronously
       showErrorMessageEnhanced(context, e);
     }
   }
 
   String imageStrengthText() {
-    if (imageStrength == 0 || imageStrength == null) {
+    if (imageStrength == 0) {
       return '自动';
     }
 
-    if (imageStrength! >= 0.4 && imageStrength! <= 0.6) {
-      return '适中（推荐）';
+    if (imageStrength! >= 0.4 && imageStrength! <= 0.67) {
+      return '适中';
     }
 
-    if (imageStrength! > 0.6 && imageStrength! < 0.9) {
+    if (imageStrength! > 0.65 && imageStrength! < 0.9) {
       return '更有创造力';
     }
 
