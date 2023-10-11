@@ -32,7 +32,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
               id: event.roomId,
             ),
             const <String, MessageState>{},
-            cascading: event.cascading,
+            cascading: false,
           ));
         }
 
@@ -63,7 +63,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
               avatarUrl: room.avatarUrl,
             ),
             const <String, MessageState>{},
-            cascading: event.cascading,
+            cascading: false,
           ));
 
           final states = await stateManager.loadRoomStates(event.roomId);

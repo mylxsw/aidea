@@ -288,6 +288,11 @@ class _ChatAnywhereScreenState extends State<ChatAnywhereScreen> {
                     _inputEnabled.value = false;
                   });
                 } else if (!state.processing && !_inputEnabled.value) {
+                  // 更新免费使用次数
+                  context
+                      .read<FreeCountBloc>()
+                      .add(FreeCountReloadEvent(model: room.room.model));
+
                   // 聊天回复完成时，取消输入框的禁止编辑状态
                   setState(() {
                     _inputEnabled.value = true;
