@@ -345,7 +345,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               context,
                               <SelectorItem>[
                                 SelectorItem(const Text('支付宝电脑端（扫码支付）'), 'web'),
-                                // SelectorItem(const Text('支付宝手机端'), 'wap'),
+                                SelectorItem(const Text('支付宝手机端'), 'wap'),
                               ],
                               (value) {
                                 _startPaymentLoading();
