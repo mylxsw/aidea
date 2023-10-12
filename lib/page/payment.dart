@@ -473,10 +473,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
     paymentId = created.paymentId;
 
+    // 沙箱环境支持
+    final env = created.sandbox ? AliPayEvn.SANDBOX : AliPayEvn.ONLINE;
+
     // 调起支付宝支付
     final aliPayRes = await aliPay(
       created.params,
-      evn: AliPayEvn.ONLINE,
+      evn: env,
     ).whenComplete(() => _closePaymentLoading());
     print("=================");
     print(aliPayRes);
