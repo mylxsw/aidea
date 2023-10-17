@@ -59,7 +59,6 @@ class _ChatAnywhereScreenState extends State<ChatAnywhereScreen> {
   @override
   void initState() {
     chatId = widget.chatId;
-
     context.read<RoomBloc>().add(RoomLoadEvent(
           chatAnywhereRoomId,
           chatHistoryId: chatId,
@@ -118,9 +117,9 @@ class _ChatAnywhereScreenState extends State<ChatAnywhereScreen> {
           listener: (context, state) {
             if (state is RoomLoaded && state.cascading) {
               // 加载免费使用次数
-              context
-                  .read<FreeCountBloc>()
-                  .add(FreeCountReloadEvent(model: state.room.model));
+              context.read<FreeCountBloc>().add(FreeCountReloadEvent(
+                    model: widget.model ?? state.room.model,
+                  ));
             }
           },
           buildWhen: (previous, current) => current is RoomLoaded,
@@ -289,9 +288,8 @@ class _ChatAnywhereScreenState extends State<ChatAnywhereScreen> {
                   });
                 } else if (!state.processing && !_inputEnabled.value) {
                   // 更新免费使用次数
-                  context
-                      .read<FreeCountBloc>()
-                      .add(FreeCountReloadEvent(model: room.room.model));
+                  context.read<FreeCountBloc>().add(FreeCountReloadEvent(
+                      model: widget.model ?? room.room.model));
 
                   // 聊天回复完成时，取消输入框的禁止编辑状态
                   setState(() {

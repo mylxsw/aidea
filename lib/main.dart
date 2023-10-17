@@ -31,6 +31,7 @@ import 'package:askaide/page/creative_island/creative_island_gallery.dart';
 import 'package:askaide/page/creative_island/creative_island_history.dart';
 import 'package:askaide/page/creative_island/creative_island_history_all.dart';
 import 'package:askaide/page/creative_island/creative_island_history_preview.dart';
+import 'package:askaide/page/custom_home_models.dart';
 import 'package:askaide/page/free_statistics.dart';
 import 'package:askaide/page/lab/creative_models.dart';
 import 'package:askaide/page/destroy_account.dart';
@@ -356,7 +357,9 @@ class MyApp extends StatefulWidget {
                     chatId:
                         int.tryParse(state.queryParameters['chat_id'] ?? '0'),
                     initialMessage: state.queryParameters['init_message'],
-                    model: state.queryParameters['model'],
+                    model: state.queryParameters['model'] == ''
+                        ? null
+                        : state.queryParameters['model'],
                   ),
                 ),
               ),
@@ -799,6 +802,13 @@ class MyApp extends StatefulWidget {
                   providers: [BlocProvider.value(value: freeCountBloc)],
                   child: FreeStatisticsPage(setting: settingRepo),
                 ),
+              ),
+            ),
+            GoRoute(
+              name: 'custom-home-models',
+              path: '/setting/custom-home-models',
+              pageBuilder: (context, state) => transitionResolver(
+                CustomHomeModelsPage(setting: settingRepo),
               ),
             ),
           ],
