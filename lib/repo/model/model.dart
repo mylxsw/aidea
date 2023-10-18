@@ -1,6 +1,7 @@
 class Model {
   final String id;
   final String name;
+  final String? shortName;
   final String ownedBy;
   String? description;
   String category;
@@ -12,6 +13,7 @@ class Model {
     this.id,
     this.name,
     this.ownedBy, {
+    this.shortName,
     required this.category,
     this.description,
     this.isChatModel = false,

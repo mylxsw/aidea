@@ -1,4 +1,3 @@
-import 'package:askaide/helper/constant.dart';
 import 'package:askaide/page/dialog.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/repo/model/model.dart';
@@ -52,7 +51,9 @@ class ModelItem extends StatelessWidget {
                   ]),
                   iconColor: customColors.weakLinkColor,
                   childrenPadding: const EdgeInsets.only(bottom: 10),
-                  initiallyExpanded: group.key == modelTypeOpenAI,
+                  initiallyExpanded: group.value
+                      .where((e) => e.uid() == initValue || e.id == initValue)
+                      .isNotEmpty,
                   children: [
                     for (var model in group.value)
                       _buildListTile(model, customColors, context),
@@ -84,7 +85,7 @@ class ModelItem extends StatelessWidget {
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: initValue == model.uid()
+              color: initValue == model.uid() || initValue == model.id
                   ? customColors.linkColor
                   : (model.disabled
                       ? customColors.tagsBackground
@@ -105,7 +106,7 @@ class ModelItem extends StatelessWidget {
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    color: initValue == model.uid()
+                    color: initValue == model.uid() || initValue == model.id
                         ? Colors.white
                         : (model.disabled
                             ? customColors.weakTextColor!.withAlpha(150)
@@ -118,7 +119,8 @@ class ModelItem extends StatelessWidget {
                   Text(
                     model.description!,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: initValue == model.uid()
+                          color: initValue == model.uid() ||
+                                  initValue == model.id
                               ? Colors.white
                               : (model.disabled
                                   ? customColors.weakTextColor!.withAlpha(150)

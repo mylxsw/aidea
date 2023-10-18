@@ -1445,11 +1445,11 @@ class APIServer {
   }
 
   /// 服务器支持的能力
-  Future<Capabilities> capabilities() async {
-    return sendGetRequest(
+  Future<Capabilities> capabilities({bool cache = true}) async {
+    return sendCachedGetRequest(
       '/public/info/capabilities',
       (resp) => Capabilities.fromJson(resp.data),
-      requestTimeout: 5000,
+      forceRefresh: !cache,
     );
   }
 
@@ -1498,6 +1498,17 @@ class APIServer {
       },
       subKey: _cacheSubKey(),
       forceRefresh: !cache,
+    );
+  }
+
+  /// 更新自定义模型
+  Future<void> updateCustomHomeModels({required List<String> models}) async {
+    return sendPostRequest(
+      '/v1/users/custom/home-models',
+      (value) => {},
+      formData: {
+        'models': models.join(','),
+      },
     );
   }
 }
@@ -1967,6 +1978,7 @@ class ModelStyle {
 class Model {
   String id;
   String name;
+  String shortName;
   String? description;
   String category;
   bool isChat;
@@ -1977,6 +1989,7 @@ class Model {
   Model({
     required this.id,
     required this.name,
+    required this.shortName,
     required this.category,
     required this.isChat,
     required this.isImage,
@@ -1988,6 +2001,7 @@ class Model {
   toJson() => {
         'id': id,
         'name': name,
+        'short_name': shortName,
         'description': description,
         'category': category,
         'is_chat': isChat,
@@ -2000,6 +2014,7 @@ class Model {
     return Model(
       id: json['id'],
       name: json['name'],
+      shortName: json['short_name'] ?? json['name'],
       description: json['description'],
       category: json['category'],
       isChat: json['is_chat'],

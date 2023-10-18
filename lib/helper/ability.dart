@@ -5,7 +5,7 @@ import 'package:askaide/repo/settings_repo.dart';
 
 class Ability {
   late final SettingRepository setting;
-  late final Capabilities capabilities;
+  late Capabilities capabilities;
 
   init(SettingRepository setting, Capabilities capabilities) {
     this.setting = setting;
@@ -20,9 +20,19 @@ class Ability {
     return _instance;
   }
 
+  /// 更新能力
+  updateCapabilities(Capabilities capabilities) {
+    this.capabilities = capabilities;
+  }
+
   /// 首页支持的模型列表
   List<HomeModel> get homeModels {
     return capabilities.homeModels;
+  }
+
+  /// 是否显示首页模型描述
+  bool get showHomeModelDescription {
+    return capabilities.showHomeModelDescription;
   }
 
   /// 是否支持 OpenAI

@@ -91,6 +91,9 @@ class _SettingScreenState extends State<SettingScreen> {
                     _buildCommonThemeSetting(customColors),
                     // 语言设置
                     _buildCommonLanguageSetting(),
+                    // 常用模型
+                    if (Ability().supportAPIServer())
+                      _buildCustomHomeModelsSetting(customColors),
                     // OpenAI 自定义配置
                     if (Ability().enableOpenAI)
                       _buildOpenAISelfHostedSetting(customColors),
@@ -564,6 +567,16 @@ class _SettingScreenState extends State<SettingScreen> {
       ),
       onPressed: (context) {
         context.push('/setting/openai-custom?source=setting');
+      },
+    );
+  }
+
+  /// 常用模型
+  SettingsTile _buildCustomHomeModelsSetting(CustomColors customColors) {
+    return SettingsTile.navigation(
+      title: Text(AppLocale.customHomeModels.getString(context)),
+      onPressed: (context) {
+        context.push('/setting/custom-home-models');
       },
     );
   }

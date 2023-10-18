@@ -58,9 +58,9 @@ class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
 
   List<ChatMemory> validMemories = [
     ChatMemory('无记忆', 1, description: '每次对话都是独立的，常用于一次性问答'),
-    ChatMemory('基础', 5, description: '记住最近的 5 次对话'),
-    ChatMemory('中等', 10, description: '记住最近的 10 次对话'),
-    ChatMemory('深度', 20, description: '记住最近的 20 次对话'),
+    ChatMemory('基础', 3, description: '记住最近的 3 次对话'),
+    ChatMemory('中等', 6, description: '记住最近的 6 次对话'),
+    ChatMemory('深度', 10, description: '记住最近的 10 次对话'),
   ];
 
   bool showAdvancedOptions = false;

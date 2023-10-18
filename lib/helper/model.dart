@@ -26,6 +26,7 @@ class ModelAggregate {
               e.id.split(':').last,
               e.name,
               e.category,
+              shortName: e.shortName,
               description: e.description,
               isChatModel: e.isChat,
               disabled: e.disabled,

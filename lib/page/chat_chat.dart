@@ -112,6 +112,33 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
           .toList();
     }
 
+    APIServer().capabilities().then((cap) {
+      Ability().updateCapabilities(cap);
+
+      if (cap.homeModels.isNotEmpty) {
+        models = cap.homeModels
+            .map((e) => ModelIndicatorInfo(
+                  modelId: e.modelId,
+                  modelName: e.name,
+                  description: e.desc,
+                  icon: e.powerful ? Icons.auto_awesome : Icons.bolt,
+                  activeColor: stringToColor(e.color),
+                ))
+            .toList();
+
+        if (mounted) {
+          // 加载免费模型剩余使用次数
+          if (currentModel != null) {
+            context
+                .read<FreeCountBloc>()
+                .add(FreeCountReloadEvent(model: currentModel!.modelId));
+          }
+
+          setState(() {});
+        }
+      }
+    });
+
     // 是否显示免费模型提示消息
     Cache().boolGet(key: 'show_home_free_model_message').then((show) async {
       if (show) {
@@ -138,13 +165,6 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
     setState(() {
       currentModel = models[0];
     });
-
-    // 加载免费模型剩余使用次数
-    if (currentModel != null) {
-      context
-          .read<FreeCountBloc>()
-          .add(FreeCountReloadEvent(model: currentModel!.modelId));
-    }
 
     if (widget.showInitialDialog) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -194,6 +214,7 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
       map[model.modelId] = ModelIndicator(
         model: model,
         selected: model.modelId == currentModel?.modelId,
+        showDescription: Ability().showHomeModelDescription,
       );
     }
     return map;
@@ -261,7 +282,7 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
                                 onTap: () {
                                   context
                                       .push(
-                                          '/chat-anywhere?chat_id=${state.histories[index - 1].id}')
+                                          '/chat-anywhere?chat_id=${state.histories[index - 1].id}&model=${state.histories[index - 1].model}')
                                       .whenComplete(() {
                                     FocusScope.of(context)
                                         .requestFocus(FocusNode());
@@ -319,7 +340,7 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
               children: buildModelIndicators(),
               padding: 0,
               isStretch: true,
-              height: 60,
+              height: Ability().showHomeModelDescription ? 60 : 45,
               innerPadding: const EdgeInsets.all(0),
               decoration: BoxDecoration(
                 color: customColors.columnBlockBackgroundColor?.withAlpha(150),

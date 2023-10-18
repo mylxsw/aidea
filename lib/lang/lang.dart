@@ -198,6 +198,8 @@ mixin AppLocale {
   static const String toPay = 'to-pay';
   static const String discover = 'discover';
 
+  static const String customHomeModels = 'custom-home-models';
+
   static const Map<String, dynamic> zh = {
     required: '必填',
     systemInfo: '系统信息',
@@ -386,6 +388,7 @@ mixin AppLocale {
     coinUnit: '个',
     toPay: '立即支付',
     discover: '绘玩',
+    customHomeModels: '常用模型',
   };
 
   static const Map<String, dynamic> en = {
@@ -589,6 +592,7 @@ mixin AppLocale {
     coinUnit: '',
     toPay: 'To pay',
     discover: 'Discover',
+    customHomeModels: 'Favorite Models',
   };
 }
 

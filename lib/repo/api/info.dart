@@ -18,6 +18,9 @@ class Capabilities {
   /// 首页显示的模型信息
   final List<HomeModel> homeModels;
 
+  /// 是否显示首页模型描述
+  final bool showHomeModelDescription;
+
   Capabilities({
     required this.applePayEnabled,
     required this.alipayEnabled,
@@ -25,6 +28,7 @@ class Capabilities {
     required this.mailEnabled,
     required this.openaiEnabled,
     required this.homeModels,
+    this.showHomeModelDescription = true,
   });
 
   factory Capabilities.fromJson(Map<String, dynamic> json) {
@@ -37,6 +41,7 @@ class Capabilities {
       homeModels: ((json['home_models'] ?? []) as List<dynamic>)
           .map((e) => HomeModel.fromJson(e))
           .toList(),
+      showHomeModelDescription: json['show_home_model_description'] ?? true,
     );
   }
 
@@ -48,6 +53,7 @@ class Capabilities {
       'mail_enabled': mailEnabled,
       'openai_enabled': openaiEnabled,
       'home_models': homeModels.map((e) => e.toJson()).toList(),
+      'show_home_model_description': showHomeModelDescription,
     };
   }
 }
