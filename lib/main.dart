@@ -4,6 +4,7 @@ import 'package:askaide/bloc/chat_chat_bloc.dart';
 import 'package:askaide/bloc/creative_island_bloc.dart';
 import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/bloc/gallery_bloc.dart';
+import 'package:askaide/bloc/group_chat_bloc.dart';
 import 'package:askaide/bloc/payment_bloc.dart';
 import 'package:askaide/bloc/version_bloc.dart';
 import 'package:askaide/helper/ability.dart';
@@ -33,6 +34,7 @@ import 'package:askaide/page/creative_island/creative_island_history_all.dart';
 import 'package:askaide/page/creative_island/creative_island_history_preview.dart';
 import 'package:askaide/page/custom_home_models.dart';
 import 'package:askaide/page/free_statistics.dart';
+import 'package:askaide/page/group/chat.dart';
 import 'package:askaide/page/lab/creative_models.dart';
 import 'package:askaide/page/destroy_account.dart';
 import 'package:askaide/page/diagnosis.dart';
@@ -810,6 +812,29 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) => transitionResolver(
                 CustomHomeModelsPage(setting: settingRepo),
               ),
+            ),
+            GoRoute(
+              name: 'group-chat-chat',
+              path: '/group-chat/:group_id/chat',
+              pageBuilder: (context, state) {
+                final groupId = int.tryParse(state.pathParameters['group_id']!);
+
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: ((context) =>
+                            GroupChatBloc(stateManager: messageStateManager)),
+                      ),
+                    ],
+                    child: GroupChatPage(
+                      setting: settingRepo,
+                      stateManager: messageStateManager,
+                      groupId: groupId!,
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         )

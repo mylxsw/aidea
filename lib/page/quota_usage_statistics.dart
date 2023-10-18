@@ -6,6 +6,7 @@ import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
+import 'package:askaide/repo/model/misc.dart';
 
 class QuotaUsageStatisticsScreen extends StatefulWidget {
   final SettingRepository setting;

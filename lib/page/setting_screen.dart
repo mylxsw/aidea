@@ -253,6 +253,18 @@ class _SettingScreenState extends State<SettingScreen> {
                           context.push('/lab/draw-board');
                         },
                       ),
+
+                      SettingsTile(
+                        title: const Text('群组'),
+                        trailing: Icon(
+                          CupertinoIcons.chevron_forward,
+                          size: MediaQuery.of(context).textScaleFactor * 18,
+                          color: Colors.grey,
+                        ),
+                        onPressed: (context) {
+                          context.push('/group-chat/1001/chat');
+                        },
+                      ),
                       // SettingsTile(
                       //   title: const Text('用户中心'),
                       //   trailing: Icon(

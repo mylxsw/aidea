@@ -175,7 +175,11 @@ enum Role {
     switch (value) {
       case 'receiver':
         return Role.receiver;
+      case 'assistant':
+        return Role.receiver;
       case 'sender':
+        return Role.sender;
+      case 'user':
         return Role.sender;
       default:
         return Role.receiver;

@@ -88,6 +88,25 @@ class HttpClient {
     return resp;
   }
 
+  static Future<Response> postJSON(
+    String url, {
+    Map<String, dynamic>? queryParameters,
+    Map<String, dynamic>? data,
+    Options? options,
+  }) async {
+    final resp = await dio.post(
+      url,
+      queryParameters: queryParameters,
+      data: data,
+      options: options,
+    );
+    // print("=======================");
+    // print("request: $url");
+    // print("response: ${resp.data}");
+
+    return resp;
+  }
+
   static Future<Response> put(
     String url, {
     Map<String, dynamic>? queryParameters,

@@ -1,5 +1,5 @@
 import 'package:askaide/page/theme/custom_theme.dart';
-import 'package:askaide/repo/api_server.dart';
+import 'package:askaide/repo/model/misc.dart';
 import 'package:flutter/material.dart';
 
 class EmptyPreview extends StatefulWidget {

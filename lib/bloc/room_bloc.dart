@@ -3,6 +3,7 @@ import 'package:askaide/helper/constant.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/repo/api/room_gallery.dart';
 import 'package:askaide/repo/api_server.dart';
+import 'package:askaide/repo/model/misc.dart';
 import 'package:askaide/repo/model/room.dart';
 
 import 'package:askaide/bloc/bloc_manager.dart';

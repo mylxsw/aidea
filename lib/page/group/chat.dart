@@ -1,4 +1,4 @@
-import 'package:askaide/bloc/free_count_bloc.dart';
+import 'package:askaide/bloc/group_chat_bloc.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
@@ -6,49 +6,41 @@ import 'package:askaide/helper/image.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/background_container.dart';
-import 'package:askaide/page/component/chat/empty.dart';
 import 'package:askaide/page/component/chat/help_tips.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
-import 'package:askaide/page/component/effect/glass.dart';
 import 'package:askaide/page/component/enhanced_popup_menu.dart';
-import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/share.dart';
+import 'package:askaide/page/dialog.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
-import 'package:askaide/bloc/chat_message_bloc.dart';
-import 'package:askaide/bloc/room_bloc.dart';
-import 'package:askaide/bloc/notify_bloc.dart';
 import 'package:askaide/page/component/chat/chat_input.dart';
 import 'package:askaide/page/component/chat/chat_preview.dart';
+import 'package:askaide/repo/model/group.dart';
 import 'package:askaide/repo/model/message.dart';
-import 'package:askaide/repo/model/misc.dart';
-import 'package:askaide/repo/model/room.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 
-import 'dialog.dart';
-
-class ChatScreen extends StatefulWidget {
-  final int roomId;
-  final MessageStateManager stateManager;
+class GroupChatPage extends StatefulWidget {
   final SettingRepository setting;
+  final int groupId;
+  final MessageStateManager stateManager;
 
-  const ChatScreen({
+  const GroupChatPage({
     super.key,
-    required this.roomId,
-    required this.stateManager,
     required this.setting,
+    required this.groupId,
+    required this.stateManager,
   });
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  State<GroupChatPage> createState() => _GroupChatPageState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _GroupChatPageState extends State<GroupChatPage> {
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<bool> _inputEnabled = ValueNotifier(true);
   final ChatPreviewController _chatPreviewController = ChatPreviewController();
@@ -56,12 +48,13 @@ class _ChatScreenState extends State<ChatScreen> {
       AudioPlayerController(useRemoteAPI: false);
   bool showAudioPlayer = false;
 
+  List<int> selectedMemberIds = [];
+
   @override
   void initState() {
     super.initState();
 
-    context.read<ChatMessageBloc>().add(ChatMessageGetRecentEvent());
-    context.read<RoomBloc>().add(RoomLoadEvent(widget.roomId, cascading: true));
+    context.read<GroupChatBloc>().add(GroupChatLoadEvent(widget.groupId));
 
     _chatPreviewController.addListener(() {
       setState(() {});
@@ -102,19 +95,21 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildChatComponents(CustomColors customColors) {
-    return BlocConsumer<RoomBloc, RoomState>(
-      listenWhen: (previous, current) => current is RoomLoaded,
+    return BlocConsumer<GroupChatBloc, GroupChatState>(
+      listenWhen: (previous, current) => current is GroupChatLoaded,
       listener: (context, state) {
-        if (state is RoomLoaded && state.cascading) {
-          // 加载免费使用次数
+        if (state is GroupChatLoaded) {
+          // 默认选中的成员
+          selectedMemberIds = state.group.members.map((e) => e.id!).toList();
+          // 加载聊天记录列表
           context
-              .read<FreeCountBloc>()
-              .add(FreeCountReloadEvent(model: state.room.model));
+              .read<GroupChatBloc>()
+              .add(GroupChatMessagesLoadEvent(widget.groupId));
         }
       },
-      buildWhen: (previous, current) => current is RoomLoaded,
+      buildWhen: (previous, current) => current is GroupChatLoaded,
       builder: (context, room) {
-        if (room is RoomLoaded) {
+        if (room is GroupChatLoaded) {
           return SafeArea(
             top: false,
             bottom: false,
@@ -126,7 +121,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 // 聊天内容窗口
                 Expanded(
                   child: _buildChatPreviewArea(
-                      room, customColors, _chatPreviewController.selectMode),
+                    room,
+                    customColors,
+                    _chatPreviewController.selectMode,
+                  ),
                 ),
 
                 // 聊天输入窗口
@@ -138,37 +136,23 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     color: customColors.chatInputPanelBackground,
                   ),
-                  child: BlocBuilder<FreeCountBloc, FreeCountState>(
-                    builder: (context, freeState) {
-                      var hintText = '有问题尽管问我';
-                      if (freeState is FreeCountLoadedState) {
-                        final matched = freeState.model(room.room.model);
-                        if (matched != null &&
-                            matched.leftCount > 0 &&
-                            matched.maxCount > 0) {
-                          hintText += '（今日还可免费畅享${matched.leftCount}次）';
-                        }
-                      }
-
-                      return SafeArea(
-                        child: _chatPreviewController.selectMode
-                            ? buildSelectModeToolbars(
-                                context,
-                                _chatPreviewController,
-                                customColors,
-                              )
-                            : ChatInput(
-                                enableNotifier: _inputEnabled,
-                                enableImageUpload: false,
-                                onSubmit: _handleSubmit,
-                                onNewChat: () => handleResetContext(context),
-                                hintText: hintText,
-                                onVoiceRecordTappedEvent: () {
-                                  _audioPlayerController.stop();
-                                },
-                              ),
-                      );
-                    },
+                  child: SafeArea(
+                    child: _chatPreviewController.selectMode
+                        ? buildSelectModeToolbars(
+                            context,
+                            _chatPreviewController,
+                            customColors,
+                          )
+                        : ChatInput(
+                            enableNotifier: _inputEnabled,
+                            enableImageUpload: false,
+                            onSubmit: _handleSubmit,
+                            onNewChat: () => handleResetContext(context),
+                            hintText: '有问题尽管问我',
+                            onVoiceRecordTappedEvent: () {
+                              _audioPlayerController.stop();
+                            },
+                          ),
                   ),
                 ),
               ],
@@ -181,19 +165,17 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  BlocConsumer<ChatMessageBloc, ChatMessageState> _buildChatPreviewArea(
-    RoomLoaded room,
+  BlocConsumer<GroupChatBloc, GroupChatState> _buildChatPreviewArea(
+    GroupChatLoaded group,
     CustomColors customColors,
     bool selectMode,
   ) {
-    return BlocConsumer<ChatMessageBloc, ChatMessageState>(
+    return BlocConsumer<GroupChatBloc, GroupChatState>(
+      listenWhen: (previous, current) => current is GroupChatMessagesLoaded,
       listener: (context, state) {
-        // 显示错误提示
-        if (state is ChatMessagesLoaded && state.error != null) {
-          showErrorMessageEnhanced(context, state.error);
-        } else if (state is ChatMessageUpdated) {
+        if (state is GroupChatMessagesLoaded) {
           // 聊天内容窗口滚动到底部
-          if (!state.processing && _scrollController.hasClients) {
+          if (!state.hasWaitTasks && _scrollController.hasClients) {
             _scrollController.animateTo(
               0,
               duration: const Duration(milliseconds: 500),
@@ -201,17 +183,12 @@ class _ChatScreenState extends State<ChatScreen> {
             );
           }
 
-          if (state.processing && _inputEnabled.value) {
+          if (state.hasWaitTasks && _inputEnabled.value) {
             // 聊天回复中时，禁止输入框编辑
             setState(() {
               _inputEnabled.value = false;
             });
-          } else if (!state.processing && !_inputEnabled.value) {
-            // 更新免费使用次数
-            context
-                .read<FreeCountBloc>()
-                .add(FreeCountReloadEvent(model: room.room.model));
-
+          } else if (!state.hasWaitTasks && !_inputEnabled.value) {
             // 聊天回复完成时，取消输入框的禁止编辑状态
             setState(() {
               _inputEnabled.value = true;
@@ -219,37 +196,24 @@ class _ChatScreenState extends State<ChatScreen> {
           }
         }
       },
-      buildWhen: (prv, cur) => cur is ChatMessagesLoaded,
+      buildWhen: (prv, cur) => cur is GroupChatMessagesLoaded,
       builder: (context, state) {
-        if (state is ChatMessagesLoaded) {
-          final loadedMessages = state.messages as List<Message>;
-          if (room.room.initMessage != null &&
-              room.room.initMessage != '' &&
-              loadedMessages.isEmpty) {
-            loadedMessages.add(
-              Message(
-                Role.receiver,
-                room.room.initMessage!,
-                type: MessageType.initMessage,
-                id: 0,
-              ),
-            );
-          }
-
-          if (loadedMessages.isEmpty) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: EmptyPreview(
-                examples: room.examples ?? [],
-                onSubmit: _handleSubmit,
-              ),
-            );
-          }
+        if (state is GroupChatMessagesLoaded) {
+          final loadedMessages = state.messages
+              .map((e) => Message(
+                    Role.getRoleFromText(e.role),
+                    e.message,
+                    type: MessageType.text,
+                    status: e.status ?? 1,
+                    refId: e.pid,
+                    ts: e.createdAt,
+                  ))
+              .toList();
 
           final messages = loadedMessages.map((e) {
             return MessageWithState(
               e,
-              room.states[
+              group.states[
                       widget.stateManager.getKey(e.roomId ?? 0, e.id ?? 0)] ??
                   MessageState(),
             );
@@ -258,11 +222,12 @@ class _ChatScreenState extends State<ChatScreen> {
           _chatPreviewController.setAllMessageIds(messages);
 
           return ChatPreview(
+            supportBloc: false,
             messages: messages,
             scrollController: _scrollController,
             controller: _chatPreviewController,
             stateManager: widget.stateManager,
-            robotAvatar: selectMode ? null : _buildAvatar(room.room),
+            robotAvatar: selectMode ? null : _buildAvatar(group.group),
             onDeleteMessage: (id) {
               handleDeleteMessage(context, id);
             },
@@ -273,9 +238,11 @@ class _ChatScreenState extends State<ChatScreen> {
               _scrollController.animateTo(0,
                   duration: const Duration(milliseconds: 500),
                   curve: Curves.easeOut);
-              _handleSubmit(message.text, messagetType: message.type);
+              _handleSubmit(
+                message.text,
+              );
             },
-            helpWidgets: state.processing || loadedMessages.last.isInitMessage()
+            helpWidgets: state.hasWaitTasks || loadedMessages.isEmpty
                 ? null
                 : [
                     HelpTips(
@@ -315,47 +282,18 @@ class _ChatScreenState extends State<ChatScreen> {
             centerTitle: true,
             elevation: 0,
             // backgroundColor: customColors.chatRoomBackground,
-            title: BlocBuilder<RoomBloc, RoomState>(
-              buildWhen: (previous, current) => current is RoomLoaded,
+            title: BlocBuilder<GroupChatBloc, GroupChatState>(
+              buildWhen: (previous, current) => current is GroupChatLoaded,
               builder: (context, state) {
-                if (state is RoomLoaded) {
+                if (state is GroupChatLoaded) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // 房间名称
                       Text(
-                        state.room.name,
+                        state.group.group.name,
                         style: const TextStyle(fontSize: 16),
                       ),
-                      // BlocBuilder<FreeCountBloc, FreeCountState>(
-                      //   buildWhen: (previous, current) =>
-                      //       current is FreeCountLoadedState,
-                      //   builder: (context, freeState) {
-                      //     if (freeState is FreeCountLoadedState) {
-                      //       final matched = freeState.model(state.room.model);
-                      //       if (matched != null &&
-                      //           matched.leftCount > 0 &&
-                      //           matched.maxCount > 0) {
-                      //         return Text(
-                      //           '今日剩余免费 ${matched.leftCount} 次',
-                      //           style: TextStyle(
-                      //             color: customColors.weakTextColor,
-                      //             fontSize: 12,
-                      //           ),
-                      //         );
-                      //       }
-                      //     }
-                      //     return const SizedBox();
-                      //   },
-                      // ),
-                      // 模型名称
-                      // Text(
-                      //   state.room.model.split(':').last,
-                      //   style: TextStyle(
-                      //     fontSize: 12,
-                      //     color: Theme.of(context).textTheme.bodySmall!.color,
-                      //   ),
-                      // ),
                     ],
                   );
                 }
@@ -364,22 +302,23 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
             actions: [
-              buildChatMoreMenu(context, widget.roomId),
+              buildChatMoreMenu(context, widget.groupId),
             ],
             toolbarHeight: CustomSize.toolbarHeight,
           );
   }
 
-  Widget _buildAvatar(Room room) {
-    if (room.avatarUrl != null && room.avatarUrl!.startsWith('http')) {
+  Widget _buildAvatar(ChatGroup room) {
+    if (room.group.avatarUrl != null &&
+        room.group.avatarUrl!.startsWith('http')) {
       return RemoteAvatar(
-        avatarUrl: imageURL(room.avatarUrl!, qiniuImageTypeAvatar),
+        avatarUrl: imageURL(room.group.avatarUrl!, qiniuImageTypeAvatar),
         size: 30,
       );
     }
 
     return RandomAvatar(
-      id: room.avatar,
+      id: room.group.id,
       size: 30,
       usage:
           Ability().supportAPIServer() ? AvatarUsage.room : AvatarUsage.legacy,
@@ -387,27 +326,18 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   /// 提交新消息
-  void _handleSubmit(String text, {messagetType = MessageType.text}) {
+  void _handleSubmit(String text) {
     setState(() {
       _inputEnabled.value = false;
     });
 
-    context.read<ChatMessageBloc>().add(
-          ChatMessageSendEvent(
-            Message(
-              Role.sender,
-              text,
-              user: 'me',
-              ts: DateTime.now(),
-              type: messagetType,
-            ),
+    context.read<GroupChatBloc>().add(
+          GroupChatSendEvent(
+            widget.groupId,
+            text,
+            selectedMemberIds,
           ),
         );
-
-    context.read<NotifyBloc>().add(NotifyResetEvent());
-    context
-        .read<RoomBloc>()
-        .add(RoomLoadEvent(widget.roomId, cascading: false));
   }
 }
 
@@ -416,9 +346,7 @@ void handleDeleteMessage(BuildContext context, int id, {int? chatHistoryId}) {
   openConfirmDialog(
     context,
     AppLocale.confirmDelete.getString(context),
-    () => context
-        .read<ChatMessageBloc>()
-        .add(ChatMessageDeleteEvent([id], chatHistoryId: chatHistoryId)),
+    () {},
     danger: true,
   );
 }
@@ -429,7 +357,7 @@ void handleResetContext(BuildContext context) {
   //   context,
   //   AppLocale.confirmStartNewChat.getString(context),
   //   () {
-  context.read<ChatMessageBloc>().add(ChatMessageBreakContextEvent());
+  // context.read<ChatMessageBloc>().add(ChatMessageBreakContextEvent());
   HapticFeedbackHelper.mediumImpact();
   //   },
   // );
@@ -441,119 +369,11 @@ void handleClearHistory(BuildContext context) {
     context,
     AppLocale.confirmClearMessages.getString(context),
     () {
-      context.read<ChatMessageBloc>().add(ChatMessageClearAllEvent());
+      // context.read<ChatMessageBloc>().add(ChatMessageClearAllEvent());
       showSuccessMessage(AppLocale.operateSuccess.getString(context));
       HapticFeedbackHelper.mediumImpact();
     },
     danger: true,
-  );
-}
-
-/// 打开示例问题列表
-void handleOpenExampleQuestion(
-  BuildContext context,
-  Room room,
-  List<ChatExample> examples,
-  Function(String text) onSubmit,
-) {
-  final customColors = Theme.of(context).extension<CustomColors>()!;
-
-  openModalBottomSheet(
-    context,
-    (context) {
-      return FractionallySizedBox(
-        heightFactor: 0.8,
-        child: GlassEffect(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                ),
-                child: Text(
-                  AppLocale.examples.getString(context),
-                  textScaleFactor: 1.2,
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: examples.length,
-                  itemBuilder: (context, i) {
-                    return ListTile(
-                      title: Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: customColors.chatExampleItemBackground,
-                        ),
-                        child: Column(
-                          children: [
-                            Text(
-                              examples[i].title,
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: customColors.chatExampleItemText,
-                              ),
-                            ),
-                            if (examples[i].content != null)
-                              const SizedBox(height: 5),
-                            if (examples[i].content != null)
-                              Text(
-                                examples[i].content!,
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: customColors.chatExampleItemText,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                      onTap: () {
-                        final controller = TextEditingController();
-                        controller.text = examples[i].text;
-
-                        openDialog(
-                          context,
-                          title: Text(
-                            AppLocale.confirmSend.getString(context),
-                            textAlign: TextAlign.left,
-                            textScaleFactor: 0.8,
-                          ),
-                          builder: Builder(
-                            builder: (context) {
-                              return EnhancedTextField(
-                                controller: controller,
-                                maxLines: 5,
-                                maxLength: 4000,
-                                customColors: customColors,
-                              );
-                            },
-                          ),
-                          onSubmit: () {
-                            onSubmit(controller.text.trim());
-                            return true;
-                          },
-                          afterSubmit: () => context.pop(),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    },
   );
 }
 
@@ -627,9 +447,9 @@ Widget buildSelectModeToolbars(
               () {
                 final ids = chatPreviewController.selectedMessageIds.toList();
                 if (ids.isNotEmpty) {
-                  context
-                      .read<ChatMessageBloc>()
-                      .add(ChatMessageDeleteEvent(ids));
+                  // context
+                  //     .read<ChatMessageBloc>()
+                  //     .add(ChatMessageDeleteEvent(ids));
 
                   showErrorMessageEnhanced(
                       context, AppLocale.operateSuccess.getString(context));

@@ -29,6 +29,7 @@ class ChatPreview extends StatefulWidget {
   final MessageStateManager stateManager;
   final List<Widget>? helpWidgets;
   final Widget? robotAvatar;
+  final bool supportBloc;
   final void Function(Message message)? onSpeakEvent;
   final void Function(Message message)? onResentEvent;
 
@@ -43,6 +44,7 @@ class ChatPreview extends StatefulWidget {
     this.helpWidgets,
     this.onSpeakEvent,
     this.onResentEvent,
+    this.supportBloc = true,
   });
 
   @override
@@ -103,25 +105,38 @@ class _ChatPreviewState extends State<ChatPreview> {
 
                   // 消息主体部分
                   Expanded(
-                    child: BlocBuilder<ChatMessageBloc, ChatMessageState>(
-                      buildWhen: (previous, current) =>
-                          (current is ChatMessageUpdated &&
-                              current.message.id == message.message.id),
-                      builder: (context, state) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 10,
+                    child: widget.supportBloc
+                        ? BlocBuilder<ChatMessageBloc, ChatMessageState>(
+                            buildWhen: (previous, current) =>
+                                (current is ChatMessageUpdated &&
+                                    current.message.id == message.message.id),
+                            builder: (context, state) {
+                              return Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 10,
+                                ),
+                                child: _buildMessageBox(
+                                  context,
+                                  customColors,
+                                  _resolveMessage(state, message),
+                                  message.state,
+                                ),
+                              );
+                            },
+                          )
+                        : Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 10,
+                            ),
+                            child: _buildMessageBox(
+                              context,
+                              customColors,
+                              message.message,
+                              message.state,
+                            ),
                           ),
-                          child: _buildMessageBox(
-                            context,
-                            customColors,
-                            _resolveMessage(state, message),
-                            message.state,
-                          ),
-                        );
-                      },
-                    ),
                   ),
                 ],
               ),
