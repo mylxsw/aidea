@@ -262,7 +262,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           color: Colors.grey,
                         ),
                         onPressed: (context) {
-                          context.push('/group-chat/1001/chat');
+                          context.push('/group-chat/1006/chat');
                         },
                       ),
                       // SettingsTile(

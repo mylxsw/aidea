@@ -14,9 +14,15 @@ class GroupChatLoaded extends GroupChatState {
 
 class GroupChatMessagesLoaded extends GroupChatState {
   final List<GroupMessage> messages;
+  final Object? _error;
+
+  get error => _error;
 
   bool get hasWaitTasks =>
       messages.any((element) => element.status == groupMessageStatusWaiting);
 
-  GroupChatMessagesLoaded({required this.messages});
+  GroupChatMessagesLoaded({
+    required this.messages,
+    Object? error,
+  }) : _error = error;
 }

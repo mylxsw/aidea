@@ -84,9 +84,12 @@ class RoomItem extends StatelessWidget {
             borderRadius: BorderRadius.all(
                 Radius.circular(customColors.borderRadius ?? 8)),
             onTap: () {
+              final redirectRoute = room.roomType == 4
+                  ? '/group-chat/${room.id}/chat'
+                  : '/room/${room.id}/chat';
               HapticFeedbackHelper.lightImpact();
               final chatRoomBloc = context.read<RoomBloc>();
-              context.push('/room/${room.id}/chat').then((value) {
+              context.push(redirectRoute).then((value) {
                 chatRoomBloc.add(RoomsLoadEvent());
               });
             },

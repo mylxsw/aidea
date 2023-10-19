@@ -29,6 +29,8 @@ class ChatPreview extends StatefulWidget {
   final MessageStateManager stateManager;
   final List<Widget>? helpWidgets;
   final Widget? robotAvatar;
+  final Widget? Function(Message message)? avatarBuilder;
+  final Widget? Function(Message message)? senderNameBuilder;
   final bool supportBloc;
   final void Function(Message message)? onSpeakEvent;
   final void Function(Message message)? onResentEvent;
@@ -41,6 +43,8 @@ class ChatPreview extends StatefulWidget {
     required this.controller,
     required this.stateManager,
     this.robotAvatar,
+    this.avatarBuilder,
+    this.senderNameBuilder,
     this.helpWidgets,
     this.onSpeakEvent,
     this.onResentEvent,
@@ -217,8 +221,7 @@ class _ChatPreviewState extends State<ChatPreview> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (widget.robotAvatar != null && message.role == Role.receiver)
-              widget.robotAvatar!,
+            buildAvatar(message),
             ConstrainedBox(
               constraints: BoxConstraints(
                 maxWidth: _chatBoxMaxWidth(context) - 80,
@@ -227,6 +230,9 @@ class _ChatPreviewState extends State<ChatPreview> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (message.role == Role.receiver &&
+                      widget.senderNameBuilder != null)
+                    widget.senderNameBuilder!(message) ?? const SizedBox(),
                   Wrap(
                     crossAxisAlignment: WrapCrossAlignment.end,
                     children: [
@@ -276,6 +282,17 @@ class _ChatPreviewState extends State<ChatPreview> {
                           ),
                           child: Builder(
                             builder: (context) {
+                              if (message.statusPending() &&
+                                  message.text.isEmpty) {
+                                return const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                );
+                              }
+
                               var text = message.text;
                               if (!message.isReady && text != '') {
                                 text += ' ▌';
@@ -401,6 +418,21 @@ class _ChatPreviewState extends State<ChatPreview> {
         child: const Icon(Icons.error, color: Colors.red, size: 20),
       ),
     );
+  }
+
+  Widget buildAvatar(Message message) {
+    if (widget.avatarBuilder != null) {
+      final avatar = widget.avatarBuilder!(message);
+      if (avatar != null) {
+        return avatar;
+      }
+    }
+
+    if (widget.robotAvatar != null && message.role == Role.receiver) {
+      return widget.robotAvatar!;
+    }
+
+    return const SizedBox();
   }
 
   /// 点击消息后控制操作弹窗菜单

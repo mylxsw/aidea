@@ -67,7 +67,9 @@ class APIServer {
       if (e.response != null) {
         final resp = e.response!;
 
-        if (resp.data is Map && resp.data['error'] != null) {
+        if (resp.data is Map &&
+            resp.data['error'] != null &&
+            resp.statusCode != 402) {
           return resp.data['error'] ?? e.toString();
         }
 
@@ -1564,7 +1566,7 @@ class APIServer {
   Future<PagedData<GroupMessage>> chatGroupMessages(
     int groupId, {
     int page = 1,
-    int perPage = 100,
+    int? perPage,
   }) async {
     return sendGetRequest(
       '/v1/group-chat/$groupId/messages',
@@ -1577,10 +1579,14 @@ class APIServer {
         return PagedData(
           data: res,
           page: resp.data['page'] ?? 1,
-          perPage: resp.data['per_page'] ?? 100,
+          perPage: resp.data['per_page'],
           total: resp.data['total'],
           lastPage: resp.data['last_page'],
         );
+      },
+      queryParameters: {
+        'page': page,
+        'per_page': perPage,
       },
     );
   }
@@ -1595,5 +1601,51 @@ class APIServer {
       },
       data: req.toJson(),
     );
+  }
+
+  /// 群聊发送系统消息
+  Future<GroupMessage> chatGroupSendSystemMessage(
+    int groupId, {
+    required String messageType,
+    String? message,
+  }) async {
+    return sendPostRequest(
+      '/v1/group-chat/$groupId/chat-system',
+      (resp) => GroupMessage.fromJson(resp['data']),
+      formData: {
+        'message_type': messageType,
+        'message': message,
+      },
+    );
+  }
+
+  /// 群组聊天消息状态
+  Future<List<GroupMessage>> chatGroupMessageStatus(
+      int groupId, List<int> messageIds) async {
+    return sendGetRequest(
+      '/v1/group-chat/$groupId/chat-messages',
+      (resp) {
+        var res = <GroupMessage>[];
+        for (var item in resp.data['data']) {
+          res.add(GroupMessage.fromJson(item));
+        }
+
+        return res;
+      },
+      queryParameters: {
+        "message_ids": messageIds.join(','),
+      },
+    );
+  }
+
+  /// 清空群组聊天消息
+  Future<void> chatGroupDeleteAllMessages(int groupId) async {
+    return sendDeleteRequest('/v1/group-chat/$groupId/all-chat', (resp) {});
+  }
+
+  /// 删除群组聊天消息
+  Future<void> chatGroupDeleteMessage(int groupId, int messageId) async {
+    return sendDeleteRequest(
+        '/v1/group-chat/$groupId/chat/$messageId', (resp) {});
   }
 }

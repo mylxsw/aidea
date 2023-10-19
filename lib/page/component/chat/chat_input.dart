@@ -25,6 +25,7 @@ class ChatInput extends StatefulWidget {
   final Function()? onNewChat;
   final String hintText;
   final Function()? onVoiceRecordTappedEvent;
+  final List<Widget> Function()? leftSideToolsBuilder;
 
   const ChatInput({
     super.key,
@@ -35,6 +36,7 @@ class ChatInput extends StatefulWidget {
     this.onNewChat,
     this.hintText = '',
     this.onVoiceRecordTappedEvent,
+    this.leftSideToolsBuilder,
   });
 
   @override
@@ -157,6 +159,8 @@ class _ChatInputState extends State<ChatInput> {
                               Ability().supportImageUploader())
                             _buildImageUploadButton(
                                 context, setting, customColors),
+                          if (widget.leftSideToolsBuilder != null)
+                            ...widget.leftSideToolsBuilder!(),
                         ],
                       ),
                       // 聊天输入框

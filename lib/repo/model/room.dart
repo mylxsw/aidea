@@ -38,6 +38,9 @@ class Room {
   /// room 类型：local or remote
   bool? localRoom;
 
+  /// 聊天室类型
+  int? roomType;
+
   bool get isLocalRoom => localRoom ?? false;
 
   /// 聊天室头像 标识
@@ -93,6 +96,7 @@ class Room {
       this.systemPrompt,
       this.priority = 0,
       this.color,
+      this.roomType,
       this.initMessage,
       this.localRoom,
       this.maxContext = 10,
@@ -109,6 +113,7 @@ class Room {
       'priority': priority,
       'icon_data': iconData,
       'color': color,
+      'room_type': roomType,
       'description': description,
       'system_prompt': systemPrompt,
       'init_message': initMessage,
@@ -129,6 +134,7 @@ class Room {
         model = (map['model'] ?? '') as String,
         iconData = map['icon_data'] as String?,
         color = map['color'] as String?,
+        roomType = map['room_type'] as int?,
         systemPrompt = map['system_prompt'] as String?,
         description = map['description'] as String?,
         initMessage = map['init_message'] as String?,

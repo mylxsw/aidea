@@ -8,6 +8,10 @@ class ChatGroup {
   final RoomInServer group;
   final List<GroupMember> members;
 
+  GroupMember? findMember(int memberId) {
+    return members.where((member) => member.id == memberId).firstOrNull;
+  }
+
   ChatGroup({
     required this.group,
     required this.members,
@@ -66,11 +70,12 @@ class GroupMessage {
   final int id;
   final String message;
   final String role;
+  final String type;
   final int? tokenConsumed;
   final int? quotaConsumed;
   final int? pid;
   final int? memberId;
-  final int? status;
+  final int status;
   DateTime? createdAt;
   DateTime? updatedAt;
 
@@ -78,11 +83,12 @@ class GroupMessage {
     required this.id,
     required this.message,
     required this.role,
+    required this.status,
+    required this.type,
     this.tokenConsumed,
     this.quotaConsumed,
     this.pid,
     this.memberId,
-    this.status,
     this.createdAt,
     this.updatedAt,
   });
@@ -92,11 +98,12 @@ class GroupMessage {
       id: json['id'],
       message: json['message'] ?? '',
       role: json['role'] == 1 ? 'user' : 'assistant',
+      type: json['type'] ?? 'text',
       tokenConsumed: json['token_consumed'],
       quotaConsumed: json['quota_consumed'],
       pid: json['pid'],
       memberId: json['member_id'],
-      status: json['status'],
+      status: json['status'] ?? 0,
       createdAt: DateTime.tryParse(json['CreatedAt']),
       updatedAt: DateTime.tryParse(json['UpdatedAt']),
     );
@@ -107,6 +114,7 @@ class GroupMessage {
       'id': id,
       'message': message,
       'role': role,
+      'type': type,
       'token_consumed': tokenConsumed,
       'quota_consumed': quotaConsumed,
       'pid': pid,
@@ -147,26 +155,24 @@ class GroupChatSendRequestMessage {
 }
 
 class GroupChatSendRequest {
-  final List<GroupChatSendRequestMessage> messages;
+  final String message;
   final List<int> memberIds;
 
   GroupChatSendRequest({
-    required this.messages,
+    required this.message,
     required this.memberIds,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'messages': messages.map((message) => message.toJson()).toList(),
+      'message': message,
       'member_ids': memberIds,
     };
   }
 
   factory GroupChatSendRequest.fromJson(Map<String, dynamic> json) {
     return GroupChatSendRequest(
-      messages: ((json['messages'] ?? []) as List)
-          .map((message) => GroupChatSendRequestMessage.fromJson(message))
-          .toList(),
+      message: json['message'],
       memberIds: (json['member_ids'] as List).map((e) => e as int).toList(),
     );
   }

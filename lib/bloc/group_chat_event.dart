@@ -12,9 +12,8 @@ class GroupChatLoadEvent extends GroupChatEvent {
 class GroupChatMessagesLoadEvent extends GroupChatEvent {
   final int groupId;
   final int page;
-  final int perPage;
 
-  GroupChatMessagesLoadEvent(this.groupId, {this.page = 1, this.perPage = 100});
+  GroupChatMessagesLoadEvent(this.groupId, {this.page = 1});
 }
 
 class GroupChatSendEvent extends GroupChatEvent {
@@ -23,4 +22,31 @@ class GroupChatSendEvent extends GroupChatEvent {
   final List<int> members;
 
   GroupChatSendEvent(this.groupId, this.message, this.members);
+}
+
+class GroupChatUpdateMessageStatusEvent extends GroupChatEvent {
+  final int groupId;
+
+  GroupChatUpdateMessageStatusEvent(this.groupId);
+}
+
+class GroupChatSendSystemEvent extends GroupChatEvent {
+  final int groupId;
+  final String? message;
+  final MessageType type;
+
+  GroupChatSendSystemEvent(this.groupId, this.type, {this.message});
+}
+
+class GroupChatDeleteAllEvent extends GroupChatEvent {
+  final int groupId;
+
+  GroupChatDeleteAllEvent(this.groupId);
+}
+
+class GroupChatDeleteEvent extends GroupChatEvent {
+  final int groupId;
+  final int messageId;
+
+  GroupChatDeleteEvent(this.groupId, this.messageId);
 }

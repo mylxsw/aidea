@@ -55,6 +55,12 @@ class Message {
   /// 是否当前消息已就绪，不需要持久化
   bool isReady = true;
 
+  /// 消息发送者的头像，不需要持久化
+  String? avatarUrl;
+
+  /// 消息发送者的名称，不需要持久化
+  String? senderName;
+
   Message(
     this.role,
     this.text, {
@@ -72,6 +78,8 @@ class Message {
     this.status = 1,
     this.quotaConsumed,
     this.tokenConsumed,
+    this.avatarUrl,
+    this.senderName,
   });
 
   /// 获取消息附加信息

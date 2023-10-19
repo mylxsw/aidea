@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:askaide/bloc/group_chat_bloc.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
@@ -9,6 +11,7 @@ import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/chat/help_tips.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/enhanced_popup_menu.dart';
+import 'package:askaide/page/component/multi_item_selector.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/share.dart';
 import 'package:askaide/page/dialog.dart';
@@ -22,7 +25,6 @@ import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
-import 'package:go_router/go_router.dart';
 
 class GroupChatPage extends StatefulWidget {
   final SettingRepository setting;
@@ -48,7 +50,10 @@ class _GroupChatPageState extends State<GroupChatPage> {
       AudioPlayerController(useRemoteAPI: false);
   bool showAudioPlayer = false;
 
-  List<int> selectedMemberIds = [];
+  List<GroupMember> selectedMembers = [];
+  List<GroupMessage> messages = [];
+
+  Timer? timer;
 
   @override
   void initState() {
@@ -74,6 +79,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
 
   @override
   void dispose() {
+    timer?.cancel();
     _scrollController.dispose();
     _chatPreviewController.dispose();
     _audioPlayerController.dispose();
@@ -99,8 +105,6 @@ class _GroupChatPageState extends State<GroupChatPage> {
       listenWhen: (previous, current) => current is GroupChatLoaded,
       listener: (context, state) {
         if (state is GroupChatLoaded) {
-          // 默认选中的成员
-          selectedMemberIds = state.group.members.map((e) => e.id!).toList();
           // 加载聊天记录列表
           context
               .read<GroupChatBloc>()
@@ -108,8 +112,8 @@ class _GroupChatPageState extends State<GroupChatPage> {
         }
       },
       buildWhen: (previous, current) => current is GroupChatLoaded,
-      builder: (context, room) {
-        if (room is GroupChatLoaded) {
+      builder: (context, groupState) {
+        if (groupState is GroupChatLoaded) {
           return SafeArea(
             top: false,
             bottom: false,
@@ -121,7 +125,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
                 // 聊天内容窗口
                 Expanded(
                   child: _buildChatPreviewArea(
-                    room,
+                    groupState,
                     customColors,
                     _chatPreviewController.selectMode,
                   ),
@@ -152,6 +156,40 @@ class _GroupChatPageState extends State<GroupChatPage> {
                             onVoiceRecordTappedEvent: () {
                               _audioPlayerController.stop();
                             },
+                            leftSideToolsBuilder: () {
+                              return [
+                                Stack(
+                                  children: [
+                                    IconButton(
+                                      onPressed: () async {
+                                        onModelSelect(
+                                            context, groupState, customColors);
+                                      },
+                                      icon: const Icon(Icons.group),
+                                      color: customColors.chatInputPanelText,
+                                      splashRadius: 20,
+                                      tooltip: '选择对话的模型',
+                                    ),
+                                    if (selectedMembers.isNotEmpty)
+                                      Positioned(
+                                        right: 2,
+                                        top: 0,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 3, vertical: 3),
+                                          child:
+                                              Text('x${selectedMembers.length}',
+                                                  style: TextStyle(
+                                                    fontSize: 8,
+                                                    color: customColors
+                                                        .weakTextColor,
+                                                  )),
+                                        ),
+                                      ),
+                                  ],
+                                )
+                              ];
+                            },
                           ),
                   ),
                 ),
@@ -165,6 +203,39 @@ class _GroupChatPageState extends State<GroupChatPage> {
     );
   }
 
+  void onModelSelect(
+    BuildContext context,
+    GroupChatLoaded groupState,
+    CustomColors customColors,
+  ) {
+    openModalBottomSheet(
+      context,
+      (context) {
+        return MultiItemSelector(
+          itemBuilder: (item) {
+            return Text(item.modelName);
+          },
+          items: groupState.group.members,
+          onChanged: (selected) {
+            setState(() {
+              selectedMembers = selected;
+            });
+          },
+          itemAvatarBuilder: (item) {
+            return _buildAvatar(
+              avatarUrl: item.avatarUrl,
+              id: item.id,
+              size: 30,
+            );
+          },
+          selectedItems: selectedMembers,
+        );
+      },
+      heightFactor: 0.6,
+      title: '选择对话的模型',
+    );
+  }
+
   BlocConsumer<GroupChatBloc, GroupChatState> _buildChatPreviewArea(
     GroupChatLoaded group,
     CustomColors customColors,
@@ -174,6 +245,12 @@ class _GroupChatPageState extends State<GroupChatPage> {
       listenWhen: (previous, current) => current is GroupChatMessagesLoaded,
       listener: (context, state) {
         if (state is GroupChatMessagesLoaded) {
+          if (state.error != null) {
+            showErrorMessageEnhanced(context, state.error);
+          }
+
+          messages = state.messages;
+
           // 聊天内容窗口滚动到底部
           if (!state.hasWaitTasks && _scrollController.hasClients) {
             _scrollController.animateTo(
@@ -194,21 +271,34 @@ class _GroupChatPageState extends State<GroupChatPage> {
               _inputEnabled.value = true;
             });
           }
+
+          // 启动定时器，定时刷新聊天记录
+          timer ??= Timer.periodic(const Duration(seconds: 3), (timer) {
+            context
+                .read<GroupChatBloc>()
+                .add(GroupChatUpdateMessageStatusEvent(widget.groupId));
+          });
         }
       },
       buildWhen: (prv, cur) => cur is GroupChatMessagesLoaded,
       builder: (context, state) {
         if (state is GroupChatMessagesLoaded) {
-          final loadedMessages = state.messages
-              .map((e) => Message(
-                    Role.getRoleFromText(e.role),
-                    e.message,
-                    type: MessageType.text,
-                    status: e.status ?? 1,
-                    refId: e.pid,
-                    ts: e.createdAt,
-                  ))
-              .toList();
+          final loadedMessages = state.messages.map((e) {
+            var member =
+                e.memberId != null ? group.group.findMember(e.memberId!) : null;
+
+            return Message(
+              id: e.id,
+              Role.getRoleFromText(e.role),
+              e.message,
+              type: MessageType.getTypeFromText(e.type),
+              status: e.status,
+              refId: e.pid,
+              ts: e.createdAt,
+              avatarUrl: member?.avatarUrl,
+              senderName: member?.modelName,
+            );
+          }).toList();
 
           final messages = loadedMessages.map((e) {
             return MessageWithState(
@@ -227,7 +317,38 @@ class _GroupChatPageState extends State<GroupChatPage> {
             scrollController: _scrollController,
             controller: _chatPreviewController,
             stateManager: widget.stateManager,
-            robotAvatar: selectMode ? null : _buildAvatar(group.group),
+            robotAvatar: selectMode
+                ? null
+                : _buildAvatar(
+                    avatarUrl: group.group.group.avatarUrl,
+                    id: group.group.group.id,
+                  ),
+            avatarBuilder: selectMode
+                ? null
+                : (Message message) {
+                    if (message.avatarUrl == null) {
+                      return null;
+                    }
+
+                    return _buildAvatar(avatarUrl: message.avatarUrl!);
+                  },
+            senderNameBuilder: (message) {
+              if (message.senderName == null) {
+                return null;
+              }
+
+              return Container(
+                margin: const EdgeInsets.fromLTRB(0, 0, 10, 7),
+                padding: const EdgeInsets.symmetric(horizontal: 13),
+                child: Text(
+                  message.senderName!,
+                  style: TextStyle(
+                    color: customColors.weakTextColor,
+                    fontSize: 12,
+                  ),
+                ),
+              );
+            },
             onDeleteMessage: (id) {
               handleDeleteMessage(context, id);
             },
@@ -254,6 +375,28 @@ class _GroupChatPageState extends State<GroupChatPage> {
         }
         return const Center(child: CircularProgressIndicator());
       },
+    );
+  }
+
+  Widget buildMembersBar(List<GroupMember> members) {
+    return Container(
+      height: 30,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        shrinkWrap: true,
+        children: [
+          for (var member in members)
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 5),
+              child: _buildAvatar(
+                avatarUrl: member.avatarUrl,
+                id: member.id,
+                size: 20,
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -308,18 +451,17 @@ class _GroupChatPageState extends State<GroupChatPage> {
           );
   }
 
-  Widget _buildAvatar(ChatGroup room) {
-    if (room.group.avatarUrl != null &&
-        room.group.avatarUrl!.startsWith('http')) {
+  Widget _buildAvatar({String? avatarUrl, int? id, int size = 30}) {
+    if (avatarUrl != null && avatarUrl.startsWith('http')) {
       return RemoteAvatar(
-        avatarUrl: imageURL(room.group.avatarUrl!, qiniuImageTypeAvatar),
-        size: 30,
+        avatarUrl: imageURL(avatarUrl, qiniuImageTypeAvatar),
+        size: size,
       );
     }
 
     return RandomAvatar(
-      id: room.group.id,
-      size: 30,
+      id: id ?? 0,
+      size: size,
       usage:
           Ability().supportAPIServer() ? AvatarUsage.room : AvatarUsage.legacy,
     );
@@ -335,178 +477,183 @@ class _GroupChatPageState extends State<GroupChatPage> {
           GroupChatSendEvent(
             widget.groupId,
             text,
-            selectedMemberIds,
+            selectedMembers.map((e) => e.id!).toList(),
           ),
         );
   }
-}
 
-/// 处理消息删除事件
-void handleDeleteMessage(BuildContext context, int id, {int? chatHistoryId}) {
-  openConfirmDialog(
-    context,
-    AppLocale.confirmDelete.getString(context),
-    () {},
-    danger: true,
-  );
-}
+  /// 处理消息删除事件
+  void handleDeleteMessage(BuildContext context, int id, {int? chatHistoryId}) {
+    openConfirmDialog(
+      context,
+      AppLocale.confirmDelete.getString(context),
+      () {
+        context
+            .read<GroupChatBloc>()
+            .add(GroupChatDeleteEvent(widget.groupId, id));
+        HapticFeedbackHelper.mediumImpact();
+      },
+      danger: true,
+    );
+  }
 
-/// 重置上下文
-void handleResetContext(BuildContext context) {
-  // openConfirmDialog(
-  //   context,
-  //   AppLocale.confirmStartNewChat.getString(context),
-  //   () {
-  // context.read<ChatMessageBloc>().add(ChatMessageBreakContextEvent());
-  HapticFeedbackHelper.mediumImpact();
-  //   },
-  // );
-}
+  /// 重置上下文
+  void handleResetContext(BuildContext context) {
+    context.read<GroupChatBloc>().add(GroupChatSendSystemEvent(
+          widget.groupId,
+          MessageType.contextBreak,
+          message: 'context-break-message',
+        ));
+    HapticFeedbackHelper.mediumImpact();
+  }
 
-/// 清空历史消息
-void handleClearHistory(BuildContext context) {
-  openConfirmDialog(
-    context,
-    AppLocale.confirmClearMessages.getString(context),
-    () {
-      // context.read<ChatMessageBloc>().add(ChatMessageClearAllEvent());
-      showSuccessMessage(AppLocale.operateSuccess.getString(context));
-      HapticFeedbackHelper.mediumImpact();
-    },
-    danger: true,
-  );
-}
+  /// 清空历史消息
+  void handleClearHistory(BuildContext context) {
+    openConfirmDialog(
+      context,
+      AppLocale.confirmClearMessages.getString(context),
+      () {
+        context
+            .read<GroupChatBloc>()
+            .add(GroupChatDeleteAllEvent(widget.groupId));
+        HapticFeedbackHelper.mediumImpact();
+      },
+      danger: true,
+    );
+  }
 
-/// 构建聊天内容窗口
-Widget buildSelectModeToolbars(
-  BuildContext context,
-  ChatPreviewController chatPreviewController,
-  CustomColors customColors,
-) {
-  return Container(
-    padding: const EdgeInsets.all(10),
-    decoration: BoxDecoration(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(10),
-        topRight: Radius.circular(10),
+  /// 构建聊天内容窗口
+  Widget buildSelectModeToolbars(
+    BuildContext context,
+    ChatPreviewController chatPreviewController,
+    CustomColors customColors,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        ),
+        color: customColors.backgroundColor,
       ),
-      color: customColors.backgroundColor,
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        TextButton.icon(
-          onPressed: () {
-            var messages = chatPreviewController.selectedMessages();
-            if (messages.isEmpty) {
-              showErrorMessageEnhanced(
-                  context, AppLocale.noMessageSelected.getString(context));
-              return;
-            }
-            var shareText = messages.map((e) {
-              if (e.message.role == Role.sender) {
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          TextButton.icon(
+            onPressed: () {
+              var messages = chatPreviewController.selectedMessages();
+              if (messages.isEmpty) {
+                showErrorMessageEnhanced(
+                    context, AppLocale.noMessageSelected.getString(context));
+                return;
+              }
+              var shareText = messages.map((e) {
+                if (e.message.role == Role.sender) {
+                  return e.message.text;
+                }
+
                 return e.message.text;
+              }).join('\n\n');
+
+              shareTo(
+                context,
+                content: shareText,
+                title: AppLocale.chatHistory.getString(context),
+              );
+            },
+            icon: Icon(Icons.share, color: customColors.linkColor),
+            label: Text(
+              AppLocale.share.getString(context),
+              style: TextStyle(color: customColors.linkColor),
+            ),
+          ),
+          TextButton.icon(
+            onPressed: () {
+              chatPreviewController.selectAllMessage();
+            },
+            icon:
+                Icon(Icons.select_all_outlined, color: customColors.linkColor),
+            label: Text(
+              AppLocale.selectAll.getString(context),
+              style: TextStyle(color: customColors.linkColor),
+            ),
+          ),
+          TextButton.icon(
+            onPressed: () {
+              if (chatPreviewController.selectedMessageIds.isEmpty) {
+                showErrorMessageEnhanced(
+                    context, AppLocale.noMessageSelected.getString(context));
+                return;
               }
 
-              return e.message.text;
-            }).join('\n\n');
+              openConfirmDialog(
+                context,
+                AppLocale.confirmDelete.getString(context),
+                () {
+                  final ids = chatPreviewController.selectedMessageIds.toList();
+                  if (ids.isNotEmpty) {
+                    // context
+                    //     .read<ChatMessageBloc>()
+                    //     .add(ChatMessageDeleteEvent(ids));
 
-            shareTo(
-              context,
-              content: shareText,
-              title: AppLocale.chatHistory.getString(context),
-            );
-          },
-          icon: Icon(Icons.share, color: customColors.linkColor),
-          label: Text(
-            AppLocale.share.getString(context),
-            style: TextStyle(color: customColors.linkColor),
+                    showErrorMessageEnhanced(
+                        context, AppLocale.operateSuccess.getString(context));
+
+                    chatPreviewController.exitSelectMode();
+                  }
+                },
+                danger: true,
+              );
+            },
+            icon: Icon(Icons.delete, color: customColors.linkColor),
+            label: Text(
+              AppLocale.delete.getString(context),
+              style: TextStyle(color: customColors.linkColor),
+            ),
           ),
-        ),
-        TextButton.icon(
-          onPressed: () {
-            chatPreviewController.selectAllMessage();
-          },
-          icon: Icon(Icons.select_all_outlined, color: customColors.linkColor),
-          label: Text(
-            AppLocale.selectAll.getString(context),
-            style: TextStyle(color: customColors.linkColor),
-          ),
-        ),
-        TextButton.icon(
-          onPressed: () {
-            if (chatPreviewController.selectedMessageIds.isEmpty) {
-              showErrorMessageEnhanced(
-                  context, AppLocale.noMessageSelected.getString(context));
-              return;
-            }
-
-            openConfirmDialog(
-              context,
-              AppLocale.confirmDelete.getString(context),
-              () {
-                final ids = chatPreviewController.selectedMessageIds.toList();
-                if (ids.isNotEmpty) {
-                  // context
-                  //     .read<ChatMessageBloc>()
-                  //     .add(ChatMessageDeleteEvent(ids));
-
-                  showErrorMessageEnhanced(
-                      context, AppLocale.operateSuccess.getString(context));
-
-                  chatPreviewController.exitSelectMode();
-                }
-              },
-              danger: true,
-            );
-          },
-          icon: Icon(Icons.delete, color: customColors.linkColor),
-          label: Text(
-            AppLocale.delete.getString(context),
-            style: TextStyle(color: customColors.linkColor),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-/// 构建聊天设置下拉菜单
-Widget buildChatMoreMenu(
-  BuildContext context,
-  int chatRoomId, {
-  bool useLocalContext = true,
-  bool withSetting = true,
-}) {
-  var customColors = Theme.of(context).extension<CustomColors>()!;
-
-  return EnhancedPopupMenu(
-    items: [
-      EnhancedPopupMenuItem(
-        title: AppLocale.newChat.getString(context),
-        icon: Icons.post_add,
-        iconColor: Colors.blue,
-        onTap: (ctx) {
-          handleResetContext(useLocalContext ? ctx : context);
-        },
+        ],
       ),
-      EnhancedPopupMenuItem(
-        title: AppLocale.clearChatHistory.getString(context),
-        icon: Icons.delete_forever,
-        iconColor: Colors.red,
-        onTap: (ctx) {
-          handleClearHistory(useLocalContext ? ctx : context);
-        },
-      ),
-      if (withSetting)
+    );
+  }
+
+  /// 构建聊天设置下拉菜单
+  Widget buildChatMoreMenu(
+    BuildContext context,
+    int chatRoomId, {
+    bool useLocalContext = true,
+    bool withSetting = true,
+  }) {
+    var customColors = Theme.of(context).extension<CustomColors>()!;
+
+    return EnhancedPopupMenu(
+      items: [
         EnhancedPopupMenuItem(
-          title: AppLocale.settings.getString(context),
-          icon: Icons.settings,
-          iconColor: customColors.linkColor,
-          onTap: (_) {
-            context.push('/room/$chatRoomId/setting');
+          title: AppLocale.newChat.getString(context),
+          icon: Icons.post_add,
+          iconColor: Colors.blue,
+          onTap: (ctx) {
+            handleResetContext(useLocalContext ? ctx : context);
           },
         ),
-    ],
-  );
+        EnhancedPopupMenuItem(
+          title: AppLocale.clearChatHistory.getString(context),
+          icon: Icons.delete_forever,
+          iconColor: Colors.red,
+          onTap: (ctx) {
+            handleClearHistory(useLocalContext ? ctx : context);
+          },
+        ),
+        if (withSetting)
+          EnhancedPopupMenuItem(
+            title: AppLocale.settings.getString(context),
+            icon: Icons.settings,
+            iconColor: customColors.linkColor,
+            onTap: (_) {
+              // context.push('/room/$chatRoomId/setting');
+            },
+          ),
+      ],
+    );
+  }
 }

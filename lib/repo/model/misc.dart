@@ -173,6 +173,7 @@ class RoomInServer {
   String? initMessage;
   int maxContext;
   int? maxTokens;
+  int? roomType;
   DateTime? lastActiveTime;
   DateTime? createdAt;
   DateTime? updatedAt;
@@ -183,6 +184,7 @@ class RoomInServer {
     required this.avatarId,
     required this.name,
     required this.maxContext,
+    this.roomType,
     this.avatarUrl,
     this.description,
     this.priority,
@@ -208,6 +210,7 @@ class RoomInServer {
         'vendor': vendor,
         'init_message': initMessage,
         'max_context': maxContext,
+        'room_type': roomType,
         'max_tokens': maxTokens,
         'system_prompt': systemPrompt,
         'last_active_time': lastActiveTime?.toIso8601String(),
@@ -230,6 +233,7 @@ class RoomInServer {
       initMessage: json['init_message'],
       maxContext: json['max_context'] ?? 10,
       maxTokens: json['max_tokens'],
+      roomType: json['room_type'],
       lastActiveTime: json['last_active_time'] != null
           ? DateTime.parse(json['last_active_time'])
           : null,

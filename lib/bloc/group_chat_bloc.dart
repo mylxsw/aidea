@@ -1,6 +1,8 @@
+import 'package:askaide/helper/logger.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/model/group.dart';
+import 'package:askaide/repo/model/message.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
@@ -21,37 +23,93 @@ class GroupChatBloc extends Bloc<GroupChatEvent, GroupChatState> {
 
     // 加载聊天组聊天记录
     on<GroupChatMessagesLoadEvent>((event, emit) async {
-      await refreshGroupMessages(
-        event.groupId,
-        page: event.page,
-        perPage: event.perPage,
-      );
+      await refreshGroupMessages(event.groupId, page: event.page);
 
       emit(GroupChatMessagesLoaded(messages: messages));
     });
 
     // 发送聊天组消息
     on<GroupChatSendEvent>((event, emit) async {
-      final List<GroupChatSendRequestMessage> requestMessages = [
-        GroupChatSendRequestMessage(role: "user", content: event.message)
-      ];
-      final resp = await APIServer().chatGroupSendMessage(
-        event.groupId,
-        GroupChatSendRequest(
-            messages: requestMessages, memberIds: event.members),
-      );
+      try {
+        final resp = await APIServer().chatGroupSendMessage(
+          event.groupId,
+          GroupChatSendRequest(
+            message: event.message,
+            memberIds: event.members,
+          ),
+        );
 
-      await refreshGroupMessages(event.groupId, page: 1, perPage: 100);
+        Logger.instance.d(resp.toJson());
+
+        await refreshGroupMessages(event.groupId, page: 1);
+        emit(GroupChatMessagesLoaded(messages: messages));
+      } catch (e) {
+        await refreshGroupMessages(event.groupId, page: 1);
+        emit(GroupChatMessagesLoaded(messages: messages, error: e));
+      }
+    });
+
+    // 发送系统消息
+    on<GroupChatSendSystemEvent>((event, emit) async {
+      try {
+        final resp = await APIServer().chatGroupSendSystemMessage(
+          event.groupId,
+          messageType: event.type.getTypeText(),
+          message: event.message,
+        );
+
+        Logger.instance.d(resp.toJson());
+      } finally {
+        await refreshGroupMessages(event.groupId, page: 1);
+        emit(GroupChatMessagesLoaded(messages: messages));
+      }
+    });
+
+    // 更新聊天组消息状态
+    on<GroupChatUpdateMessageStatusEvent>((event, emit) async {
+      final waitMessageIds = messages
+          .where((msg) => msg.status == groupMessageStatusWaiting)
+          .map((msg) => msg.id)
+          .toList();
+
+      if (waitMessageIds.isEmpty) {
+        return;
+      }
+
+      final resp = await APIServer()
+          .chatGroupMessageStatus(event.groupId, waitMessageIds);
+      final newMessageStatusMap = <int, GroupMessage>{};
+      for (var msg in resp) {
+        newMessageStatusMap[msg.id] = msg;
+      }
+
+      for (var i = 0; i < messages.length; i++) {
+        final msg = messages[i];
+        if (newMessageStatusMap.containsKey(msg.id)) {
+          messages[i] = newMessageStatusMap[msg.id]!;
+        }
+      }
+
+      emit(GroupChatMessagesLoaded(messages: messages));
+    });
+
+    // 清空聊天组消息
+    on<GroupChatDeleteAllEvent>((event, emit) async {
+      await APIServer().chatGroupDeleteAllMessages(event.groupId);
+      messages.clear();
+      emit(GroupChatMessagesLoaded(messages: messages));
+    });
+
+    // 删除聊天组消息
+    on<GroupChatDeleteEvent>((event, emit) async {
+      await APIServer().chatGroupDeleteMessage(event.groupId, event.messageId);
+      messages.removeWhere((msg) => msg.id == event.messageId);
       emit(GroupChatMessagesLoaded(messages: messages));
     });
   }
 
-  refreshGroupMessages(int groupId, {int page = 1, int perPage = 100}) async {
-    final data = await APIServer().chatGroupMessages(
-      groupId,
-      page: page,
-      perPage: perPage,
-    );
+  refreshGroupMessages(int groupId, {int page = 1}) async {
+    final data = await APIServer().chatGroupMessages(groupId, page: page);
 
     messages = data.data.reversed.toList();
   }
