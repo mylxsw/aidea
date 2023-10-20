@@ -3,6 +3,7 @@ import 'package:askaide/helper/constant.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/repo/api/room_gallery.dart';
 import 'package:askaide/repo/api_server.dart';
+import 'package:askaide/repo/model/group.dart';
 import 'package:askaide/repo/model/misc.dart';
 import 'package:askaide/repo/model/room.dart';
 
@@ -116,7 +117,9 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
 
     // 加载聊天室列表
     on<RoomsLoadEvent>((event, emit) async {
-      emit(RoomsLoading());
+      if (!event.forceRefresh) {
+        emit(RoomsLoading());
+      }
       emit(await createRoomsLoadedState(cache: !event.forceRefresh));
     });
 
@@ -265,6 +268,27 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
         emit(RoomGalleriesLoaded(resp.galleries, tags: resp.tags));
       } catch (e) {
         emit(RoomGalleriesLoaded(const [], error: e));
+      }
+    });
+
+    // 创建群聊聊天室
+    on<GroupRoomCreateEvent>((event, emit) async {
+      emit(RoomsLoading());
+
+      try {
+        await APIServer().createGroupRoom(
+          name: event.name,
+          avatarUrl: event.avatarUrl,
+          members: (event.members ?? [])
+              .map((e) => GroupMember(modelId: e.id, modelName: e.shortName))
+              .toList(),
+        );
+
+        emit(GroupRoomCreateResultState(true));
+        emit(await createRoomsLoadedState(cache: false));
+      } catch (e) {
+        emit(GroupRoomCreateResultState(false, error: e));
+        emit(RoomsLoaded(const [], error: e.toString()));
       }
     });
   }

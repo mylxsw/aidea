@@ -35,6 +35,7 @@ import 'package:askaide/page/creative_island/creative_island_history_preview.dar
 import 'package:askaide/page/custom_home_models.dart';
 import 'package:askaide/page/free_statistics.dart';
 import 'package:askaide/page/group/chat.dart';
+import 'package:askaide/page/group/create.dart';
 import 'package:askaide/page/lab/creative_models.dart';
 import 'package:askaide/page/destroy_account.dart';
 import 'package:askaide/page/diagnosis.dart';
@@ -832,6 +833,24 @@ class MyApp extends StatefulWidget {
                       stateManager: messageStateManager,
                       groupId: groupId!,
                     ),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'group-chat-create',
+              path: '/group-chat-create',
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: ((context) =>
+                            GroupChatBloc(stateManager: messageStateManager)),
+                      ),
+                      BlocProvider.value(value: chatRoomBloc),
+                    ],
+                    child: GroupCreatePage(setting: settingRepo),
                   ),
                 );
               },

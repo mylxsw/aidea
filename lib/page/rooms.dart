@@ -90,7 +90,7 @@ class RoomItem extends StatelessWidget {
               HapticFeedbackHelper.lightImpact();
               final chatRoomBloc = context.read<RoomBloc>();
               context.push(redirectRoute).then((value) {
-                chatRoomBloc.add(RoomsLoadEvent());
+                chatRoomBloc.add(RoomsLoadEvent(forceRefresh: true));
               });
             },
             child: Row(

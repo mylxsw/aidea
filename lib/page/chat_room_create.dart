@@ -105,6 +105,17 @@ class _ChatRoomCreateScreenState extends State<ChatRoomCreateScreen> {
         backgroundColor: customColors.backgroundContainerColor,
         centerTitle: true,
         toolbarHeight: CustomSize.toolbarHeight,
+        actions: [
+          if (Ability().supportAPIServer() && !Ability().supportLocalOpenAI())
+            IconButton(
+              icon: const Icon(Icons.group_add),
+              onPressed: () {
+                context.push('/group-chat-create').whenComplete(() {
+                  context.read<RoomBloc>().add(RoomsLoadEvent());
+                });
+              },
+            ),
+        ],
       ),
       body: BackgroundContainer(
         setting: widget.setting,

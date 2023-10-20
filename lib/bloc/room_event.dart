@@ -29,6 +29,18 @@ class RoomCreateEvent extends RoomEvent {
   });
 }
 
+class GroupRoomCreateEvent extends RoomEvent {
+  final String name;
+  final String? avatarUrl;
+  final List<Model>? members;
+
+  GroupRoomCreateEvent({
+    required this.name,
+    this.avatarUrl,
+    this.members,
+  });
+}
+
 class RoomDeleteEvent extends RoomEvent {
   final int roomId;
 

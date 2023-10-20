@@ -170,22 +170,22 @@ class _GroupChatPageState extends State<GroupChatPage> {
                                       splashRadius: 20,
                                       tooltip: '选择对话的模型',
                                     ),
-                                    if (selectedMembers.isNotEmpty)
-                                      Positioned(
-                                        right: 2,
-                                        top: 0,
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 3, vertical: 3),
-                                          child:
-                                              Text('x${selectedMembers.length}',
-                                                  style: TextStyle(
-                                                    fontSize: 8,
-                                                    color: customColors
-                                                        .weakTextColor,
-                                                  )),
-                                        ),
+                                    Positioned(
+                                      right: 2,
+                                      top: 0,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 3, vertical: 3),
+                                        child: Text(
+                                            selectedMembers.isNotEmpty
+                                                ? 'x${selectedMembers.length}'
+                                                : '随机',
+                                            style: TextStyle(
+                                              fontSize: 7,
+                                              color: customColors.weakTextColor,
+                                            )),
                                       ),
+                                    ),
                                   ],
                                 )
                               ];
@@ -445,7 +445,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
               },
             ),
             actions: [
-              buildChatMoreMenu(context, widget.groupId),
+              buildChatMoreMenu(context, widget.groupId, withSetting: false),
             ],
             toolbarHeight: CustomSize.toolbarHeight,
           );

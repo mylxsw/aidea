@@ -476,6 +476,7 @@ class Model {
   bool isImage;
   bool disabled;
   String? tag;
+  String? avatarUrl;
 
   Model({
     required this.id,
@@ -487,6 +488,7 @@ class Model {
     this.description,
     this.disabled = false,
     this.tag,
+    this.avatarUrl,
   });
 
   toJson() => {
@@ -499,6 +501,7 @@ class Model {
         'is_image': isImage,
         'disabled': disabled,
         'tag': tag,
+        'avatar_url': avatarUrl,
       };
 
   static Model fromJson(Map<String, dynamic> json) {
@@ -512,6 +515,7 @@ class Model {
       isImage: json['is_image'],
       disabled: json['disabled'] ?? false,
       tag: json['tag'],
+      avatarUrl: json['avatar_url'],
     );
   }
 }

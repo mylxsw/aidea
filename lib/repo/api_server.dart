@@ -1041,6 +1041,28 @@ class APIServer {
     );
   }
 
+  /// 创建群聊房间
+  Future<int> createGroupRoom({
+    required String name,
+    String? description,
+    String? avatarUrl,
+    List<GroupMember>? members,
+  }) async {
+    return sendPostJSONRequest(
+      '/v1/group-chat',
+      (resp) => resp.data["group_id"],
+      data: {
+        'name': name,
+        'avatar_url': avatarUrl,
+        'members': members?.map((e) => e.toJson()).toList(),
+      },
+      finallyCallback: () {
+        HttpClient.cacheManager
+            .deleteByPrimaryKey('$url/v2/rooms', requestMethod: 'GET');
+      },
+    );
+  }
+
   /// 创建房间
   Future<int> createRoom({
     required String name,
