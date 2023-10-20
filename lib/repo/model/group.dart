@@ -120,8 +120,8 @@ class GroupMessage {
       'pid': pid,
       'member_id': memberId,
       'status': status,
-      'created_at': createdAt?.toIso8601String(),
-      'updated_at': updatedAt?.toIso8601String(),
+      'CreatedAt': createdAt?.toIso8601String(),
+      'UpdatedAt': updatedAt?.toIso8601String(),
     };
   }
 }

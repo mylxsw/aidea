@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:askaide/helper/cache.dart';
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/repo/api_server.dart';
@@ -23,7 +26,27 @@ class GroupChatBloc extends Bloc<GroupChatEvent, GroupChatState> {
 
     // 加载聊天组聊天记录
     on<GroupChatMessagesLoadEvent>((event, emit) async {
-      await refreshGroupMessages(event.groupId, page: event.page);
+      if (event.isInitRequest) {
+        try {
+          final cached =
+              await Cache().stringGet(key: 'group:speed:${event.groupId}');
+          if (cached != null) {
+            final messages = (jsonDecode(cached) as List<dynamic>)
+                .map((e) => GroupMessage.fromJson(e))
+                .toList();
+
+            emit(GroupChatMessagesLoaded(messages: messages));
+          }
+        } catch (e) {
+          Logger.instance.e(e);
+        }
+      }
+
+      await refreshGroupMessages(
+        event.groupId,
+        page: event.page,
+        forceRefresh: true,
+      );
 
       emit(GroupChatMessagesLoaded(messages: messages));
     });
@@ -41,10 +64,18 @@ class GroupChatBloc extends Bloc<GroupChatEvent, GroupChatState> {
 
         Logger.instance.d(resp.toJson());
 
-        await refreshGroupMessages(event.groupId, page: 1);
+        await refreshGroupMessages(
+          event.groupId,
+          page: 1,
+          forceRefresh: true,
+        );
         emit(GroupChatMessagesLoaded(messages: messages));
       } catch (e) {
-        await refreshGroupMessages(event.groupId, page: 1);
+        await refreshGroupMessages(
+          event.groupId,
+          page: 1,
+          forceRefresh: true,
+        );
         emit(GroupChatMessagesLoaded(messages: messages, error: e));
       }
     });
@@ -60,7 +91,11 @@ class GroupChatBloc extends Bloc<GroupChatEvent, GroupChatState> {
 
         Logger.instance.d(resp.toJson());
       } finally {
-        await refreshGroupMessages(event.groupId, page: 1);
+        await refreshGroupMessages(
+          event.groupId,
+          page: 1,
+          forceRefresh: true,
+        );
         emit(GroupChatMessagesLoaded(messages: messages));
       }
     });
@@ -108,9 +143,18 @@ class GroupChatBloc extends Bloc<GroupChatEvent, GroupChatState> {
     });
   }
 
-  refreshGroupMessages(int groupId, {int page = 1}) async {
-    final data = await APIServer().chatGroupMessages(groupId, page: page);
-
+  refreshGroupMessages(
+    int groupId, {
+    int page = 1,
+    bool forceRefresh = false,
+  }) async {
+    final data = await APIServer()
+        .chatGroupMessages(groupId, page: page, cache: !forceRefresh);
     messages = data.data.reversed.toList();
+
+    if (page == 1) {
+      Cache()
+          .setString(key: 'group:speed:$groupId', value: jsonEncode(messages));
+    }
   }
 }

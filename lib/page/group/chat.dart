@@ -106,9 +106,8 @@ class _GroupChatPageState extends State<GroupChatPage> {
       listener: (context, state) {
         if (state is GroupChatLoaded) {
           // 加载聊天记录列表
-          context
-              .read<GroupChatBloc>()
-              .add(GroupChatMessagesLoadEvent(widget.groupId));
+          context.read<GroupChatBloc>().add(
+              GroupChatMessagesLoadEvent(widget.groupId, isInitRequest: true));
         }
       },
       buildWhen: (previous, current) => current is GroupChatLoaded,

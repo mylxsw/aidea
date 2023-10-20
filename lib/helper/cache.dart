@@ -42,4 +42,16 @@ class Cache {
   }) async {
     await cacheRepo.set(key, value.toString(), duration);
   }
+
+  Future<void> setString({
+    required String key,
+    required String value,
+    Duration duration = const Duration(days: 1),
+  }) async {
+    await cacheRepo.set(key, value, duration);
+  }
+
+  Future<String?> stringGet({required String key}) async {
+    return await cacheRepo.get(key);
+  }
 }

@@ -1589,8 +1589,9 @@ class APIServer {
     int groupId, {
     int page = 1,
     int? perPage,
+    bool cache = true,
   }) async {
-    return sendGetRequest(
+    return sendCachedGetRequest(
       '/v1/group-chat/$groupId/messages',
       (resp) {
         var res = <GroupMessage>[];
@@ -1610,6 +1611,7 @@ class APIServer {
         'page': page,
         'per_page': perPage,
       },
+      forceRefresh: !cache,
     );
   }
 
