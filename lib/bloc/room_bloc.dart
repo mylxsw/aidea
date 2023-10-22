@@ -279,16 +279,32 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
         await APIServer().createGroupRoom(
           name: event.name,
           avatarUrl: event.avatarUrl,
-          members: (event.members ?? [])
-              .map((e) => GroupMember(modelId: e.id, modelName: e.shortName))
-              .toList(),
+          members: event.members,
         );
 
-        emit(GroupRoomCreateResultState(true));
+        emit(GroupRoomUpdateResultState(true));
         emit(await createRoomsLoadedState(cache: false));
       } catch (e) {
-        emit(GroupRoomCreateResultState(false, error: e));
+        emit(GroupRoomUpdateResultState(false, error: e));
         emit(RoomsLoaded(const [], error: e.toString()));
+      }
+    });
+
+    // 群聊聊天室更新
+    on<GroupRoomUpdateEvent>((event, emit) async {
+      emit(RoomsLoading());
+
+      try {
+        await APIServer().updateGroupRoom(
+          groupId: event.groupId,
+          name: event.name,
+          avatarUrl: event.avatarUrl,
+          members: event.members,
+        );
+
+        emit(GroupRoomUpdateResultState(true));
+      } catch (e) {
+        emit(GroupRoomUpdateResultState(false, error: e));
       }
     });
   }

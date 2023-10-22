@@ -19,7 +19,8 @@ class GroupChatBloc extends Bloc<GroupChatEvent, GroupChatState> {
   GroupChatBloc({required this.stateManager}) : super(GroupChatInitial()) {
     // 加载聊天组
     on<GroupChatLoadEvent>((event, emit) async {
-      final group = await APIServer().chatGroup(event.groupId);
+      final group =
+          await APIServer().chatGroup(event.groupId, cache: !event.forceUpdate);
       final states = await stateManager.loadRoomStates(event.groupId);
       emit(GroupChatLoaded(group: group, states: states));
     });

@@ -5,8 +5,9 @@ sealed class GroupChatEvent {}
 
 class GroupChatLoadEvent extends GroupChatEvent {
   final int groupId;
+  final bool forceUpdate;
 
-  GroupChatLoadEvent(this.groupId);
+  GroupChatLoadEvent(this.groupId, {this.forceUpdate = false});
 }
 
 class GroupChatMessagesLoadEvent extends GroupChatEvent {

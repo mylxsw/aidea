@@ -233,6 +233,28 @@ class APIServer {
     );
   }
 
+  Future<T> sendPutJSONRequest<T>(
+    String endpoint,
+    T Function(dynamic) parser, {
+    String? subKey,
+    Duration duration = const Duration(days: 1),
+    Map<String, dynamic>? queryParameters,
+    Map<String, dynamic>? data,
+    bool forceRefresh = false,
+    VoidCallback? finallyCallback,
+  }) async {
+    return request(
+      HttpClient.putJSON(
+        '$url$endpoint',
+        queryParameters: queryParameters,
+        data: data,
+        options: _buildRequestOptions(),
+      ),
+      parser,
+      finallyCallback: finallyCallback,
+    );
+  }
+
   Future<T> sendDeleteRequest<T>(
     String endpoint,
     T Function(dynamic) parser, {
@@ -1059,6 +1081,33 @@ class APIServer {
       finallyCallback: () {
         HttpClient.cacheManager
             .deleteByPrimaryKey('$url/v2/rooms', requestMethod: 'GET');
+      },
+    );
+  }
+
+  /// 更新群聊房间
+  Future<void> updateGroupRoom({
+    required int groupId,
+    required String name,
+    String? description,
+    String? avatarUrl,
+    List<GroupMember>? members,
+  }) async {
+    return sendPutJSONRequest(
+      '/v1/group-chat/$groupId',
+      (resp) {},
+      data: {
+        'name': name,
+        'avatar_url': avatarUrl,
+        'members': members?.map((e) => e.toJson()).toList(),
+      },
+      finallyCallback: () {
+        HttpClient.cacheManager
+            .deleteByPrimaryKey('$url/v2/rooms', requestMethod: 'GET');
+
+        HttpClient.cacheManager.deleteByPrimaryKey(
+            '$url/v1/group-chat/$groupId',
+            requestMethod: 'GET');
       },
     );
   }

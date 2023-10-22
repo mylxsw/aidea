@@ -21,6 +21,7 @@ import 'package:askaide/page/dialog.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/repo/api_server.dart';
+import 'package:askaide/repo/model/group.dart';
 import 'package:askaide/repo/model/misc.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -66,8 +67,6 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
         models = value;
       });
     });
-
-    context.read<RoomBloc>().add(RoomGalleriesLoadEvent());
   }
 
   @override
@@ -95,9 +94,9 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
         enabled: false,
         child: BlocListener<RoomBloc, RoomState>(
           listenWhen: (previous, current) =>
-              current is GroupRoomCreateResultState,
+              current is GroupRoomUpdateResultState,
           listener: (context, state) {
-            if (state is GroupRoomCreateResultState) {
+            if (state is GroupRoomUpdateResultState) {
               globalLoadingCancel?.call();
               if (state.success) {
                 showSuccessMessage(AppLocale.operateSuccess.getString(context));
@@ -278,7 +277,7 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
                   children: [
                     Expanded(
                       child: EnhancedButton(
-                        title: AppLocale.ok.getString(context),
+                        title: AppLocale.save.getString(context),
                         onPressed: () async {
                           globalLoadingCancel = BotToast.showCustomLoading(
                             toastBuilder: (cancel) {
@@ -325,7 +324,11 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
                                     GroupRoomCreateEvent(
                                       name: name,
                                       avatarUrl: _avatarUrl,
-                                      members: selectedModels,
+                                      members: selectedModels
+                                          .map((e) => GroupMember(
+                                              modelId: e.realModelId,
+                                              modelName: e.shortName))
+                                          .toList(),
                                     ),
                                   );
                             }

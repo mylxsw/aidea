@@ -36,6 +36,7 @@ import 'package:askaide/page/custom_home_models.dart';
 import 'package:askaide/page/free_statistics.dart';
 import 'package:askaide/page/group/chat.dart';
 import 'package:askaide/page/group/create.dart';
+import 'package:askaide/page/group/edit.dart';
 import 'package:askaide/page/lab/creative_models.dart';
 import 'package:askaide/page/destroy_account.dart';
 import 'package:askaide/page/diagnosis.dart';
@@ -851,6 +852,27 @@ class MyApp extends StatefulWidget {
                       BlocProvider.value(value: chatRoomBloc),
                     ],
                     child: GroupCreatePage(setting: settingRepo),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'group-chat-edit',
+              path: '/group-chat/:group_id/edit',
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: ((context) =>
+                            GroupChatBloc(stateManager: messageStateManager)),
+                      ),
+                      BlocProvider.value(value: chatRoomBloc),
+                    ],
+                    child: GroupEditPage(
+                      setting: settingRepo,
+                      groupId: int.tryParse(state.pathParameters['group_id']!)!,
+                    ),
                   ),
                 );
               },

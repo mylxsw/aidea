@@ -121,6 +121,20 @@ class HttpClient {
     );
   }
 
+  static Future<Response> putJSON(
+    String url, {
+    Map<String, dynamic>? queryParameters,
+    Map<String, dynamic>? data,
+    Options? options,
+  }) async {
+    return await dio.put(
+      url,
+      queryParameters: queryParameters,
+      data: data,
+      options: options,
+    );
+  }
+
   static Future<Response> delete(
     String url, {
     Map<String, dynamic>? queryParameters,

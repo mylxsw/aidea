@@ -39,12 +39,14 @@ class GroupMember {
   final String modelId;
   final String modelName;
   final String? avatarUrl;
+  final int? status;
 
   GroupMember({
     this.id,
     required this.modelId,
     required this.modelName,
     this.avatarUrl,
+    this.status,
   });
 
   factory GroupMember.fromJson(Map<String, dynamic> json) {
@@ -53,6 +55,7 @@ class GroupMember {
       modelId: json['model_id'],
       modelName: json['model_name'],
       avatarUrl: json['avatar_url'],
+      status: json['status'],
     );
   }
 
@@ -62,6 +65,7 @@ class GroupMember {
       'model_id': modelId,
       'model_name': modelName,
       'avatar_url': avatarUrl,
+      'status': status,
     };
   }
 }

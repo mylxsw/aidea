@@ -45,9 +45,9 @@ class RoomGalleriesLoaded extends RoomState {
   RoomGalleriesLoaded(this.galleries, {this.error, this.tags = const []});
 }
 
-class GroupRoomCreateResultState extends RoomState {
+class GroupRoomUpdateResultState extends RoomState {
   final bool success;
   final Object? error;
 
-  GroupRoomCreateResultState(this.success, {this.error});
+  GroupRoomUpdateResultState(this.success, {this.error});
 }

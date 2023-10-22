@@ -50,7 +50,11 @@ class RoomItem extends StatelessWidget {
               icon: Icons.edit,
               onPressed: (_) {
                 final chatRoomBloc = context.read<RoomBloc>();
-                context.push('/room/${room.id}/setting').then((value) {
+                final redirectUrl = room.roomType == 4
+                    ? '/group-chat/${room.id}/edit'
+                    : '/room/${room.id}/setting';
+
+                context.push(redirectUrl).then((value) {
                   chatRoomBloc.add(RoomsLoadEvent());
                 });
               },
@@ -93,82 +97,112 @@ class RoomItem extends StatelessWidget {
                 chatRoomBloc.add(RoomsLoadEvent(forceRefresh: true));
               });
             },
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+            child: Stack(
               children: [
-                _buildAvatar(room),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                room.name,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            Text(
-                              humanTime(room.lastActiveTime),
-                              style: TextStyle(
-                                color:
-                                    customColors.weakLinkColor?.withAlpha(65),
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        Column(
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildAvatar(room),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (room.systemPrompt != null &&
-                                room.systemPrompt != '')
-                              Text(
-                                room.systemPrompt!,
-                                style: TextStyle(
-                                  color: customColors.weakLinkColor
-                                      ?.withAlpha(150),
-                                  fontSize: 13,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    room.name,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            // if (room.description != null)
-                            //   Text(
-                            //     room.description!,
-                            //     style:
-                            //         Theme.of(context).textTheme.bodySmall,
-                            //   ),
-                            if (room.systemPrompt == null ||
-                                room.systemPrompt == '')
-                              Text(
-                                room
-                                    .modelName()
-                                    .toUpperCase()
-                                    .replaceAll('-TURBO', ''),
-                                style: TextStyle(
-                                  color: customColors.weakLinkColor
-                                      ?.withAlpha(150),
-                                  fontSize: 13,
+                                Text(
+                                  humanTime(room.lastActiveTime),
+                                  style: TextStyle(
+                                    color: customColors.weakLinkColor
+                                        ?.withAlpha(65),
+                                    fontSize: 10,
+                                  ),
                                 ),
-                              ),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            buildRoomDesc(customColors),
                           ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
+                if (room.roomType == 4)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: customColors.backgroundContainerColor,
+                        borderRadius: const BorderRadius.only(
+                          topRight: Radius.circular(8),
+                          bottomLeft: Radius.circular(8),
+                        ),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
+                      child: Text(
+                        '群组',
+                        style: TextStyle(
+                          color: customColors.weakTextColor,
+                          fontSize: 8,
+                        ),
+                      ),
+                    ),
+                  )
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  Widget buildRoomDesc(CustomColors customColors) {
+    if (room.description != null && room.description != '') {
+      return Text(
+        room.description!,
+        style: TextStyle(
+          color: customColors.weakLinkColor?.withAlpha(150),
+          fontSize: 13,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+
+    if (room.systemPrompt != null && room.systemPrompt != '') {
+      return Text(
+        room.systemPrompt!,
+        style: TextStyle(
+          color: customColors.weakLinkColor?.withAlpha(150),
+          fontSize: 13,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+
+    if (room.systemPrompt == null || room.systemPrompt == '') {
+      Text(
+        room.modelName().toUpperCase().replaceAll('-TURBO', ''),
+        style: TextStyle(
+          color: customColors.weakLinkColor?.withAlpha(150),
+          fontSize: 13,
+        ),
+      );
+    }
+
+    return const SizedBox();
   }
 
   Widget _buildAvatar(Room room) {

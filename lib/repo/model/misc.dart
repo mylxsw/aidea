@@ -478,6 +478,10 @@ class Model {
   String? tag;
   String? avatarUrl;
 
+  String get realModelId {
+    return id.split(':').last;
+  }
+
   Model({
     required this.id,
     required this.name,

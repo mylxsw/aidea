@@ -25,6 +25,7 @@ import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:go_router/go_router.dart';
 
 class GroupChatPage extends StatefulWidget {
   final SettingRepository setting;
@@ -214,7 +215,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
           itemBuilder: (item) {
             return Text(item.modelName);
           },
-          items: groupState.group.members,
+          items: groupState.group.members.where((e) => e.status != 2).toList(),
           onChanged: (selected) {
             setState(() {
               selectedMembers = selected;
@@ -444,7 +445,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
               },
             ),
             actions: [
-              buildChatMoreMenu(context, widget.groupId, withSetting: false),
+              buildChatMoreMenu(context, widget.groupId),
             ],
             toolbarHeight: CustomSize.toolbarHeight,
           );
@@ -649,7 +650,11 @@ class _GroupChatPageState extends State<GroupChatPage> {
             icon: Icons.settings,
             iconColor: customColors.linkColor,
             onTap: (_) {
-              // context.push('/room/$chatRoomId/setting');
+              context.push('/group-chat/$chatRoomId/edit').whenComplete(() {
+                context
+                    .read<GroupChatBloc>()
+                    .add(GroupChatLoadEvent(widget.groupId, forceUpdate: true));
+              });
             },
           ),
       ],
