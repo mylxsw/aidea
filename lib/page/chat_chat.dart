@@ -241,6 +241,15 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
                     color: customColors.backgroundInvertedColor,
                   ),
                 ),
+                actions: [
+                  // IconButton(
+                  //   icon: Icon(
+                  //     Icons.history,
+                  //     color: customColors.backgroundInvertedColor,
+                  //   ),
+                  //   onPressed: () {},
+                  // ),
+                ],
                 backgroundImage: Image.asset(
                   customColors.appBarBackgroundImage!,
                   fit: BoxFit.cover,
@@ -262,9 +271,9 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
                                 bottom: false,
                                 child: Container(
                                   margin:
-                                      const EdgeInsets.only(top: 20, left: 15),
+                                      const EdgeInsets.only(top: 10, left: 15),
                                   child: Text(
-                                    '历史记录',
+                                    '最近历史记录',
                                     style: TextStyle(
                                       color: customColors.weakTextColor
                                           ?.withAlpha(100),
