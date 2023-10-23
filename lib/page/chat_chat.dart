@@ -242,13 +242,19 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
                   ),
                 ),
                 actions: [
-                  // IconButton(
-                  //   icon: Icon(
-                  //     Icons.history,
-                  //     color: customColors.backgroundInvertedColor,
-                  //   ),
-                  //   onPressed: () {},
-                  // ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.history,
+                      color: customColors.backgroundInvertedColor,
+                    ),
+                    onPressed: () {
+                      context.push('/chat-chat/history').whenComplete(() {
+                        context
+                            .read<ChatChatBloc>()
+                            .add(ChatChatLoadRecentHistories());
+                      });
+                    },
+                  ),
                 ],
                 backgroundImage: Image.asset(
                   customColors.appBarBackgroundImage!,

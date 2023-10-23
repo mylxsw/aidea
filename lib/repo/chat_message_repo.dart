@@ -149,11 +149,13 @@ class ChatMessageRepository {
     int roomId,
     int count, {
     int? userId,
+    int? offset,
   }) async {
     return await _chatHistoryProvider.getChatHistories(
       roomId,
       count,
       userId: userId,
+      offset: offset,
     );
   }
 

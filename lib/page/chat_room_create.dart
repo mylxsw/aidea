@@ -115,6 +115,7 @@ class _ChatRoomCreateScreenState extends State<ChatRoomCreateScreen> {
                 });
               },
             ),
+          const SizedBox(width: 8),
         ],
       ),
       body: BackgroundContainer(
@@ -145,6 +146,7 @@ class _ChatRoomCreateScreenState extends State<ChatRoomCreateScreen> {
                             isScrollable: true,
                             labelColor: customColors.linkColor,
                             indicator: const BoxDecoration(),
+                            labelPadding: EdgeInsets.only(right: 15),
                             overlayColor:
                                 MaterialStateProperty.all(Colors.transparent),
                           ),

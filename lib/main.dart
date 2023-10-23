@@ -23,6 +23,7 @@ import 'package:askaide/page/bind_phone_page.dart';
 import 'package:askaide/page/change_password.dart';
 import 'package:askaide/page/chat_anywhere.dart';
 import 'package:askaide/page/chat_chat.dart';
+import 'package:askaide/page/chat_history.dart';
 import 'package:askaide/page/chat_room_create.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/transition_resolver.dart';
@@ -384,6 +385,22 @@ class MyApp extends StatefulWidget {
                         state.queryParameters['show_initial_dialog'] == 'true',
                     reward:
                         int.tryParse(state.queryParameters['reward'] ?? '0'),
+                  ),
+                ),
+              ),
+            ),
+            GoRoute(
+              name: 'chat_chat_history',
+              path: '/chat-chat/history',
+              pageBuilder: (context, state) => transitionResolver(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider(
+                        create: (context) => ChatChatBloc(chatMsgRepo)),
+                  ],
+                  child: ChatHistoryPage(
+                    setting: settingRepo,
+                    chatMessageRepo: chatMsgRepo,
                   ),
                 ),
               ),
