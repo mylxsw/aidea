@@ -365,6 +365,9 @@ class MyApp extends StatefulWidget {
                     model: state.queryParameters['model'] == ''
                         ? null
                         : state.queryParameters['model'],
+                    title: state.queryParameters['title'] == ''
+                        ? null
+                        : state.queryParameters['title'],
                   ),
                 ),
               ),

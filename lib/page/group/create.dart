@@ -260,7 +260,7 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
                               },
                               itemAvatarBuilder: (item) {
                                 return _buildAvatar(
-                                    avatarUrl: item.avatarUrl, size: 30);
+                                    avatarUrl: item.avatarUrl, size: 40);
                               },
                               selectedItems: selectedModels,
                             );

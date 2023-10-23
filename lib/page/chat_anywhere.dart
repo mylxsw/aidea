@@ -3,6 +3,7 @@ import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/bloc/notify_bloc.dart';
 import 'package:askaide/bloc/room_bloc.dart';
 import 'package:askaide/helper/constant.dart';
+import 'package:askaide/helper/model.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/chat_screen.dart';
 import 'package:askaide/page/component/audio_player.dart';
@@ -24,6 +25,7 @@ import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:askaide/repo/model/model.dart' as mm;
 
 class ChatAnywhereScreen extends StatefulWidget {
   final MessageStateManager stateManager;
@@ -31,6 +33,7 @@ class ChatAnywhereScreen extends StatefulWidget {
   final int? chatId;
   final String? initialMessage;
   final String? model;
+  final String? title;
 
   const ChatAnywhereScreen({
     super.key,
@@ -39,6 +42,7 @@ class ChatAnywhereScreen extends StatefulWidget {
     this.chatId,
     this.initialMessage,
     this.model,
+    this.title,
   });
 
   @override
@@ -55,6 +59,8 @@ class _ChatAnywhereScreenState extends State<ChatAnywhereScreen> {
   int? chatId;
 
   bool showAudioPlayer = false;
+
+  List<mm.Model> supportModels = [];
 
   @override
   void initState() {
@@ -90,6 +96,13 @@ class _ChatAnywhereScreenState extends State<ChatAnywhereScreen> {
         showAudioPlayer = true;
       });
     };
+
+    // 加载模型列表，用于查询模型名称
+    ModelAggregate.models().then((value) {
+      setState(() {
+        supportModels = value;
+      });
+    });
 
     super.initState();
   }
@@ -173,45 +186,29 @@ class _ChatAnywhereScreenState extends State<ChatAnywhereScreen> {
           if (state is ChatMessagesLoaded) {
             return Column(
               children: [
-                Text(
-                  AppLocale.chatAnywhere.getString(context),
-                  style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+                Container(
+                  width: MediaQuery.of(context).size.width / 2,
+                  alignment: Alignment.center,
+                  child: Text(
+                    widget.title ?? AppLocale.chatAnywhere.getString(context),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style:
+                        const TextStyle(fontSize: CustomSize.appBarTitleSize),
+                  ),
                 ),
-                // BlocBuilder<RoomBloc, RoomState>(
-                //   buildWhen: (previous, current) => current is RoomLoaded,
-                //   builder: (context, state) {
-                //     if (state is RoomLoaded) {
-                //       return BlocBuilder<FreeCountBloc, FreeCountState>(
-                //         buildWhen: (previous, current) =>
-                //             current is FreeCountLoadedState,
-                //         builder: (context, freeState) {
-                //           if (freeState is FreeCountLoadedState) {
-                //             final matched = freeState.model(state.room.model);
-                //             if (matched != null &&
-                //                 matched.leftCount > 0 &&
-                //                 matched.maxCount > 0) {
-                //               return Text(
-                //                 '今日剩余免费 ${matched.leftCount} 次',
-                //                 style: TextStyle(
-                //                   color: customColors.weakTextColor,
-                //                   fontSize: 12,
-                //                 ),
-                //               );
-                //             }
-                //           }
-                //           return const SizedBox();
-                //         },
-                //       );
-                //     }
-                //     return const SizedBox();
-                //   },
-                // ),
-                // if (state.chatHistory != null &&
-                //     state.chatHistory!.model != null)
-                //   Text(
-                //     state.chatHistory!.model ?? '',
-                //     style: const TextStyle(fontSize: 12),
-                //   ),
+                if (state.chatHistory?.model != null)
+                  Text(
+                    supportModels
+                            .where((e) => e.id == state.chatHistory!.model!)
+                            .firstOrNull
+                            ?.shortName ??
+                        '',
+                    style: TextStyle(
+                      color: customColors.weakTextColor,
+                      fontSize: 10,
+                    ),
+                  )
               ],
             );
           }
@@ -219,15 +216,6 @@ class _ChatAnywhereScreenState extends State<ChatAnywhereScreen> {
           return const SizedBox();
         },
       ),
-
-      // actions: [
-      //   buildChatMoreMenu(
-      //     context,
-      //     chatAnywhereRoomId,
-      //     useLocalContext: false,
-      //     withSetting: false,
-      //   ),
-      // ],
       flexibleSpace: SizedBox(
         width: double.infinity,
         child: ShaderMask(

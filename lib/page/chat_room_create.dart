@@ -146,7 +146,8 @@ class _ChatRoomCreateScreenState extends State<ChatRoomCreateScreen> {
                             isScrollable: true,
                             labelColor: customColors.linkColor,
                             indicator: const BoxDecoration(),
-                            labelPadding: EdgeInsets.only(right: 15),
+                            labelPadding:
+                                const EdgeInsets.only(right: 5, left: 10),
                             overlayColor:
                                 MaterialStateProperty.all(Colors.transparent),
                           ),

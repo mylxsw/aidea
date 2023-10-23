@@ -129,17 +129,17 @@ class _SettingScreenState extends State<SettingScreen> {
                       },
                     ),
                     // 诊断
-                    SettingsTile(
-                      title: Text(AppLocale.diagnostic.getString(context)),
-                      trailing: Icon(
-                        CupertinoIcons.chevron_forward,
-                        size: MediaQuery.of(context).textScaleFactor * 18,
-                        color: Colors.grey,
-                      ),
-                      onPressed: (context) {
-                        context.push('/diagnosis');
-                      },
-                    ),
+                    // SettingsTile(
+                    //   title: Text(AppLocale.diagnostic.getString(context)),
+                    //   trailing: Icon(
+                    //     CupertinoIcons.chevron_forward,
+                    //     size: MediaQuery.of(context).textScaleFactor * 18,
+                    //     color: Colors.grey,
+                    //   ),
+                    //   onPressed: (context) {
+                    //     context.push('/diagnosis');
+                    //   },
+                    // ),
                     // 检查更新
                     if (!PlatformTool.isIOS())
                       SettingsTile(
@@ -254,17 +254,6 @@ class _SettingScreenState extends State<SettingScreen> {
                         },
                       ),
 
-                      SettingsTile(
-                        title: const Text('群组'),
-                        trailing: Icon(
-                          CupertinoIcons.chevron_forward,
-                          size: MediaQuery.of(context).textScaleFactor * 18,
-                          color: Colors.grey,
-                        ),
-                        onPressed: (context) {
-                          context.push('/group-chat/1006/chat');
-                        },
-                      ),
                       // SettingsTile(
                       //   title: const Text('用户中心'),
                       //   trailing: Icon(

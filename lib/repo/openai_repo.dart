@@ -86,6 +86,7 @@ class OpenAIRepository {
       category: modelTypeOpenAI,
       isChatModel: true,
       description: '能力最强的 GPT-3.5 模型，成本低',
+      shortName: 'GPT-3.5 Turbo',
     ),
     'gpt-3.5-turbo-16k': mm.Model(
       'gpt-3.5-turbo-16k',
@@ -94,6 +95,7 @@ class OpenAIRepository {
       category: modelTypeOpenAI,
       isChatModel: true,
       description: '能力最强的 GPT-3.5 模型，成本为 gpt-3.5-turbo 的两倍，但是支持 4K 上下文',
+      shortName: 'GPT-3.5 Turbo 16K',
     ),
     'gpt-4': mm.Model(
       'gpt-4',
@@ -102,6 +104,7 @@ class OpenAIRepository {
       category: modelTypeOpenAI,
       isChatModel: true,
       description: '比GPT-3.5模型更强，能够执行复杂任务，并优化用于聊天',
+      shortName: 'GPT-4',
     ),
 
     'gpt-4-32k': mm.Model(
@@ -111,6 +114,7 @@ class OpenAIRepository {
       category: modelTypeOpenAI,
       isChatModel: true,
       description: '基于 GPT-4，但是支持4倍的内容长度',
+      shortName: 'GPT-4 32K',
     ),
 
     // 'gpt-4-0314': Model(

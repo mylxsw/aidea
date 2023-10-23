@@ -298,7 +298,7 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
                                 onTap: () {
                                   context
                                       .push(
-                                          '/chat-anywhere?chat_id=${state.histories[index - 1].id}&model=${state.histories[index - 1].model}')
+                                          '/chat-anywhere?chat_id=${state.histories[index - 1].id}&model=${state.histories[index - 1].model}&title=${state.histories[index - 1].title}')
                                       .whenComplete(() {
                                     FocusScope.of(context)
                                         .requestFocus(FocusNode());

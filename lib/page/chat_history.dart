@@ -14,7 +14,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loading_more_list/loading_more_list.dart';
-import 'package:provider/provider.dart';
 
 class ChatHistoryPage extends StatefulWidget {
   final SettingRepository setting;
@@ -54,75 +53,80 @@ class _ChatHistoryPageState extends State<ChatHistoryPage> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
-        child: RefreshIndicator(
-          color: customColors.linkColor,
-          onRefresh: () async {
-            await datasource.refresh();
-          },
-          child: BlocListener<ChatChatBloc, ChatChatState>(
-            listenWhen: (previous, current) =>
-                current is ChatChatRecentHistoriesLoaded,
-            listener: (context, state) {
-              if (state is ChatChatRecentHistoriesLoaded) {
-                datasource.refresh();
-              }
+        child: SafeArea(
+          top: false,
+          left: false,
+          right: false,
+          child: RefreshIndicator(
+            color: customColors.linkColor,
+            onRefresh: () async {
+              await datasource.refresh();
             },
-            child: RefreshIndicator(
-              color: customColors.linkColor,
-              displacement: 20,
-              onRefresh: () {
-                return datasource.refresh();
+            child: BlocListener<ChatChatBloc, ChatChatState>(
+              listenWhen: (previous, current) =>
+                  current is ChatChatRecentHistoriesLoaded,
+              listener: (context, state) {
+                if (state is ChatChatRecentHistoriesLoaded) {
+                  datasource.refresh();
+                }
               },
-              child: LoadingMoreList(
-                ListConfig<ChatHistory>(
-                  itemBuilder: (context, item, index) {
-                    return ChatHistoryItem(
-                      history: item,
-                      customColors: customColors,
-                      onTap: () {
-                        context
-                            .push(
-                                '/chat-anywhere?chat_id=${item.id}&model=${item.model}')
-                            .whenComplete(() {
-                          FocusScope.of(context).requestFocus(FocusNode());
+              child: RefreshIndicator(
+                color: customColors.linkColor,
+                displacement: 20,
+                onRefresh: () {
+                  return datasource.refresh();
+                },
+                child: LoadingMoreList(
+                  ListConfig<ChatHistory>(
+                    itemBuilder: (context, item, index) {
+                      return ChatHistoryItem(
+                        history: item,
+                        customColors: customColors,
+                        onTap: () {
                           context
-                              .read<ChatChatBloc>()
-                              .add(ChatChatLoadRecentHistories());
-                        });
-                      },
-                    );
-                  },
-                  sourceList: datasource,
-                  indicatorBuilder: (context, status) {
-                    String msg = '';
-                    switch (status) {
-                      case IndicatorStatus.noMoreLoad:
-                        msg = '~ 没有更多了 ~';
-                        break;
-                      case IndicatorStatus.loadingMoreBusying:
-                        msg = '加载中...';
-                        break;
-                      case IndicatorStatus.error:
-                        msg = '加载失败，请稍后再试';
-                        break;
-                      case IndicatorStatus.empty:
-                        msg = '暂无数据';
-                        break;
-                      default:
-                        return const Center(child: LoadingIndicator());
-                    }
-                    return Container(
-                      padding: const EdgeInsets.all(15),
-                      alignment: Alignment.center,
-                      child: Text(
-                        msg,
-                        style: TextStyle(
-                          color: customColors.weakTextColor,
-                          fontSize: 14,
+                              .push(
+                                  '/chat-anywhere?chat_id=${item.id}&model=${item.model}&title=${item.title}')
+                              .whenComplete(() {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            context
+                                .read<ChatChatBloc>()
+                                .add(ChatChatLoadRecentHistories());
+                          });
+                        },
+                      );
+                    },
+                    sourceList: datasource,
+                    indicatorBuilder: (context, status) {
+                      String msg = '';
+                      switch (status) {
+                        case IndicatorStatus.noMoreLoad:
+                          msg = '~ 没有更多了 ~';
+                          break;
+                        case IndicatorStatus.loadingMoreBusying:
+                          msg = '加载中...';
+                          break;
+                        case IndicatorStatus.error:
+                          msg = '加载失败，请稍后再试';
+                          break;
+                        case IndicatorStatus.empty:
+                          msg = '暂无数据';
+                          break;
+                        default:
+                          return const Center(child: LoadingIndicator());
+                      }
+                      return Container(
+                        padding: const EdgeInsets.all(15),
+                        alignment: Alignment.center,
+                        child: Text(
+                          msg,
+                          style: TextStyle(
+                            color: customColors.weakTextColor,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
             ),

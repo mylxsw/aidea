@@ -73,10 +73,8 @@ class _MultiItemSelectorState<T> extends State<MultiItemSelector<T>> {
               return ListTile(
                 title: Container(
                   alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 15,
-                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     mainAxisSize: MainAxisSize.min,
