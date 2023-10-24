@@ -66,7 +66,7 @@ dependencies:
   isolate_image_compress: ^2.0.0
   image: ^4.0.15
   flutter_cache_manager: ^3.3.0
-  file_saver: ^0.2.1
+  file_saver: ^0.2.9
   image_gallery_saver: ^1.7.1
   tiktoken: ^1.0.3
   flutter_colorpicker: ^1.0.3
