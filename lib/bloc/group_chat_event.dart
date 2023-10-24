@@ -12,12 +12,12 @@ class GroupChatLoadEvent extends GroupChatEvent {
 
 class GroupChatMessagesLoadEvent extends GroupChatEvent {
   final int groupId;
-  final int page;
+  final int startId;
   final bool isInitRequest;
 
   GroupChatMessagesLoadEvent(
     this.groupId, {
-    this.page = 1,
+    this.startId = 0,
     this.isInitRequest = false,
   });
 }

@@ -22,7 +22,12 @@ class GroupChatBloc extends Bloc<GroupChatEvent, GroupChatState> {
       final group =
           await APIServer().chatGroup(event.groupId, cache: !event.forceUpdate);
       final states = await stateManager.loadRoomStates(event.groupId);
-      emit(GroupChatLoaded(group: group, states: states));
+
+      emit(GroupChatLoaded(
+        group: group,
+        states: states,
+        defaultChatMembers: await loadDefaultChatMembers(event.groupId),
+      ));
     });
 
     // 加载聊天组聊天记录
@@ -45,7 +50,7 @@ class GroupChatBloc extends Bloc<GroupChatEvent, GroupChatState> {
 
       await refreshGroupMessages(
         event.groupId,
-        page: event.page,
+        startId: event.startId,
         forceRefresh: true,
       );
 
@@ -65,16 +70,24 @@ class GroupChatBloc extends Bloc<GroupChatEvent, GroupChatState> {
 
         Logger.instance.d(resp.toJson());
 
+        // 记录默认聊天成员
+        updateDefaultChatMembers(
+          event.groupId,
+          resp.tasks.map((e) => e.memberId).toList(),
+        ).then((members) {
+          emit(GroupDefaultMemberSelected(members));
+        });
+
         await refreshGroupMessages(
           event.groupId,
-          page: 1,
+          startId: 0,
           forceRefresh: true,
         );
         emit(GroupChatMessagesLoaded(messages: messages));
       } catch (e) {
         await refreshGroupMessages(
           event.groupId,
-          page: 1,
+          startId: 0,
           forceRefresh: true,
         );
         emit(GroupChatMessagesLoaded(messages: messages, error: e));
@@ -94,7 +107,7 @@ class GroupChatBloc extends Bloc<GroupChatEvent, GroupChatState> {
       } finally {
         await refreshGroupMessages(
           event.groupId,
-          page: 1,
+          startId: 0,
           forceRefresh: true,
         );
         emit(GroupChatMessagesLoaded(messages: messages));
@@ -146,16 +159,39 @@ class GroupChatBloc extends Bloc<GroupChatEvent, GroupChatState> {
 
   refreshGroupMessages(
     int groupId, {
-    int page = 1,
+    int startId = 0,
     bool forceRefresh = false,
   }) async {
     final data = await APIServer()
-        .chatGroupMessages(groupId, page: page, cache: !forceRefresh);
+        .chatGroupMessages(groupId, startId: startId, cache: !forceRefresh);
     messages = data.data.reversed.toList();
 
-    if (page == 1) {
+    if (startId == 0) {
       Cache()
           .setString(key: 'group:speed:$groupId', value: jsonEncode(messages));
     }
+  }
+
+  Future<List<int>> loadDefaultChatMembers(int groupId) async {
+    final defaultMembers =
+        await Cache().stringGet(key: 'group:$groupId:default-members');
+
+    return (defaultMembers ?? '')
+        .split(',')
+        .map((e) => int.tryParse(e) ?? 0)
+        .where((e) => e > 0)
+        .toList();
+  }
+
+  Future<List<int>> updateDefaultChatMembers(
+      int groupId, List<int> members) async {
+    // 记录默认聊天成员
+    await Cache().setString(
+      key: 'group:$groupId:default-members',
+      value: members.join(','),
+      duration: const Duration(days: 365),
+    );
+
+    return members;
   }
 }

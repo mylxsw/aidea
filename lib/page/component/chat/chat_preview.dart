@@ -7,6 +7,7 @@ import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/attached_button_panel.dart';
+import 'package:askaide/page/component/chat/chat_share.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/share.dart';
 import 'package:askaide/page/dialog.dart';
@@ -584,49 +585,72 @@ class _ChatPreviewState extends State<ChatPreview> {
                     )
                   ],
                 )),
-          if (message.role == Role.sender && widget.onResentEvent != null)
-            TextButton.icon(
-              onPressed: () {
-                widget.onResentEvent!(message);
+          TextButton.icon(
+              onPressed: () async {
                 cancel();
+                var messages = <ChatShareMessage>[];
+
+                if (message.role == Role.receiver) {
+                  final questions = widget.messages
+                      .where((e) => e.message.id == message.refId)
+                      .toList();
+                  if (questions.isNotEmpty) {
+                    var q = questions.first;
+                    messages.add(ChatShareMessage(
+                      content: q.message.text,
+                      leftSide: false,
+                    ));
+                  }
+                }
+
+                messages.add(ChatShareMessage(
+                  content: message.text,
+                  leftSide: message.role == Role.receiver,
+                  avatarURL: message.avatarUrl,
+                  username: message.senderName,
+                ));
+
+                if (message.role == Role.sender) {
+                  final answers = widget.messages
+                      .where((e) => e.message.refId == message.id)
+                      .toList();
+                  if (answers.isNotEmpty) {
+                    for (var a in answers) {
+                      messages.add(ChatShareMessage(
+                        content: a.message.text,
+                        leftSide: true,
+                        avatarURL: a.message.avatarUrl,
+                        username: a.message.senderName,
+                      ));
+                    }
+                  }
+                }
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    fullscreenDialog: true,
+                    builder: (context) => ChatShareScreen(messages: messages),
+                  ),
+                );
+
+                // await shareTo(context, content: message.text, title: '聊天记录');
               },
               label: const Text(''),
-              icon: const Column(
+              icon: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.restore,
+                  const Icon(
+                    Icons.share,
                     color: Color.fromARGB(255, 255, 255, 255),
                     size: 14,
                   ),
                   Text(
-                    '重发',
-                    style: TextStyle(fontSize: 12, color: Colors.white),
-                  ),
+                    AppLocale.share.getString(context),
+                    style: const TextStyle(fontSize: 12, color: Colors.white),
+                  )
                 ],
-              ),
-            )
-          else
-            TextButton.icon(
-                onPressed: () async {
-                  cancel();
-                  await shareTo(context, content: message.text, title: '聊天记录');
-                },
-                label: const Text(''),
-                icon: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.share,
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      size: 14,
-                    ),
-                    Text(
-                      AppLocale.share.getString(context),
-                      style: const TextStyle(fontSize: 12, color: Colors.white),
-                    )
-                  ],
-                )),
+              )),
           TextButton.icon(
               onPressed: () {
                 widget.controller.enterSelectMode();
@@ -671,25 +695,48 @@ class _ChatPreviewState extends State<ChatPreview> {
             ),
           if (Ability().supportSpeak() && widget.onSpeakEvent != null)
             TextButton.icon(
-                onPressed: () {
-                  cancel();
-                  widget.onSpeakEvent!(message);
-                },
-                label: const Text(''),
-                icon: const Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.record_voice_over,
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      size: 14,
-                    ),
-                    Text(
-                      '朗读',
-                      style: TextStyle(fontSize: 12, color: Colors.white),
-                    )
-                  ],
-                )),
+              onPressed: () {
+                cancel();
+                widget.onSpeakEvent!(message);
+              },
+              label: const Text(''),
+              icon: const Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.record_voice_over,
+                    color: Color.fromARGB(255, 255, 255, 255),
+                    size: 14,
+                  ),
+                  Text(
+                    '朗读',
+                    style: TextStyle(fontSize: 12, color: Colors.white),
+                  )
+                ],
+              ),
+            ),
+          if (message.role == Role.sender && widget.onResentEvent != null)
+            TextButton.icon(
+              onPressed: () {
+                widget.onResentEvent!(message);
+                cancel();
+              },
+              label: const Text(''),
+              icon: const Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.restore,
+                    color: Color.fromARGB(255, 255, 255, 255),
+                    size: 14,
+                  ),
+                  Text(
+                    '重发',
+                    style: TextStyle(fontSize: 12, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );

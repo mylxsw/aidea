@@ -8,12 +8,12 @@ import 'package:askaide/helper/image.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/background_container.dart';
+import 'package:askaide/page/component/chat/chat_share.dart';
 import 'package:askaide/page/component/chat/help_tips.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/enhanced_popup_menu.dart';
 import 'package:askaide/page/component/multi_item_selector.dart';
 import 'package:askaide/page/component/random_avatar.dart';
-import 'package:askaide/page/component/share.dart';
 import 'package:askaide/page/dialog.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
@@ -51,8 +51,10 @@ class _GroupChatPageState extends State<GroupChatPage> {
       AudioPlayerController(useRemoteAPI: false);
   bool showAudioPlayer = false;
 
-  List<GroupMember> selectedMembers = [];
+  List<GroupMember>? selectedMembers = [];
   List<GroupMessage> messages = [];
+
+  ChatGroup? group;
 
   Timer? timer;
 
@@ -103,12 +105,31 @@ class _GroupChatPageState extends State<GroupChatPage> {
 
   Widget _buildChatComponents(CustomColors customColors) {
     return BlocConsumer<GroupChatBloc, GroupChatState>(
-      listenWhen: (previous, current) => current is GroupChatLoaded,
+      listenWhen: (previous, current) =>
+          current is GroupChatLoaded || current is GroupDefaultMemberSelected,
       listener: (context, state) {
         if (state is GroupChatLoaded) {
           // 加载聊天记录列表
           context.read<GroupChatBloc>().add(
               GroupChatMessagesLoadEvent(widget.groupId, isInitRequest: true));
+
+          // 选中默认的聊天成员
+          selectedMembers = state.group.members
+              .where((e) => state.defaultChatMembers?.contains(e.id) ?? false)
+              .toList();
+
+          setState(() {
+            group = state.group;
+          });
+        }
+
+        if (state is GroupDefaultMemberSelected) {
+          // 选中默认的聊天成员
+          if (group != null) {
+            selectedMembers = group?.members
+                .where((e) => state.members.contains(e.id))
+                .toList();
+          }
         }
       },
       buildWhen: (previous, current) => current is GroupChatLoaded,
@@ -160,32 +181,46 @@ class _GroupChatPageState extends State<GroupChatPage> {
                               return [
                                 Stack(
                                   children: [
-                                    IconButton(
-                                      onPressed: () async {
-                                        onModelSelect(
-                                            context, groupState, customColors);
-                                      },
-                                      icon: const Icon(Icons.group),
-                                      color: customColors.chatInputPanelText,
-                                      splashRadius: 20,
-                                      tooltip: '选择对话的模型',
-                                    ),
-                                    Positioned(
-                                      right: 2,
-                                      top: 0,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 3, vertical: 3),
-                                        child: Text(
-                                            selectedMembers.isNotEmpty
-                                                ? 'x${selectedMembers.length}'
-                                                : '随机',
-                                            style: TextStyle(
-                                              fontSize: 7,
-                                              color: customColors.weakTextColor,
-                                            )),
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      padding: const EdgeInsets.all(5),
+                                      child: InkWell(
+                                        onTap: () {
+                                          onModelSelect(context, groupState,
+                                              customColors);
+                                        },
+                                        child: selectedMembers?.length == 1
+                                            ? _buildAvatar(
+                                                avatarUrl: selectedMembers!
+                                                    .first.avatarUrl)
+                                            : Icon(
+                                                Icons.group,
+                                                color: customColors
+                                                    .chatInputPanelText,
+                                              ),
                                       ),
                                     ),
+                                    if (selectedMembers?.length != 1)
+                                      Positioned(
+                                        right: 2,
+                                        top: 0,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 3, vertical: 3),
+                                          child: Text(
+                                              selectedMembers != null &&
+                                                      selectedMembers!
+                                                          .isNotEmpty
+                                                  ? 'x${selectedMembers!.length}'
+                                                  : '随机',
+                                              style: TextStyle(
+                                                fontSize: 7,
+                                                color:
+                                                    customColors.weakTextColor,
+                                              )),
+                                        ),
+                                      ),
                                   ],
                                 )
                               ];
@@ -297,6 +332,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
               ts: e.createdAt,
               avatarUrl: member?.avatarUrl,
               senderName: member?.modelName,
+              roomId: e.groupId,
             );
           }).toList();
 
@@ -473,13 +509,10 @@ class _GroupChatPageState extends State<GroupChatPage> {
       _inputEnabled.value = false;
     });
 
-    context.read<GroupChatBloc>().add(
-          GroupChatSendEvent(
-            widget.groupId,
-            text,
-            selectedMembers.map((e) => e.id!).toList(),
-          ),
-        );
+    var replyMemberIds = (selectedMembers ?? []).map((e) => e.id!).toList();
+    context
+        .read<GroupChatBloc>()
+        .add(GroupChatSendEvent(widget.groupId, text, replyMemberIds));
   }
 
   /// 处理消息删除事件
@@ -548,19 +581,36 @@ class _GroupChatPageState extends State<GroupChatPage> {
                     context, AppLocale.noMessageSelected.getString(context));
                 return;
               }
-              var shareText = messages.map((e) {
-                if (e.message.role == Role.sender) {
-                  return e.message.text;
-                }
 
-                return e.message.text;
-              }).join('\n\n');
-
-              shareTo(
+              Navigator.push(
                 context,
-                content: shareText,
-                title: AppLocale.chatHistory.getString(context),
+                MaterialPageRoute(
+                  fullscreenDialog: true,
+                  builder: (context) => ChatShareScreen(
+                    messages: messages
+                        .map((e) => ChatShareMessage(
+                              content: e.message.text,
+                              username: e.message.senderName,
+                              avatarURL: e.message.avatarUrl,
+                              leftSide: e.message.role == Role.receiver,
+                            ))
+                        .toList(),
+                  ),
+                ),
               );
+              // var shareText = messages.map((e) {
+              //   if (e.message.role == Role.sender) {
+              //     return '我：\n${e.message.text}';
+              //   }
+
+              //   return '${e.message.senderName ?? "助理"}：\n${e.message.text}';
+              // }).join('\n\n');
+
+              // shareTo(
+              //   context,
+              //   content: shareText,
+              //   title: AppLocale.chatHistory.getString(context),
+              // );
             },
             icon: Icon(Icons.share, color: customColors.linkColor),
             label: Text(

@@ -75,6 +75,7 @@ class GroupMessage {
   final String message;
   final String role;
   final String type;
+  final int groupId;
   final int? tokenConsumed;
   final int? quotaConsumed;
   final int? pid;
@@ -89,6 +90,7 @@ class GroupMessage {
     required this.role,
     required this.status,
     required this.type,
+    required this.groupId,
     this.tokenConsumed,
     this.quotaConsumed,
     this.pid,
@@ -103,6 +105,7 @@ class GroupMessage {
       message: json['message'] ?? '',
       role: json['role'] == 1 ? 'user' : 'assistant',
       type: json['type'] ?? 'text',
+      groupId: json['group_id'],
       tokenConsumed: json['token_consumed'],
       quotaConsumed: json['quota_consumed'],
       pid: json['pid'],
@@ -119,6 +122,7 @@ class GroupMessage {
       'message': message,
       'role': role,
       'type': type,
+      'group_id': groupId,
       'token_consumed': tokenConsumed,
       'quota_consumed': quotaConsumed,
       'pid': pid,

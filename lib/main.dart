@@ -848,6 +848,7 @@ class MyApp extends StatefulWidget {
                         create: ((context) =>
                             GroupChatBloc(stateManager: messageStateManager)),
                       ),
+                      BlocProvider.value(value: chatRoomBloc),
                     ],
                     child: GroupChatPage(
                       setting: settingRepo,

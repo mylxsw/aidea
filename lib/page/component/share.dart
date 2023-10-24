@@ -13,7 +13,15 @@ Future<void> shareTo(
   String? title,
   List<String>? images,
 }) async {
-  final box = context.findRenderObject() as RenderBox?;
+  Rect? sharePositionOrigin;
+
+  try {
+    final box = context.findRenderObject() as RenderBox?;
+    Rect? pos = box!.localToGlobal(Offset.zero) & box.size;
+    sharePositionOrigin = pos;
+    // ignore: empty_catches
+  } catch (ignored) {}
+
   if ((PlatformTool.isIOS() || PlatformTool.isAndroid()) &&
       await isWeChatInstalled) {
     // ignore: use_build_context_synchronously
@@ -93,15 +101,13 @@ Future<void> shareTo(
                     Share.shareXFiles(
                       [XFile(images.first)],
                       subject: title,
-                      sharePositionOrigin:
-                          box!.localToGlobal(Offset.zero) & box.size,
+                      sharePositionOrigin: sharePositionOrigin,
                     ).whenComplete(() => context.pop());
                   } else {
                     Share.share(
                       content,
                       subject: title,
-                      sharePositionOrigin:
-                          box!.localToGlobal(Offset.zero) & box.size,
+                      sharePositionOrigin: sharePositionOrigin,
                     ).whenComplete(() => context.pop());
                   }
                 },
@@ -128,13 +134,13 @@ Future<void> shareTo(
       Share.shareXFiles(
         [XFile(images.first)],
         subject: title,
-        sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+        sharePositionOrigin: sharePositionOrigin,
       );
     } else {
       Share.share(
         content,
         subject: title,
-        sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+        sharePositionOrigin: sharePositionOrigin,
       );
     }
   }

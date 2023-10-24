@@ -1634,9 +1634,9 @@ class APIServer {
   }
 
   /// 群组聊天消息列表
-  Future<PagedData<GroupMessage>> chatGroupMessages(
+  Future<OffsetPageData<GroupMessage>> chatGroupMessages(
     int groupId, {
-    int page = 1,
+    int startId = 0,
     int? perPage,
     bool cache = true,
   }) async {
@@ -1648,16 +1648,15 @@ class APIServer {
           res.add(GroupMessage.fromJson(item));
         }
 
-        return PagedData(
+        return OffsetPageData(
           data: res,
-          page: resp.data['page'] ?? 1,
+          lastId: resp.data['last_id'],
+          startId: resp.data['start_id'],
           perPage: resp.data['per_page'],
-          total: resp.data['total'],
-          lastPage: resp.data['last_page'],
         );
       },
       queryParameters: {
-        'page': page,
+        'start_id': startId,
         'per_page': perPage,
       },
       forceRefresh: !cache,

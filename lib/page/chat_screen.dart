@@ -585,10 +585,10 @@ Widget buildSelectModeToolbars(
             }
             var shareText = messages.map((e) {
               if (e.message.role == Role.sender) {
-                return e.message.text;
+                return '我：\n${e.message.text}';
               }
 
-              return e.message.text;
+              return '助理：\n${e.message.text}';
             }).join('\n\n');
 
             shareTo(
