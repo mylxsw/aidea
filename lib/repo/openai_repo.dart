@@ -275,7 +275,13 @@ class OpenAIRepository {
           (event) {
             final evt = jsonDecode(event);
             if (evt['code'] != null && evt['code'] > 0) {
-              throw Exception(event['message']);
+              onData(ChatStreamRespData(
+                content: evt['error'],
+                code: evt['code'],
+                error: evt['error'],
+              ));
+
+              return;
             }
 
             final res = OpenAIStreamChatCompletionModel.fromMap(evt);
@@ -378,9 +384,13 @@ class ChatReplyMessage {
 class ChatStreamRespData {
   final String? role;
   final String content;
+  final int? code;
+  final String? error;
 
   ChatStreamRespData({
     this.role,
     required this.content,
+    this.code,
+    this.error,
   });
 }
