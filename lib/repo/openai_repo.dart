@@ -255,17 +255,21 @@ class OpenAIRepository {
 
         final apiToken = settings.getDefault(settingAPIServerToken, '');
 
-        final wsUri = Uri.parse(
-            '$wsURL/v1/chat/completions?ws=true&authorization=$apiToken&client-version=$clientVersion&platform-version=${PlatformTool.operatingSystemVersion()}&platform=${PlatformTool.operatingSystem()}&language=$language');
-
-        Uri(
+        final wsUri = Uri.parse('$wsURL/v1/chat/completions');
+        var channel = WebSocketChannel.connect(Uri(
           scheme: wsUri.scheme,
           host: wsUri.host,
           port: wsUri.port,
           path: wsUri.path,
-          queryParameters: {},
-        );
-        var channel = WebSocketChannel.connect(wsUri);
+          queryParameters: {
+            'ws': 'true',
+            'authorization': apiToken,
+            'client-version': clientVersion,
+            'platform-version': PlatformTool.operatingSystemVersion(),
+            'platform': PlatformTool.operatingSystem(),
+            'language': language,
+          },
+        ));
 
         channel.stream.listen(
           (event) {
