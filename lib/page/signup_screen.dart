@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/env.dart';
 import 'package:askaide/helper/helper.dart';
@@ -558,7 +559,7 @@ class _SignupScreenState extends State<SignupScreen> {
       } else {
         if (context.mounted) {
           context.go(
-              '/chat-chat?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
+              '${Ability().homeRoute}?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
         }
       }
     }).catchError((e) {

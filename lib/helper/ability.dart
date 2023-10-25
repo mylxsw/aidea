@@ -40,9 +40,35 @@ class Ability {
     return capabilities.showHomeModelDescription;
   }
 
+  /// 首页路由
+  String get homeRoute {
+    return capabilities.homeRoute;
+  }
+
+  /// 是否支持绘玩
+  bool get enableGallery {
+    return !capabilities.disableGallery;
+  }
+
+  /// 是否支持创作岛
+  bool get enableCreationIsland {
+    return !capabilities.disableCreationIsland;
+  }
+
+  /// 是否支持数字人
+  bool get enableDigitalHuman {
+    return !capabilities.disableDigitalHuman;
+  }
+
+  /// 是否支持聊一聊
+  bool get enableChat {
+    return !capabilities.disableChat;
+  }
+
   /// 是否支持 OpenAI
   bool get enableOpenAI {
-    return capabilities.openaiEnabled;
+    return capabilities.openaiEnabled &&
+        (!capabilities.disableChat || !capabilities.disableDigitalHuman);
   }
 
   /// 是否支持支付宝

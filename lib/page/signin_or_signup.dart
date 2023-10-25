@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/lang/lang.dart';
@@ -164,7 +165,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
                 await widget.settings.set(settingUserInfo, jsonEncode(value));
                 if (context.mounted) {
                   context.go(
-                      '/chat-chat?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
+                      '${Ability().homeRoute}?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
                 }
               }).catchError((e) {
                 showErrorMessage(resolveError(context, e));
@@ -405,7 +406,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
       } else {
         if (context.mounted) {
           context.go(
-              '/chat-chat?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
+              '${Ability().homeRoute}?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
         }
       }
     }).catchError((e) {

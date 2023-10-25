@@ -1,3 +1,4 @@
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
@@ -78,7 +79,7 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
           if (widget.source != 'setting')
             TextButton(
               onPressed: () {
-                context.go('/chat-chat');
+                context.go(Ability().homeRoute);
               },
               child: Text(
                 '暂不设置',
@@ -227,7 +228,7 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
     } else {
       await widget.settings.set(settingOpenAISelfHosted, 'true');
       if (context.mounted) {
-        context.go('/chat-chat');
+        context.go(Ability().homeRoute);
       }
     }
   }

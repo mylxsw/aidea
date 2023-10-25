@@ -77,7 +77,7 @@ class _SignInScreenState extends State<SignInScreen> {
             if (context.canPop()) {
               context.pop();
             } else {
-              context.go('/chat-chat');
+              context.go(Ability().homeRoute);
             }
           },
         ),
@@ -410,7 +410,7 @@ class _SignInScreenState extends State<SignInScreen> {
             return;
           } else {
             context.go(
-                '/chat-chat?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
+                '${Ability().homeRoute}?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
           }
         });
       }).catchError((e) {

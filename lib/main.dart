@@ -175,7 +175,7 @@ void main() async {
 
   // 从服务器获取客户端支持的能力清单
   try {
-    final capabilities = await APIServer().capabilities();
+    final capabilities = await APIServer().capabilities(cache: false);
     Ability().init(settingRepo, capabilities);
   } catch (e) {
     Logger.instance.e('获取客户端能力清单失败', error: e);
@@ -188,6 +188,9 @@ void main() async {
         mailEnabled: true,
         openaiEnabled: true,
         homeModels: [],
+        homeRoute: '/chat-chat',
+        showHomeModelDescription: true,
+        supportWebsocket: false,
       ),
     );
   }
@@ -264,7 +267,7 @@ class MyApp extends StatefulWidget {
         !stabilityAISelfHosted;
 
     _router = GoRouter(
-      initialLocation: shouldLogin ? '/login' : '/chat-chat',
+      initialLocation: shouldLogin ? '/login' : Ability().homeRoute,
       observers: [
         BotToastNavigatorObserver(),
       ],
