@@ -114,6 +114,7 @@ dependencies:
   flutter_markdown: ^0.6.17+3
   markdown: ^7.1.1
   fetch_api: 1.0.1
+  web_socket_channel: ^2.4.0
   
 dev_dependencies:
   flutter_test:

@@ -20,6 +20,11 @@ class Ability {
     return _instance;
   }
 
+  /// 是否支持 Websocket
+  bool supportWebSocket() {
+    return capabilities.supportWebsocket && !supportLocalOpenAI();
+  }
+
   /// 更新能力
   updateCapabilities(Capabilities capabilities) {
     this.capabilities = capabilities;

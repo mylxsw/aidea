@@ -21,6 +21,9 @@ class Capabilities {
   /// 是否显示首页模型描述
   final bool showHomeModelDescription;
 
+  /// 是否支持 Websocket
+  final bool supportWebsocket;
+
   Capabilities({
     required this.applePayEnabled,
     required this.alipayEnabled,
@@ -29,6 +32,7 @@ class Capabilities {
     required this.openaiEnabled,
     required this.homeModels,
     this.showHomeModelDescription = true,
+    this.supportWebsocket = false,
   });
 
   factory Capabilities.fromJson(Map<String, dynamic> json) {
@@ -42,6 +46,7 @@ class Capabilities {
           .map((e) => HomeModel.fromJson(e))
           .toList(),
       showHomeModelDescription: json['show_home_model_description'] ?? true,
+      supportWebsocket: json['support_websocket'] ?? false,
     );
   }
 
@@ -54,6 +59,7 @@ class Capabilities {
       'openai_enabled': openaiEnabled,
       'home_models': homeModels.map((e) => e.toJson()).toList(),
       'show_home_model_description': showHomeModelDescription,
+      'support_websocket': supportWebsocket,
     };
   }
 }

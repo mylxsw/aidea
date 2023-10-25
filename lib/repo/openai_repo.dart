@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
@@ -7,6 +8,7 @@ import 'package:askaide/helper/platform.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
 import 'package:dart_openai/openai.dart';
 import 'package:askaide/repo/data/settings_data.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class OpenAIRepository {
   final SettingDataProvider settings;
@@ -245,34 +247,96 @@ class OpenAIRepository {
     var completer = Completer<void>();
 
     try {
-      var chatStream = OpenAI.instance.chat.createStream(
-        model: model,
-        messages: messages,
-        temperature: temperature,
-        user: user,
-        maxTokens: maxTokens,
-        n: Ability().supportLocalOpenAI()
-            ? null
-            : roomId, // n 参数暂时用不到，复用作为 roomId
-      );
+      if (Ability().supportWebSocket()) {
+        final serverURL = settings.getDefault(settingServerURL, apiServerURL);
+        final wsURL = serverURL.startsWith('https://')
+            ? serverURL.replaceFirst('https://', 'wss://')
+            : serverURL.replaceFirst('http://', 'ws://');
 
-      chatStream.listen(
-        (event) {
-          for (var element in event.choices) {
-            if (element.delta.content != null) {
-              onData(ChatStreamRespData(
-                content: element.delta.content!,
-                role: element.delta.role,
-              ));
+        final apiToken = settings.getDefault(settingAPIServerToken, '');
+
+        final wsUri = Uri.parse(
+            '$wsURL/v1/chat/completions?ws=true&authorization=$apiToken&client-version=$clientVersion&platform-version=${PlatformTool.operatingSystemVersion()}&platform=${PlatformTool.operatingSystem()}&language=$language');
+
+        Uri(
+          scheme: wsUri.scheme,
+          host: wsUri.host,
+          port: wsUri.port,
+          path: wsUri.path,
+          queryParameters: {},
+        );
+        var channel = WebSocketChannel.connect(wsUri);
+
+        channel.stream.listen(
+          (event) {
+            final evt = jsonDecode(event);
+            if (evt['code'] != null && evt['code'] > 0) {
+              throw Exception(event['message']);
             }
-          }
-        },
-        onDone: () => completer.complete(),
-        onError: (e) => completer.completeError(e),
-        cancelOnError: true,
-      ).onError((e) {
-        completer.completeError(e);
-      });
+
+            final res = OpenAIStreamChatCompletionModel.fromMap(evt);
+            for (var element in res.choices) {
+              if (element.delta.content != null) {
+                onData(ChatStreamRespData(
+                  content: element.delta.content!,
+                  role: element.delta.role,
+                ));
+              }
+            }
+          },
+          onDone: () {
+            channel.sink.close();
+            completer.complete();
+          },
+          onError: (e) {
+            channel.sink.close();
+            completer.completeError(e);
+          },
+          cancelOnError: true,
+        ).onError((e) {
+          completer.completeError(e);
+        });
+
+        channel.sink.add(jsonEncode({
+          'model': model,
+          'messages': messages.map((e) => e.toMap()).toList(),
+          'temperature': temperature,
+          'user': user,
+          'max_tokens': maxTokens,
+          'n': Ability().supportLocalOpenAI()
+              ? null
+              : roomId, // n 参数暂时用不到，复用作为 roomId
+        }));
+      } else {
+        var chatStream = OpenAI.instance.chat.createStream(
+          model: model,
+          messages: messages,
+          temperature: temperature,
+          user: user,
+          maxTokens: maxTokens,
+          n: Ability().supportLocalOpenAI()
+              ? null
+              : roomId, // n 参数暂时用不到，复用作为 roomId
+        );
+
+        chatStream.listen(
+          (event) {
+            for (var element in event.choices) {
+              if (element.delta.content != null) {
+                onData(ChatStreamRespData(
+                  content: element.delta.content!,
+                  role: element.delta.role,
+                ));
+              }
+            }
+          },
+          onDone: () => completer.complete(),
+          onError: (e) => completer.completeError(e),
+          cancelOnError: true,
+        ).onError((e) {
+          completer.completeError(e);
+        });
+      }
     } catch (e) {
       completer.completeError(e);
     }
