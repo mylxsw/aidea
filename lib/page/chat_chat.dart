@@ -25,6 +25,7 @@ import 'package:askaide/repo/model/misc.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -89,6 +90,21 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
 
   /// 促销事件
   PromotionEvent? promotionEvent;
+
+  /// 用于监听键盘事件，实现回车发送消息，Shift+Enter换行
+  late final FocusNode _focusNode = FocusNode(
+    onKey: (node, event) {
+      if (!event.isShiftPressed && event.logicalKey.keyLabel == 'Enter') {
+        if (event is RawKeyDownEvent) {
+          onSubmit(context, _textController.text.trim());
+        }
+
+        return KeyEventResult.handled;
+      } else {
+        return KeyEventResult.ignored;
+      }
+    },
+  );
 
   @override
   void dispose() {
@@ -279,7 +295,7 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
                                   margin:
                                       const EdgeInsets.only(top: 10, left: 15),
                                   child: Text(
-                                    '最近历史记录',
+                                    AppLocale.histories.getString(context),
                                     style: TextStyle(
                                       color: customColors.weakTextColor
                                           ?.withAlpha(100),
@@ -289,6 +305,56 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
                                 ),
                               );
                             }
+
+                            if (index == state.histories.length && index > 3) {
+                              return SafeArea(
+                                top: false,
+                                bottom: false,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    context
+                                        .push('/chat-chat/history')
+                                        .whenComplete(() {
+                                      context
+                                          .read<ChatChatBloc>()
+                                          .add(ChatChatLoadRecentHistories());
+                                    });
+                                  },
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    margin: const EdgeInsets.only(
+                                        top: 5, bottom: 15),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.keyboard_double_arrow_left,
+                                          size: 12,
+                                          color: customColors.weakTextColor!
+                                              .withAlpha(120),
+                                        ),
+                                        Text(
+                                          "查看更多",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: customColors.weakTextColor!
+                                                .withAlpha(120),
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.keyboard_double_arrow_right,
+                                          size: 12,
+                                          color: customColors.weakTextColor!
+                                              .withAlpha(120),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+
                             return SafeArea(
                               top: false,
                               bottom: false,
@@ -417,6 +483,7 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
                           ),
                         Expanded(
                           child: EnhancedTextField(
+                            focusNode: _focusNode,
                             controller: _textController,
                             customColors: customColors,
                             maxLines: 10,
@@ -692,10 +759,6 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
         ),
         InkWell(
           onTap: () {
-            if (_textController.text.trim().isEmpty) {
-              return;
-            }
-
             onSubmit(context, _textController.text.trim());
           },
           child: Icon(
@@ -712,6 +775,10 @@ class _ChatChatScreenState extends State<ChatChatScreen> {
   }
 
   void onSubmit(BuildContext context, String text) {
+    if (text.trim().isEmpty) {
+      return;
+    }
+
     context
         .push(Uri(path: '/chat-anywhere', queryParameters: {
       'init_message': text,

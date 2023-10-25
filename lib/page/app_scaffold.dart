@@ -155,6 +155,10 @@ class _AppScaffoldState extends State<AppScaffold> {
   }
 
   void onTap(int value) {
+    if (context.canPop()) {
+      context.pop();
+    }
+
     HapticFeedbackHelper.lightImpact();
 
     final barItems = _bottomNavigationBarList();

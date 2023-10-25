@@ -190,18 +190,17 @@ class _GroupChatPageState extends State<GroupChatPage> {
                                           onModelSelect(context, groupState,
                                               customColors);
                                         },
-                                        child: selectedMembers?.length == 1
-                                            ? _buildAvatar(
-                                                avatarUrl: selectedMembers!
-                                                    .first.avatarUrl)
-                                            : Icon(
-                                                Icons.group,
-                                                color: customColors
-                                                    .chatInputPanelText,
-                                              ),
+                                        child: Icon(
+                                          Icons.alternate_email,
+                                          color: selectedMembers != null &&
+                                                  selectedMembers!.isNotEmpty
+                                              ? customColors.linkColor
+                                              : customColors.chatInputPanelText,
+                                        ),
                                       ),
                                     ),
-                                    if (selectedMembers?.length != 1)
+                                    if (selectedMembers != null &&
+                                        selectedMembers!.isNotEmpty)
                                       Positioned(
                                         right: 2,
                                         top: 0,
@@ -209,15 +208,10 @@ class _GroupChatPageState extends State<GroupChatPage> {
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 3, vertical: 3),
                                           child: Text(
-                                              selectedMembers != null &&
-                                                      selectedMembers!
-                                                          .isNotEmpty
-                                                  ? 'x${selectedMembers!.length}'
-                                                  : '随机',
+                                              'x${selectedMembers!.length}',
                                               style: TextStyle(
                                                 fontSize: 7,
-                                                color:
-                                                    customColors.weakTextColor,
+                                                color: customColors.linkColor,
                                               )),
                                         ),
                                       ),

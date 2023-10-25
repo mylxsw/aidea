@@ -105,7 +105,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          '群组设置',
+          '群聊设置',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,

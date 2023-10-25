@@ -81,7 +81,7 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          '创建群组',
+          '发起群聊',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,

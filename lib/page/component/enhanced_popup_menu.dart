@@ -16,12 +16,13 @@ class EnhancedPopupMenuItem {
 
 class EnhancedPopupMenu extends StatelessWidget {
   final List<EnhancedPopupMenuItem> items;
-  const EnhancedPopupMenu({super.key, required this.items});
+  final IconData? icon;
+  const EnhancedPopupMenu({super.key, required this.items, this.icon});
 
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton(
-      icon: const Icon(Icons.more_horiz),
+      icon: Icon(icon ?? Icons.more_horiz),
       splashRadius: 20,
       elevation: 0,
       shape: RoundedRectangleBorder(

@@ -1,9 +1,11 @@
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/event.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/bloc/room_bloc.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/enhanced_error.dart';
+import 'package:askaide/page/component/enhanced_popup_menu.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/room_card.dart';
 import 'package:askaide/page/component/sliver_component.dart';
@@ -69,13 +71,32 @@ class _CharactersScreenState extends State<CharactersScreen> {
               return SliverComponent(
                 actions: [
                   if (selectedSuggestions.isEmpty)
-                    IconButton(
-                      onPressed: () {
-                        context.push('/create-room').whenComplete(() {
-                          context.read<RoomBloc>().add(RoomsLoadEvent());
-                        });
-                      },
-                      icon: const Icon(Icons.add_circle_outline),
+                    EnhancedPopupMenu(
+                      items: [
+                        EnhancedPopupMenuItem(
+                          title: '创建数字人',
+                          icon: Icons.person_add_alt_outlined,
+                          onTap: (p0) {
+                            context.push('/create-room').whenComplete(() {
+                              context.read<RoomBloc>().add(RoomsLoadEvent());
+                            });
+                          },
+                        ),
+                        if (Ability().supportAPIServer() &&
+                            !Ability().supportLocalOpenAI())
+                          EnhancedPopupMenuItem(
+                            title: '发起群聊',
+                            icon: Icons.chat_bubble_outline,
+                            onTap: (p0) {
+                              context
+                                  .push('/group-chat-create')
+                                  .whenComplete(() {
+                                context.read<RoomBloc>().add(RoomsLoadEvent());
+                              });
+                            },
+                          )
+                      ],
+                      icon: Icons.add_circle_outline,
                     ),
                 ],
                 centerTitle: state.suggests.isEmpty,
