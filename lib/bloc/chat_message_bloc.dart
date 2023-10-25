@@ -15,6 +15,7 @@ import 'package:askaide/repo/model/message.dart';
 import 'package:askaide/repo/model/room.dart';
 import 'package:askaide/repo/openai_repo.dart';
 import 'package:askaide/repo/settings_repo.dart';
+import 'package:dart_openai/openai.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -305,6 +306,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     // 等待监听机器人应答消息
     final queue = GracefulQueue<ChatStreamRespData>();
     try {
+      RequestFailedException? error;
       var listener = queue.listen(const Duration(milliseconds: 10), (items) {
         final systemCmds = items.where((e) => e.role == 'system').toList();
         if (systemCmds.isNotEmpty) {
@@ -335,6 +337,13 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
             .map((e) => e.content)
             .join('');
         emit(ChatMessageUpdated(waitMessage, processing: true));
+
+        // 失败处理
+        for (var e in items) {
+          if (e.code != null && e.code! > 0) {
+            error = RequestFailedException(e.error ?? '请求处理失败', e.code!);
+          }
+        }
       });
 
       await ModelResolver.instance
@@ -347,6 +356,10 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
           .whenComplete(queue.finish);
 
       await listener;
+
+      if (error != null) {
+        throw error!;
+      }
 
       // 机器人应答完成，将最后一条机器人应答消息更新到数据库，替换掉思考中消息
       waitMessage.isReady = true;

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:askaide/bloc/account_bloc.dart';
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/lang/lang.dart';
@@ -86,7 +87,8 @@ class _BindPhoneScreenState extends State<BindPhoneScreen> {
         leading: IconButton(
           onPressed: () {
             if (widget.isSignIn) {
-              context.go('/chat-chat?show_initial_dialog=false&reward=0');
+              context.go(
+                  '${Ability().homeRoute}?show_initial_dialog=false&reward=0');
             } else {
               context.pop();
             }
@@ -292,7 +294,7 @@ class _BindPhoneScreenState extends State<BindPhoneScreen> {
       if (widget.isSignIn) {
         if (context.mounted) {
           context.go(
-              '/chat-chat?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
+              '${Ability().homeRoute}?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
         }
       } else {
         if (context.mounted) {
