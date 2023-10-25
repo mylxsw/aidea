@@ -277,9 +277,9 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                 children: [
                   Row(
                     children: [
-                      if (message.avatarURL != null)
+                      if (message.avatarURL != null && message.leftSide)
                         _buildAvatar(avatarUrl: message.avatarURL),
-                      if (message.username != null)
+                      if (message.username != null && message.leftSide)
                         Container(
                           margin: const EdgeInsets.fromLTRB(0, 0, 10, 7),
                           padding: const EdgeInsets.symmetric(horizontal: 13),
@@ -348,7 +348,7 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (message.avatarURL != null)
+                    if (message.avatarURL != null && message.leftSide)
                       _buildAvatar(avatarUrl: message.avatarURL),
                     ConstrainedBox(
                       constraints: BoxConstraints(
@@ -358,7 +358,7 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (message.username != null)
+                          if (message.username != null && message.leftSide)
                             Container(
                               margin: const EdgeInsets.fromLTRB(0, 0, 10, 7),
                               padding:

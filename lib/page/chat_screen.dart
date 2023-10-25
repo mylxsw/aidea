@@ -6,6 +6,7 @@ import 'package:askaide/helper/image.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/background_container.dart';
+import 'package:askaide/page/component/chat/chat_share.dart';
 import 'package:askaide/page/component/chat/empty.dart';
 import 'package:askaide/page/component/chat/help_tips.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
@@ -247,6 +248,9 @@ class _ChatScreenState extends State<ChatScreen> {
           }
 
           final messages = loadedMessages.map((e) {
+            e.avatarUrl = room.room.avatarUrl;
+            e.senderName = room.room.name;
+
             return MessageWithState(
               e,
               room.states[
@@ -583,19 +587,42 @@ Widget buildSelectModeToolbars(
                   context, AppLocale.noMessageSelected.getString(context));
               return;
             }
-            var shareText = messages.map((e) {
-              if (e.message.role == Role.sender) {
-                return '我：\n${e.message.text}';
-              }
 
-              return '助理：\n${e.message.text}';
-            }).join('\n\n');
-
-            shareTo(
+            Navigator.push(
               context,
-              content: shareText,
-              title: AppLocale.chatHistory.getString(context),
+              MaterialPageRoute(
+                fullscreenDialog: true,
+                builder: (context) => ChatShareScreen(
+                  messages: messages
+                      .map((e) => ChatShareMessage(
+                            content: e.message.text,
+                            username: e.message.senderName,
+                            avatarURL: e.message.avatarUrl,
+                            leftSide: e.message.role == Role.receiver,
+                          ))
+                      .toList(),
+                ),
+              ),
             );
+            // var messages = chatPreviewController.selectedMessages();
+            // if (messages.isEmpty) {
+            //   showErrorMessageEnhanced(
+            //       context, AppLocale.noMessageSelected.getString(context));
+            //   return;
+            // }
+            // var shareText = messages.map((e) {
+            //   if (e.message.role == Role.sender) {
+            //     return '我：\n${e.message.text}';
+            //   }
+
+            //   return '助理：\n${e.message.text}';
+            // }).join('\n\n');
+
+            // shareTo(
+            //   context,
+            //   content: shareText,
+            //   title: AppLocale.chatHistory.getString(context),
+            // );
           },
           icon: Icon(Icons.share, color: customColors.linkColor),
           label: Text(
