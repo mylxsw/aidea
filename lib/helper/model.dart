@@ -32,6 +32,7 @@ class ModelAggregate {
               disabled: e.disabled,
               category: e.category,
               tag: e.tag,
+              avatarUrl: e.avatarUrl,
             ),
           )
           .toList());

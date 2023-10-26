@@ -50,7 +50,7 @@ class _ChatInputState extends State<ChatInput> {
   late final FocusNode _focusNode = FocusNode(
     onKey: (node, event) {
       if (!event.isShiftPressed && event.logicalKey.keyLabel == 'Enter') {
-        if (event is RawKeyDownEvent) {
+        if (event is RawKeyDownEvent && widget.enableNotifier.value) {
           _handleSubmited(_textController.text.trim());
         }
 
@@ -94,128 +94,100 @@ class _ChatInputState extends State<ChatInput> {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
         color: customColors.backgroundColor,
-        // borderRadius: const BorderRadius.only(
-        //   topLeft: Radius.circular(10),
-        //   topRight: Radius.circular(10),
-        // ),
-        // boxShadow: const [
-        //   BoxShadow(
-        //     color: Color.fromARGB(31, 161, 161, 161),
-        //     blurRadius: 5,
-        //     spreadRadius: 0,
-        //     offset: Offset(0, -5),
-        //   ),
-        // ],
       ),
       child: Builder(builder: (context) {
         final setting = context.read<SettingRepository>();
-        if (widget.enableNotifier.value) {
-          return Column(
-            children: [
-              // 工具栏
-              if (widget.toolbar != null)
-                Row(
+        return Column(
+          children: [
+            // 工具栏
+            if (widget.toolbar != null)
+              Row(
+                children: [
+                  Expanded(child: widget.toolbar!),
+                  Text(
+                    "${_textController.text.length}/$maxLength",
+                    textScaleFactor: 0.8,
+                    style: TextStyle(
+                      color: customColors.chatInputPanelText,
+                    ),
+                  ),
+                ],
+              ),
+            // if (widget.toolbar != null)
+            const SizedBox(height: 8),
+            // 聊天内容输入栏
+            SingleChildScrollView(
+              child: Slidable(
+                startActionPane: widget.onNewChat != null
+                    ? ActionPane(
+                        extentRatio: 0.3,
+                        motion: const ScrollMotion(),
+                        children: [
+                          SlidableAction(
+                            autoClose: true,
+                            label: AppLocale.newChat.getString(context),
+                            backgroundColor: Colors.blue,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20)),
+                            onPressed: (_) {
+                              widget.onNewChat!();
+                            },
+                          ),
+                          const SizedBox(width: 10),
+                        ],
+                      )
+                    : null,
+                child: Row(
                   children: [
-                    Expanded(child: widget.toolbar!),
-                    Text(
-                      "${_textController.text.length}/$maxLength",
-                      textScaleFactor: 0.8,
-                      style: TextStyle(
-                        color: customColors.chatInputPanelText,
+                    // 聊天功能按钮
+                    Row(
+                      children: [
+                        if (widget.enableImageUpload &&
+                            Ability().supportImageUploader())
+                          _buildImageUploadButton(
+                              context, setting, customColors),
+                        if (widget.leftSideToolsBuilder != null)
+                          ...widget.leftSideToolsBuilder!(),
+                      ],
+                    ),
+                    // 聊天输入框
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: customColors.chatInputAreaBackground,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                keyboardType: TextInputType.multiline,
+                                textInputAction: TextInputAction.newline,
+                                maxLines: 5,
+                                minLines: 1,
+                                maxLength: maxLength,
+                                focusNode: _focusNode,
+                                controller: _textController,
+                                decoration: InputDecoration(
+                                  hintText: widget.hintText,
+                                  hintStyle: const TextStyle(
+                                    fontSize: CustomSize.defaultHintTextSize,
+                                  ),
+                                  border: InputBorder.none,
+                                  counterText: '',
+                                ),
+                              ),
+                            ),
+                            // 聊天发送按钮
+                            _buildSendOrVoiceButton(context, customColors),
+                          ],
+                        ),
                       ),
                     ),
                   ],
                 ),
-              // if (widget.toolbar != null)
-              const SizedBox(height: 8),
-              // 聊天内容输入栏
-              SingleChildScrollView(
-                child: Slidable(
-                  startActionPane: widget.onNewChat != null
-                      ? ActionPane(
-                          extentRatio: 0.3,
-                          motion: const ScrollMotion(),
-                          children: [
-                            SlidableAction(
-                              autoClose: true,
-                              label: AppLocale.newChat.getString(context),
-                              backgroundColor: Colors.blue,
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(20)),
-                              onPressed: (_) {
-                                widget.onNewChat!();
-                              },
-                            ),
-                            const SizedBox(width: 10),
-                          ],
-                        )
-                      : null,
-                  child: Row(
-                    children: [
-                      // 聊天功能按钮
-                      Row(
-                        children: [
-                          if (widget.enableImageUpload &&
-                              Ability().supportImageUploader())
-                            _buildImageUploadButton(
-                                context, setting, customColors),
-                          if (widget.leftSideToolsBuilder != null)
-                            ...widget.leftSideToolsBuilder!(),
-                        ],
-                      ),
-                      // 聊天输入框
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: customColors.chatInputAreaBackground,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: TextFormField(
-                                  enabled: widget.enableNotifier.value,
-                                  keyboardType: TextInputType.multiline,
-                                  textInputAction: TextInputAction.newline,
-                                  maxLines: 5,
-                                  minLines: 1,
-                                  maxLength: maxLength,
-                                  focusNode: _focusNode,
-                                  controller: _textController,
-                                  // onSubmitted: _handleSubmited,
-                                  decoration: InputDecoration(
-                                    hintText: widget.hintText,
-                                    hintStyle: const TextStyle(
-                                      fontSize: CustomSize.defaultHintTextSize,
-                                    ),
-                                    border: InputBorder.none,
-                                    counterText: '',
-                                  ),
-                                ),
-                              ),
-                              // 聊天发送按钮
-                              _buildSendOrVoiceButton(context, customColors),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ),
-            ],
-          );
-        }
-
-        /// 回复时加载中效果
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            LoadingAnimationWidget.flickr(
-              leftDotColor: const Color.fromARGB(255, 0, 214, 187),
-              rightDotColor: const Color.fromARGB(255, 243, 133, 0),
-              size: 40,
             ),
           ],
         );
@@ -228,6 +200,13 @@ class _ChatInputState extends State<ChatInput> {
     BuildContext context,
     CustomColors customColors,
   ) {
+    if (!widget.enableNotifier.value) {
+      return LoadingAnimationWidget.beat(
+        color: customColors.linkColor!,
+        size: 20,
+      );
+    }
+
     return _textController.text == ''
         ? InkWell(
             onTap: () {

@@ -21,6 +21,7 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ChatPreview extends StatefulWidget {
   final List<MessageWithState> messages;
@@ -285,12 +286,9 @@ class _ChatPreviewState extends State<ChatPreview> {
                             builder: (context) {
                               if (message.statusPending() &&
                                   message.text.isEmpty) {
-                                return const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
+                                return LoadingAnimationWidget.waveDots(
+                                  color: customColors.weakLinkColor!,
+                                  size: 25,
                                 );
                               }
 

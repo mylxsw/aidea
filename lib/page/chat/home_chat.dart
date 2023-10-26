@@ -18,6 +18,7 @@ import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/repo/model/chat_history.dart';
 import 'package:askaide/repo/model/message.dart';
 import 'package:askaide/repo/model/misc.dart';
 import 'package:askaide/repo/model/room.dart';
@@ -379,6 +380,17 @@ class _HomeChatPageState extends State<HomeChatPage> {
     }
 
     final messages = loadedMessages.map((e) {
+      if (loadedState.chatHistory != null &&
+          loadedState.chatHistory!.model != null) {
+        final mod = supportModels
+            .where((e) => e.id == loadedState.chatHistory!.model!)
+            .firstOrNull;
+        if (mod != null) {
+          e.senderName = mod.shortName;
+          e.avatarUrl = mod.avatarUrl;
+        }
+      }
+
       final stateMessage =
           room.states[widget.stateManager.getKey(e.roomId ?? 0, e.id ?? 0)] ??
               MessageState();
@@ -392,7 +404,9 @@ class _HomeChatPageState extends State<HomeChatPage> {
       scrollController: _scrollController,
       controller: _chatPreviewController,
       stateManager: widget.stateManager,
-      robotAvatar: selectMode ? null : _buildAvatar(room.room),
+      robotAvatar: selectMode
+          ? null
+          : _buildAvatar(room.room, his: loadedState.chatHistory),
       onDeleteMessage: (id) {
         handleDeleteMessage(context, id, chatHistoryId: chatId);
       },
@@ -437,9 +451,16 @@ class _HomeChatPageState extends State<HomeChatPage> {
         .add(RoomLoadEvent(chatAnywhereRoomId, cascading: false));
   }
 
-  Widget _buildAvatar(Room room) {
+  Widget _buildAvatar(Room room, {ChatHistory? his}) {
     if (room.avatarUrl != null && room.avatarUrl!.startsWith('http')) {
       return RemoteAvatar(avatarUrl: room.avatarUrl!, size: 30);
+    }
+
+    if (his != null && his.model != null) {
+      var mod = supportModels.where((e) => e.id == his.model!).firstOrNull;
+      if (mod != null && mod.avatarUrl != null && mod.avatarUrl != '') {
+        return RemoteAvatar(avatarUrl: mod.avatarUrl!, size: 30);
+      }
     }
 
     return const LocalAvatar(assetName: 'assets/app.png', size: 30);

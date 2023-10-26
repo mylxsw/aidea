@@ -27,6 +27,7 @@ import 'package:askaide/repo/model/room.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_initicon/flutter_initicon.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 
@@ -381,11 +382,11 @@ class _RoomChatPageState extends State<RoomChatPage> {
       );
     }
 
-    return RandomAvatar(
-      id: room.avatar,
+    return Initicon(
+      text: room.name.split('、').join(' '),
       size: 30,
-      usage:
-          Ability().supportAPIServer() ? AvatarUsage.room : AvatarUsage.legacy,
+      backgroundColor: Colors.grey.withAlpha(100),
+      borderRadius: BorderRadius.circular(8),
     );
   }
 
