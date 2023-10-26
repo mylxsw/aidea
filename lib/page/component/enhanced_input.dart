@@ -38,7 +38,7 @@ class EnhancedInputSimple extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: customColors.textfieldValueColor,
-                fontSize: 14,
+                fontSize: 15,
               ),
             )
           : null,

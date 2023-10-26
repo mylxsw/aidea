@@ -259,10 +259,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 actions: [
                   IconButton(
-                    icon: Icon(
-                      Icons.history,
-                      color: customColors.backgroundInvertedColor,
-                    ),
+                    icon: const Icon(Icons.history),
                     onPressed: () {
                       context.push('/chat-chat/history').whenComplete(() {
                         context

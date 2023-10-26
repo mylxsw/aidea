@@ -357,6 +357,11 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
       await listener;
 
+      waitMessage.text = waitMessage.text.trim();
+      if (waitMessage.text.isEmpty) {
+        error = RequestFailedException('机器人没有回答任何内容', 500);
+      }
+
       if (error != null) {
         throw error!;
       }

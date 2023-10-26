@@ -59,6 +59,24 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
         centerTitle: true,
         elevation: 0,
         toolbarHeight: CustomSize.toolbarHeight,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: EnhancedButton(
+              width: 50,
+              height: 30,
+              fontSize: 14,
+              title: AppLocale.ok.getString(context),
+              color: selectedModels.isEmpty ? customColors.weakTextColor : null,
+              backgroundColor: selectedModels.isEmpty
+                  ? customColors.weakTextColor!.withAlpha(20)
+                  : null,
+              onPressed: () {
+                onSave(context);
+              },
+            ),
+          ),
+        ],
       ),
       backgroundColor: customColors.backgroundContainerColor,
       body: BackgroundContainer(
@@ -79,137 +97,109 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
               }
             }
           },
-          child: Container(
-            padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.only(left: 20, bottom: 5),
-                  child: Text(
-                    '选择参与群聊的成员',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: customColors.weakLinkColor,
-                    ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.only(top: 15, left: 20, bottom: 15),
+                child: Text(
+                  '选择参与群聊的成员',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: customColors.weakLinkColor,
                   ),
                 ),
-                Expanded(
-                  child: ListView.separated(
-                    itemCount: models.length,
-                    itemBuilder: (context, i) {
-                      var item = models[i];
-                      return ListTile(
-                        title: Container(
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _buildAvatar(avatarUrl: item.avatarUrl, size: 40),
-                              Expanded(
-                                  child: Container(
-                                alignment: Alignment.center,
+              ),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: models.length,
+                  itemBuilder: (context, i) {
+                    var item = models[i];
+                    return CheckboxListTile(
+                      controlAffinity: ListTileControlAffinity.leading,
+                      checkboxShape: const CircleBorder(),
+                      activeColor: customColors.linkColor,
+                      side: BorderSide(
+                        color: customColors.weakTextColor!.withAlpha(100),
+                      ),
+                      title: Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(vertical: 5),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildAvatar(avatarUrl: item.avatarUrl, size: 40),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: Container(
+                                alignment: Alignment.centerLeft,
                                 child: Text(item.name),
-                              )),
-                              SizedBox(
-                                width: 10,
-                                child: Icon(
-                                  Icons.check,
-                                  color: selectedModels.contains(item)
-                                      ? customColors.linkColor
-                                      : Colors.transparent,
-                                ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        onTap: () {
-                          setState(() {
-                            if (selectedModels.contains(item)) {
-                              selectedModels.remove(item);
-                            } else {
-                              selectedModels.add(item);
-                            }
-                          });
-                        },
-                      );
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return Divider(
-                        height: 1,
-                        color: customColors.columnBlockDividerColor,
-                      );
-                    },
-                  ),
+                      ),
+                      onChanged: (selected) {
+                        setState(() {
+                          if (selectedModels.contains(item)) {
+                            selectedModels.remove(item);
+                          } else {
+                            selectedModels.add(item);
+                          }
+                        });
+                      },
+                      value: selectedModels.contains(item),
+                    );
+                  },
+                  separatorBuilder: (BuildContext context, int index) {
+                    return Divider(
+                      height: 1,
+                      color:
+                          customColors.columnBlockDividerColor?.withAlpha(200),
+                    );
+                  },
                 ),
-
-                const SizedBox(height: 10),
-                // 保存按钮
-                buildSaveButton(context),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget buildSaveButton(BuildContext context) {
-    return SafeArea(
-      child: Row(
-        children: [
-          Expanded(
-            child: EnhancedButton(
-              title: AppLocale.ok.getString(context) +
-                  (selectedModels.isNotEmpty
-                      ? ' (x${selectedModels.length})'
-                      : ''),
-              backgroundColor: selectedModels.isEmpty ? Colors.grey : null,
-              onPressed: () async {
-                if (selectedModels.isEmpty) {
-                  return;
-                }
+  void onSave(BuildContext context) {
+    if (selectedModels.isEmpty) {
+      return;
+    }
 
-                globalLoadingCancel = BotToast.showCustomLoading(
-                  toastBuilder: (cancel) {
-                    return LoadingIndicator(
-                      message: AppLocale.processingWait.getString(context),
-                    );
-                  },
-                  allowClick: false,
-                  duration: const Duration(seconds: 120),
-                );
-
-                try {
-                  if (context.mounted) {
-                    context.read<RoomBloc>().add(
-                          GroupRoomCreateEvent(
-                            name: selectedModels
-                                .map((e) => e.shortName)
-                                .take(3)
-                                .join("、"),
-                            members: selectedModels
-                                .map((e) => GroupMember(
-                                    modelId: e.realModelId,
-                                    modelName: e.shortName))
-                                .toList(),
-                          ),
-                        );
-                  }
-                } catch (e) {
-                  globalLoadingCancel?.call();
-                  // ignore: use_build_context_synchronously
-                  showErrorMessageEnhanced(context, e);
-                }
-              },
-            ),
-          ),
-        ],
-      ),
+    globalLoadingCancel = BotToast.showCustomLoading(
+      toastBuilder: (cancel) {
+        return LoadingIndicator(
+          message: AppLocale.processingWait.getString(context),
+        );
+      },
+      allowClick: false,
+      duration: const Duration(seconds: 120),
     );
+
+    try {
+      if (context.mounted) {
+        context.read<RoomBloc>().add(
+              GroupRoomCreateEvent(
+                name: selectedModels.map((e) => e.shortName).take(3).join("、"),
+                members: selectedModels
+                    .map((e) => GroupMember(
+                        modelId: e.realModelId, modelName: e.shortName))
+                    .toList(),
+              ),
+            );
+      }
+    } catch (e) {
+      globalLoadingCancel?.call();
+      // ignore: use_build_context_synchronously
+      showErrorMessageEnhanced(context, e);
+    }
   }
 
   Widget _buildAvatar({String? avatarUrl, int? id, int size = 30}) {

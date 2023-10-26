@@ -104,9 +104,9 @@ class _GroupEditPageState extends State<GroupEditPage> {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          '群聊设置',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+        title: Text(
+          AppLocale.roomSetting.getString(context),
+          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
         elevation: 0,
@@ -176,6 +176,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
                           labelText: '名称',
                           labelPosition: LabelPosition.left,
                           hintText: AppLocale.required.getString(context),
+                          textDirection: TextDirection.rtl,
                         ),
                         EnhancedInput(
                           padding: const EdgeInsets.only(top: 10, bottom: 5),
@@ -271,26 +272,26 @@ class _GroupEditPageState extends State<GroupEditPage> {
                                     clipBehavior: Clip.hardEdge,
                                     child: buildSelectedModelsPreview(),
                                   ),
-                                  Positioned(
-                                    right: 0,
-                                    top: 0,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(3),
-                                      decoration: BoxDecoration(
-                                        color: customColors.tagsBackground,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(
-                                        selectedModels.isEmpty
-                                            ? '全部'
-                                            : 'x${selectedModels.length}',
-                                        style: TextStyle(
-                                          fontSize: 8,
-                                          color: customColors.weakTextColor,
+                                  if (selectedModels.isNotEmpty)
+                                    Positioned(
+                                      right: 0,
+                                      top: 0,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(3),
+                                        decoration: BoxDecoration(
+                                          color: customColors.tagsBackground,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          'x${selectedModels.length}',
+                                          style: TextStyle(
+                                            fontSize: 8,
+                                            color: customColors.weakTextColor,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  )
+                                    )
                                 ],
                               ),
                             ],
@@ -301,7 +302,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
                               (context) {
                                 return MultiItemSelector(
                                   itemBuilder: (item) {
-                                    return Text(item.model.shortName);
+                                    return Text(item.model.name);
                                   },
                                   items: models
                                       .map((e) => ModelWithMemberId(
@@ -327,7 +328,6 @@ class _GroupEditPageState extends State<GroupEditPage> {
                                 );
                               },
                               heightFactor: 0.8,
-                              title: '选择参与群聊的成员',
                             );
                           },
                         ),
@@ -339,7 +339,16 @@ class _GroupEditPageState extends State<GroupEditPage> {
                         Expanded(
                           child: EnhancedButton(
                             title: AppLocale.save.getString(context),
+                            color:
+                                canSubmit() ? null : customColors.weakTextColor,
+                            backgroundColor: canSubmit()
+                                ? null
+                                : customColors.weakTextColor!.withAlpha(20),
                             onPressed: () async {
+                              if (!canSubmit()) {
+                                return;
+                              }
+
                               globalLoadingCancel = BotToast.showCustomLoading(
                                 toastBuilder: (cancel) {
                                   return LoadingIndicator(
@@ -414,6 +423,18 @@ class _GroupEditPageState extends State<GroupEditPage> {
         ),
       ),
     );
+  }
+
+  bool canSubmit() {
+    if (selectedModels.isEmpty) {
+      return false;
+    }
+
+    if (_nameController.text.trim() == '') {
+      return false;
+    }
+
+    return true;
   }
 
   Widget buildSelectedModelsPreview() {

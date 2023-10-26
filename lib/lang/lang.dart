@@ -84,6 +84,7 @@ mixin AppLocale {
   static const String quotaExceeded = 'quota-exceeded';
   static const String internalServerError = 'internal-server-error';
   static const String badGateway = 'bad-gateway';
+  static const String emptyResponse = 'empty-response';
   static const String modelNotValid = 'model-not-valid';
   static const String signInRequired = 'sign-in-required';
   static const String accountNeedReSignin = 'account-need-re-signin';
@@ -266,7 +267,7 @@ mixin AppLocale {
     search: '搜索',
     background: '背景',
     backgroundSetting: '背景图',
-    roomSetting: '数字人设置',
+    roomSetting: '设置',
     chatHistory: '聊天记录',
     confirmSend: '确定发送以下内容？',
     questionExamples: '问题示例',
@@ -280,7 +281,7 @@ mixin AppLocale {
     modelRequiredMessage: '请选择 AI 模型',
     operateSuccess: '操作成功',
     operateFailed: '操作失败',
-    confirmDelete: '确定要删除这些项目？',
+    confirmDelete: '确定删除？',
     confirmStartNewChat: '确定要开始新的对话？',
     confirmClearMessages: '确定要清空聊天记录？',
     quotaExceeded: '智慧果数量不足，请先购买',
@@ -290,7 +291,7 @@ mixin AppLocale {
     signInRequired: '您尚未登录，请先登录',
     accountNeedReSignin: '账号异常，请重新登录',
     openAIAuthFailed: '您启用了自定义 OpenAI 服务，请检查 API Key 是否正确',
-    confirmToDeleteRoom: '确定删除该数字人?',
+    confirmToDeleteRoom: '确定删除?',
     writeYourIdeas: '你的想法',
     describeYourImages: '你的想法',
     excludeContents: '反向提示词',
@@ -458,7 +459,7 @@ mixin AppLocale {
     search: 'Search',
     background: 'Background',
     backgroundSetting: 'Background Setting',
-    roomSetting: 'Character Setting',
+    roomSetting: 'Setting',
     chatHistory: 'Histories',
     confirmSend: 'Confirm to send?',
     questionExamples: 'Question Examples',

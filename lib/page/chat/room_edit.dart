@@ -166,17 +166,17 @@ class _RoomEditPageState extends State<RoomEditPage> {
                               maxLength: 50,
                               maxLines: 1,
                               showCounter: false,
-                              labelText: AppLocale.room.getString(context) +
-                                  AppLocale.roomName.getString(context),
+                              labelText: AppLocale.roomName.getString(context),
                               labelPosition: LabelPosition.left,
                               hintText: AppLocale.required.getString(context),
+                              textDirection: TextDirection.rtl,
                             ),
                             if (Ability().supportAPIServer())
                               EnhancedInput(
                                 padding:
                                     const EdgeInsets.only(top: 10, bottom: 5),
                                 title: Text(
-                                  '数字人头像',
+                                  '头像',
                                   style: TextStyle(
                                     color: customColors.textfieldLabelColor,
                                     fontSize: 16,
@@ -263,7 +263,7 @@ class _RoomEditPageState extends State<RoomEditPage> {
                           // 模型
                           EnhancedInputSimple(
                             title: AppLocale.model.getString(context),
-                            padding: const EdgeInsets.only(top: 10, bottom: 10),
+                            padding: const EdgeInsets.only(top: 10, bottom: 0),
                             onPressed: () {
                               openSelectModelDialog(
                                 context,
@@ -347,10 +347,11 @@ class _RoomEditPageState extends State<RoomEditPage> {
                               ),
                               value: Text(
                                 validMemories
-                                    .where((element) =>
-                                        element.number == maxContext)
-                                    .first
-                                    .name,
+                                        .where((element) =>
+                                            element.number == maxContext)
+                                        .firstOrNull
+                                        ?.name ??
+                                    '',
                               ),
                               onPressed: () {
                                 openListSelectDialog(
@@ -387,7 +388,10 @@ class _RoomEditPageState extends State<RoomEditPage> {
                                     return true;
                                   },
                                   heightFactor: 0.5,
-                                  value: maxContext,
+                                  value: validMemories
+                                      .where((element) =>
+                                          element.number == maxContext)
+                                      .firstOrNull,
                                 );
                               },
                             ),

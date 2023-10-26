@@ -40,88 +40,91 @@ class _MultiItemSelectorState<T> extends State<MultiItemSelector<T>> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Column(
-      children: [
-        if (widget.onSubmit != null)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              EnhancedButton(
-                width: 100,
-                height: 40,
-                backgroundColor: customColors.weakTextColor,
-                title: AppLocale.cancel.getString(context),
-                onPressed: () {
-                  context.pop();
-                },
-              ),
-              EnhancedButton(
-                width: 100,
-                height: 40,
-                title: AppLocale.ok.getString(context),
-                onPressed: () {
-                  widget.onSubmit!(selectedItems);
-                },
-              ),
-            ],
-          ),
-        Expanded(
-          child: ListView.separated(
-            itemCount: widget.items.length,
-            itemBuilder: (context, i) {
-              var item = widget.items[i];
-              return ListTile(
-                title: Container(
-                  alignment: Alignment.center,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (widget.itemAvatarBuilder != null)
-                        widget.itemAvatarBuilder!(item),
-                      Expanded(
-                          child: Container(
-                        alignment: Alignment.center,
-                        child: widget.itemBuilder(item),
-                      )),
-                      SizedBox(
-                        width: 10,
-                        child: Icon(
-                          Icons.check,
-                          color: selectedItems.contains(item)
-                              ? customColors.linkColor
-                              : Colors.transparent,
-                        ),
-                      ),
-                    ],
-                  ),
+    return Container(
+      margin: const EdgeInsets.only(top: 15),
+      child: Column(
+        children: [
+          if (widget.onSubmit != null)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                EnhancedButton(
+                  width: 100,
+                  height: 40,
+                  backgroundColor: customColors.weakTextColor,
+                  title: AppLocale.cancel.getString(context),
+                  onPressed: () {
+                    context.pop();
+                  },
                 ),
-                onTap: () {
-                  setState(() {
-                    if (selectedItems.contains(item)) {
-                      selectedItems.remove(item);
-                    } else {
-                      selectedItems.add(item);
-                    }
+                EnhancedButton(
+                  width: 100,
+                  height: 40,
+                  title: AppLocale.ok.getString(context),
+                  onPressed: () {
+                    widget.onSubmit!(selectedItems);
+                  },
+                ),
+              ],
+            ),
+          Expanded(
+            child: ListView.separated(
+              itemCount: widget.items.length,
+              itemBuilder: (context, i) {
+                var item = widget.items[i];
+                return CheckboxListTile(
+                  controlAffinity: ListTileControlAffinity.leading,
+                  checkboxShape: const CircleBorder(),
+                  activeColor: customColors.linkColor,
+                  side: BorderSide(
+                    color: customColors.weakTextColor!.withAlpha(100),
+                  ),
+                  title: Container(
+                    alignment: Alignment.center,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (widget.itemAvatarBuilder != null)
+                          widget.itemAvatarBuilder!(item),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: Container(
+                            alignment: Alignment.centerLeft,
+                            child: widget.itemBuilder(item),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  onChanged: (selected) {
+                    setState(() {
+                      if (selectedItems.contains(item)) {
+                        selectedItems.remove(item);
+                      } else {
+                        selectedItems.add(item);
+                      }
 
-                    if (widget.onChanged != null) {
-                      widget.onChanged!(selectedItems);
-                    }
-                  });
-                },
-              );
-            },
-            separatorBuilder: (BuildContext context, int index) {
-              return Divider(
-                height: 1,
-                color: customColors.columnBlockDividerColor,
-              );
-            },
-          ),
-        )
-      ],
+                      if (widget.onChanged != null) {
+                        widget.onChanged!(selectedItems);
+                      }
+                    });
+                  },
+                  value: selectedItems.contains(item),
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return Divider(
+                  height: 1,
+                  color: customColors.columnBlockDividerColor,
+                );
+              },
+            ),
+          )
+        ],
+      ),
     );
   }
 }

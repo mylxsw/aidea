@@ -283,7 +283,8 @@ class _ChatPreviewState extends State<ChatPreview> {
                           ),
                           child: Builder(
                             builder: (context) {
-                              if (message.statusPending() &&
+                              if ((message.statusPending() ||
+                                      !message.isReady) &&
                                   message.text.isEmpty) {
                                 return LoadingAnimationWidget.waveDots(
                                   color: customColors.weakLinkColor!,

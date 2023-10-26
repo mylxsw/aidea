@@ -22,48 +22,54 @@ class ModelItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return models.isNotEmpty
-        ? ListView.separated(
-            itemCount: models.length,
-            itemBuilder: (context, i) {
-              var item = models[i];
-              return ListTile(
-                title: Container(
-                  alignment: Alignment.center,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildAvatar(avatarUrl: item.avatarUrl, size: 40),
-                      Expanded(
+        ? Padding(
+            padding: const EdgeInsets.only(top: 15),
+            child: ListView.separated(
+              itemCount: models.length,
+              itemBuilder: (context, i) {
+                var item = models[i];
+                return ListTile(
+                  title: Container(
+                    alignment: Alignment.center,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildAvatar(avatarUrl: item.avatarUrl, size: 40),
+                        const SizedBox(width: 20),
+                        Expanded(
                           child: Container(
-                        alignment: Alignment.center,
-                        child: Text(item.name),
-                      )),
-                      SizedBox(
-                        width: 10,
-                        child: Icon(
-                          Icons.check,
-                          color: initValue == item.uid() || initValue == item.id
-                              ? customColors.linkColor
-                              : Colors.transparent,
+                            alignment: Alignment.centerLeft,
+                            child: Text(item.name),
+                          ),
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          width: 10,
+                          child: Icon(
+                            Icons.check,
+                            color:
+                                initValue == item.uid() || initValue == item.id
+                                    ? customColors.linkColor
+                                    : Colors.transparent,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                onTap: () {
-                  onSelected(item);
-                },
-              );
-            },
-            separatorBuilder: (BuildContext context, int index) {
-              return Divider(
-                height: 1,
-                color: customColors.columnBlockDividerColor,
-              );
-            },
+                  onTap: () {
+                    onSelected(item);
+                  },
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return Divider(
+                  height: 1,
+                  color: customColors.columnBlockDividerColor,
+                );
+              },
+            ),
           )
         : const Center(
             child: Text(

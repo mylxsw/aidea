@@ -187,8 +187,11 @@ class _GroupChatPageState extends State<GroupChatPage> {
                                       padding: const EdgeInsets.all(5),
                                       child: InkWell(
                                         onTap: () {
-                                          onModelSelect(context, groupState,
-                                              customColors);
+                                          onModelSelect(
+                                            context,
+                                            groupState,
+                                            customColors,
+                                          );
                                         },
                                         child: Icon(
                                           Icons.alternate_email,
@@ -240,28 +243,46 @@ class _GroupChatPageState extends State<GroupChatPage> {
     openModalBottomSheet(
       context,
       (context) {
-        return MultiItemSelector(
-          itemBuilder: (item) {
-            return Text(item.modelName);
-          },
-          items: groupState.group.members.where((e) => e.status != 2).toList(),
-          onChanged: (selected) {
-            setState(() {
-              selectedMembers = selected;
-            });
-          },
-          itemAvatarBuilder: (item) {
-            return _buildAvatar(
-              avatarUrl: item.avatarUrl,
-              id: item.id,
-              size: 30,
-            );
-          },
-          selectedItems: selectedMembers,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.only(top: 15, left: 20),
+              child: Text(
+                '选择本次对话成员',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: customColors.weakLinkColor,
+                ),
+              ),
+            ),
+            Expanded(
+              child: MultiItemSelector(
+                itemBuilder: (item) {
+                  return Text(item.modelName);
+                },
+                items: groupState.group.members
+                    .where((e) => e.status != 2)
+                    .toList(),
+                onChanged: (selected) {
+                  setState(() {
+                    selectedMembers = selected;
+                  });
+                },
+                itemAvatarBuilder: (item) {
+                  return _buildAvatar(
+                    avatarUrl: item.avatarUrl,
+                    id: item.id,
+                    size: 30,
+                  );
+                },
+                selectedItems: selectedMembers,
+              ),
+            ),
+          ],
         );
       },
       heightFactor: 0.6,
-      title: '选择对话的模型',
     );
   }
 
@@ -405,28 +426,6 @@ class _GroupChatPageState extends State<GroupChatPage> {
         }
         return const Center(child: CircularProgressIndicator());
       },
-    );
-  }
-
-  Widget buildMembersBar(List<GroupMember> members) {
-    return Container(
-      height: 30,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        children: [
-          for (var member in members)
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 5),
-              child: _buildAvatar(
-                avatarUrl: member.avatarUrl,
-                id: member.id,
-                size: 20,
-              ),
-            ),
-        ],
-      ),
     );
   }
 

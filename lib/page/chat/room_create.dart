@@ -55,7 +55,7 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
 
   List<String> avatarPresets = [];
 
-  int maxContext = 5;
+  int maxContext = 3;
 
   List<ChatMemory> validMemories = [
     ChatMemory('无记忆', 1, description: '每次对话都是独立的，常用于一次性问答'),
@@ -204,7 +204,7 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                 child: Row(
                   children: [
                     WeakTextButton(
-                      title: '取消',
+                      title: AppLocale.cancel.getString(context),
                       onPressed: () {
                         selectedSuggestions.clear();
                         setState(() {});
@@ -213,7 +213,7 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                     const SizedBox(width: 20),
                     Expanded(
                       child: EnhancedButton(
-                        title: '添加为专属伙伴',
+                        title: AppLocale.ok.getString(context),
                         onPressed: () {
                           context.read<RoomBloc>().add(GalleryRoomCopyEvent(
                               selectedSuggestions.map((e) => e.id).toList()));
@@ -282,16 +282,16 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                 maxLength: 50,
                 maxLines: 1,
                 showCounter: false,
-                labelText: AppLocale.room.getString(context) +
-                    AppLocale.roomName.getString(context),
+                labelText: AppLocale.roomName.getString(context),
                 labelPosition: LabelPosition.left,
                 hintText: AppLocale.required.getString(context),
+                textDirection: TextDirection.rtl,
               ),
               if (Ability().supportAPIServer())
                 EnhancedInput(
                   padding: const EdgeInsets.only(top: 10, bottom: 5),
                   title: Text(
-                    '数字人头像',
+                    '头像',
                     style: TextStyle(
                       color: customColors.textfieldLabelColor,
                       fontSize: 16,
@@ -460,9 +460,10 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                   ),
                   value: Text(
                     validMemories
-                        .where((element) => element.number == maxContext)
-                        .first
-                        .name,
+                            .where((element) => element.number == maxContext)
+                            .firstOrNull
+                            ?.name ??
+                        '',
                   ),
                   onPressed: () {
                     openListSelectDialog(
@@ -498,7 +499,9 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                         return true;
                       },
                       heightFactor: 0.5,
-                      value: maxContext,
+                      value: validMemories
+                          .where((element) => element.number == maxContext)
+                          .firstOrNull,
                     );
                   },
                 ),
