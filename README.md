@@ -9,14 +9,24 @@
 
 - 支持 OpenAI 的 GPT-3.5，GPT-4 大语言模型
 - 支持 Anthropic 的 Claude instant，Claude 2.0 大语言模型
-- 支持国产模型：通义千问，文心一言，讯飞星火，商汤日日新，腾讯混元大语言模型
+- 支持国产模型：通义千问，文心一言，讯飞星火，商汤日日新，腾讯混元，百川53B，360智脑
 - 支持开源大模型：Llama2，ChatGLM2，AquilaChat 7B，Bloomz 7B 等，后续还将开放更多
 - 支持文生图、图生图、超分辨率、黑白图片上色等功能，集成 Stable Diffusion 模型，支持 SDXL 1.0
+
+下载体验地址：
+
+https://aidea.aicode.cc
 
 开源代码：
 
 - 客户端：https://github.com/mylxsw/aidea
 - 服务端：https://github.com/mylxsw/aidea-server
+
+## 私有化部署
+
+如果你不想使用托管的云服务，可以自己部署服务端，[部署请看这里](https://github.com/mylxsw/aidea-server/blob/main/docs/deploy.md)。
+
+不想自己折腾，可以找我来帮你部署，详情参考 [服务器代部署说明](https://github.com/mylxsw/aidea-server/blob/main/docs/deploy-vip.md)。
 
 ## 技术交流
 
@@ -30,22 +40,8 @@
 
 - 电报群：[点此加入](https://t.me/aideachat)
 
-## 下载安装地址
-
-Android/IOS APP：https://aidea.aicode.cc/
-
-Mac/Windows 桌面端：https://github.com/mylxsw/aidea/releases
-
-Web 端：https://web.aicode.cc/
-
-## 福利
-
-目前我的 OpenAI 账户还有大约 4900+ 美金的额度，为了感谢各位的关注，在 2023 年 11 月 1 日前（4900 美金额度消耗完为止），GPT-4 使用价格低至 每 1K Token 只需要 10 个智慧果。
-
-> 相当于 0.1 元 / 1000 Token，OpenAI 官方价格为输入 0.21 元，输出 0.42 元。
 
 ## APP 截图
-
 
 ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-32-34.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-09-14_10-20-28.jpg-thumb)
 :-------------------------:|:-------------------------:
