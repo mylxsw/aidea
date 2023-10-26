@@ -158,55 +158,57 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
   }
 
   Widget buildSaveButton(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: EnhancedButton(
-            title: AppLocale.ok.getString(context) +
-                (selectedModels.isNotEmpty
-                    ? ' (x${selectedModels.length})'
-                    : ''),
-            backgroundColor: selectedModels.isEmpty ? Colors.grey : null,
-            onPressed: () async {
-              if (selectedModels.isEmpty) {
-                return;
-              }
-
-              globalLoadingCancel = BotToast.showCustomLoading(
-                toastBuilder: (cancel) {
-                  return LoadingIndicator(
-                    message: AppLocale.processingWait.getString(context),
-                  );
-                },
-                allowClick: false,
-                duration: const Duration(seconds: 120),
-              );
-
-              try {
-                if (context.mounted) {
-                  context.read<RoomBloc>().add(
-                        GroupRoomCreateEvent(
-                          name: selectedModels
-                              .map((e) => e.shortName)
-                              .take(3)
-                              .join("、"),
-                          members: selectedModels
-                              .map((e) => GroupMember(
-                                  modelId: e.realModelId,
-                                  modelName: e.shortName))
-                              .toList(),
-                        ),
-                      );
+    return SafeArea(
+      child: Row(
+        children: [
+          Expanded(
+            child: EnhancedButton(
+              title: AppLocale.ok.getString(context) +
+                  (selectedModels.isNotEmpty
+                      ? ' (x${selectedModels.length})'
+                      : ''),
+              backgroundColor: selectedModels.isEmpty ? Colors.grey : null,
+              onPressed: () async {
+                if (selectedModels.isEmpty) {
+                  return;
                 }
-              } catch (e) {
-                globalLoadingCancel?.call();
-                // ignore: use_build_context_synchronously
-                showErrorMessageEnhanced(context, e);
-              }
-            },
+
+                globalLoadingCancel = BotToast.showCustomLoading(
+                  toastBuilder: (cancel) {
+                    return LoadingIndicator(
+                      message: AppLocale.processingWait.getString(context),
+                    );
+                  },
+                  allowClick: false,
+                  duration: const Duration(seconds: 120),
+                );
+
+                try {
+                  if (context.mounted) {
+                    context.read<RoomBloc>().add(
+                          GroupRoomCreateEvent(
+                            name: selectedModels
+                                .map((e) => e.shortName)
+                                .take(3)
+                                .join("、"),
+                            members: selectedModels
+                                .map((e) => GroupMember(
+                                    modelId: e.realModelId,
+                                    modelName: e.shortName))
+                                .toList(),
+                          ),
+                        );
+                  }
+                } catch (e) {
+                  globalLoadingCancel?.call();
+                  // ignore: use_build_context_synchronously
+                  showErrorMessageEnhanced(context, e);
+                }
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

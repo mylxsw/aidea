@@ -326,7 +326,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
                                   selectedItems: selectedModels,
                                 );
                               },
-                              heightFactor: 0.6,
+                              heightFactor: 0.8,
                               title: '选择参与群聊的成员',
                             );
                           },
