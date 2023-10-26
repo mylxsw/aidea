@@ -13,10 +13,20 @@
 - 支持开源大模型：Llama2，ChatGLM2，AquilaChat 7B，Bloomz 7B 等，后续还将开放更多
 - 支持文生图、图生图、超分辨率、黑白图片上色等功能，集成 Stable Diffusion 模型，支持 SDXL 1.0
 
+下载体验地址：
+
+https://aidea.aicode.cc
+
 开源代码：
 
 - 客户端：https://github.com/mylxsw/aidea
 - 服务端：https://github.com/mylxsw/aidea-server
+
+## 私有化部署
+
+如果你不想使用托管的云服务，可以自己部署服务端，[部署请看这里](https://github.com/mylxsw/aidea-server/blob/main/docs/deploy.md)。
+
+不想自己折腾，可以找我来帮你部署，详情参考 [服务器代部署说明](https://github.com/mylxsw/aidea-server/blob/main/docs/deploy-vip.md)。
 
 ## 技术交流
 
@@ -30,15 +40,6 @@
 
 - 电报群：[点此加入](https://t.me/aideachat)
 
-## 下载体验地址
-
-https://aidea.aicode.cc/
-
-## 服务端部署
-
-如果你不想使用托管的云服务，可以自己部署服务端，[部署请看这里](https://github.com/mylxsw/aidea-server/blob/main/docs/deploy.md)。
-
-不想自己折腾，可以找我来帮你部署，详情参考 [服务器代部署说明](https://github.com/mylxsw/aidea-server/blob/main/docs/deploy-vip.md)。
 
 ## APP 截图
 
