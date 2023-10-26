@@ -89,19 +89,11 @@ class _RoomsPageState extends State<RoomsPage> {
                             title: '发起群聊',
                             icon: Icons.chat_bubble_outline,
                             onTap: (p0) {
-                              // context
-                              //     .push('/group-chat-create')
-                              //     .whenComplete(() {
-                              //   context.read<RoomBloc>().add(RoomsLoadEvent());
-                              // });
-
-                              openModalBottomSheet(
-                                context,
-                                (context) {
-                                  return Container();
-                                },
-                                heightFactor: 0.8,
-                              );
+                              context
+                                  .push('/group-chat-create')
+                                  .whenComplete(() {
+                                context.read<RoomBloc>().add(RoomsLoadEvent());
+                              });
                             },
                           )
                       ],

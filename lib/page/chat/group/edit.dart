@@ -173,14 +173,14 @@ class _GroupEditPageState extends State<GroupEditPage> {
                           maxLength: 50,
                           maxLines: 1,
                           showCounter: false,
-                          labelText: '群组名称',
+                          labelText: '名称',
                           labelPosition: LabelPosition.left,
                           hintText: AppLocale.required.getString(context),
                         ),
                         EnhancedInput(
                           padding: const EdgeInsets.only(top: 10, bottom: 5),
                           title: Text(
-                            '群组头像',
+                            '头像',
                             style: TextStyle(
                               color: customColors.textfieldLabelColor,
                               fontSize: 16,
@@ -248,7 +248,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
                         EnhancedInput(
                           padding: const EdgeInsets.only(top: 10, bottom: 5),
                           title: Text(
-                            '模型成员',
+                            '成员',
                             style: TextStyle(
                               color: customColors.textfieldLabelColor,
                               fontSize: 16,
@@ -327,7 +327,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
                                 );
                               },
                               heightFactor: 0.6,
-                              title: '选择模型',
+                              title: '选择参与群聊的成员',
                             );
                           },
                         ),

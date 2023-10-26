@@ -329,6 +329,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
                     avatarId: room.avatarId,
                     avatarUrl: room.avatarUrl,
                     roomType: room.roomType,
+                    members: room.members,
                   ))
               .toList(),
           suggests: resp.suggests ?? [],

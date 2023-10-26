@@ -73,17 +73,49 @@ class _AvatarSelectorState extends State<AvatarSelector> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             if (_avatarUrl != null)
-              SizedBox(
-                width: 100,
-                height: 100,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: _avatarUrl!.startsWith('http')
-                      ? CachedNetworkImageEnhanced(
-                          imageUrl: _avatarUrl!,
-                        )
-                      : Image.file(File(_avatarUrl!)),
-                ),
+              Stack(
+                children: [
+                  SizedBox(
+                    width: 100,
+                    height: 100,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: _avatarUrl!.startsWith('http')
+                          ? CachedNetworkImageEnhanced(
+                              imageUrl: _avatarUrl!,
+                            )
+                          : Image.file(File(_avatarUrl!)),
+                    ),
+                  ),
+                  Positioned(
+                    right: 5,
+                    top: 5,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _avatarUrl = null;
+                          _avatarId = null;
+                        });
+                        widget.onSelected(Avatar(
+                          type: AvatarType.network,
+                          url: _avatarUrl,
+                        ));
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: customColors.chatRoomBackground,
+                        ),
+                        child: Icon(
+                          Icons.close,
+                          size: 10,
+                          color: customColors.weakTextColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             if (_avatarId != null)
               RandomAvatar(id: _avatarId ?? 0, size: 80, usage: widget.usage),

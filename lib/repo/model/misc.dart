@@ -178,6 +178,8 @@ class RoomInServer {
   DateTime? createdAt;
   DateTime? updatedAt;
 
+  List<String> members;
+
   RoomInServer({
     required this.id,
     required this.userId,
@@ -196,6 +198,7 @@ class RoomInServer {
     this.createdAt,
     this.updatedAt,
     this.maxTokens,
+    this.members = const [],
   });
 
   toJson() => {
@@ -216,6 +219,7 @@ class RoomInServer {
         'last_active_time': lastActiveTime?.toIso8601String(),
         'created_at': createdAt?.toIso8601String(),
         'updated_at': updatedAt?.toIso8601String(),
+        'members': members,
       };
 
   static RoomInServer fromJson(Map<String, dynamic> json) {
@@ -241,6 +245,10 @@ class RoomInServer {
           json['CreatedAt'] != null ? DateTime.parse(json['CreatedAt']) : null,
       updatedAt:
           json['UpdatedAt'] != null ? DateTime.parse(json['UpdatedAt']) : null,
+      members: (json['members'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
     );
   }
 }

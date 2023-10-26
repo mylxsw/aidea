@@ -40,13 +40,6 @@ class GroupCreatePage extends StatefulWidget {
 }
 
 class _GroupCreatePageState extends State<GroupCreatePage> {
-  final _nameController = TextEditingController(text: '');
-
-  String? _avatarUrl;
-  List<String> avatarPresets = [];
-
-  final randomSeed = Random().nextInt(10000);
-
   List<Model> models = [];
   List<Model> selectedModels = [];
 
@@ -56,23 +49,12 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
   void initState() {
     super.initState();
 
-    // 加载预定义头像
-    APIServer().avatars().then((value) {
-      avatarPresets = value;
-    });
-
     // 加载模型
     APIServer().models().then((value) {
       setState(() {
         models = value;
       });
     });
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
   }
 
   @override
@@ -107,241 +89,76 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
               }
             }
           },
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Container(
+            padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 10),
-                ColumnBlock(
-                  children: [
-                    // 名称
-                    EnhancedTextField(
-                      customColors: customColors,
-                      controller: _nameController,
-                      maxLength: 50,
-                      maxLines: 1,
-                      showCounter: false,
-                      labelText: '群组名称',
-                      labelPosition: LabelPosition.left,
-                      hintText: AppLocale.required.getString(context),
+                Container(
+                  padding: const EdgeInsets.only(left: 20, bottom: 5),
+                  child: Text(
+                    '选择参与群聊的成员',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: customColors.weakLinkColor,
                     ),
-                    EnhancedInput(
-                      padding: const EdgeInsets.only(top: 10, bottom: 5),
-                      title: Text(
-                        '群组头像',
-                        style: TextStyle(
-                          color: customColors.textfieldLabelColor,
-                          fontSize: 16,
-                        ),
-                      ),
-                      value: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 45,
-                            height: 45,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              image: _avatarUrl == null
-                                  ? null
-                                  : DecorationImage(
-                                      image: (_avatarUrl!.startsWith('http')
-                                          ? CachedNetworkImageProviderEnhanced(
-                                              _avatarUrl!)
-                                          : FileImage(File(
-                                              _avatarUrl!))) as ImageProvider,
-                                      fit: BoxFit.cover,
-                                    ),
-                            ),
-                            child: _avatarUrl == null
-                                ? const Center(
-                                    child: Icon(
-                                      Icons.interests,
-                                      color: Colors.grey,
-                                    ),
-                                  )
-                                : const SizedBox(),
-                          ),
-                        ],
-                      ),
-                      onPressed: () {
-                        openModalBottomSheet(
-                          context,
-                          (context) {
-                            return AvatarSelector(
-                              onSelected: (selected) {
-                                setState(() {
-                                  _avatarUrl = selected.url;
-                                });
-                                context.pop();
-                              },
-                              usage: AvatarUsage.room,
-                              randomSeed: randomSeed,
-                              defaultAvatarUrl: _avatarUrl,
-                              externalAvatarUrls: [
-                                ...avatarPresets,
-                              ],
-                            );
-                          },
-                          heightFactor: 0.8,
-                        );
-                      },
-                    ),
-                  ],
+                  ),
                 ),
-                ColumnBlock(
-                  children: [
-                    // 成员
-                    EnhancedInput(
-                      padding: const EdgeInsets.only(top: 10, bottom: 5),
-                      title: Text(
-                        '模型成员',
-                        style: TextStyle(
-                          color: customColors.textfieldLabelColor,
-                          fontSize: 16,
-                        ),
-                      ),
-                      value: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Stack(
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: models.length,
+                    itemBuilder: (context, i) {
+                      var item = models[i];
+                      return ListTile(
+                        title: Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Container(
-                                width:
-                                    resolveSelectedModelsPreviewWidth(context),
-                                height: 45,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
+                              _buildAvatar(avatarUrl: item.avatarUrl, size: 40),
+                              Expanded(
+                                  child: Container(
                                 alignment: Alignment.center,
-                                clipBehavior: Clip.hardEdge,
-                                child: buildSelectedModelsPreview(),
-                              ),
-                              Positioned(
-                                right: 0,
-                                top: 0,
-                                child: Container(
-                                  padding: const EdgeInsets.all(3),
-                                  decoration: BoxDecoration(
-                                    color: customColors.tagsBackground,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    selectedModels.isEmpty
-                                        ? '全部'
-                                        : 'x${selectedModels.length}',
-                                    style: TextStyle(
-                                      fontSize: 8,
-                                      color: customColors.weakTextColor,
-                                    ),
-                                  ),
+                                child: Text(item.shortName),
+                              )),
+                              SizedBox(
+                                width: 10,
+                                child: Icon(
+                                  Icons.check,
+                                  color: selectedModels.contains(item)
+                                      ? customColors.linkColor
+                                      : Colors.transparent,
                                 ),
-                              )
+                              ),
                             ],
                           ),
-                        ],
-                      ),
-                      onPressed: () {
-                        openModalBottomSheet(
-                          context,
-                          (context) {
-                            return MultiItemSelector(
-                              itemBuilder: (item) {
-                                return Text(item.shortName);
-                              },
-                              items: models,
-                              onChanged: (selected) {
-                                setState(() {
-                                  selectedModels = selected;
-                                });
-                              },
-                              itemAvatarBuilder: (item) {
-                                return _buildAvatar(
-                                    avatarUrl: item.avatarUrl, size: 40);
-                              },
-                              selectedItems: selectedModels,
-                            );
-                          },
-                          heightFactor: 0.6,
-                          title: '选择模型',
-                        );
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: EnhancedButton(
-                        title: AppLocale.save.getString(context),
-                        onPressed: () async {
-                          globalLoadingCancel = BotToast.showCustomLoading(
-                            toastBuilder: (cancel) {
-                              return LoadingIndicator(
-                                message:
-                                    AppLocale.processingWait.getString(context),
-                              );
-                            },
-                            allowClick: false,
-                            duration: const Duration(seconds: 120),
-                          );
-
-                          final name = _nameController.text.trim();
-                          if (name == '') {
-                            globalLoadingCancel?.call();
-                            showErrorMessage('请输入群组名称');
-                            return;
-                          }
-
-                          try {
-                            if (_avatarUrl != null) {
-                              if (!(_avatarUrl!.startsWith('http://') ||
-                                  _avatarUrl!.startsWith('https://'))) {
-                                // 上传文件，获取 URL
-                                final cancel = BotToast.showCustomLoading(
-                                  toastBuilder: (cancel) {
-                                    return const LoadingIndicator(
-                                      message: "正在上传图片，请稍后...",
-                                    );
-                                  },
-                                  allowClick: false,
-                                );
-
-                                final uploadRes =
-                                    await ImageUploader(widget.setting)
-                                        .upload(_avatarUrl!, usage: 'avatar')
-                                        .whenComplete(() => cancel());
-                                _avatarUrl = uploadRes.url;
-                              }
+                        ),
+                        onTap: () {
+                          setState(() {
+                            if (selectedModels.contains(item)) {
+                              selectedModels.remove(item);
+                            } else {
+                              selectedModels.add(item);
                             }
-
-                            if (context.mounted) {
-                              context.read<RoomBloc>().add(
-                                    GroupRoomCreateEvent(
-                                      name: name,
-                                      avatarUrl: _avatarUrl,
-                                      members: selectedModels
-                                          .map((e) => GroupMember(
-                                              modelId: e.realModelId,
-                                              modelName: e.shortName))
-                                          .toList(),
-                                    ),
-                                  );
-                            }
-                          } catch (e) {
-                            globalLoadingCancel?.call();
-                            // ignore: use_build_context_synchronously
-                            showErrorMessageEnhanced(context, e);
-                          }
+                          });
                         },
-                      ),
-                    ),
-                  ],
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return Divider(
+                        height: 1,
+                        color: customColors.columnBlockDividerColor,
+                      );
+                    },
+                  ),
                 ),
+
+                const SizedBox(height: 10),
+                // 保存按钮
+                buildSaveButton(context),
               ],
             ),
           ),
@@ -350,32 +167,55 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
     );
   }
 
-  Widget buildSelectedModelsPreview() {
-    if (selectedModels.isEmpty) {
-      return const Center(
-        child: Icon(
-          Icons.group,
-          color: Colors.grey,
-        ),
-      );
-    }
-
-    return Stack(
-      clipBehavior: Clip.none,
+  Widget buildSaveButton(BuildContext context) {
+    return Row(
       children: [
-        for (var i = 0; i < selectedModels.length; i++)
-          i == 0
-              ? _buildAvatar(
-                  avatarUrl: selectedModels.first.avatarUrl,
-                  size: 30,
-                )
-              : Positioned(
-                  left: i * 15.0,
-                  child: _buildAvatar(
-                    avatarUrl: selectedModels[i].avatarUrl,
-                    size: 30,
-                  ),
-                ),
+        Expanded(
+          child: EnhancedButton(
+            title: AppLocale.ok.getString(context) +
+                (selectedModels.isNotEmpty
+                    ? ' (x${selectedModels.length})'
+                    : ''),
+            backgroundColor: selectedModels.isEmpty ? Colors.grey : null,
+            onPressed: () async {
+              if (selectedModels.isEmpty) {
+                return;
+              }
+
+              globalLoadingCancel = BotToast.showCustomLoading(
+                toastBuilder: (cancel) {
+                  return LoadingIndicator(
+                    message: AppLocale.processingWait.getString(context),
+                  );
+                },
+                allowClick: false,
+                duration: const Duration(seconds: 120),
+              );
+
+              try {
+                if (context.mounted) {
+                  context.read<RoomBloc>().add(
+                        GroupRoomCreateEvent(
+                          name: selectedModels
+                              .map((e) => e.shortName)
+                              .take(3)
+                              .join("、"),
+                          members: selectedModels
+                              .map((e) => GroupMember(
+                                  modelId: e.realModelId,
+                                  modelName: e.shortName))
+                              .toList(),
+                        ),
+                      );
+                }
+              } catch (e) {
+                globalLoadingCancel?.call();
+                // ignore: use_build_context_synchronously
+                showErrorMessageEnhanced(context, e);
+              }
+            },
+          ),
+        ),
       ],
     );
   }
@@ -394,12 +234,5 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
       usage:
           Ability().supportAPIServer() ? AvatarUsage.room : AvatarUsage.legacy,
     );
-  }
-
-  double resolveSelectedModelsPreviewWidth(BuildContext context) {
-    final maxSize = MediaQuery.of(context).size.width - 180;
-    final expectSize = 45.0 + selectedModels.length * 15;
-
-    return expectSize > maxSize ? maxSize : expectSize;
   }
 }

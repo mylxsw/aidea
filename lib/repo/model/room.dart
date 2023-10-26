@@ -84,24 +84,31 @@ class Room {
   /// 聊天室最后活跃时间
   DateTime? lastActiveTime;
 
-  Room(this.name, this.category,
-      {this.description,
-      this.id,
-      this.userId,
-      this.avatarId,
-      this.avatarUrl,
-      this.createdAt,
-      this.lastActiveTime,
-      this.iconData,
-      this.systemPrompt,
-      this.priority = 0,
-      this.color,
-      this.roomType,
-      this.initMessage,
-      this.localRoom,
-      this.maxContext = 10,
-      this.maxTokens,
-      this.model = defaultChatModel});
+  /// 聊天室成员头像列表
+  List<String> members;
+
+  Room(
+    this.name,
+    this.category, {
+    this.description,
+    this.id,
+    this.userId,
+    this.avatarId,
+    this.avatarUrl,
+    this.createdAt,
+    this.lastActiveTime,
+    this.iconData,
+    this.systemPrompt,
+    this.priority = 0,
+    this.color,
+    this.roomType,
+    this.initMessage,
+    this.localRoom,
+    this.maxContext = 10,
+    this.maxTokens,
+    this.model = defaultChatModel,
+    this.members = const [],
+  });
 
   Map<String, Object?> toJson() {
     return {
@@ -118,6 +125,7 @@ class Room {
       'system_prompt': systemPrompt,
       'init_message': initMessage,
       'max_context': maxContext,
+      'members': members,
       'created_at': createdAt?.millisecondsSinceEpoch,
       'last_active_time': lastActiveTime?.millisecondsSinceEpoch,
     };
@@ -140,6 +148,10 @@ class Room {
         initMessage = map['init_message'] as String?,
         maxContext = map['max_context'] as int? ?? 10,
         maxTokens = map['max_tokens'] as int?,
+        members = (map['members'] as List<dynamic>?)
+                ?.map((e) => e as String)
+                .toList() ??
+            [],
         createdAt =
             DateTime.fromMillisecondsSinceEpoch(map['created_at'] as int? ?? 0),
         lastActiveTime = DateTime.fromMillisecondsSinceEpoch(

@@ -5,6 +5,7 @@ import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/image.dart';
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/chat/component/group_avatar.dart';
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/dialog.dart';
@@ -12,6 +13,7 @@ import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/model/room.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_initicon/flutter_initicon.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
@@ -37,7 +39,7 @@ class RoomItem extends StatelessWidget {
           children: [
             const SizedBox(width: 10),
             SlidableAction(
-              label: '编辑',
+              label: '设置',
               backgroundColor: Colors.green,
               borderRadius: room.category == 'system'
                   ? BorderRadius.all(
@@ -47,7 +49,7 @@ class RoomItem extends StatelessWidget {
                       bottomLeft:
                           Radius.circular(customColors.borderRadius ?? 8),
                     ),
-              icon: Icons.edit,
+              icon: Icons.settings,
               onPressed: (_) {
                 final chatRoomBloc = context.read<RoomBloc>();
                 final redirectUrl = room.roomType == 4
@@ -206,6 +208,11 @@ class RoomItem extends StatelessWidget {
   }
 
   Widget _buildAvatar(Room room) {
+    if (room.members.length == 1 &&
+        (room.avatarUrl == null || room.avatarUrl == '')) {
+      room.avatarUrl = room.members[0];
+    }
+
     if (room.avatarUrl != null && room.avatarUrl!.startsWith('http')) {
       return SizedBox(
         width: 70,
@@ -222,11 +229,23 @@ class RoomItem extends StatelessWidget {
       );
     }
 
-    return RandomAvatar(
-      id: room.avatar,
+    if (room.members.isNotEmpty) {
+      return ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(8),
+          bottomLeft: Radius.circular(8),
+        ),
+        child: GroupAvatar(
+          size: 70,
+          avatars: room.members,
+        ),
+      );
+    }
+
+    return Initicon(
+      text: room.name.split('、').join(' '),
       size: 70,
-      usage:
-          Ability().supportAPIServer() ? AvatarUsage.room : AvatarUsage.legacy,
+      backgroundColor: Colors.grey.withAlpha(100),
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(8),
         bottomLeft: Radius.circular(8),
