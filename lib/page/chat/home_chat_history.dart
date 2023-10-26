@@ -1,6 +1,6 @@
 import 'package:askaide/bloc/chat_chat_bloc.dart';
 import 'package:askaide/lang/lang.dart';
-import 'package:askaide/page/chat_chat.dart';
+import 'package:askaide/page/chat/home.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/data/chat_history_datasource.dart';
@@ -15,18 +15,18 @@ import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loading_more_list/loading_more_list.dart';
 
-class ChatHistoryPage extends StatefulWidget {
+class HomeChatHistoryPage extends StatefulWidget {
   final SettingRepository setting;
   final ChatMessageRepository chatMessageRepo;
 
-  const ChatHistoryPage(
+  const HomeChatHistoryPage(
       {super.key, required this.setting, required this.chatMessageRepo});
 
   @override
-  State<ChatHistoryPage> createState() => _ChatHistoryPageState();
+  State<HomeChatHistoryPage> createState() => _HomeChatHistoryPageState();
 }
 
-class _ChatHistoryPageState extends State<ChatHistoryPage> {
+class _HomeChatHistoryPageState extends State<HomeChatHistoryPage> {
   late final ChatHistoryDatasource datasource;
 
   @override

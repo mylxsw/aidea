@@ -5,7 +5,7 @@ import 'package:askaide/bloc/room_bloc.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/model.dart';
 import 'package:askaide/lang/lang.dart';
-import 'package:askaide/page/chat_screen.dart';
+import 'package:askaide/page/chat/room_chat.dart';
 import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/chat/chat_input.dart';
@@ -15,7 +15,7 @@ import 'package:askaide/page/component/chat/help_tips.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/enhanced_error.dart';
 import 'package:askaide/page/component/random_avatar.dart';
-import 'package:askaide/page/dialog.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/repo/model/message.dart';
@@ -27,7 +27,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
 
-class ChatAnywhereScreen extends StatefulWidget {
+class HomeChatPage extends StatefulWidget {
   final MessageStateManager stateManager;
   final SettingRepository setting;
   final int? chatId;
@@ -35,7 +35,7 @@ class ChatAnywhereScreen extends StatefulWidget {
   final String? model;
   final String? title;
 
-  const ChatAnywhereScreen({
+  const HomeChatPage({
     super.key,
     required this.stateManager,
     required this.setting,
@@ -46,10 +46,10 @@ class ChatAnywhereScreen extends StatefulWidget {
   });
 
   @override
-  State<ChatAnywhereScreen> createState() => _ChatAnywhereScreenState();
+  State<HomeChatPage> createState() => _HomeChatPageState();
 }
 
-class _ChatAnywhereScreenState extends State<ChatAnywhereScreen> {
+class _HomeChatPageState extends State<HomeChatPage> {
   final ChatPreviewController _chatPreviewController = ChatPreviewController();
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<bool> _inputEnabled = ValueNotifier(true);

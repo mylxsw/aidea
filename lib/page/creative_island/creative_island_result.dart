@@ -2,7 +2,7 @@ import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/creative_island/content_preview.dart';
-import 'package:askaide/page/dialog.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:flutter/material.dart';

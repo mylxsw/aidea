@@ -14,7 +14,6 @@ import 'package:askaide/page/component/effect/glass.dart';
 import 'package:askaide/page/component/enhanced_popup_menu.dart';
 import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/random_avatar.dart';
-import 'package:askaide/page/component/share.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/bloc/chat_message_bloc.dart';
@@ -31,14 +30,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 
-import 'dialog.dart';
+import '../component/dialog.dart';
 
-class ChatScreen extends StatefulWidget {
+class RoomChatPage extends StatefulWidget {
   final int roomId;
   final MessageStateManager stateManager;
   final SettingRepository setting;
 
-  const ChatScreen({
+  const RoomChatPage({
     super.key,
     required this.roomId,
     required this.stateManager,
@@ -46,10 +45,10 @@ class ChatScreen extends StatefulWidget {
   });
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  State<RoomChatPage> createState() => _RoomChatPageState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _RoomChatPageState extends State<RoomChatPage> {
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<bool> _inputEnabled = ValueNotifier(true);
   final ChatPreviewController _chatPreviewController = ChatPreviewController();

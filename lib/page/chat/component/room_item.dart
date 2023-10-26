@@ -7,7 +7,7 @@ import 'package:askaide/helper/image.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/random_avatar.dart';
-import 'package:askaide/page/dialog.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/repo/model/room.dart';
 import 'package:flutter/material.dart';

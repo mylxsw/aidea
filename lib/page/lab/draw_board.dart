@@ -5,7 +5,7 @@ import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/column_block.dart';
-import 'package:askaide/page/dialog.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/draw/components/image_selector.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:file_saver/file_saver.dart';

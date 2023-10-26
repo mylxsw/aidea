@@ -3,7 +3,7 @@ import 'package:askaide/helper/logger.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/enhanced_popup_menu.dart';
-import 'package:askaide/page/dialog.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/repo/settings_repo.dart';

@@ -10,8 +10,8 @@ import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/room_card.dart';
 import 'package:askaide/page/component/sliver_component.dart';
 import 'package:askaide/page/component/weak_text_button.dart';
-import 'package:askaide/page/dialog.dart';
-import 'package:askaide/page/rooms.dart';
+import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/page/chat/component/room_item.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/repo/api/room_gallery.dart';
@@ -21,15 +21,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 
-class CharactersScreen extends StatefulWidget {
+class RoomsPage extends StatefulWidget {
   final SettingRepository setting;
-  const CharactersScreen({Key? key, required this.setting}) : super(key: key);
+  const RoomsPage({Key? key, required this.setting}) : super(key: key);
 
   @override
-  State<CharactersScreen> createState() => _CharactersScreenState();
+  State<RoomsPage> createState() => _RoomsPageState();
 }
 
-class _CharactersScreenState extends State<CharactersScreen> {
+class _RoomsPageState extends State<RoomsPage> {
   @override
   void initState() {
     context.read<RoomBloc>().add(RoomsLoadEvent());

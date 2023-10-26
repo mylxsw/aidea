@@ -21,7 +21,7 @@ import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/multi_item_selector.dart';
 import 'package:askaide/page/component/random_avatar.dart';
-import 'package:askaide/page/dialog.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/repo/api_server.dart';

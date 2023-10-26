@@ -5,7 +5,7 @@ import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/model.dart';
 import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
-import 'package:askaide/page/chat_room_create.dart';
+import 'package:askaide/page/chat/room_create.dart';
 import 'package:askaide/page/component/avatar_selector.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
@@ -19,7 +19,7 @@ import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/bloc/room_bloc.dart';
-import 'package:askaide/page/dialog.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
 import 'package:askaide/repo/settings_repo.dart';
@@ -29,17 +29,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 
-class ChatRoomSettingScreen extends StatefulWidget {
+class RoomEditPage extends StatefulWidget {
   final int roomId;
   final SettingRepository setting;
-  const ChatRoomSettingScreen(
-      {super.key, required this.roomId, required this.setting});
+  const RoomEditPage({super.key, required this.roomId, required this.setting});
 
   @override
-  State<ChatRoomSettingScreen> createState() => _ChatRoomSettingScreenState();
+  State<RoomEditPage> createState() => _RoomEditPageState();
 }
 
-class _ChatRoomSettingScreenState extends State<ChatRoomSettingScreen> {
+class _RoomEditPageState extends State<RoomEditPage> {
   final _nameController = TextEditingController();
   final _promptController = TextEditingController(text: '');
   final _initMessageController = TextEditingController(text: '');

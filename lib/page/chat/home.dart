@@ -16,7 +16,7 @@ import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/model_indicator.dart';
 import 'package:askaide/page/component/notify_message.dart';
 import 'package:askaide/page/component/sliver_component.dart';
-import 'package:askaide/page/dialog.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/repo/api_server.dart';
@@ -34,11 +34,11 @@ import 'package:go_router/go_router.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-class ChatChatScreen extends StatefulWidget {
+class HomePage extends StatefulWidget {
   final SettingRepository setting;
   final bool showInitialDialog;
   final int? reward;
-  const ChatChatScreen({
+  const HomePage({
     super.key,
     required this.setting,
     this.showInitialDialog = false,
@@ -46,7 +46,7 @@ class ChatChatScreen extends StatefulWidget {
   });
 
   @override
-  State<ChatChatScreen> createState() => _ChatChatScreenState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class ChatModel {
@@ -63,7 +63,7 @@ class ChatModel {
   });
 }
 
-class _ChatChatScreenState extends State<ChatChatScreen> {
+class _HomePageState extends State<HomePage> {
   final TextEditingController _textController = TextEditingController();
 
   ModelIndicatorInfo? currentModel;

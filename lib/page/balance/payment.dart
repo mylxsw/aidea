@@ -11,7 +11,7 @@ import 'package:askaide/page/component/coin.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/loading.dart';
-import 'package:askaide/page/dialog.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/repo/api/payment.dart';

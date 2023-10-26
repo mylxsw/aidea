@@ -4,7 +4,7 @@ import 'package:askaide/page/component/account_quota_card.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/invite_card.dart';
-import 'package:askaide/page/dialog.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';

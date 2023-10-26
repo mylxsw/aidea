@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:askaide/helper/platform.dart';
-import 'package:askaide/page/dialog.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:fluwx/fluwx.dart';
 import 'package:go_router/go_router.dart';

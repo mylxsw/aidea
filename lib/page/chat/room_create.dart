@@ -29,21 +29,21 @@ import 'package:flutter_localization/flutter_localization.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/model.dart';
 import 'package:askaide/page/component/model_item.dart';
-import 'package:askaide/page/dialog.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/theme/custom_theme.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
 import 'package:go_router/go_router.dart';
 
 /// 创建聊天室对话框
-class ChatRoomCreateScreen extends StatefulWidget {
+class RoomCreatePage extends StatefulWidget {
   final SettingRepository setting;
-  const ChatRoomCreateScreen({super.key, required this.setting});
+  const RoomCreatePage({super.key, required this.setting});
 
   @override
-  State<ChatRoomCreateScreen> createState() => _ChatRoomCreateScreenState();
+  State<RoomCreatePage> createState() => _RoomCreatePageState();
 }
 
-class _ChatRoomCreateScreenState extends State<ChatRoomCreateScreen> {
+class _RoomCreatePageState extends State<RoomCreatePage> {
   final _nameController = TextEditingController(text: '');
   final _promptController = TextEditingController(text: '');
   final _initMessageController = TextEditingController(text: '');

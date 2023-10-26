@@ -9,7 +9,7 @@ import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/image_preview.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/share.dart';
-import 'package:askaide/page/dialog.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/gallery/gallery_item.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/page/theme/custom_theme.dart';

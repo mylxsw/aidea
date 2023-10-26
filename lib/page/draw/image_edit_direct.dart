@@ -8,7 +8,7 @@ import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/message_box.dart';
 import 'package:askaide/page/creative_island/content_preview.dart';
 import 'package:askaide/page/creative_island/creative_island_result.dart';
-import 'package:askaide/page/dialog.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/draw/components/image_selector.dart';
 import 'package:askaide/page/theme/custom_size.dart';
 import 'package:askaide/page/theme/custom_theme.dart';

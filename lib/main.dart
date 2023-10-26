@@ -15,16 +15,16 @@ import 'package:askaide/helper/model_resolver.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/data/migrate.dart';
-import 'package:askaide/page/account_security.dart';
+import 'package:askaide/page/setting/account_security.dart';
 import 'package:askaide/page/app_scaffold.dart';
-import 'package:askaide/page/avatar_selector.dart';
-import 'package:askaide/page/background_selector.dart';
-import 'package:askaide/page/bind_phone_page.dart';
-import 'package:askaide/page/change_password.dart';
-import 'package:askaide/page/chat_anywhere.dart';
-import 'package:askaide/page/chat_chat.dart';
-import 'package:askaide/page/chat_history.dart';
-import 'package:askaide/page/chat_room_create.dart';
+import 'package:askaide/page/lab/avatar_selector.dart';
+import 'package:askaide/page/setting/background_selector.dart';
+import 'package:askaide/page/setting/bind_phone_page.dart';
+import 'package:askaide/page/setting/change_password.dart';
+import 'package:askaide/page/chat/home_chat.dart';
+import 'package:askaide/page/chat/home.dart';
+import 'package:askaide/page/chat/home_chat_history.dart';
+import 'package:askaide/page/chat/room_create.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/transition_resolver.dart';
 import 'package:askaide/page/creative_island/creative_island.dart';
@@ -33,30 +33,30 @@ import 'package:askaide/page/creative_island/creative_island_gallery.dart';
 import 'package:askaide/page/creative_island/creative_island_history.dart';
 import 'package:askaide/page/creative_island/creative_island_history_all.dart';
 import 'package:askaide/page/creative_island/creative_island_history_preview.dart';
-import 'package:askaide/page/custom_home_models.dart';
-import 'package:askaide/page/free_statistics.dart';
+import 'package:askaide/page/setting/custom_home_models.dart';
+import 'package:askaide/page/balance/free_statistics.dart';
 import 'package:askaide/page/group/chat.dart';
 import 'package:askaide/page/group/create.dart';
 import 'package:askaide/page/group/edit.dart';
 import 'package:askaide/page/lab/creative_models.dart';
-import 'package:askaide/page/destroy_account.dart';
-import 'package:askaide/page/diagnosis.dart';
+import 'package:askaide/page/setting/destroy_account.dart';
+import 'package:askaide/page/setting/diagnosis.dart';
 import 'package:askaide/page/draw/draw.dart';
 import 'package:askaide/page/draw/draw_create.dart';
 import 'package:askaide/page/draw/image_edit_direct.dart';
 import 'package:askaide/page/lab/draw_board.dart';
 import 'package:askaide/page/gallery/gallery.dart';
 import 'package:askaide/page/gallery/gallery_item.dart';
-import 'package:askaide/page/openai_setting.dart';
-import 'package:askaide/page/payment.dart';
-import 'package:askaide/page/prompt.dart';
-import 'package:askaide/page/quota_usage_statistics.dart';
-import 'package:askaide/page/signin_or_signup.dart';
-import 'package:askaide/page/signin_screen.dart';
+import 'package:askaide/page/setting/openai_setting.dart';
+import 'package:askaide/page/balance/payment.dart';
+import 'package:askaide/page/lab/prompt.dart';
+import 'package:askaide/page/balance/quota_usage_statistics.dart';
+import 'package:askaide/page/auth/signin_or_signup.dart';
+import 'package:askaide/page/auth/signin_screen.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
-import 'package:askaide/page/quota_detail_screen.dart';
-import 'package:askaide/page/retrieve_password_screen.dart';
-import 'package:askaide/page/signup_screen.dart';
+import 'package:askaide/page/balance/quota_detail_screen.dart';
+import 'package:askaide/page/setting/retrieve_password_screen.dart';
+import 'package:askaide/page/auth/signup_screen.dart';
 import 'package:askaide/page/lab/user_center.dart';
 import 'package:askaide/repo/api/info.dart';
 import 'package:askaide/repo/api_server.dart';
@@ -79,10 +79,10 @@ import 'package:askaide/bloc/bloc_manager.dart';
 import 'package:askaide/bloc/chat_message_bloc.dart';
 import 'package:askaide/bloc/room_bloc.dart';
 import 'package:askaide/bloc/notify_bloc.dart';
-import 'package:askaide/page/chat_room_setting.dart';
-import 'package:askaide/page/chat_screen.dart';
-import 'package:askaide/page/home_screen.dart';
-import 'package:askaide/page/setting_screen.dart';
+import 'package:askaide/page/chat/room_edit.dart';
+import 'package:askaide/page/chat/room_chat.dart';
+import 'package:askaide/page/chat/rooms.dart';
+import 'package:askaide/page/setting/setting_screen.dart';
 import 'package:askaide/repo/data/chat_message_data.dart';
 import 'package:askaide/repo/chat_message_repo.dart';
 import 'package:askaide/repo/data/room_data.dart';
@@ -359,7 +359,7 @@ class MyApp extends StatefulWidget {
                     BlocProvider(create: (context) => NotifyBloc()),
                     BlocProvider.value(value: freeCountBloc),
                   ],
-                  child: ChatAnywhereScreen(
+                  child: HomeChatPage(
                     stateManager: messageStateManager,
                     setting: settingRepo,
                     chatId:
@@ -385,7 +385,7 @@ class MyApp extends StatefulWidget {
                         create: (context) => ChatChatBloc(chatMsgRepo)),
                     BlocProvider.value(value: freeCountBloc),
                   ],
-                  child: ChatChatScreen(
+                  child: HomePage(
                     setting: settingRepo,
                     showInitialDialog:
                         state.queryParameters['show_initial_dialog'] == 'true',
@@ -404,7 +404,7 @@ class MyApp extends StatefulWidget {
                     BlocProvider(
                         create: (context) => ChatChatBloc(chatMsgRepo)),
                   ],
-                  child: ChatHistoryPage(
+                  child: HomeChatHistoryPage(
                     setting: settingRepo,
                     chatMessageRepo: chatMsgRepo,
                   ),
@@ -429,7 +429,7 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [BlocProvider.value(value: chatRoomBloc)],
-                  child: CharactersScreen(setting: settingRepo),
+                  child: RoomsPage(setting: settingRepo),
                 ),
               ),
             ),
@@ -439,7 +439,7 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [BlocProvider.value(value: chatRoomBloc)],
-                  child: ChatRoomCreateScreen(setting: settingRepo),
+                  child: RoomCreatePage(setting: settingRepo),
                 ),
               ),
             ),
@@ -458,7 +458,7 @@ class MyApp extends StatefulWidget {
                       BlocProvider(create: (context) => NotifyBloc()),
                       BlocProvider.value(value: freeCountBloc),
                     ],
-                    child: ChatScreen(
+                    child: RoomChatPage(
                       roomId: roomId,
                       stateManager: messageStateManager,
                       setting: settingRepo,
@@ -480,8 +480,7 @@ class MyApp extends StatefulWidget {
                         value: ChatBlocManager().getBloc(roomId),
                       ),
                     ],
-                    child: ChatRoomSettingScreen(
-                        roomId: roomId, setting: settingRepo),
+                    child: RoomEditPage(roomId: roomId, setting: settingRepo),
                   ),
                 );
               },

@@ -14,7 +14,7 @@ import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/prompt_tags_selector.dart';
 import 'package:askaide/page/creative_island/content_preview.dart';
 import 'package:askaide/page/creative_island/creative_island_result.dart';
-import 'package:askaide/page/dialog.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/draw/components/image_selector.dart';
 import 'package:askaide/page/draw/components/image_size.dart';
 import 'package:askaide/page/draw/components/image_style_selector.dart';
