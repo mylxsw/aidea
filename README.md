@@ -38,14 +38,13 @@ Mac/Windows 桌面端：https://github.com/mylxsw/aidea/releases
 
 Web 端：https://web.aicode.cc/
 
-## 福利
+## 服务端部署
 
-目前我的 OpenAI 账户还有大约 4900+ 美金的额度，为了感谢各位的关注，在 2023 年 11 月 1 日前（4900 美金额度消耗完为止），GPT-4 使用价格低至 每 1K Token 只需要 10 个智慧果。
+如果你不想使用托管的云服务，可以自己部署服务端，[部署请看这里](https://github.com/mylxsw/aidea-server/blob/main/docs/deploy.md)。
 
-> 相当于 0.1 元 / 1000 Token，OpenAI 官方价格为输入 0.21 元，输出 0.42 元。
+不想自己折腾，可以找我来帮你部署，详情参考 [服务器代部署说明](https://github.com/mylxsw/aidea-server/blob/main/docs/deploy-vip.md)。
 
 ## APP 截图
-
 
 ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-32-34.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-09-14_10-20-28.jpg-thumb)
 :-------------------------:|:-------------------------:
