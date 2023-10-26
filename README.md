@@ -30,13 +30,9 @@
 
 - 电报群：[点此加入](https://t.me/aideachat)
 
-## 下载安装地址
+## 下载体验地址
 
-Android/IOS APP：https://aidea.aicode.cc/
-
-Mac/Windows 桌面端：https://github.com/mylxsw/aidea/releases
-
-Web 端：https://web.aicode.cc/
+https://aidea.aicode.cc/
 
 ## 服务端部署
 
