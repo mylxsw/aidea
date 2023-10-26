@@ -1,6 +1,6 @@
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/prompt_tags_selector.dart';
-import 'package:askaide/page/theme/custom_theme.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
 
 class CreativeItem extends StatelessWidget {

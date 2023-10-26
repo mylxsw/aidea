@@ -8,7 +8,7 @@ import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/dialog.dart';
-import 'package:askaide/page/theme/custom_theme.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';

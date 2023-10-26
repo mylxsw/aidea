@@ -12,8 +12,8 @@ import 'package:askaide/page/component/sliver_component.dart';
 import 'package:askaide/page/component/weak_text_button.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/chat/component/room_item.dart';
-import 'package:askaide/page/theme/custom_size.dart';
-import 'package:askaide/page/theme/custom_theme.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/room_gallery.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
@@ -70,6 +70,7 @@ class _RoomsPageState extends State<RoomsPage> {
 
               return SliverComponent(
                 actions: [
+                  // 数字人创建按钮
                   if (selectedSuggestions.isEmpty)
                     EnhancedPopupMenu(
                       items: [
@@ -88,11 +89,19 @@ class _RoomsPageState extends State<RoomsPage> {
                             title: '发起群聊',
                             icon: Icons.chat_bubble_outline,
                             onTap: (p0) {
-                              context
-                                  .push('/group-chat-create')
-                                  .whenComplete(() {
-                                context.read<RoomBloc>().add(RoomsLoadEvent());
-                              });
+                              // context
+                              //     .push('/group-chat-create')
+                              //     .whenComplete(() {
+                              //   context.read<RoomBloc>().add(RoomsLoadEvent());
+                              // });
+
+                              openModalBottomSheet(
+                                context,
+                                (context) {
+                                  return Container();
+                                },
+                                heightFactor: 0.8,
+                              );
                             },
                           )
                       ],

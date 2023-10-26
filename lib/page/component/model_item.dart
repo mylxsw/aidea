@@ -1,5 +1,5 @@
 import 'package:askaide/page/component/dialog.dart';
-import 'package:askaide/page/theme/custom_theme.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/model/model.dart';
 import 'package:flutter/material.dart';
 

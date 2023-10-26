@@ -1,8 +1,8 @@
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/message_box.dart';
-import 'package:askaide/page/theme/custom_size.dart';
-import 'package:askaide/page/theme/custom_theme.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';

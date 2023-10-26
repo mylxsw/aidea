@@ -1,7 +1,7 @@
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/image.dart';
 import 'package:askaide/page/component/image_preview.dart';
-import 'package:askaide/page/theme/custom_theme.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/creative.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
