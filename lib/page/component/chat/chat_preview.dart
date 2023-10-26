@@ -9,7 +9,6 @@ import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/attached_button_panel.dart';
 import 'package:askaide/page/component/chat/chat_share.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
-import 'package:askaide/page/component/share.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/repo/api_server.dart';

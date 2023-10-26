@@ -1,5 +1,4 @@
 import 'package:askaide/bloc/room_bloc.dart';
-import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
@@ -7,7 +6,6 @@ import 'package:askaide/helper/image.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/chat/component/group_avatar.dart';
 import 'package:askaide/page/component/image.dart';
-import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/model/room.dart';

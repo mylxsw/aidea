@@ -58,7 +58,7 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
           .toList();
     }
 
-    APIServer().capabilities().then((cap) {
+    APIServer().capabilities(cache: false).then((cap) {
       Ability().updateCapabilities(cap);
 
       if (cap.homeModels.isNotEmpty) {

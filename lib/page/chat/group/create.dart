@@ -1,21 +1,11 @@
-import 'dart:io';
-import 'dart:math';
-
 import 'package:askaide/bloc/room_bloc.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/image.dart';
-import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
-import 'package:askaide/page/component/avatar_selector.dart';
 import 'package:askaide/page/component/background_container.dart';
-import 'package:askaide/page/component/column_block.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
-import 'package:askaide/page/component/enhanced_input.dart';
-import 'package:askaide/page/component/enhanced_textfield.dart';
-import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/loading.dart';
-import 'package:askaide/page/component/multi_item_selector.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
@@ -122,7 +112,7 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
                               Expanded(
                                   child: Container(
                                 alignment: Alignment.center,
-                                child: Text(item.shortName),
+                                child: Text(item.name),
                               )),
                               SizedBox(
                                 width: 10,
