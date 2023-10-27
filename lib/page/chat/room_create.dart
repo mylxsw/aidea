@@ -610,6 +610,7 @@ void openSelectModelDialog(
   BuildContext context,
   Function(mm.Model selected) onSelected, {
   String? initValue,
+  List<String>? reservedModels,
 }) {
   openModalBottomSheet(
     context,
@@ -626,7 +627,11 @@ void openSelectModelDialog(
             }
 
             return ModelItem(
-              models: snapshot.data!,
+              models: snapshot.data!
+                  .where((e) =>
+                      !e.disabled ||
+                      (reservedModels != null && reservedModels.contains(e.id)))
+                  .toList(),
               onSelected: (selected) {
                 onSelected(selected);
                 context.pop();

@@ -6,9 +6,11 @@ import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/image.dart';
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/chat/component/group_empty.dart';
 import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/chat/chat_share.dart';
+import 'package:askaide/page/component/chat/empty.dart';
 import 'package:askaide/page/component/chat/help_tips.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/enhanced_popup_menu.dart';
@@ -333,6 +335,13 @@ class _GroupChatPageState extends State<GroupChatPage> {
       buildWhen: (prv, cur) => cur is GroupChatMessagesLoaded,
       builder: (context, state) {
         if (state is GroupChatMessagesLoaded) {
+          if (state.messages.isEmpty) {
+            return const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: GroupEmptyBoard(),
+            );
+          }
+
           final loadedMessages = state.messages.map((e) {
             var member =
                 e.memberId != null ? group.group.findMember(e.memberId!) : null;

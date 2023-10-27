@@ -49,48 +49,50 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         actions: [
-          TextButton(
-            onPressed: () async {
-              final cancel = BotToast.showCustomLoading(
-                toastBuilder: (cancel) {
-                  return LoadingIndicator(
-                    message: AppLocale.processingWait.getString(context),
-                  );
-                },
-                allowClick: false,
-                duration: const Duration(seconds: 15),
-              );
+          if (!PlatformTool.isWeb())
+            TextButton(
+              onPressed: () async {
+                final cancel = BotToast.showCustomLoading(
+                  toastBuilder: (cancel) {
+                    return LoadingIndicator(
+                      message: AppLocale.processingWait.getString(context),
+                    );
+                  },
+                  allowClick: false,
+                  duration: const Duration(seconds: 15),
+                );
 
-              try {
-                final data = await controller.capture();
-                if (data != null) {
-                  final file = await writeTempFile('share-image.png', data);
+                try {
+                  final data = await controller.capture();
+                  if (data != null) {
+                    final file = await writeTempFile('share-image.png', data);
+                    cancel();
+                    // ignore: use_build_context_synchronously
+                    await shareTo(
+                      context,
+                      content: 'images',
+                      images: [
+                        file.path,
+                      ],
+                    );
+                  }
+                } finally {
                   cancel();
-                  // ignore: use_build_context_synchronously
-                  await shareTo(
-                    context,
-                    content: 'images',
-                    images: [
-                      file.path,
-                    ],
-                  );
                 }
-              } finally {
-                cancel();
-              }
-            },
-            child: Row(
-              children: [
-                Icon(Icons.share, size: 14, color: customColors.weakLinkColor),
-                const SizedBox(width: 5),
-                Text(
-                  '分享',
-                  style: TextStyle(
-                      color: customColors.weakLinkColor, fontSize: 14),
-                ),
-              ],
+              },
+              child: Row(
+                children: [
+                  Icon(Icons.share,
+                      size: 14, color: customColors.weakLinkColor),
+                  const SizedBox(width: 5),
+                  Text(
+                    '分享',
+                    style: TextStyle(
+                        color: customColors.weakLinkColor, fontSize: 14),
+                  ),
+                ],
+              ),
             ),
-          ),
           EnhancedPopupMenu(
             items: [
               EnhancedPopupMenuItem(

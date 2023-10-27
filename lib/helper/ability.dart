@@ -113,6 +113,10 @@ class Ability {
   /// 是否支持语音合成功能
   bool supportSpeak() {
     // return setting.stringDefault(settingAPIServerToken, '') != '';
+    if (PlatformTool.isWeb()) {
+      return false;
+    }
+
     return true;
   }
 

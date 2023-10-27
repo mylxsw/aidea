@@ -562,7 +562,7 @@ class _SettingScreenState extends State<SettingScreen> {
             ? AppLocale.enable.getString(context)
             : AppLocale.disable.getString(context),
         style: TextStyle(
-          color: customColors.weakTextColor,
+          color: customColors.weakTextColor?.withAlpha(200),
           fontSize: 13,
         ),
       ),

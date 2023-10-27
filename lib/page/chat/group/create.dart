@@ -42,7 +42,7 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
     // 加载模型
     APIServer().models().then((value) {
       setState(() {
-        models = value;
+        models = value.where((e) => !e.disabled).toList();
       });
     });
   }

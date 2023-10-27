@@ -155,6 +155,14 @@ class _GroupEditPageState extends State<GroupEditPage> {
                     .where((e) => e != null)
                     .map((e) => e!)
                     .toList();
+
+                final selectedModelIds =
+                    selectedModels.map((e) => e.model.realModelId).toList();
+
+                models = models
+                    .where((e) =>
+                        !e.disabled || selectedModelIds.contains(e.realModelId))
+                    .toList();
               }
             },
             builder: (context, state) {

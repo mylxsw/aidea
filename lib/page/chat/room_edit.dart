@@ -65,6 +65,7 @@ class _RoomEditPageState extends State<RoomEditPage> {
   bool showAdvancedOptions = false;
 
   mm.Model? _selectedModel;
+  String? reservedModel;
 
   @override
   void initState() {
@@ -116,6 +117,7 @@ class _RoomEditPageState extends State<RoomEditPage> {
               ModelAggregate.model(state.room.model).then((value) {
                 setState(() {
                   _selectedModel = value;
+                  reservedModel = value.id;
                 });
               });
 
@@ -273,6 +275,9 @@ class _RoomEditPageState extends State<RoomEditPage> {
                                   });
                                 },
                                 initValue: _selectedModel?.uid(),
+                                reservedModels: reservedModel != null
+                                    ? [reservedModel!]
+                                    : [],
                               );
                             },
                             value: _selectedModel != null

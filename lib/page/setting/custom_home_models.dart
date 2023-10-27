@@ -84,6 +84,7 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
   @override
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
+    var reservedModels = models.map((e) => e.modelId).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -125,6 +126,7 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
                             setState(() {});
                           },
                           initValue: models[i].modelId,
+                          reservedModels: reservedModels,
                         );
                       },
                       child: Stack(
