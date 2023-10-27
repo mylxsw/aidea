@@ -70,7 +70,7 @@ class GroupEmptyBoard extends StatelessWidget {
 
   Widget buildTextLine(CustomColors customColors, String text, IconData? icon) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 10, left: 15),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -88,6 +88,7 @@ class GroupEmptyBoard extends StatelessWidget {
                 color: customColors.weakTextColor,
                 height: 1.5,
                 fontSize: 14,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           )
