@@ -336,13 +336,9 @@ class _GroupChatPageState extends State<GroupChatPage> {
       builder: (context, state) {
         if (state is GroupChatMessagesLoaded) {
           if (state.messages.isEmpty) {
-            return Padding(
-              padding: EdgeInsets.only(
-                left: 15,
-                right: 15,
-                top: (MediaQuery.of(context).size.height - 300) / 6,
-              ),
-              child: const GroupEmptyBoard(),
+            return const Padding(
+              padding: EdgeInsets.only(left: 15, right: 15, top: 10),
+              child: GroupEmptyBoard(),
             );
           }
 
