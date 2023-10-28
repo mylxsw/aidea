@@ -75,7 +75,7 @@ class _RoomEditPageState extends State<RoomEditPage> {
         .add(RoomLoadEvent(widget.roomId, cascading: false));
 
     // 获取预设头像
-    if (Ability().supportAPIServer()) {
+    if (Ability().enableAPIServer()) {
       APIServer().avatars().then((value) {
         avatarPresets = value;
       });
@@ -173,7 +173,7 @@ class _RoomEditPageState extends State<RoomEditPage> {
                               hintText: AppLocale.required.getString(context),
                               textDirection: TextDirection.rtl,
                             ),
-                            if (Ability().supportAPIServer())
+                            if (Ability().enableAPIServer())
                               EnhancedInput(
                                 padding:
                                     const EdgeInsets.only(top: 10, bottom: 5),

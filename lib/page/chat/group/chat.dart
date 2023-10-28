@@ -10,7 +10,6 @@ import 'package:askaide/page/chat/component/group_empty.dart';
 import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/chat/chat_share.dart';
-import 'package:askaide/page/component/chat/empty.dart';
 import 'package:askaide/page/component/chat/help_tips.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/enhanced_popup_menu.dart';
@@ -501,7 +500,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
       id: id ?? 0,
       size: size,
       usage:
-          Ability().supportAPIServer() ? AvatarUsage.room : AvatarUsage.legacy,
+          Ability().enableAPIServer() ? AvatarUsage.room : AvatarUsage.legacy,
     );
   }
 

@@ -120,12 +120,10 @@ class Room {
       'priority': priority,
       'icon_data': iconData,
       'color': color,
-      'room_type': roomType,
       'description': description,
       'system_prompt': systemPrompt,
       'init_message': initMessage,
       'max_context': maxContext,
-      'members': members,
       'created_at': createdAt?.millisecondsSinceEpoch,
       'last_active_time': lastActiveTime?.millisecondsSinceEpoch,
     };

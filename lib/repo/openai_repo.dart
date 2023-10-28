@@ -83,40 +83,48 @@ class OpenAIRepository {
   static final supportForChat = <String, mm.Model>{
     'gpt-3.5-turbo': mm.Model(
       'gpt-3.5-turbo',
-      'gpt-3.5-turbo',
+      'GPT-3.5 Turbo',
       'openai',
       category: modelTypeOpenAI,
       isChatModel: true,
-      description: '能力最强的 GPT-3.5 模型，成本低',
+      description: '速度快，成本低',
       shortName: 'GPT-3.5 Turbo',
+      tag: 'local',
+      avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt35.png',
     ),
     'gpt-3.5-turbo-16k': mm.Model(
       'gpt-3.5-turbo-16k',
-      'gpt-3.5-turbo-16k',
+      'GPT-3.5 Turbo 16k',
       'openai',
       category: modelTypeOpenAI,
       isChatModel: true,
-      description: '能力最强的 GPT-3.5 模型，成本为 gpt-3.5-turbo 的两倍，但是支持 4K 上下文',
+      description: '3.5 升级版，支持 16K 长文本',
       shortName: 'GPT-3.5 Turbo 16K',
+      tag: 'local',
+      avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt35.png',
     ),
     'gpt-4': mm.Model(
       'gpt-4',
-      'gpt-4',
+      'GPT-4',
       'openai',
       category: modelTypeOpenAI,
       isChatModel: true,
-      description: '比GPT-3.5模型更强，能够执行复杂任务，并优化用于聊天',
+      description: '能力强，更精准',
       shortName: 'GPT-4',
+      tag: 'local',
+      avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt4.png',
     ),
 
     'gpt-4-32k': mm.Model(
       'gpt-4-32k',
-      'gpt-4-32k',
+      'GPT-4 32k',
       'openai',
       category: modelTypeOpenAI,
       isChatModel: true,
       description: '基于 GPT-4，但是支持4倍的内容长度',
       shortName: 'GPT-4 32K',
+      tag: 'local',
+      avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt4.png',
     ),
 
     // 'gpt-4-0314': Model(
@@ -240,14 +248,25 @@ class OpenAIRepository {
     void Function(ChatStreamRespData data) onData, {
     double temperature = 1.0,
     user = 'user',
-    model = defaultChatModel,
+    String model = defaultChatModel,
     int? roomId,
     int? maxTokens,
   }) async {
     var completer = Completer<void>();
 
     try {
-      if (Ability().supportWebSocket()) {
+      bool canUseWebsocket = true;
+      if (Ability().enableLocalOpenAI()) {
+        if (supportForChat.containsKey(model) || model.startsWith('openai:')) {
+          canUseWebsocket = false;
+        }
+      }
+
+      if (!Ability().enableAPIServer()) {
+        canUseWebsocket = false;
+      }
+
+      if (Ability().supportWebSocket() && canUseWebsocket) {
         final serverURL = settings.getDefault(settingServerURL, apiServerURL);
         final wsURL = serverURL.startsWith('https://')
             ? serverURL.replaceFirst('https://', 'wss://')
@@ -313,7 +332,7 @@ class OpenAIRepository {
           'temperature': temperature,
           'user': user,
           'max_tokens': maxTokens,
-          'n': Ability().supportLocalOpenAI()
+          'n': Ability().enableLocalOpenAI()
               ? null
               : roomId, // n 参数暂时用不到，复用作为 roomId
         }));
@@ -324,7 +343,7 @@ class OpenAIRepository {
           temperature: temperature,
           user: user,
           maxTokens: maxTokens,
-          n: Ability().supportLocalOpenAI()
+          n: Ability().enableLocalOpenAI()
               ? null
               : roomId, // n 参数暂时用不到，复用作为 roomId
         );

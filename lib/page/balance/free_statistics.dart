@@ -11,6 +11,7 @@ import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 
 class FreeStatisticsPage extends StatefulWidget {
@@ -26,8 +27,9 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
   @override
   void initState() {
     super.initState();
-
-    context.read<FreeCountBloc>().add(FreeCountReloadAllEvent());
+    context
+        .read<FreeCountBloc>()
+        .add(FreeCountReloadAllEvent(checkSigninStatus: true));
   }
 
   @override
@@ -57,7 +59,16 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
             height: double.infinity,
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              child: BlocBuilder<FreeCountBloc, FreeCountState>(
+              child: BlocConsumer<FreeCountBloc, FreeCountState>(
+                listenWhen: (previous, current) =>
+                    current is FreeCountLoadedState,
+                listener: (BuildContext context, FreeCountState state) {
+                  if (state is FreeCountLoadedState) {
+                    if (state.needSignin) {
+                      context.go('/login');
+                    }
+                  }
+                },
                 builder: (context, state) {
                   if (state is FreeCountLoadedState) {
                     if (state.counts.isEmpty) {

@@ -230,14 +230,18 @@ openConfirmDialog(
           children: [
             buildBottomSheetTopBar(customColors),
             const SizedBox(height: 10),
-            Text(
-              message,
-              style: TextStyle(
-                color: customColors.dialogDefaultTextColor,
-                fontSize: 16,
+            if (title != null) title,
+            if (title != null && message != '') const SizedBox(height: 10),
+            if (message != '')
+              Text(
+                message,
+                style: TextStyle(
+                  color: customColors.dialogDefaultTextColor,
+                  fontSize: title == null ? 16 : 12,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: title == null ? 4 : 2,
               ),
-              textAlign: TextAlign.center,
-            ),
             const SizedBox(height: 20),
             Column(
               mainAxisSize: MainAxisSize.min,

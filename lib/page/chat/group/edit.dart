@@ -487,7 +487,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
       id: id ?? 0,
       size: size,
       usage:
-          Ability().supportAPIServer() ? AvatarUsage.room : AvatarUsage.legacy,
+          Ability().enableAPIServer() ? AvatarUsage.room : AvatarUsage.legacy,
     );
   }
 

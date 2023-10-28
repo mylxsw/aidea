@@ -92,7 +92,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     // 语言设置
                     _buildCommonLanguageSetting(),
                     // 常用模型
-                    if (Ability().supportAPIServer())
+                    if (Ability().enableAPIServer())
                       _buildCustomHomeModelsSetting(customColors),
                     // OpenAI 自定义配置
                     if (Ability().enableOpenAI)

@@ -1,4 +1,5 @@
 import 'package:askaide/bloc/room_bloc.dart';
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
@@ -152,6 +153,29 @@ class RoomItem extends StatelessWidget {
                           horizontal: 8, vertical: 2),
                       child: Text(
                         '群聊',
+                        style: TextStyle(
+                          color: customColors.weakTextColor,
+                          fontSize: 8,
+                        ),
+                      ),
+                    ),
+                  ),
+                if (Ability().usingLocalOpenAIModel(room.model))
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: customColors.backgroundContainerColor,
+                        borderRadius: const BorderRadius.only(
+                          topRight: Radius.circular(8),
+                          bottomLeft: Radius.circular(8),
+                        ),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
+                      child: Text(
+                        'local',
                         style: TextStyle(
                           color: customColors.weakTextColor,
                           fontSize: 8,

@@ -22,7 +22,7 @@ class Ability {
 
   /// 是否支持 Websocket
   bool supportWebSocket() {
-    return capabilities.supportWebsocket && !supportLocalOpenAI();
+    return capabilities.supportWebsocket;
   }
 
   /// 更新能力
@@ -95,13 +95,19 @@ class Ability {
   }
 
   /// 是否支持API Server
-  bool supportAPIServer() {
+  bool enableAPIServer() {
     return setting.stringDefault(settingAPIServerToken, '') != '';
   }
 
   /// 是否启用了 OpenAI 自定义设置
-  bool supportLocalOpenAI() {
+  bool enableLocalOpenAI() {
     return setting.boolDefault(settingOpenAISelfHosted, false);
+  }
+
+  /// 是否使用本地的 OpenAI 模型
+  bool usingLocalOpenAIModel(String model) {
+    return setting.boolDefault(settingOpenAISelfHosted, false) &&
+        (model.startsWith('openai:') || model.startsWith('gpt-'));
   }
 
   /// 是否支持翻译功能

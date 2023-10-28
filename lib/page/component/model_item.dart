@@ -42,7 +42,31 @@ class ModelItem extends StatelessWidget {
                         Expanded(
                           child: Container(
                             alignment: Alignment.centerLeft,
-                            child: Text(item.name),
+                            child: Row(children: [
+                              Text(
+                                item.name,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              if (item.tag != null && item.tag!.isNotEmpty)
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: customColors.tagsBackgroundHover,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  margin: const EdgeInsets.only(left: 5),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 2,
+                                  ),
+                                  child: Text(
+                                    item.tag!,
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: customColors.tagsText,
+                                    ),
+                                  ),
+                                ),
+                            ]),
                           ),
                         ),
                         SizedBox(
@@ -91,7 +115,7 @@ class ModelItem extends StatelessWidget {
       id: id ?? 0,
       size: size,
       usage:
-          Ability().supportAPIServer() ? AvatarUsage.room : AvatarUsage.legacy,
+          Ability().enableAPIServer() ? AvatarUsage.room : AvatarUsage.legacy,
     );
   }
 }

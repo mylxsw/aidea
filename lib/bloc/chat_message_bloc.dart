@@ -269,7 +269,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
     // 更新 Room 最后活跃时间
     // 这里没有使用 await，因为不需要等待更新完成，让 room 的更新异步的去处理吧
-    if (!Ability().supportAPIServer()) {
+    if (!Ability().enableAPIServer()) {
       chatMsgRepo.updateRoomLastActiveTime(roomId);
     }
 
@@ -406,11 +406,13 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
         chatHistory: localChatHistory,
       ));
     } catch (e) {
+      final error = resolveErrorMessage(e, isChat: true);
       await chatMsgRepo.updateMessagePart(
         roomId,
         sentMessageId,
         [
           MessagePart('status', 2),
+          MessagePart('extra', jsonEncode({'error': error.toString()})),
         ],
       );
 
@@ -421,7 +423,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
             waitMessage.id!,
             Message(
               Role.receiver,
-              AppLocale.robotHasSomeError,
+              error.toString(),
               id: waitMessage.id,
               ts: DateTime.now(),
               type: MessageType.system,
@@ -441,7 +443,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
           userId: APIServer().localUserID(),
           chatHistoryId: localChatHistoryId,
         ),
-        error: resolveErrorMessage(e),
+        error: error,
         chatHistory: localChatHistory,
       ));
 
@@ -457,7 +459,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 Future<Room?> queryRoomById(
     ChatMessageRepository chatMsgRepo, int roomId) async {
   Room? room;
-  if (Ability().supportAPIServer()) {
+  if (Ability().enableAPIServer()) {
     final roomInServer = await APIServer().room(roomId: roomId);
     room = Room(
       roomInServer.name,

@@ -91,6 +91,7 @@ mixin AppLocale {
   static const String confirmToDeleteRoom = 'confirm-to-delete-room';
   static const String confirmSend = 'confirm-send';
   static const String openAIAuthFailed = 'openai-auth-failed';
+  static const String modelNotFound = 'model-not-found';
 
   static const String nameRequiredMessage = 'name-required-message';
   static const String promptFormatError = 'prompt-format-error';
@@ -114,6 +115,8 @@ mixin AppLocale {
   static const String generateResult = 'generate-result';
   static const String generateExitConfirm = 'generate-exit-confirm';
   static const String tooManyRequests = 'too-many-requests';
+  static const String tooManyRequestsOrPaymentRequired =
+      'too-many-requests-or-payment-required';
   static const String promptHint = 'prompt-hint';
   static const String confirmClearCache = 'confirm-clear-cache';
   static const String confirmSignOut = 'confirm-sign-out';
@@ -291,6 +294,7 @@ mixin AppLocale {
     signInRequired: '您尚未登录，请先登录',
     accountNeedReSignin: '账号异常，请重新登录',
     openAIAuthFailed: '您启用了自定义 OpenAI 服务，请检查 API Key 是否正确',
+    modelNotFound: '当前模型尚未开通，暂时无法使用',
     confirmToDeleteRoom: '确定删除?',
     writeYourIdeas: '你的想法',
     describeYourImages: '你的想法',
@@ -310,6 +314,8 @@ mixin AppLocale {
     generateResult: '创作结果',
     generateExitConfirm: '创作中...\n退出后，可在历史记录中查看结果',
     tooManyRequests: '操作过于频繁，请稍后再试',
+    tooManyRequestsOrPaymentRequired:
+        '操作过于频繁（如果您使用了自定义的 OpenAI Keys，请登录 https://platform.openai.com 检查账户余额是否充足）',
     promptHint: '设定该数字人的角色和技能，以便为你提供更精准有效的信息。',
     confirmClearCache: '确定要清除缓存吗？',
     confirmSignOut: '确定要退出登录吗？',
@@ -485,6 +491,8 @@ mixin AppLocale {
     accountNeedReSignin: 'Account exception, please log in again',
     openAIAuthFailed:
         'You have enabled custom OpenAI service, please check if the API Key is correct',
+    modelNotFound:
+        'The current model is not enabled yet, please try again later',
     confirmToDeleteRoom: 'Confirm to delete the character?',
     writeYourIdeas: 'Your ideas',
     describeYourImages: 'Your ideas',
@@ -505,6 +513,8 @@ mixin AppLocale {
     generateExitConfirm:
         'Generating...\nYou can view the result in the history',
     tooManyRequests: 'Too many requests, please try again later',
+    tooManyRequestsOrPaymentRequired:
+        'Too many requests (If you are using your own OpenAI Keys, please log in to https://platform.openai.com to check if your account balance is sufficient)',
     promptHint:
         'Set the role and skills of the character so that it can provide more accurate and effective information for you.',
     confirmClearCache: 'Confirm to clear cache?',
@@ -601,6 +611,11 @@ class LanguageText {
   final String message;
   final String? action;
   const LanguageText(this.message, {this.action});
+
+  @override
+  String toString() {
+    return message;
+  }
 }
 
 final languages = <String, String>{

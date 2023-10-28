@@ -38,7 +38,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
           ));
         }
 
-        if (Ability().supportAPIServer()) {
+        if (Ability().enableAPIServer()) {
           final room = await APIServer().room(roomId: event.roomId);
           if (event.chatHistoryId != null && event.chatHistoryId! > 0) {
             final chatHistory =
@@ -128,7 +128,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
       emit(RoomsLoading());
 
       try {
-        if (Ability().supportAPIServer()) {
+        if (Ability().enableAPIServer()) {
           await APIServer().createRoom(
             name: event.name,
             vendor: event.model.split(':').first,
@@ -161,7 +161,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
       emit(RoomsLoading());
 
       try {
-        if (Ability().supportAPIServer()) {
+        if (Ability().enableAPIServer()) {
           await APIServer().deleteRoom(roomId: event.roomId);
         } else {
           var room = await chatMsgRepo.room(event.roomId);
@@ -180,7 +180,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
 
     // 更新聊天室信息
     on<RoomUpdateEvent>((event, emit) async {
-      if (Ability().supportAPIServer()) {
+      if (Ability().enableAPIServer()) {
         final room = await APIServer().updateRoom(
           roomId: event.roomId,
           name: event.name!,
@@ -311,7 +311,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
 
   Future<RoomsLoaded> createRoomsLoadedState({bool cache = true}) async {
     try {
-      if (Ability().supportAPIServer()) {
+      if (Ability().enableAPIServer()) {
         final resp = await APIServer().rooms(cache: cache);
         return RoomsLoaded(
           resp.rooms

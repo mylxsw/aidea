@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:askaide/bloc/chat_message_bloc.dart';
 import 'package:askaide/bloc/room_bloc.dart';
@@ -222,7 +223,9 @@ class _ChatPreviewState extends State<ChatPreview> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // 消息头像
             buildAvatar(message),
+            // 消息内容部分
             ConstrainedBox(
               constraints: BoxConstraints(
                 maxWidth: _chatBoxMaxWidth(context) - 80,
@@ -231,15 +234,18 @@ class _ChatPreviewState extends State<ChatPreview> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // 发送人名称
                   if (message.role == Role.receiver &&
                       widget.senderNameBuilder != null)
                     widget.senderNameBuilder!(message) ?? const SizedBox(),
                   Wrap(
                     crossAxisAlignment: WrapCrossAlignment.end,
                     children: [
+                      // 错误指示器
                       if (message.role == Role.sender &&
                           message.statusIsFailed())
                         buildErrorIndicator(message, state, context),
+                      // 消息主体
                       GestureDetector(
                         // 选择模式下，单击切换选择与否
                         // 非选择模式下，单击隐藏键盘
@@ -405,12 +411,29 @@ class _ChatPreviewState extends State<ChatPreview> {
 
           HapticFeedbackHelper.mediumImpact();
 
+          var confirmMessage = '';
+          if (message.extra != null && message.extra!.isNotEmpty) {
+            try {
+              final extra = jsonDecode(message.extra!);
+              if (extra['error'] != null && extra['error'] != '') {
+                var e1 = extra['error'];
+                try {
+                  e1 = (e1 as String).getString(context);
+                  // ignore: empty_catches
+                } catch (ignored) {}
+                confirmMessage = e1;
+              }
+              // ignore: empty_catches
+            } catch (ignored) {}
+          }
+
           openConfirmDialog(
             context,
-            AppLocale.robotHasSomeError.getString(context),
+            confirmMessage,
             () {
               widget.onResentEvent!(message);
             },
+            title: Text(AppLocale.robotHasSomeError.getString(context)),
             confirmText: '重新发送',
           );
         },

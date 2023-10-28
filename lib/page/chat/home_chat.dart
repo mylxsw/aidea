@@ -324,6 +324,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
                     hintText += '（今日还可免费畅享${matched.leftCount}次）';
                   }
                 }
+
                 return SafeArea(
                   child: ChatInput(
                     enableNotifier: _inputEnabled,

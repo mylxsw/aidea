@@ -237,7 +237,7 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                                     child: EnhancedButton(
                                       title: '制作同款',
                                       onPressed: () {
-                                        if (Ability().supportAPIServer()) {
+                                        if (Ability().enableAPIServer()) {
                                           context.push(
                                               '/creative-draw/create?mode=text-to-image&id=${state.item.creativeId}&gallery_copy_id=${state.item.id}');
                                         } else {
