@@ -2,7 +2,7 @@ import 'package:askaide/bloc/creative_island_bloc.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
-import 'package:askaide/page/creative_island/content_preview.dart';
+import 'package:askaide/page/creative_island/draw/components/content_preview.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
@@ -13,13 +13,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 
-class CreativeIslandHistoryPreview extends StatefulWidget {
+class MyCreationItemPage extends StatefulWidget {
   final String islandId;
   final int itemId;
   final SettingRepository setting;
   final bool showErrorMessage;
 
-  const CreativeIslandHistoryPreview({
+  const MyCreationItemPage({
     super.key,
     required this.setting,
     required this.islandId,
@@ -28,12 +28,10 @@ class CreativeIslandHistoryPreview extends StatefulWidget {
   });
 
   @override
-  State<CreativeIslandHistoryPreview> createState() =>
-      _CreativeIslandHistoryPreviewState();
+  State<MyCreationItemPage> createState() => _MyCreationItemPageState();
 }
 
-class _CreativeIslandHistoryPreviewState
-    extends State<CreativeIslandHistoryPreview>
+class _MyCreationItemPageState extends State<MyCreationItemPage>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 

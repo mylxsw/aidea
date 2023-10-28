@@ -6,8 +6,8 @@ import 'package:askaide/page/component/column_block.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/message_box.dart';
-import 'package:askaide/page/creative_island/content_preview.dart';
-import 'package:askaide/page/creative_island/creative_island_result.dart';
+import 'package:askaide/page/creative_island/draw/components/content_preview.dart';
+import 'package:askaide/page/creative_island/draw/draw_result.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/creative_island/draw/components/image_selector.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
@@ -193,7 +193,7 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
           context,
           MaterialPageRoute(
             fullscreenDialog: true,
-            builder: (context) => CreativeIslandResultDialog(
+            builder: (context) => DrawResultPage(
               future: Future.delayed(const Duration(seconds: 10), () async {
                 return await queryCompletionTaskStatus(
                   taskId: taskId,

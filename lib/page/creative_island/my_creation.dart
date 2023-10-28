@@ -20,19 +20,17 @@ import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loading_more_list/loading_more_list.dart';
 
-class CreativeIslandHistoriesAllScreen extends StatefulWidget {
+class MyCreationScreen extends StatefulWidget {
   final SettingRepository setting;
   final String mode;
-  const CreativeIslandHistoriesAllScreen(
+  const MyCreationScreen(
       {super.key, required this.setting, required this.mode});
 
   @override
-  State<CreativeIslandHistoriesAllScreen> createState() =>
-      _CreativeIslandHistoriesAllScreenState();
+  State<MyCreationScreen> createState() => _MyCreationScreenState();
 }
 
-class _CreativeIslandHistoriesAllScreenState
-    extends State<CreativeIslandHistoriesAllScreen> {
+class _MyCreationScreenState extends State<MyCreationScreen> {
   final DrawHistoryDatasource datasource = DrawHistoryDatasource();
 
   @override

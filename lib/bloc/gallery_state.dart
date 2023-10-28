@@ -13,6 +13,7 @@ class GalleryLoaded extends GalleryState {
 
 class GalleryItemLoaded extends GalleryState {
   final CreativeGallery item;
+  final bool isInternalUser;
 
-  GalleryItemLoaded({required this.item});
+  GalleryItemLoaded({required this.item, this.isInternalUser = false});
 }

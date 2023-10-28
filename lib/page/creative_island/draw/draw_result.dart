@@ -1,7 +1,7 @@
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/lang/lang.dart';
-import 'package:askaide/page/creative_island/content_preview.dart';
+import 'package:askaide/page/creative_island/draw/components/content_preview.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
@@ -9,25 +9,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 
-class CreativeIslandResultDialog extends StatefulWidget {
+class DrawResultPage extends StatefulWidget {
   final Future<IslandResult> future;
   final int waitDuration;
 
-  const CreativeIslandResultDialog({
+  const DrawResultPage({
     super.key,
     required this.future,
     this.waitDuration = 30,
   });
 
   @override
-  State<CreativeIslandResultDialog> createState() =>
-      _CreativeIslandResultDialogState();
+  State<DrawResultPage> createState() => _DrawResultPageState();
 }
 
 const defaultCounterRestartValue = 15;
 
-class _CreativeIslandResultDialogState
-    extends State<CreativeIslandResultDialog> {
+class _DrawResultPageState extends State<DrawResultPage> {
   var loading = true;
   var restartCounterValue = defaultCounterRestartValue;
 

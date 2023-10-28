@@ -1420,13 +1420,13 @@ class APIServer {
     );
   }
 
-  Future<CreativeGallery> creativeGalleryItem({
+  Future<CreativeGalleryItemResponse> creativeGalleryItem({
     required int id,
     bool cache = true,
   }) async {
     return sendCachedGetRequest(
       '/v1/creatives/gallery/$id',
-      (resp) => CreativeGallery.fromJson(resp.data),
+      (resp) => CreativeGalleryItemResponse.fromJson(resp.data),
       forceRefresh: !cache,
       duration: const Duration(minutes: 30),
     );

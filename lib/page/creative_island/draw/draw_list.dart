@@ -13,15 +13,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 
-class DrawScreen extends StatefulWidget {
+class DrawListScreen extends StatefulWidget {
   final SettingRepository setting;
-  const DrawScreen({super.key, required this.setting});
+  const DrawListScreen({super.key, required this.setting});
 
   @override
-  State<DrawScreen> createState() => _DrawScreenState();
+  State<DrawListScreen> createState() => _DrawListScreenState();
 }
 
-class _DrawScreenState extends State<DrawScreen> {
+class _DrawListScreenState extends State<DrawListScreen> {
   @override
   void initState() {
     if (Ability().supportAPIServer()) {

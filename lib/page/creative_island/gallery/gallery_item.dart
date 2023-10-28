@@ -4,6 +4,7 @@ import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/image.dart';
+import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/attached_button_panel.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
@@ -20,6 +21,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 
 class GalleryItemScreen extends StatefulWidget {
@@ -54,6 +56,44 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
         ),
         backgroundColor: customColors.backgroundContainerColor?.withAlpha(200),
         toolbarHeight: CustomSize.toolbarHeight,
+        actions: [
+          BlocBuilder<GalleryBloc, GalleryState>(
+            buildWhen: (previous, current) => current is GalleryItemLoaded,
+            builder: (context, state) {
+              if (state is GalleryItemLoaded &&
+                  state.isInternalUser &&
+                  state.item.status == 1) {
+                return TextButton(
+                  onPressed: () {
+                    openConfirmDialog(
+                      context,
+                      '确认取消？',
+                      () => APIServer()
+                          .cancelShareCreativeHistoryToGallery(
+                              historyId: state.item.creativeHistoryId!)
+                          .then((value) {
+                        showSuccessMessage(
+                            AppLocale.operateSuccess.getString(context));
+
+                        context.read<GalleryBloc>().add(GalleryItemLoadEvent(
+                            id: widget.galleryId, forceRefresh: true));
+                      }),
+                    );
+                  },
+                  child: Text(
+                    '取消共享',
+                    style: TextStyle(
+                      color: customColors.weakLinkColor,
+                      fontSize: 12,
+                    ),
+                  ),
+                );
+              }
+
+              return const SizedBox();
+            },
+          ),
+        ],
       ),
       extendBodyBehindAppBar: true,
       backgroundColor: customColors.backgroundContainerColor,

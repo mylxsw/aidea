@@ -12,8 +12,8 @@ import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/prompt_tags_selector.dart';
-import 'package:askaide/page/creative_island/content_preview.dart';
-import 'package:askaide/page/creative_island/creative_island_result.dart';
+import 'package:askaide/page/creative_island/draw/components/content_preview.dart';
+import 'package:askaide/page/creative_island/draw/draw_result.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/creative_island/draw/components/image_selector.dart';
 import 'package:askaide/page/creative_island/draw/components/image_size.dart';
@@ -93,7 +93,8 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
       if (widget.galleryCopyId != null && widget.galleryCopyId! > 0) {
         APIServer()
             .creativeGalleryItem(id: widget.galleryCopyId!)
-            .then((gallery) {
+            .then((response) {
+          final gallery = response.item;
           if (gallery.prompt != null && gallery.prompt!.isNotEmpty) {
             promptController.text = gallery.prompt!;
           }
@@ -857,7 +858,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
           context,
           MaterialPageRoute(
             fullscreenDialog: true,
-            builder: (context) => CreativeIslandResultDialog(
+            builder: (context) => DrawResultPage(
               future: Future.delayed(const Duration(seconds: 10), () async {
                 return await queryCompletionTaskStatus(
                   taskId: taskId,

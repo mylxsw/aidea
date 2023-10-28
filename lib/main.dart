@@ -28,12 +28,8 @@ import 'package:askaide/page/chat/home_chat_history.dart';
 import 'package:askaide/page/chat/room_create.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/transition_resolver.dart';
-import 'package:askaide/page/creative_island/creative_island.dart';
-import 'package:askaide/page/creative_island/creative_island_create_page.dart';
-import 'package:askaide/page/creative_island/creative_island_gallery.dart';
-import 'package:askaide/page/creative_island/creative_island_history.dart';
-import 'package:askaide/page/creative_island/creative_island_history_all.dart';
-import 'package:askaide/page/creative_island/creative_island_history_preview.dart';
+import 'package:askaide/page/creative_island/my_creation.dart';
+import 'package:askaide/page/creative_island/my_creation_item.dart';
 import 'package:askaide/page/setting/custom_home_models.dart';
 import 'package:askaide/page/balance/free_statistics.dart';
 import 'package:askaide/page/chat/group/chat.dart';
@@ -42,7 +38,7 @@ import 'package:askaide/page/chat/group/edit.dart';
 import 'package:askaide/page/lab/creative_models.dart';
 import 'package:askaide/page/setting/destroy_account.dart';
 import 'package:askaide/page/setting/diagnosis.dart';
-import 'package:askaide/page/creative_island/draw/draw.dart';
+import 'package:askaide/page/creative_island/draw/draw_list.dart';
 import 'package:askaide/page/creative_island/draw/draw_create.dart';
 import 'package:askaide/page/creative_island/draw/image_edit_direct.dart';
 import 'package:askaide/page/lab/draw_board.dart';
@@ -549,20 +545,6 @@ class MyApp extends StatefulWidget {
               ),
             ),
             GoRoute(
-              name: 'creative-island',
-              path: '/creative-island',
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: creativeIslandBloc),
-                  ],
-                  child: CreativeIsland(
-                    setting: settingRepo,
-                  ),
-                ),
-              ),
-            ),
-            GoRoute(
               name: 'creative-draw',
               path: '/creative-draw',
               pageBuilder: (context, state) => transitionResolver(
@@ -570,7 +552,7 @@ class MyApp extends StatefulWidget {
                   providers: [
                     BlocProvider.value(value: creativeIslandBloc),
                   ],
-                  child: DrawScreen(
+                  child: DrawListScreen(
                     setting: settingRepo,
                   ),
                 ),
@@ -645,25 +627,6 @@ class MyApp extends StatefulWidget {
               ),
             ),
             GoRoute(
-              name: 'creative-island-create',
-              path: '/creative-island/:id/create',
-              pageBuilder: (context, state) {
-                final id = state.pathParameters['id']!;
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider.value(value: creativeIslandBloc),
-                    ],
-                    child: CreativeIslandCreatePage(
-                      id: id,
-                      repo: creativeIslandRepo,
-                      setting: settingRepo,
-                    ),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
               name: 'creative-island-history-all',
               path: '/creative-island/history',
               pageBuilder: (context, state) {
@@ -672,24 +635,10 @@ class MyApp extends StatefulWidget {
                     providers: [
                       BlocProvider.value(value: creativeIslandBloc),
                     ],
-                    child: CreativeIslandHistoriesAllScreen(
+                    child: MyCreationScreen(
                       setting: settingRepo,
                       mode: state.queryParameters['mode'] ?? '',
                     ),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'creative-island-gallery',
-              path: '/creative-island/gallery',
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider.value(value: creativeIslandBloc),
-                    ],
-                    child: CreativeIslandGalleryScreen(setting: settingRepo),
                   ),
                 );
               },
@@ -709,25 +658,6 @@ class MyApp extends StatefulWidget {
               },
             ),
             GoRoute(
-              name: 'creative-island-history',
-              path: '/creative-island/:id/history',
-              pageBuilder: (context, state) {
-                final id = state.pathParameters['id']!;
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider.value(value: creativeIslandBloc),
-                    ],
-                    child: CreativeIslandHistoryPage(
-                      id: id,
-                      repo: creativeIslandRepo,
-                      setting: settingRepo,
-                    ),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
               name: 'creative-island-history-item',
               path: '/creative-island/:id/history/:item_id',
               pageBuilder: (context, state) {
@@ -740,7 +670,7 @@ class MyApp extends StatefulWidget {
                     providers: [
                       BlocProvider.value(value: creativeIslandBloc),
                     ],
-                    child: CreativeIslandHistoryPreview(
+                    child: MyCreationItemPage(
                       setting: settingRepo,
                       islandId: id,
                       itemId: itemId!,
