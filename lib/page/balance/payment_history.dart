@@ -11,15 +11,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:intl/intl.dart';
 
-class QuotaDetailScreen extends StatefulWidget {
+class PaymentHistoryScreen extends StatefulWidget {
   final SettingRepository setting;
-  const QuotaDetailScreen({super.key, required this.setting});
+  const PaymentHistoryScreen({super.key, required this.setting});
 
   @override
-  State<QuotaDetailScreen> createState() => _QuotaDetailScreenState();
+  State<PaymentHistoryScreen> createState() => _PaymentHistoryScreenState();
 }
 
-class _QuotaDetailScreenState extends State<QuotaDetailScreen> {
+class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;

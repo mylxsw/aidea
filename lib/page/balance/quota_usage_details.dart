@@ -1,32 +1,33 @@
-import 'package:askaide/helper/helper.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/loading.dart';
-import 'package:askaide/page/component/message_box.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api_server.dart';
+import 'package:askaide/repo/model/misc.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
-import 'package:askaide/repo/model/misc.dart';
-import 'package:go_router/go_router.dart';
 
-class QuotaUsageStatisticsScreen extends StatefulWidget {
+class QuotaUsageDetailScreen extends StatefulWidget {
   final SettingRepository setting;
-  const QuotaUsageStatisticsScreen({super.key, required this.setting});
+  final String date;
+
+  const QuotaUsageDetailScreen({
+    super.key,
+    required this.setting,
+    required this.date,
+  });
 
   @override
-  State<QuotaUsageStatisticsScreen> createState() =>
-      _QuotaUsageStatisticsScreenState();
+  State<QuotaUsageDetailScreen> createState() => _QuotaUsageDetailScreenState();
 }
 
-class _QuotaUsageStatisticsScreenState
-    extends State<QuotaUsageStatisticsScreen> {
-  List<QuotaUsageInDay> usages = [];
+class _QuotaUsageDetailScreenState extends State<QuotaUsageDetailScreen> {
+  List<QuotaUsageDetailInDay> usages = [];
   bool loaded = false;
 
   @override
   void initState() {
-    APIServer().quotaUsedStatistics().then((value) {
+    APIServer().quotaUsedDetails(date: widget.date).then((value) {
       setState(() {
         usages = value;
         loaded = true;
@@ -43,9 +44,9 @@ class _QuotaUsageStatisticsScreenState
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
-        title: const Text(
-          '使用明细',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+        title: Text(
+          widget.date,
+          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
         elevation: 0,
@@ -56,18 +57,7 @@ class _QuotaUsageStatisticsScreenState
         enabled: false,
         child: Container(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              const MessageBox(
-                message: '使用明细将在次日更新，显示近 30 天的使用量。',
-                type: MessageBoxType.info,
-              ),
-              const SizedBox(height: 10),
-              Expanded(
-                child: _buildQuotaUsagePage(context, customColors),
-              ),
-            ],
-          ),
+          child: _buildQuotaUsagePage(context, customColors),
         ),
       ),
     );
@@ -83,7 +73,7 @@ class _QuotaUsageStatisticsScreenState
       );
     }
 
-    final usageGt0 = usages.where((e) => e.used > 0 || e.used == -1).toList();
+    final usageGt0 = usages.where((e) => e.used > 0).toList();
     if (usageGt0.isEmpty) {
       return const Center(
         child: Column(
@@ -116,26 +106,16 @@ class _QuotaUsageStatisticsScreenState
                     color: customColors.paymentItemBackgroundColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: InkWell(
-                    onTap: () {
-                      context
-                          .push('/quota-usage-daily-details?date=${item.date}');
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          item.date,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        if (item.used == -1)
-                          const Text('未出账')
-                        else
-                          Text('${item.used > 0 ? "-" : ""}${item.used}'),
-                      ],
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(item.createdAt,
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Text('使用 ${item.type} 消耗 ${item.used} 个智慧果'),
+                      ),
+                    ],
                   ),
                 )
             ],

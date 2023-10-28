@@ -1374,6 +1374,22 @@ class APIServer {
     );
   }
 
+  /// 获取用户智慧果消耗历史记录详情
+  Future<List<QuotaUsageDetailInDay>> quotaUsedDetails(
+      {required String date}) async {
+    return sendGetRequest(
+      '/v1/users/quota/usage-stat/$date',
+      (resp) {
+        var res = <QuotaUsageDetailInDay>[];
+        for (var item in resp.data['data']) {
+          res.add(QuotaUsageDetailInDay.fromJson(item));
+        }
+
+        return res;
+      },
+    );
+  }
+
   Future<PagedData<CreativeGallery>> creativeGallery({
     bool cache = true,
     int page = 1,

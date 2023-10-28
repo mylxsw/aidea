@@ -15,6 +15,7 @@ import 'package:askaide/helper/model_resolver.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/data/migrate.dart';
+import 'package:askaide/page/balance/quota_usage_details.dart';
 import 'package:askaide/page/setting/account_security.dart';
 import 'package:askaide/page/app_scaffold.dart';
 import 'package:askaide/page/lab/avatar_selector.dart';
@@ -54,7 +55,7 @@ import 'package:askaide/page/balance/quota_usage_statistics.dart';
 import 'package:askaide/page/auth/signin_or_signup.dart';
 import 'package:askaide/page/auth/signin_screen.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
-import 'package:askaide/page/balance/quota_detail_screen.dart';
+import 'package:askaide/page/balance/payment_history.dart';
 import 'package:askaide/page/setting/retrieve_password_screen.dart';
 import 'package:askaide/page/auth/signup_screen.dart';
 import 'package:askaide/page/lab/user_center.dart';
@@ -74,6 +75,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:fluwx/fluwx.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:askaide/bloc/bloc_manager.dart';
 import 'package:askaide/bloc/chat_message_bloc.dart';
@@ -752,7 +754,7 @@ class MyApp extends StatefulWidget {
               name: 'quota-details',
               path: '/quota-details',
               pageBuilder: (context, state) => transitionResolver(
-                QuotaDetailScreen(setting: settingRepo),
+                PaymentHistoryScreen(setting: settingRepo),
               ),
             ),
             GoRoute(
@@ -760,6 +762,17 @@ class MyApp extends StatefulWidget {
               path: '/quota-usage-statistics',
               pageBuilder: (context, state) => transitionResolver(
                 QuotaUsageStatisticsScreen(setting: settingRepo),
+              ),
+            ),
+            GoRoute(
+              name: 'quota-usage-daily-details',
+              path: '/quota-usage-daily-details',
+              pageBuilder: (context, state) => transitionResolver(
+                QuotaUsageDetailScreen(
+                  setting: settingRepo,
+                  date: state.queryParameters['date'] ??
+                      DateFormat('yyyy-MM-dd').format(DateTime.now()),
+                ),
               ),
             ),
             GoRoute(

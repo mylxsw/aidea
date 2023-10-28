@@ -127,6 +127,32 @@ class QuotaUsageInDay {
   }
 }
 
+class QuotaUsageDetailInDay {
+  int used;
+  String type;
+  String createdAt;
+
+  QuotaUsageDetailInDay({
+    required this.used,
+    required this.type,
+    required this.createdAt,
+  });
+
+  toJson() => {
+        'used': used,
+        'type': type,
+        'created_at': createdAt,
+      };
+
+  static QuotaUsageDetailInDay fromJson(Map<String, dynamic> json) {
+    return QuotaUsageDetailInDay(
+      used: json['used'],
+      type: json['type'],
+      createdAt: json['created_at'],
+    );
+  }
+}
+
 class RoomsResponse {
   List<RoomInServer> rooms;
   List<RoomGallery>? suggests;
