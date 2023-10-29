@@ -2,6 +2,7 @@ import 'package:askaide/helper/image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class GroupAvatar extends StatelessWidget {
   final double size;
   final double padding;
