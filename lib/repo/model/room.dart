@@ -38,6 +38,9 @@ class Room {
   /// room 类型：local or remote
   bool? localRoom;
 
+  /// 聊天室类型
+  int? roomType;
+
   bool get isLocalRoom => localRoom ?? false;
 
   /// 聊天室头像 标识
@@ -81,23 +84,31 @@ class Room {
   /// 聊天室最后活跃时间
   DateTime? lastActiveTime;
 
-  Room(this.name, this.category,
-      {this.description,
-      this.id,
-      this.userId,
-      this.avatarId,
-      this.avatarUrl,
-      this.createdAt,
-      this.lastActiveTime,
-      this.iconData,
-      this.systemPrompt,
-      this.priority = 0,
-      this.color,
-      this.initMessage,
-      this.localRoom,
-      this.maxContext = 10,
-      this.maxTokens,
-      this.model = defaultChatModel});
+  /// 聊天室成员头像列表
+  List<String> members;
+
+  Room(
+    this.name,
+    this.category, {
+    this.description,
+    this.id,
+    this.userId,
+    this.avatarId,
+    this.avatarUrl,
+    this.createdAt,
+    this.lastActiveTime,
+    this.iconData,
+    this.systemPrompt,
+    this.priority = 0,
+    this.color,
+    this.roomType,
+    this.initMessage,
+    this.localRoom,
+    this.maxContext = 10,
+    this.maxTokens,
+    this.model = defaultChatModel,
+    this.members = const [],
+  });
 
   Map<String, Object?> toJson() {
     return {
@@ -124,16 +135,21 @@ class Room {
         avatarId = map['avatar_id'] as int?,
         avatarUrl = map['avatar_url'] as String?,
         name = map['name'] as String,
-        category = map['category'] as String,
-        priority = map['priority'] as int,
-        model = map['model'] as String,
+        category = (map['category'] ?? '') as String,
+        priority = (map['priority'] ?? 0) as int,
+        model = (map['model'] ?? '') as String,
         iconData = map['icon_data'] as String?,
         color = map['color'] as String?,
+        roomType = map['room_type'] as int?,
         systemPrompt = map['system_prompt'] as String?,
         description = map['description'] as String?,
         initMessage = map['init_message'] as String?,
         maxContext = map['max_context'] as int? ?? 10,
         maxTokens = map['max_tokens'] as int?,
+        members = (map['members'] as List<dynamic>?)
+                ?.map((e) => e as String)
+                .toList() ??
+            [],
         createdAt =
             DateTime.fromMillisecondsSinceEpoch(map['created_at'] as int? ?? 0),
         lastActiveTime = DateTime.fromMillisecondsSinceEpoch(

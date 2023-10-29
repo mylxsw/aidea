@@ -4,6 +4,7 @@ import 'package:askaide/bloc/chat_chat_bloc.dart';
 import 'package:askaide/bloc/creative_island_bloc.dart';
 import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/bloc/gallery_bloc.dart';
+import 'package:askaide/bloc/group_chat_bloc.dart';
 import 'package:askaide/bloc/payment_bloc.dart';
 import 'package:askaide/bloc/version_bloc.dart';
 import 'package:askaide/helper/ability.dart';
@@ -14,44 +15,45 @@ import 'package:askaide/helper/model_resolver.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/data/migrate.dart';
-import 'package:askaide/page/account_security.dart';
+import 'package:askaide/page/balance/quota_usage_details.dart';
+import 'package:askaide/page/setting/account_security.dart';
 import 'package:askaide/page/app_scaffold.dart';
-import 'package:askaide/page/avatar_selector.dart';
-import 'package:askaide/page/background_selector.dart';
-import 'package:askaide/page/bind_phone_page.dart';
-import 'package:askaide/page/change_password.dart';
-import 'package:askaide/page/chat_anywhere.dart';
-import 'package:askaide/page/chat_chat.dart';
-import 'package:askaide/page/chat_room_create.dart';
+import 'package:askaide/page/lab/avatar_selector.dart';
+import 'package:askaide/page/setting/background_selector.dart';
+import 'package:askaide/page/setting/bind_phone_page.dart';
+import 'package:askaide/page/setting/change_password.dart';
+import 'package:askaide/page/chat/home_chat.dart';
+import 'package:askaide/page/chat/home.dart';
+import 'package:askaide/page/chat/home_chat_history.dart';
+import 'package:askaide/page/chat/room_create.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/transition_resolver.dart';
-import 'package:askaide/page/creative_island/creative_island.dart';
-import 'package:askaide/page/creative_island/creative_island_create_page.dart';
-import 'package:askaide/page/creative_island/creative_island_gallery.dart';
-import 'package:askaide/page/creative_island/creative_island_history.dart';
-import 'package:askaide/page/creative_island/creative_island_history_all.dart';
-import 'package:askaide/page/creative_island/creative_island_history_preview.dart';
-import 'package:askaide/page/custom_home_models.dart';
-import 'package:askaide/page/free_statistics.dart';
+import 'package:askaide/page/creative_island/my_creation.dart';
+import 'package:askaide/page/creative_island/my_creation_item.dart';
+import 'package:askaide/page/setting/custom_home_models.dart';
+import 'package:askaide/page/balance/free_statistics.dart';
+import 'package:askaide/page/chat/group/chat.dart';
+import 'package:askaide/page/chat/group/create.dart';
+import 'package:askaide/page/chat/group/edit.dart';
 import 'package:askaide/page/lab/creative_models.dart';
-import 'package:askaide/page/destroy_account.dart';
-import 'package:askaide/page/diagnosis.dart';
-import 'package:askaide/page/draw/draw.dart';
-import 'package:askaide/page/draw/draw_create.dart';
-import 'package:askaide/page/draw/image_edit_direct.dart';
+import 'package:askaide/page/setting/destroy_account.dart';
+import 'package:askaide/page/setting/diagnosis.dart';
+import 'package:askaide/page/creative_island/draw/draw_list.dart';
+import 'package:askaide/page/creative_island/draw/draw_create.dart';
+import 'package:askaide/page/creative_island/draw/image_edit_direct.dart';
 import 'package:askaide/page/lab/draw_board.dart';
-import 'package:askaide/page/gallery/gallery.dart';
-import 'package:askaide/page/gallery/gallery_item.dart';
-import 'package:askaide/page/openai_setting.dart';
-import 'package:askaide/page/payment.dart';
-import 'package:askaide/page/prompt.dart';
-import 'package:askaide/page/quota_usage_statistics.dart';
-import 'package:askaide/page/signin_or_signup.dart';
-import 'package:askaide/page/signin_screen.dart';
+import 'package:askaide/page/creative_island/gallery/gallery.dart';
+import 'package:askaide/page/creative_island/gallery/gallery_item.dart';
+import 'package:askaide/page/setting/openai_setting.dart';
+import 'package:askaide/page/balance/payment.dart';
+import 'package:askaide/page/lab/prompt.dart';
+import 'package:askaide/page/balance/quota_usage_statistics.dart';
+import 'package:askaide/page/auth/signin_or_signup.dart';
+import 'package:askaide/page/auth/signin_screen.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
-import 'package:askaide/page/quota_detail_screen.dart';
-import 'package:askaide/page/retrieve_password_screen.dart';
-import 'package:askaide/page/signup_screen.dart';
+import 'package:askaide/page/balance/payment_history.dart';
+import 'package:askaide/page/setting/retrieve_password_screen.dart';
+import 'package:askaide/page/auth/signup_screen.dart';
 import 'package:askaide/page/lab/user_center.dart';
 import 'package:askaide/repo/api/info.dart';
 import 'package:askaide/repo/api_server.dart';
@@ -64,20 +66,21 @@ import 'package:askaide/repo/deepai_repo.dart';
 import 'package:askaide/repo/stabilityai_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:askaide/helper/constant.dart';
-import 'package:askaide/page/theme/custom_theme.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:fluwx/fluwx.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:askaide/bloc/bloc_manager.dart';
 import 'package:askaide/bloc/chat_message_bloc.dart';
 import 'package:askaide/bloc/room_bloc.dart';
 import 'package:askaide/bloc/notify_bloc.dart';
-import 'package:askaide/page/chat_room_setting.dart';
-import 'package:askaide/page/chat_screen.dart';
-import 'package:askaide/page/home_screen.dart';
-import 'package:askaide/page/setting_screen.dart';
+import 'package:askaide/page/chat/room_edit.dart';
+import 'package:askaide/page/chat/room_chat.dart';
+import 'package:askaide/page/chat/rooms.dart';
+import 'package:askaide/page/setting/setting_screen.dart';
 import 'package:askaide/repo/data/chat_message_data.dart';
 import 'package:askaide/repo/chat_message_repo.dart';
 import 'package:askaide/repo/data/room_data.dart';
@@ -87,7 +90,7 @@ import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
-import 'page/theme/theme.dart';
+import 'page/component/theme/theme.dart';
 import 'package:sizer/sizer.dart';
 import 'package:askaide/helper/http.dart' as httpx;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -170,7 +173,7 @@ void main() async {
 
   // 从服务器获取客户端支持的能力清单
   try {
-    final capabilities = await APIServer().capabilities();
+    final capabilities = await APIServer().capabilities(cache: false);
     Ability().init(settingRepo, capabilities);
   } catch (e) {
     Logger.instance.e('获取客户端能力清单失败', error: e);
@@ -183,6 +186,9 @@ void main() async {
         mailEnabled: true,
         openaiEnabled: true,
         homeModels: [],
+        homeRoute: '/chat-chat',
+        showHomeModelDescription: true,
+        supportWebsocket: false,
       ),
     );
   }
@@ -259,7 +265,7 @@ class MyApp extends StatefulWidget {
         !stabilityAISelfHosted;
 
     _router = GoRouter(
-      initialLocation: shouldLogin ? '/login' : '/chat-chat',
+      initialLocation: shouldLogin ? '/login' : Ability().homeRoute,
       observers: [
         BotToastNavigatorObserver(),
       ],
@@ -351,7 +357,7 @@ class MyApp extends StatefulWidget {
                     BlocProvider(create: (context) => NotifyBloc()),
                     BlocProvider.value(value: freeCountBloc),
                   ],
-                  child: ChatAnywhereScreen(
+                  child: HomeChatPage(
                     stateManager: messageStateManager,
                     setting: settingRepo,
                     chatId:
@@ -360,6 +366,9 @@ class MyApp extends StatefulWidget {
                     model: state.queryParameters['model'] == ''
                         ? null
                         : state.queryParameters['model'],
+                    title: state.queryParameters['title'] == ''
+                        ? null
+                        : state.queryParameters['title'],
                   ),
                 ),
               ),
@@ -374,12 +383,28 @@ class MyApp extends StatefulWidget {
                         create: (context) => ChatChatBloc(chatMsgRepo)),
                     BlocProvider.value(value: freeCountBloc),
                   ],
-                  child: ChatChatScreen(
+                  child: HomePage(
                     setting: settingRepo,
                     showInitialDialog:
                         state.queryParameters['show_initial_dialog'] == 'true',
                     reward:
                         int.tryParse(state.queryParameters['reward'] ?? '0'),
+                  ),
+                ),
+              ),
+            ),
+            GoRoute(
+              name: 'chat_chat_history',
+              path: '/chat-chat/history',
+              pageBuilder: (context, state) => transitionResolver(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider(
+                        create: (context) => ChatChatBloc(chatMsgRepo)),
+                  ],
+                  child: HomeChatHistoryPage(
+                    setting: settingRepo,
+                    chatMessageRepo: chatMsgRepo,
                   ),
                 ),
               ),
@@ -402,7 +427,7 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [BlocProvider.value(value: chatRoomBloc)],
-                  child: CharactersScreen(setting: settingRepo),
+                  child: RoomsPage(setting: settingRepo),
                 ),
               ),
             ),
@@ -412,7 +437,7 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [BlocProvider.value(value: chatRoomBloc)],
-                  child: ChatRoomCreateScreen(setting: settingRepo),
+                  child: RoomCreatePage(setting: settingRepo),
                 ),
               ),
             ),
@@ -431,7 +456,7 @@ class MyApp extends StatefulWidget {
                       BlocProvider(create: (context) => NotifyBloc()),
                       BlocProvider.value(value: freeCountBloc),
                     ],
-                    child: ChatScreen(
+                    child: RoomChatPage(
                       roomId: roomId,
                       stateManager: messageStateManager,
                       setting: settingRepo,
@@ -453,8 +478,7 @@ class MyApp extends StatefulWidget {
                         value: ChatBlocManager().getBloc(roomId),
                       ),
                     ],
-                    child: ChatRoomSettingScreen(
-                        roomId: roomId, setting: settingRepo),
+                    child: RoomEditPage(roomId: roomId, setting: settingRepo),
                   ),
                 );
               },
@@ -521,20 +545,6 @@ class MyApp extends StatefulWidget {
               ),
             ),
             GoRoute(
-              name: 'creative-island',
-              path: '/creative-island',
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: creativeIslandBloc),
-                  ],
-                  child: CreativeIsland(
-                    setting: settingRepo,
-                  ),
-                ),
-              ),
-            ),
-            GoRoute(
               name: 'creative-draw',
               path: '/creative-draw',
               pageBuilder: (context, state) => transitionResolver(
@@ -542,7 +552,7 @@ class MyApp extends StatefulWidget {
                   providers: [
                     BlocProvider.value(value: creativeIslandBloc),
                   ],
-                  child: DrawScreen(
+                  child: DrawListScreen(
                     setting: settingRepo,
                   ),
                 ),
@@ -617,25 +627,6 @@ class MyApp extends StatefulWidget {
               ),
             ),
             GoRoute(
-              name: 'creative-island-create',
-              path: '/creative-island/:id/create',
-              pageBuilder: (context, state) {
-                final id = state.pathParameters['id']!;
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider.value(value: creativeIslandBloc),
-                    ],
-                    child: CreativeIslandCreatePage(
-                      id: id,
-                      repo: creativeIslandRepo,
-                      setting: settingRepo,
-                    ),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
               name: 'creative-island-history-all',
               path: '/creative-island/history',
               pageBuilder: (context, state) {
@@ -644,24 +635,10 @@ class MyApp extends StatefulWidget {
                     providers: [
                       BlocProvider.value(value: creativeIslandBloc),
                     ],
-                    child: CreativeIslandHistoriesAllScreen(
+                    child: MyCreationScreen(
                       setting: settingRepo,
                       mode: state.queryParameters['mode'] ?? '',
                     ),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'creative-island-gallery',
-              path: '/creative-island/gallery',
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider.value(value: creativeIslandBloc),
-                    ],
-                    child: CreativeIslandGalleryScreen(setting: settingRepo),
                   ),
                 );
               },
@@ -681,25 +658,6 @@ class MyApp extends StatefulWidget {
               },
             ),
             GoRoute(
-              name: 'creative-island-history',
-              path: '/creative-island/:id/history',
-              pageBuilder: (context, state) {
-                final id = state.pathParameters['id']!;
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider.value(value: creativeIslandBloc),
-                    ],
-                    child: CreativeIslandHistoryPage(
-                      id: id,
-                      repo: creativeIslandRepo,
-                      setting: settingRepo,
-                    ),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
               name: 'creative-island-history-item',
               path: '/creative-island/:id/history/:item_id',
               pageBuilder: (context, state) {
@@ -712,7 +670,7 @@ class MyApp extends StatefulWidget {
                     providers: [
                       BlocProvider.value(value: creativeIslandBloc),
                     ],
-                    child: CreativeIslandHistoryPreview(
+                    child: MyCreationItemPage(
                       setting: settingRepo,
                       islandId: id,
                       itemId: itemId!,
@@ -726,7 +684,7 @@ class MyApp extends StatefulWidget {
               name: 'quota-details',
               path: '/quota-details',
               pageBuilder: (context, state) => transitionResolver(
-                QuotaDetailScreen(setting: settingRepo),
+                PaymentHistoryScreen(setting: settingRepo),
               ),
             ),
             GoRoute(
@@ -734,6 +692,17 @@ class MyApp extends StatefulWidget {
               path: '/quota-usage-statistics',
               pageBuilder: (context, state) => transitionResolver(
                 QuotaUsageStatisticsScreen(setting: settingRepo),
+              ),
+            ),
+            GoRoute(
+              name: 'quota-usage-daily-details',
+              path: '/quota-usage-daily-details',
+              pageBuilder: (context, state) => transitionResolver(
+                QuotaUsageDetailScreen(
+                  setting: settingRepo,
+                  date: state.queryParameters['date'] ??
+                      DateFormat('yyyy-MM-dd').format(DateTime.now()),
+                ),
               ),
             ),
             GoRoute(
@@ -810,6 +779,69 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) => transitionResolver(
                 CustomHomeModelsPage(setting: settingRepo),
               ),
+            ),
+            GoRoute(
+              name: 'group-chat-chat',
+              path: '/group-chat/:group_id/chat',
+              pageBuilder: (context, state) {
+                final groupId = int.tryParse(state.pathParameters['group_id']!);
+
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: ((context) =>
+                            GroupChatBloc(stateManager: messageStateManager)),
+                      ),
+                      BlocProvider.value(value: chatRoomBloc),
+                    ],
+                    child: GroupChatPage(
+                      setting: settingRepo,
+                      stateManager: messageStateManager,
+                      groupId: groupId!,
+                    ),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'group-chat-create',
+              path: '/group-chat-create',
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: ((context) =>
+                            GroupChatBloc(stateManager: messageStateManager)),
+                      ),
+                      BlocProvider.value(value: chatRoomBloc),
+                    ],
+                    child: GroupCreatePage(setting: settingRepo),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'group-chat-edit',
+              path: '/group-chat/:group_id/edit',
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: ((context) =>
+                            GroupChatBloc(stateManager: messageStateManager)),
+                      ),
+                      BlocProvider.value(value: chatRoomBloc),
+                    ],
+                    child: GroupEditPage(
+                      setting: settingRepo,
+                      groupId: int.tryParse(state.pathParameters['group_id']!)!,
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         )

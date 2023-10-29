@@ -1,6 +1,6 @@
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
-import 'package:askaide/page/theme/custom_theme.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';

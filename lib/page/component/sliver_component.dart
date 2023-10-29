@@ -1,6 +1,6 @@
 import 'package:askaide/page/component/image.dart';
-import 'package:askaide/page/theme/custom_size.dart';
-import 'package:askaide/page/theme/custom_theme.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
 
 class SliverSingleComponent extends StatelessWidget {
@@ -34,7 +34,9 @@ class SliverSingleComponent extends StatelessWidget {
           pinned: true,
           snap: false,
           primary: true,
-          actions: actions,
+          actions: (actions ?? []).isEmpty
+              ? null
+              : <Widget>[...actions!, const SizedBox(width: 8)],
           backgroundColor: customColors.backgroundContainerColor,
           flexibleSpace: FlexibleSpaceBar(
             title: title,
@@ -94,7 +96,9 @@ class SliverComponent extends StatelessWidget {
             pinned: true,
             snap: false,
             primary: true,
-            actions: actions,
+            actions: (actions ?? []).isEmpty
+                ? null
+                : <Widget>[...actions!, const SizedBox(width: 8)],
             backgroundColor: customColors.backgroundContainerColor,
             flexibleSpace: FlexibleSpaceBar(
               title: title,

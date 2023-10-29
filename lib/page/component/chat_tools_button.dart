@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:askaide/page/theme/custom_theme.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 
 class ChatToolsButton extends StatefulWidget {
   final String text;

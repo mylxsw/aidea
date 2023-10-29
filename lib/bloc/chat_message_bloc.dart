@@ -15,6 +15,7 @@ import 'package:askaide/repo/model/message.dart';
 import 'package:askaide/repo/model/room.dart';
 import 'package:askaide/repo/openai_repo.dart';
 import 'package:askaide/repo/settings_repo.dart';
+import 'package:dart_openai/openai.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -268,7 +269,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
     // 更新 Room 最后活跃时间
     // 这里没有使用 await，因为不需要等待更新完成，让 room 的更新异步的去处理吧
-    if (!Ability().supportAPIServer()) {
+    if (!Ability().enableAPIServer()) {
       chatMsgRepo.updateRoomLastActiveTime(roomId);
     }
 
@@ -305,6 +306,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     // 等待监听机器人应答消息
     final queue = GracefulQueue<ChatStreamRespData>();
     try {
+      RequestFailedException? error;
       var listener = queue.listen(const Duration(milliseconds: 10), (items) {
         final systemCmds = items.where((e) => e.role == 'system').toList();
         if (systemCmds.isNotEmpty) {
@@ -335,6 +337,13 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
             .map((e) => e.content)
             .join('');
         emit(ChatMessageUpdated(waitMessage, processing: true));
+
+        // 失败处理
+        for (var e in items) {
+          if (e.code != null && e.code! > 0) {
+            error = RequestFailedException(e.error ?? '请求处理失败', e.code!);
+          }
+        }
       });
 
       await ModelResolver.instance
@@ -347,6 +356,15 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
           .whenComplete(queue.finish);
 
       await listener;
+
+      waitMessage.text = waitMessage.text.trim();
+      if (waitMessage.text.isEmpty) {
+        error = RequestFailedException('机器人没有回答任何内容', 500);
+      }
+
+      if (error != null) {
+        throw error!;
+      }
 
       // 机器人应答完成，将最后一条机器人应答消息更新到数据库，替换掉思考中消息
       waitMessage.isReady = true;
@@ -388,11 +406,13 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
         chatHistory: localChatHistory,
       ));
     } catch (e) {
+      final error = resolveErrorMessage(e, isChat: true);
       await chatMsgRepo.updateMessagePart(
         roomId,
         sentMessageId,
         [
           MessagePart('status', 2),
+          MessagePart('extra', jsonEncode({'error': error.toString()})),
         ],
       );
 
@@ -403,7 +423,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
             waitMessage.id!,
             Message(
               Role.receiver,
-              AppLocale.robotHasSomeError,
+              error.toString(),
               id: waitMessage.id,
               ts: DateTime.now(),
               type: MessageType.system,
@@ -423,7 +443,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
           userId: APIServer().localUserID(),
           chatHistoryId: localChatHistoryId,
         ),
-        error: resolveErrorMessage(e),
+        error: error,
         chatHistory: localChatHistory,
       ));
 
@@ -439,7 +459,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 Future<Room?> queryRoomById(
     ChatMessageRepository chatMsgRepo, int roomId) async {
   Room? room;
-  if (Ability().supportAPIServer()) {
+  if (Ability().enableAPIServer()) {
     final roomInServer = await APIServer().room(roomId: roomId);
     room = Room(
       roomInServer.name,

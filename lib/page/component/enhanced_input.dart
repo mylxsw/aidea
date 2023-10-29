@@ -1,4 +1,4 @@
-import 'package:askaide/page/theme/custom_theme.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -38,7 +38,7 @@ class EnhancedInputSimple extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: customColors.textfieldValueColor,
-                fontSize: 14,
+                fontSize: 15,
               ),
             )
           : null,

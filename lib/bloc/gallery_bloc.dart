@@ -29,7 +29,10 @@ class GalleryBloc extends Bloc<GalleryEvent, GalleryState> {
         id: event.id,
       );
 
-      emit(GalleryItemLoaded(item: res));
+      emit(GalleryItemLoaded(
+        item: res.item,
+        isInternalUser: res.isInternalUser,
+      ));
     });
   }
 }

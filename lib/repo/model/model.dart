@@ -8,6 +8,7 @@ class Model {
   bool isChatModel = false;
   bool disabled;
   String? tag;
+  String? avatarUrl;
 
   Model(
     this.id,
@@ -19,6 +20,7 @@ class Model {
     this.isChatModel = false,
     this.disabled = false,
     this.tag,
+    this.avatarUrl,
   });
 
   String uid() {

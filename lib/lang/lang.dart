@@ -84,12 +84,14 @@ mixin AppLocale {
   static const String quotaExceeded = 'quota-exceeded';
   static const String internalServerError = 'internal-server-error';
   static const String badGateway = 'bad-gateway';
+  static const String emptyResponse = 'empty-response';
   static const String modelNotValid = 'model-not-valid';
   static const String signInRequired = 'sign-in-required';
   static const String accountNeedReSignin = 'account-need-re-signin';
   static const String confirmToDeleteRoom = 'confirm-to-delete-room';
   static const String confirmSend = 'confirm-send';
   static const String openAIAuthFailed = 'openai-auth-failed';
+  static const String modelNotFound = 'model-not-found';
 
   static const String nameRequiredMessage = 'name-required-message';
   static const String promptFormatError = 'prompt-format-error';
@@ -113,6 +115,8 @@ mixin AppLocale {
   static const String generateResult = 'generate-result';
   static const String generateExitConfirm = 'generate-exit-confirm';
   static const String tooManyRequests = 'too-many-requests';
+  static const String tooManyRequestsOrPaymentRequired =
+      'too-many-requests-or-payment-required';
   static const String promptHint = 'prompt-hint';
   static const String confirmClearCache = 'confirm-clear-cache';
   static const String confirmSignOut = 'confirm-sign-out';
@@ -221,7 +225,7 @@ mixin AppLocale {
     clearChatHistory: '清空聊天记录',
     examples: '示例',
     continueMessage: '继续',
-    messageInputTips: '有问题尽管问我...',
+    messageInputTips: '有问题尽管问我',
     uploadImage: '上传图片',
     longPressSpeak: '长按说话',
     send: '发送',
@@ -266,7 +270,7 @@ mixin AppLocale {
     search: '搜索',
     background: '背景',
     backgroundSetting: '背景图',
-    roomSetting: '数字人设置',
+    roomSetting: '设置',
     chatHistory: '聊天记录',
     confirmSend: '确定发送以下内容？',
     questionExamples: '问题示例',
@@ -280,7 +284,7 @@ mixin AppLocale {
     modelRequiredMessage: '请选择 AI 模型',
     operateSuccess: '操作成功',
     operateFailed: '操作失败',
-    confirmDelete: '确定要删除这些项目？',
+    confirmDelete: '确定删除？',
     confirmStartNewChat: '确定要开始新的对话？',
     confirmClearMessages: '确定要清空聊天记录？',
     quotaExceeded: '智慧果数量不足，请先购买',
@@ -290,7 +294,8 @@ mixin AppLocale {
     signInRequired: '您尚未登录，请先登录',
     accountNeedReSignin: '账号异常，请重新登录',
     openAIAuthFailed: '您启用了自定义 OpenAI 服务，请检查 API Key 是否正确',
-    confirmToDeleteRoom: '确定删除该数字人?',
+    modelNotFound: '当前模型尚未开通，暂时无法使用',
+    confirmToDeleteRoom: '确定删除?',
     writeYourIdeas: '你的想法',
     describeYourImages: '你的想法',
     excludeContents: '反向提示词',
@@ -309,10 +314,12 @@ mixin AppLocale {
     generateResult: '创作结果',
     generateExitConfirm: '创作中...\n退出后，可在历史记录中查看结果',
     tooManyRequests: '操作过于频繁，请稍后再试',
+    tooManyRequestsOrPaymentRequired:
+        '操作过于频繁（如果您使用了自定义的 OpenAI Keys，请登录 https://platform.openai.com 检查账户余额是否充足）',
     promptHint: '设定该数字人的角色和技能，以便为你提供更精准有效的信息。',
     confirmClearCache: '确定要清除缓存吗？',
     confirmSignOut: '确定要退出登录吗？',
-    askMeAnyQuestion: '有问题尽管问我~',
+    askMeAnyQuestion: '有问题尽管问我',
     askMeLikeThis: '可以这样问我:',
     refresh: '换一换',
     fastAndCostEffective: '速度快，成本低',
@@ -458,7 +465,7 @@ mixin AppLocale {
     search: 'Search',
     background: 'Background',
     backgroundSetting: 'Background Setting',
-    roomSetting: 'Character Setting',
+    roomSetting: 'Setting',
     chatHistory: 'Histories',
     confirmSend: 'Confirm to send?',
     questionExamples: 'Question Examples',
@@ -484,6 +491,8 @@ mixin AppLocale {
     accountNeedReSignin: 'Account exception, please log in again',
     openAIAuthFailed:
         'You have enabled custom OpenAI service, please check if the API Key is correct',
+    modelNotFound:
+        'The current model is not enabled yet, please try again later',
     confirmToDeleteRoom: 'Confirm to delete the character?',
     writeYourIdeas: 'Your ideas',
     describeYourImages: 'Your ideas',
@@ -504,6 +513,8 @@ mixin AppLocale {
     generateExitConfirm:
         'Generating...\nYou can view the result in the history',
     tooManyRequests: 'Too many requests, please try again later',
+    tooManyRequestsOrPaymentRequired:
+        'Too many requests (If you are using your own OpenAI Keys, please log in to https://platform.openai.com to check if your account balance is sufficient)',
     promptHint:
         'Set the role and skills of the character so that it can provide more accurate and effective information for you.',
     confirmClearCache: 'Confirm to clear cache?',
@@ -600,6 +611,11 @@ class LanguageText {
   final String message;
   final String? action;
   const LanguageText(this.message, {this.action});
+
+  @override
+  String toString() {
+    return message;
+  }
 }
 
 final languages = <String, String>{

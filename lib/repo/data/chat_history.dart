@@ -6,7 +6,7 @@ class ChatHistoryProvider {
   ChatHistoryProvider(this.conn);
 
   Future<List<ChatHistory>> getChatHistories(int roomId, int count,
-      {int? userId}) async {
+      {int? userId, int? offset}) async {
     final userConditon =
         userId == null ? ' AND user_id IS NULL' : ' AND user_id = $userId';
 
@@ -16,6 +16,7 @@ class ChatHistoryProvider {
       whereArgs: [roomId],
       orderBy: 'updated_at DESC',
       limit: count,
+      offset: offset,
     );
 
     return histories.map((e) => ChatHistory.fromMap(e)).toList();

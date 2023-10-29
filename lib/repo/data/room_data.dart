@@ -41,6 +41,7 @@ class RoomDataProvider {
       maxContext: maxContext ?? 10,
       createdAt: DateTime.now(),
       lastActiveTime: DateTime.now(),
+      iconData: '57683,MaterialIcons',
     );
 
     room.id = await conn.insert('chat_room', room.toJson());

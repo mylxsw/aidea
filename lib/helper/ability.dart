@@ -20,6 +20,11 @@ class Ability {
     return _instance;
   }
 
+  /// 是否支持 Websocket
+  bool supportWebSocket() {
+    return capabilities.supportWebsocket;
+  }
+
   /// 更新能力
   updateCapabilities(Capabilities capabilities) {
     this.capabilities = capabilities;
@@ -35,9 +40,35 @@ class Ability {
     return capabilities.showHomeModelDescription;
   }
 
+  /// 首页路由
+  String get homeRoute {
+    return capabilities.homeRoute;
+  }
+
+  /// 是否支持绘玩
+  bool get enableGallery {
+    return !capabilities.disableGallery;
+  }
+
+  /// 是否支持创作岛
+  bool get enableCreationIsland {
+    return !capabilities.disableCreationIsland;
+  }
+
+  /// 是否支持数字人
+  bool get enableDigitalHuman {
+    return !capabilities.disableDigitalHuman;
+  }
+
+  /// 是否支持聊一聊
+  bool get enableChat {
+    return !capabilities.disableChat;
+  }
+
   /// 是否支持 OpenAI
   bool get enableOpenAI {
-    return capabilities.openaiEnabled;
+    return capabilities.openaiEnabled &&
+        (!capabilities.disableChat || !capabilities.disableDigitalHuman);
   }
 
   /// 是否支持支付宝
@@ -64,13 +95,19 @@ class Ability {
   }
 
   /// 是否支持API Server
-  bool supportAPIServer() {
+  bool enableAPIServer() {
     return setting.stringDefault(settingAPIServerToken, '') != '';
   }
 
   /// 是否启用了 OpenAI 自定义设置
-  bool supportLocalOpenAI() {
+  bool enableLocalOpenAI() {
     return setting.boolDefault(settingOpenAISelfHosted, false);
+  }
+
+  /// 是否使用本地的 OpenAI 模型
+  bool usingLocalOpenAIModel(String model) {
+    return setting.boolDefault(settingOpenAISelfHosted, false) &&
+        (model.startsWith('openai:') || model.startsWith('gpt-'));
   }
 
   /// 是否支持翻译功能
@@ -82,6 +119,10 @@ class Ability {
   /// 是否支持语音合成功能
   bool supportSpeak() {
     // return setting.stringDefault(settingAPIServerToken, '') != '';
+    if (PlatformTool.isWeb()) {
+      return false;
+    }
+
     return true;
   }
 
