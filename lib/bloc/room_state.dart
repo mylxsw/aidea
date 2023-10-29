@@ -44,3 +44,10 @@ class RoomGalleriesLoaded extends RoomState {
 
   RoomGalleriesLoaded(this.galleries, {this.error, this.tags = const []});
 }
+
+class GroupRoomUpdateResultState extends RoomState {
+  final bool success;
+  final Object? error;
+
+  GroupRoomUpdateResultState(this.success, {this.error});
+}

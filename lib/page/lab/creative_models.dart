@@ -1,7 +1,5 @@
 import 'package:askaide/bloc/creative_island_bloc.dart';
 import 'package:askaide/helper/constant.dart';
-import 'package:askaide/helper/helper.dart';
-import 'package:askaide/helper/image.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
@@ -9,9 +7,9 @@ import 'package:askaide/page/component/enhanced_input.dart';
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/image_preview.dart';
 import 'package:askaide/page/component/item_selector_search.dart';
-import 'package:askaide/page/dialog.dart';
-import 'package:askaide/page/theme/custom_size.dart';
-import 'package:askaide/page/theme/custom_theme.dart';
+import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/image_model.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
@@ -20,7 +18,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:sizer/sizer.dart';
 
 class CreativeModelScreen extends StatefulWidget {
   final SettingRepository setting;

@@ -7,6 +7,7 @@ final class FreeCountInitial extends FreeCountState {}
 
 class FreeCountLoadedState extends FreeCountState {
   final List<FreeModelCount> counts;
+  final bool needSignin;
 
   FreeModelCount? model(String model) {
     model = model.split(':').last;
@@ -19,5 +20,5 @@ class FreeCountLoadedState extends FreeCountState {
     return null;
   }
 
-  FreeCountLoadedState({required this.counts});
+  FreeCountLoadedState({required this.counts, this.needSignin = false});
 }

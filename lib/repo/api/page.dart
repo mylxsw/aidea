@@ -13,3 +13,17 @@ class PagedData<T> {
     required this.data,
   });
 }
+
+class OffsetPageData<T> {
+  int startId;
+  int lastId;
+  int perPage;
+  List<T> data;
+
+  OffsetPageData({
+    required this.startId,
+    required this.lastId,
+    required this.perPage,
+    required this.data,
+  });
+}

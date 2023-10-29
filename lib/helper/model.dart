@@ -19,23 +19,32 @@ class ModelAggregate {
         settings.stringDefault(settingAPIServerToken, '') != '';
     final selfHostOpenAI = settings.boolDefault(settingOpenAISelfHosted, false);
 
-    if (isAPIServerSet && !selfHostOpenAI) {
+    if (isAPIServerSet) {
       models.addAll((await APIServer().models())
           .map(
             (e) => mm.Model(
               e.id.split(':').last,
               e.name,
               e.category,
+              shortName: e.shortName,
               description: e.description,
               isChatModel: e.isChat,
               disabled: e.disabled,
               category: e.category,
               tag: e.tag,
+              avatarUrl: e.avatarUrl,
             ),
           )
           .toList());
-    } else {
-      models.addAll(OpenAIRepository.supportModels());
+    }
+
+    if (selfHostOpenAI) {
+      return <mm.Model>[
+        ...OpenAIRepository.supportModels(),
+        ...models
+            .where((element) => element.category != modelTypeOpenAI)
+            .toList()
+      ];
     }
 
     // if (isAPIServerSet ||

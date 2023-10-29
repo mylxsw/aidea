@@ -2,6 +2,25 @@ import 'dart:convert';
 
 import 'package:intl/intl.dart';
 
+class CreativeGalleryItemResponse {
+  CreativeGallery item;
+  bool isInternalUser;
+
+  CreativeGalleryItemResponse(this.item, this.isInternalUser);
+
+  toJson() => {
+        'data': item.toJson(),
+        'is_internal_user': isInternalUser,
+      };
+
+  static CreativeGalleryItemResponse fromJson(Map<String, dynamic> json) {
+    return CreativeGalleryItemResponse(
+      CreativeGallery.fromJson(json['data']),
+      json['is_internal_user'] ?? false,
+    );
+  }
+}
+
 class CreativeGallery {
   int id;
   int? userId;
@@ -16,6 +35,7 @@ class CreativeGallery {
   int refCount;
   int starLevel;
   int hotValue;
+  int status;
   DateTime? createdAt;
   DateTime? updatedAt;
 
@@ -33,6 +53,7 @@ class CreativeGallery {
     this.refCount = 0,
     this.starLevel = 0,
     this.hotValue = 0,
+    this.status = 0,
     this.createdAt,
     this.updatedAt,
   });
@@ -72,6 +93,7 @@ class CreativeGallery {
         'ref_count': refCount,
         'star_level': starLevel,
         'hot_value': hotValue,
+        'status': status,
         'created_at': createdAt?.toIso8601String(),
         'updated_at': updatedAt?.toIso8601String(),
       };
@@ -91,6 +113,7 @@ class CreativeGallery {
       refCount: json['ref_count'] ?? 0,
       starLevel: json['star_level'] ?? 0,
       hotValue: json['hot_value'] ?? 0,
+      status: json['status'] ?? 0,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : null,

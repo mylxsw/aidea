@@ -8,4 +8,8 @@ class FreeCountReloadEvent extends FreeCountEvent {
   FreeCountReloadEvent({required this.model});
 }
 
-class FreeCountReloadAllEvent extends FreeCountEvent {}
+class FreeCountReloadAllEvent extends FreeCountEvent {
+  final bool checkSigninStatus;
+
+  FreeCountReloadAllEvent({this.checkSigninStatus = false});
+}

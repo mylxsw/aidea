@@ -3,6 +3,8 @@ import 'package:askaide/helper/constant.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/repo/api/room_gallery.dart';
 import 'package:askaide/repo/api_server.dart';
+import 'package:askaide/repo/model/group.dart';
+import 'package:askaide/repo/model/misc.dart';
 import 'package:askaide/repo/model/room.dart';
 
 import 'package:askaide/bloc/bloc_manager.dart';
@@ -32,11 +34,11 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
               id: event.roomId,
             ),
             const <String, MessageState>{},
-            cascading: event.cascading,
+            cascading: false,
           ));
         }
 
-        if (Ability().supportAPIServer()) {
+        if (Ability().enableAPIServer()) {
           final room = await APIServer().room(roomId: event.roomId);
           if (event.chatHistoryId != null && event.chatHistoryId! > 0) {
             final chatHistory =
@@ -61,9 +63,10 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
               maxContext: room.maxContext,
               avatarId: room.avatarId,
               avatarUrl: room.avatarUrl,
+              roomType: room.roomType,
             ),
             const <String, MessageState>{},
-            cascading: event.cascading,
+            cascading: false,
           ));
 
           final states = await stateManager.loadRoomStates(event.roomId);
@@ -83,6 +86,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
               maxContext: room.maxContext,
               avatarId: room.avatarId,
               avatarUrl: room.avatarUrl,
+              roomType: room.roomType,
             ),
             states,
             examples: await APIServer().example('${room.vendor}:${room.model}'),
@@ -113,7 +117,9 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
 
     // 加载聊天室列表
     on<RoomsLoadEvent>((event, emit) async {
-      emit(RoomsLoading());
+      if (!event.forceRefresh) {
+        emit(RoomsLoading());
+      }
       emit(await createRoomsLoadedState(cache: !event.forceRefresh));
     });
 
@@ -122,7 +128,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
       emit(RoomsLoading());
 
       try {
-        if (Ability().supportAPIServer()) {
+        if (Ability().enableAPIServer()) {
           await APIServer().createRoom(
             name: event.name,
             vendor: event.model.split(':').first,
@@ -155,7 +161,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
       emit(RoomsLoading());
 
       try {
-        if (Ability().supportAPIServer()) {
+        if (Ability().enableAPIServer()) {
           await APIServer().deleteRoom(roomId: event.roomId);
         } else {
           var room = await chatMsgRepo.room(event.roomId);
@@ -174,7 +180,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
 
     // 更新聊天室信息
     on<RoomUpdateEvent>((event, emit) async {
-      if (Ability().supportAPIServer()) {
+      if (Ability().enableAPIServer()) {
         final room = await APIServer().updateRoom(
           roomId: event.roomId,
           name: event.name!,
@@ -204,6 +210,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
               avatarId: room.avatarId,
               avatarUrl: room.avatarUrl,
               initMessage: room.initMessage,
+              roomType: room.roomType,
             ),
             states,
             examples: await APIServer().example(room.model),
@@ -263,11 +270,48 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
         emit(RoomGalleriesLoaded(const [], error: e));
       }
     });
+
+    // 创建群聊聊天室
+    on<GroupRoomCreateEvent>((event, emit) async {
+      emit(RoomsLoading());
+
+      try {
+        await APIServer().createGroupRoom(
+          name: event.name,
+          avatarUrl: event.avatarUrl,
+          members: event.members,
+        );
+
+        emit(GroupRoomUpdateResultState(true));
+        emit(await createRoomsLoadedState(cache: false));
+      } catch (e) {
+        emit(GroupRoomUpdateResultState(false, error: e));
+        emit(RoomsLoaded(const [], error: e.toString()));
+      }
+    });
+
+    // 群聊聊天室更新
+    on<GroupRoomUpdateEvent>((event, emit) async {
+      emit(RoomsLoading());
+
+      try {
+        await APIServer().updateGroupRoom(
+          groupId: event.groupId,
+          name: event.name,
+          avatarUrl: event.avatarUrl,
+          members: event.members,
+        );
+
+        emit(GroupRoomUpdateResultState(true));
+      } catch (e) {
+        emit(GroupRoomUpdateResultState(false, error: e));
+      }
+    });
   }
 
   Future<RoomsLoaded> createRoomsLoadedState({bool cache = true}) async {
     try {
-      if (Ability().supportAPIServer()) {
+      if (Ability().enableAPIServer()) {
         final resp = await APIServer().rooms(cache: cache);
         return RoomsLoaded(
           resp.rooms
@@ -284,6 +328,8 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
                     model: '${room.vendor}:${room.model}',
                     avatarId: room.avatarId,
                     avatarUrl: room.avatarUrl,
+                    roomType: room.roomType,
+                    members: room.members,
                   ))
               .toList(),
           suggests: resp.suggests ?? [],

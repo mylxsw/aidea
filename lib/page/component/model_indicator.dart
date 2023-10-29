@@ -1,12 +1,12 @@
-import 'package:askaide/page/theme/custom_theme.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
 
 class ModelIndicatorInfo {
-  final IconData icon;
-  final Color activeColor;
-  final String modelId;
-  final String modelName;
-  final String description;
+  IconData icon;
+  Color activeColor;
+  String modelId;
+  String modelName;
+  String description;
 
   ModelIndicatorInfo({
     required this.modelName,
@@ -20,11 +20,13 @@ class ModelIndicatorInfo {
 class ModelIndicator extends StatelessWidget {
   final ModelIndicatorInfo model;
   final bool selected;
+  final bool showDescription;
 
   const ModelIndicator({
     super.key,
     required this.model,
     this.selected = false,
+    this.showDescription = true,
   });
 
   @override
@@ -61,16 +63,17 @@ class ModelIndicator extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    Text(
-                      model.description,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: selected
-                            ? Colors.white
-                            : customColors.weakTextColor,
-                        overflow: TextOverflow.ellipsis,
+                    if (showDescription)
+                      Text(
+                        model.description,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: selected
+                              ? Colors.white
+                              : customColors.weakTextColor,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
                   ],
                 ),
                 const SizedBox(width: 15),

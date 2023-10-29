@@ -3,7 +3,7 @@ import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/coin.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/image.dart';
-import 'package:askaide/page/theme/custom_theme.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
@@ -66,7 +66,7 @@ class AccountQuotaCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       AppLocale.usage.getString(context),

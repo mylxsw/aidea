@@ -1,4 +1,4 @@
-import 'package:askaide/helper/constant.dart';
+import 'package:askaide/helper/env.dart';
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:dio/dio.dart';
@@ -88,6 +88,25 @@ class HttpClient {
     return resp;
   }
 
+  static Future<Response> postJSON(
+    String url, {
+    Map<String, dynamic>? queryParameters,
+    Map<String, dynamic>? data,
+    Options? options,
+  }) async {
+    final resp = await dio.post(
+      url,
+      queryParameters: queryParameters,
+      data: data,
+      options: options,
+    );
+    // print("=======================");
+    // print("request: $url");
+    // print("response: ${resp.data}");
+
+    return resp;
+  }
+
   static Future<Response> put(
     String url, {
     Map<String, dynamic>? queryParameters,
@@ -98,6 +117,20 @@ class HttpClient {
       url,
       queryParameters: queryParameters,
       data: formData != null ? FormData.fromMap(formData) : null,
+      options: options,
+    );
+  }
+
+  static Future<Response> putJSON(
+    String url, {
+    Map<String, dynamic>? queryParameters,
+    Map<String, dynamic>? data,
+    Options? options,
+  }) async {
+    return await dio.put(
+      url,
+      queryParameters: queryParameters,
+      data: data,
       options: options,
     );
   }

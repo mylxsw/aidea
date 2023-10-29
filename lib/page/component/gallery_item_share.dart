@@ -9,10 +9,10 @@ import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/image_preview.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/share.dart';
-import 'package:askaide/page/dialog.dart';
-import 'package:askaide/page/gallery/gallery_item.dart';
-import 'package:askaide/page/theme/custom_size.dart';
-import 'package:askaide/page/theme/custom_theme.dart';
+import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/page/creative_island/gallery/gallery_item.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:file_saver/file_saver.dart';
@@ -49,48 +49,50 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         actions: [
-          TextButton(
-            onPressed: () async {
-              final cancel = BotToast.showCustomLoading(
-                toastBuilder: (cancel) {
-                  return LoadingIndicator(
-                    message: AppLocale.processingWait.getString(context),
-                  );
-                },
-                allowClick: false,
-                duration: const Duration(seconds: 15),
-              );
+          if (!PlatformTool.isWeb())
+            TextButton(
+              onPressed: () async {
+                final cancel = BotToast.showCustomLoading(
+                  toastBuilder: (cancel) {
+                    return LoadingIndicator(
+                      message: AppLocale.processingWait.getString(context),
+                    );
+                  },
+                  allowClick: false,
+                  duration: const Duration(seconds: 15),
+                );
 
-              try {
-                final data = await controller.capture();
-                if (data != null) {
-                  final file = await writeTempFile('share-image.png', data);
+                try {
+                  final data = await controller.capture();
+                  if (data != null) {
+                    final file = await writeTempFile('share-image.png', data);
+                    cancel();
+                    // ignore: use_build_context_synchronously
+                    await shareTo(
+                      context,
+                      content: 'images',
+                      images: [
+                        file.path,
+                      ],
+                    );
+                  }
+                } finally {
                   cancel();
-                  // ignore: use_build_context_synchronously
-                  await shareTo(
-                    context,
-                    content: 'images',
-                    images: [
-                      file.path,
-                    ],
-                  );
                 }
-              } finally {
-                cancel();
-              }
-            },
-            child: Row(
-              children: [
-                Icon(Icons.share, size: 14, color: customColors.weakLinkColor),
-                const SizedBox(width: 5),
-                Text(
-                  '分享',
-                  style: TextStyle(
-                      color: customColors.weakLinkColor, fontSize: 14),
-                ),
-              ],
+              },
+              child: Row(
+                children: [
+                  Icon(Icons.share,
+                      size: 14, color: customColors.weakLinkColor),
+                  const SizedBox(width: 5),
+                  Text(
+                    '分享',
+                    style: TextStyle(
+                        color: customColors.weakLinkColor, fontSize: 14),
+                  ),
+                ],
+              ),
             ),
-          ),
           EnhancedPopupMenu(
             items: [
               EnhancedPopupMenuItem(
