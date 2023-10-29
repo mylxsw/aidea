@@ -1,9 +1,16 @@
+import 'package:askaide/helper/platform.dart';
+import 'package:askaide/page/component/chat/markdown/latex.dart';
 import 'package:askaide/page/component/image_preview.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_highlight/themes/a11y-light.dart';
+import 'package:flutter_highlight/themes/monokai.dart';
+import 'package:flutter_highlight/themes/vs.dart';
 import 'package:flutter_markdown/flutter_markdown.dart' as md;
 import 'package:markdown/markdown.dart';
+import 'package:markdown_widget/config/all.dart';
+import 'package:markdown_widget/widget/all.dart';
 
 class Markdown extends StatelessWidget {
   final String data;
@@ -20,6 +27,15 @@ class Markdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!PlatformTool.isWeb()) {
+      return MarkdownPlus(
+        data: data,
+        onUrlTap: onUrlTap,
+        textStyle: textStyle,
+        compact: true,
+      );
+    }
+
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return md.MarkdownBody(
       shrinkWrap: true,
@@ -70,6 +86,96 @@ class Markdown extends StatelessWidget {
       },
       extensionSet: ExtensionSet.gitHubFlavored,
       data: data,
+    );
+  }
+}
+
+class MarkdownPlus extends StatelessWidget {
+  final String data;
+  final Function(String value)? onUrlTap;
+  final bool compact;
+  final TextStyle? textStyle;
+  final cacheManager = DefaultCacheManager();
+
+  MarkdownPlus({
+    super.key,
+    required this.data,
+    this.onUrlTap,
+    this.compact = true,
+    this.textStyle,
+  });
+
+  MarkdownConfig _buildMarkdownConfig(CustomColors customColors) {
+    return MarkdownConfig(
+      configs: [
+        PConfig(textStyle: textStyle ?? const TextStyle(fontSize: 16)),
+        // 链接配置
+        LinkConfig(
+          style: TextStyle(
+            color: customColors.markdownLinkColor,
+            decoration: TextDecoration.none,
+          ),
+          onTap: (value) {
+            if (onUrlTap != null) onUrlTap!(value);
+          },
+        ),
+        // 代码块配置
+        PreConfig(
+          theme: monokaiTheme,
+          decoration: BoxDecoration(
+            color: customColors.markdownPreColor,
+            borderRadius: BorderRadius.circular(5),
+          ),
+          textStyle: const TextStyle(fontSize: 14),
+        ),
+        // 代码配置
+        CodeConfig(
+          style: TextStyle(
+            fontSize: 14,
+            color: customColors.markdownCodeColor,
+          ),
+        ),
+        // 图片配置
+        ImgConfig(
+          builder: (url, attributes) {
+            if (url.isEmpty) {
+              return const SizedBox();
+            }
+
+            return NetworkImagePreviewer(
+              url: url,
+              hidePreviewButton: true,
+            );
+          },
+        )
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final customColors = Theme.of(context).extension<CustomColors>()!;
+    if (compact) {
+      final markdownGenerator = MarkdownGenerator(
+        generators: [latexGenerator],
+        inlineSyntaxList: [LatexSyntax()],
+      );
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        textDirection: TextDirection.ltr,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: markdownGenerator.buildWidgets(
+          data,
+          config: _buildMarkdownConfig(customColors),
+        ),
+      );
+    }
+
+    return MarkdownWidget(
+      data: data,
+      shrinkWrap: true,
+      config: _buildMarkdownConfig(customColors),
     );
   }
 }

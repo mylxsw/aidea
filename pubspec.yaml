@@ -116,6 +116,8 @@ dependencies:
   fetch_api: 1.0.1
   web_socket_channel: ^2.4.0
   flutter_initicon: ^3.0.0+1
+  markdown_widget: ^2.3.1
+  flutter_math_fork: ^0.7.1
   
 dev_dependencies:
   flutter_test:
