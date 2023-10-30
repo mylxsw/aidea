@@ -43,13 +43,14 @@ https://aidea.aicode.cc
 
 ## APP 截图
 
-![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-32-34.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-09-14_10-20-28.jpg-thumb)
-:-------------------------:|:-------------------------:
-![images](https://ssl.aicode.cc/ai-server/article/2023-09-14_10-23-30.jpg-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/2023-09-14_10-24-58.jpg-thumb) 
-![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-32-53.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-33-44.png-thumb) 
-![images](https://ssl.aicode.cc/ai-server/article/2023-09-14_10-22-55.jpg-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-09-14_10-21-31.jpg-thumb) 
-![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-34-42.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-35-01.png-thumb) 
-![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-35-33.png-thumb)  | ![images](https://ssl.aicode.cc/ai-server/article/Xnip2023-08-30_11-35-52.png-thumb)
+亮色系
+
+![image](https://github.com/mylxsw/aidea/assets/2330911/89fc3f6f-b110-45f4-9e9a-b43a7a2c011a)
+
+暗色系
+
+![image](https://github.com/mylxsw/aidea/assets/2330911/7c0167eb-4bd3-4dcb-8b7b-a6d22cebe3ae)
+
 
 ## Star History
 
