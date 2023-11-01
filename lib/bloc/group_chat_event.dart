@@ -26,8 +26,11 @@ class GroupChatSendEvent extends GroupChatEvent {
   final int groupId;
   final String message;
   final List<int> members;
+  final int? index;
+  final bool isResent;
 
-  GroupChatSendEvent(this.groupId, this.message, this.members);
+  GroupChatSendEvent(this.groupId, this.message, this.members,
+      {this.index, this.isResent = false});
 }
 
 class GroupChatUpdateMessageStatusEvent extends GroupChatEvent {

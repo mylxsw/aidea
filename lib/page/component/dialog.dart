@@ -63,6 +63,48 @@ showErrorMessageEnhanced(
   showErrorMessage(message.toString(), duration: duration);
 }
 
+showCustomBeautyDialog(
+  BuildContext context, {
+  required QuickAlertType type,
+  required Widget child,
+  String confirmBtnText = '确定',
+  String? cancelBtnText,
+  Function()? onConfirmBtnTap,
+  Function()? onCancelBtnTap,
+  bool showCancelBtn = false,
+  String title = '',
+}) {
+  final customColors = Theme.of(context).extension<CustomColors>()!;
+
+  QuickAlert.show(
+    context: context,
+    type: type,
+    widget: child,
+    width: MediaQuery.of(context).size.width > 600 ? 400 : null,
+    barrierDismissible: false, // 禁止点击外部关闭
+    showCancelBtn: showCancelBtn,
+    confirmBtnText: confirmBtnText,
+    cancelBtnText: cancelBtnText ?? AppLocale.cancel.getString(context),
+    confirmBtnColor: customColors.linkColor!,
+    borderRadius: 10,
+    buttonBorderRadius: 10,
+    backgroundColor: customColors.dialogBackgroundColor!,
+    confirmBtnTextStyle: const TextStyle(
+      color: Colors.white,
+      fontWeight: FontWeight.normal,
+    ),
+    title: title,
+    titleColor: customColors.dialogDefaultTextColor!,
+    textColor: customColors.dialogDefaultTextColor!,
+    cancelBtnTextStyle: TextStyle(
+      color: customColors.dialogDefaultTextColor,
+      fontWeight: FontWeight.normal,
+    ),
+    onConfirmBtnTap: onConfirmBtnTap,
+    onCancelBtnTap: onCancelBtnTap,
+  );
+}
+
 showBeautyDialog(
   BuildContext context, {
   required QuickAlertType type,

@@ -21,12 +21,16 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:go_router/go_router.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class ChatPreview extends StatefulWidget {
   final List<MessageWithState> messages;
   final ScrollController? scrollController;
   final void Function(int id)? onDeleteMessage;
+  final void Function()? onResetContext;
   final ChatPreviewController controller;
   final MessageStateManager stateManager;
   final List<Widget>? helpWidgets;
@@ -35,13 +39,14 @@ class ChatPreview extends StatefulWidget {
   final Widget? Function(Message message)? senderNameBuilder;
   final bool supportBloc;
   final void Function(Message message)? onSpeakEvent;
-  final void Function(Message message)? onResentEvent;
+  final void Function(Message message, int index)? onResentEvent;
 
   const ChatPreview({
     super.key,
     required this.messages,
     this.scrollController,
     this.onDeleteMessage,
+    this.onResetContext,
     required this.controller,
     required this.stateManager,
     this.robotAvatar,
@@ -127,6 +132,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                                   customColors,
                                   _resolveMessage(state, message),
                                   message.state,
+                                  index,
                                 ),
                               );
                             },
@@ -141,6 +147,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                               customColors,
                               message.message,
                               message.state,
+                              index,
                             ),
                           ),
                   ),
@@ -171,6 +178,7 @@ class _ChatPreviewState extends State<ChatPreview> {
     CustomColors customColors,
     Message message,
     MessageState state,
+    int index,
   ) {
     // 系统消息
     if (message.isSystem()) {
@@ -213,6 +221,10 @@ class _ChatPreviewState extends State<ChatPreview> {
     final showTranslate = state.showTranslate &&
         state.translateText != null &&
         state.translateText != '';
+
+    final extra = index == 0 ? message.decodeExtra() : null;
+    final extraInfo = extra != null ? extra['info'] ?? '' : '';
+
     // 普通消息
     return Align(
       alignment:
@@ -244,7 +256,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                       // 错误指示器
                       if (message.role == Role.sender &&
                           message.statusIsFailed())
-                        buildErrorIndicator(message, state, context),
+                        buildErrorIndicator(message, state, context, index),
                       // 消息主体
                       GestureDetector(
                         // 选择模式下，单击切换选择与否
@@ -263,6 +275,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                             detail.globalPosition,
                             message,
                             state,
+                            index,
                           );
                         },
                         onDoubleTapDown: (details) {
@@ -271,69 +284,118 @@ class _ChatPreviewState extends State<ChatPreview> {
                             details.globalPosition,
                             message,
                             state,
+                            index,
                           );
                         },
-                        child: Container(
-                          margin: message.role == Role.sender
-                              ? const EdgeInsets.fromLTRB(0, 0, 10, 7)
-                              : const EdgeInsets.fromLTRB(10, 0, 0, 7),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: message.role == Role.receiver
-                                ? customColors.chatRoomReplyBackground
-                                : customColors.chatRoomSenderBackground,
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 13,
-                            vertical: 13,
-                          ),
-                          child: Builder(
-                            builder: (context) {
-                              if ((message.statusPending() ||
-                                      !message.isReady) &&
-                                  message.text.isEmpty) {
-                                return LoadingAnimationWidget.waveDots(
-                                  color: customColors.weakLinkColor!,
-                                  size: 25,
-                                );
-                              }
+                        child: Stack(
+                          children: [
+                            Container(
+                              margin: message.role == Role.sender
+                                  ? const EdgeInsets.fromLTRB(0, 0, 10, 7)
+                                  : const EdgeInsets.fromLTRB(10, 0, 0, 7),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: message.role == Role.receiver
+                                    ? customColors.chatRoomReplyBackground
+                                    : customColors.chatRoomSenderBackground,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 13,
+                                vertical: 13,
+                              ),
+                              child: Builder(
+                                builder: (context) {
+                                  if ((message.statusPending() ||
+                                          !message.isReady) &&
+                                      message.text.isEmpty) {
+                                    return LoadingAnimationWidget.waveDots(
+                                      color: customColors.weakLinkColor!,
+                                      size: 25,
+                                    );
+                                  }
 
-                              var text = message.text;
-                              if (!message.isReady && text != '') {
-                                text += ' ▌';
-                              }
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  state.showMarkdown
-                                      ? Markdown(data: text)
-                                      : SelectableText(
-                                          text,
-                                          style: TextStyle(
-                                            color:
-                                                customColors.chatRoomSenderText,
-                                          ),
+                                  var text = message.text;
+                                  if (!message.isReady && text != '') {
+                                    text += ' ▌';
+                                  }
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      state.showMarkdown
+                                          ? Markdown(
+                                              data: text.trim(),
+                                              onUrlTap: (value) =>
+                                                  launchUrlString(value),
+                                            )
+                                          : SelectableText(
+                                              text,
+                                              style: TextStyle(
+                                                color: customColors
+                                                    .chatRoomSenderText,
+                                              ),
+                                            ),
+                                      if (message.quotaConsumed != null &&
+                                          message.quotaConsumed! > 0)
+                                        Row(
+                                          children: [
+                                            const Icon(Icons.check_circle,
+                                                size: 12, color: Colors.green),
+                                            const SizedBox(width: 5),
+                                            Expanded(
+                                              child: Text(
+                                                '共 ${message.tokenConsumed} 个 Token， 消耗 ${message.quotaConsumed} 个智慧果',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: customColors
+                                                      .weakTextColor,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                  if (message.quotaConsumed != null &&
-                                      message.quotaConsumed! > 0)
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.check_circle,
-                                            size: 12, color: Colors.green),
-                                        const SizedBox(width: 5),
-                                        Text(
-                                          '共 ${message.tokenConsumed} 个 Token， 消耗 ${message.quotaConsumed} 个智慧果',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: customColors.weakTextColor,
-                                          ),
+                                    ],
+                                  );
+                                },
+                              ),
+                            ),
+                            if (extraInfo.isNotEmpty)
+                              Positioned(
+                                top: 5,
+                                right: 5,
+                                child: InkWell(
+                                  onTap: () {
+                                    showCustomBeautyDialog(
+                                      context,
+                                      type: QuickAlertType.warning,
+                                      confirmBtnText:
+                                          AppLocale.gotIt.getString(context),
+                                      showCancelBtn: false,
+                                      title: '温馨提示',
+                                      child: Markdown(
+                                        data: extraInfo,
+                                        onUrlTap: (value) {
+                                          onMarkdownUrlTap(value);
+                                          context.pop();
+                                        },
+                                        textStyle: TextStyle(
+                                          fontSize: 14,
+                                          color: customColors
+                                              .dialogDefaultTextColor,
                                         ),
-                                      ],
-                                    )
-                                ],
-                              );
-                            },
-                          ),
+                                      ),
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.info_outline,
+                                    size: 16,
+                                    color: customColors.weakLinkColor
+                                        ?.withAlpha(50),
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                     ],
@@ -400,6 +462,7 @@ class _ChatPreviewState extends State<ChatPreview> {
     Message message,
     MessageState state,
     BuildContext context,
+    int index,
   ) {
     return Container(
       margin: const EdgeInsets.only(right: 5, bottom: 10),
@@ -431,7 +494,7 @@ class _ChatPreviewState extends State<ChatPreview> {
             context,
             confirmMessage,
             () {
-              widget.onResentEvent!(message);
+              widget.onResentEvent!(message, index);
             },
             title: Text(AppLocale.robotHasSomeError.getString(context)),
             confirmText: '重新发送',
@@ -440,6 +503,24 @@ class _ChatPreviewState extends State<ChatPreview> {
         child: const Icon(Icons.error, color: Colors.red, size: 20),
       ),
     );
+  }
+
+  void onMarkdownUrlTap(value) {
+    if (value.startsWith("aidea-app://")) {
+      var route = value.substring(12);
+      context.push(route);
+    } else if (value.startsWith("aidea-command://")) {
+      var command = value.substring(17);
+      switch (command) {
+        case "reset-context":
+          if (widget.onResetContext != null) {
+            widget.onResetContext!();
+          }
+          break;
+      }
+    } else {
+      launchUrlString(value);
+    }
   }
 
   Widget buildAvatar(Message message) {
@@ -463,6 +544,7 @@ class _ChatPreviewState extends State<ChatPreview> {
     Offset? offset,
     Message message,
     MessageState state,
+    int index,
   ) {
     if (widget.controller.selectMode || message.isSystem()) {
       return;
@@ -739,7 +821,7 @@ class _ChatPreviewState extends State<ChatPreview> {
           if (message.role == Role.sender && widget.onResentEvent != null)
             TextButton.icon(
               onPressed: () {
-                widget.onResentEvent!(message);
+                widget.onResentEvent!(message, index);
                 cancel();
               },
               label: const Text(''),

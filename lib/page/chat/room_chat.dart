@@ -269,14 +269,16 @@ class _RoomChatPageState extends State<RoomChatPage> {
             onDeleteMessage: (id) {
               handleDeleteMessage(context, id);
             },
+            onResetContext: () => handleResetContext(context),
             onSpeakEvent: (message) {
               _audioPlayerController.playAudio(message.text);
             },
-            onResentEvent: (message) {
+            onResentEvent: (message, index) {
               _scrollController.animateTo(0,
                   duration: const Duration(milliseconds: 500),
                   curve: Curves.easeOut);
-              _handleSubmit(message.text, messagetType: message.type);
+              _handleSubmit(message.text,
+                  messagetType: message.type, index: index, isResent: true);
             },
             helpWidgets: state.processing || loadedMessages.last.isInitMessage()
                 ? null
@@ -390,7 +392,12 @@ class _RoomChatPageState extends State<RoomChatPage> {
   }
 
   /// 提交新消息
-  void _handleSubmit(String text, {messagetType = MessageType.text}) {
+  void _handleSubmit(
+    String text, {
+    messagetType = MessageType.text,
+    int? index,
+    bool isResent = false,
+  }) {
     setState(() {
       _inputEnabled.value = false;
     });
@@ -404,6 +411,8 @@ class _RoomChatPageState extends State<RoomChatPage> {
               ts: DateTime.now(),
               type: messagetType,
             ),
+            index: index,
+            isResent: isResent,
           ),
         );
 

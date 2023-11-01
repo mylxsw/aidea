@@ -11,8 +11,10 @@ class ChatMessageReceivedEvent extends ChatMessageEvent {
 
 class ChatMessageSendEvent extends ChatMessageEvent {
   final Message message;
+  final int? index;
+  final bool isResent;
 
-  ChatMessageSendEvent(this.message);
+  ChatMessageSendEvent(this.message, {this.index, this.isResent = false});
 }
 
 class ChatMessageGetRecentEvent extends ChatMessageEvent {
