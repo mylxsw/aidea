@@ -507,10 +507,10 @@ class _ChatPreviewState extends State<ChatPreview> {
 
   void onMarkdownUrlTap(value) {
     if (value.startsWith("aidea-app://")) {
-      var route = value.substring(12);
+      var route = value.substring('aidea-app://'.length);
       context.push(route);
     } else if (value.startsWith("aidea-command://")) {
-      var command = value.substring(17);
+      var command = value.substring('aidea-command://'.length);
       switch (command) {
         case "reset-context":
           if (widget.onResetContext != null) {

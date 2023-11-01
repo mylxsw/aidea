@@ -332,7 +332,8 @@ class OpenAIRepository {
           'temperature': temperature,
           'user': user,
           'max_tokens': maxTokens,
-          'n': Ability().enableLocalOpenAI()
+          'n': Ability().enableLocalOpenAI() &&
+                  (model.startsWith('openai:') || model.startsWith('gpt-'))
               ? null
               : roomId, // n 参数暂时用不到，复用作为 roomId
         }));
