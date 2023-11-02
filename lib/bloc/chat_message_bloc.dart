@@ -272,6 +272,12 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
         last.type == MessageType.text) {
       // 如果当前是消息重发，同时重发的是最后一条消息，则不会重新生成该消息，直接生成答案即可
       sentMessageId = last.id!;
+      if (last.statusIsFailed()) {
+        // 如果最后一条消息发送失败，则重新发送
+        await chatMsgRepo.updateMessagePart(roomId, last.id!, [
+          MessagePart('status', 0),
+        ]);
+      }
     } else {
       sentMessageId = await chatMsgRepo.sendMessage(roomId, message);
     }
