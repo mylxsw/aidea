@@ -411,11 +411,13 @@ class _HomeChatPageState extends State<HomeChatPage> {
       onDeleteMessage: (id) {
         handleDeleteMessage(context, id, chatHistoryId: chatId);
       },
-      onResentEvent: (message) {
+      onResetContext: () => handleResetContext(context),
+      onResentEvent: (message, index) {
         _scrollController.animateTo(0,
             duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
 
-        _handleSubmit(message.text, messagetType: message.type);
+        _handleSubmit(message.text,
+            messagetType: message.type, index: index, isResent: true);
       },
       onSpeakEvent: (message) {
         _audioPlayerController.playAudio(message.text);
@@ -427,7 +429,12 @@ class _HomeChatPageState extends State<HomeChatPage> {
   }
 
   /// 提交新消息
-  void _handleSubmit(String text, {messagetType = MessageType.text}) {
+  void _handleSubmit(
+    String text, {
+    messagetType = MessageType.text,
+    int? index,
+    bool isResent = false,
+  }) {
     setState(() {
       _inputEnabled.value = false;
     });
@@ -443,6 +450,8 @@ class _HomeChatPageState extends State<HomeChatPage> {
               type: messagetType,
               chatHistoryId: chatId,
             ),
+            index: index,
+            isResent: isResent,
           ),
         );
 

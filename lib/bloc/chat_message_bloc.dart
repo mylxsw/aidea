@@ -265,7 +265,22 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     await chatMsgRepo.fixMessageStatus(roomId);
 
     // 记录当前消息
-    final sentMessageId = await chatMsgRepo.sendMessage(roomId, message);
+    var sentMessageId = 0;
+    if (event.isResent &&
+        event.index == 0 &&
+        last != null &&
+        last.type == MessageType.text) {
+      // 如果当前是消息重发，同时重发的是最后一条消息，则不会重新生成该消息，直接生成答案即可
+      sentMessageId = last.id!;
+      if (last.statusIsFailed()) {
+        // 如果最后一条消息发送失败，则重新发送
+        await chatMsgRepo.updateMessagePart(roomId, last.id!, [
+          MessagePart('status', 0),
+        ]);
+      }
+    } else {
+      sentMessageId = await chatMsgRepo.sendMessage(roomId, message);
+    }
 
     // 更新 Room 最后活跃时间
     // 这里没有使用 await，因为不需要等待更新完成，让 room 的更新异步的去处理吧
@@ -312,6 +327,15 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
         if (systemCmds.isNotEmpty) {
           for (var element in systemCmds) {
             try {
+              // SYSTEM 命令
+              // - type: 命令类型
+              //
+              // type=summary （默认值）
+              //     - question_id: 问题 ID
+              //     - answer_id: 答案 ID
+              //     - quota_consumed: 消耗的配额
+              //     - token: 消耗的 token
+              //     - info: 提示信息
               final cmd = jsonDecode(element.content);
 
               message.serverId = cmd['question_id'];
@@ -319,6 +343,11 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
               final quotaConsumed = cmd['quota_consumed'] ?? 0;
               final tokenConsumed = cmd['token'] ?? 0;
+
+              final info = cmd['info'] ?? '';
+              if (info != '') {
+                waitMessage.setExtra({'info': info});
+              }
 
               if (quotaConsumed == 0 && tokenConsumed == 0) {
                 continue;

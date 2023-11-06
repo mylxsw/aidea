@@ -409,8 +409,8 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
   /// 获取聊天框的最大宽度
   double _chatBoxMaxWidth(BuildContext context) {
     var screenWidth = MediaQuery.of(context).size.width;
-    if (screenWidth >= CustomSize.maxWindowSize) {
-      return CustomSize.maxWindowSize;
+    if (screenWidth >= CustomSize.smallWindowSize) {
+      return CustomSize.smallWindowSize;
     }
 
     return screenWidth;

@@ -411,16 +411,15 @@ class _GroupChatPageState extends State<GroupChatPage> {
             onDeleteMessage: (id) {
               handleDeleteMessage(context, id);
             },
+            onResetContext: () => handleResetContext(context),
             onSpeakEvent: (message) {
               _audioPlayerController.playAudio(message.text);
             },
-            onResentEvent: (message) {
+            onResentEvent: (message, index) {
               _scrollController.animateTo(0,
                   duration: const Duration(milliseconds: 500),
                   curve: Curves.easeOut);
-              _handleSubmit(
-                message.text,
-              );
+              _handleSubmit(message.text, index: index, isResent: true);
             },
             helpWidgets: state.hasWaitTasks || loadedMessages.isEmpty
                 ? null
@@ -505,15 +504,23 @@ class _GroupChatPageState extends State<GroupChatPage> {
   }
 
   /// 提交新消息
-  void _handleSubmit(String text) {
+  void _handleSubmit(
+    String text, {
+    int? index,
+    bool isResent = false,
+  }) {
     setState(() {
       _inputEnabled.value = false;
     });
 
     var replyMemberIds = (selectedMembers ?? []).map((e) => e.id!).toList();
-    context
-        .read<GroupChatBloc>()
-        .add(GroupChatSendEvent(widget.groupId, text, replyMemberIds));
+    context.read<GroupChatBloc>().add(GroupChatSendEvent(
+          widget.groupId,
+          text,
+          replyMemberIds,
+          index: index,
+          isResent: isResent,
+        ));
   }
 
   /// 处理消息删除事件
