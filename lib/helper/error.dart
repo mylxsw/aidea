@@ -5,7 +5,8 @@ import 'package:dart_openai/openai.dart';
 Object resolveErrorMessage(dynamic e, {bool isChat = false}) {
   // TODO
   if (e is RequestFailedException) {
-    final msg = resolveHTTPStatusCode(e.statusCode, isChat: isChat);
+    final msg =
+        resolveHTTPStatusCode(e.statusCode, isChat: isChat, message: e.message);
     if (msg != null) {
       return msg;
     }
@@ -16,7 +17,8 @@ Object resolveErrorMessage(dynamic e, {bool isChat = false}) {
   return e.toString();
 }
 
-Object? resolveHTTPStatusCode(int statusCode, {bool isChat = false}) {
+Object? resolveHTTPStatusCode(int statusCode,
+    {bool isChat = false, String? message}) {
   switch (statusCode) {
     case 400:
       return const LanguageText('请求参数错误');
@@ -46,6 +48,10 @@ Object? resolveHTTPStatusCode(int statusCode, {bool isChat = false}) {
     case 402:
       return const LanguageText(AppLocale.quotaExceeded, action: 'payment');
     case 500:
+      if (message != null && message.isNotEmpty) {
+        return message;
+      }
+
       return const LanguageText(AppLocale.internalServerError);
     case 502:
       return const LanguageText(AppLocale.badGateway);

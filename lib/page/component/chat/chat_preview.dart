@@ -481,7 +481,9 @@ class _ChatPreviewState extends State<ChatPreview> {
               if (extra['error'] != null && extra['error'] != '') {
                 var e1 = extra['error'];
                 try {
-                  e1 = (e1 as String).getString(context);
+                  if (e1 is LanguageText) {
+                    e1 = (e1 as String).getString(context);
+                  }
                   // ignore: empty_catches
                 } catch (ignored) {}
                 confirmMessage = e1;
