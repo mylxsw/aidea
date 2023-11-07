@@ -1,9 +1,9 @@
-class AlipayCreatedReponse {
+class OtherPayCreatedReponse {
   String params;
   String paymentId;
   bool sandbox;
 
-  AlipayCreatedReponse(this.params, this.paymentId, {this.sandbox = false});
+  OtherPayCreatedReponse(this.params, this.paymentId, {this.sandbox = false});
 
   toJson() => {
         'params': params,
@@ -11,8 +11,8 @@ class AlipayCreatedReponse {
         'sandbox': sandbox,
       };
 
-  static AlipayCreatedReponse fromJson(Map<String, dynamic> json) {
-    return AlipayCreatedReponse(
+  static OtherPayCreatedReponse fromJson(Map<String, dynamic> json) {
+    return OtherPayCreatedReponse(
       json['params'],
       json['payment_id'],
       sandbox: json['sandbox'] ?? false,

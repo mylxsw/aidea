@@ -3,8 +3,8 @@ class Capabilities {
   /// 是否支持 Apple Pay
   final bool applePayEnabled;
 
-  /// 是否支持支付宝
-  final bool alipayEnabled;
+  /// 是否支持其它
+  final bool otherPayEnabled;
 
   /// 是否支持翻译
   final bool translateEnabled;
@@ -41,7 +41,7 @@ class Capabilities {
 
   Capabilities({
     required this.applePayEnabled,
-    required this.alipayEnabled,
+    required this.otherPayEnabled,
     required this.translateEnabled,
     required this.mailEnabled,
     required this.openaiEnabled,
@@ -58,7 +58,7 @@ class Capabilities {
   factory Capabilities.fromJson(Map<String, dynamic> json) {
     return Capabilities(
       applePayEnabled: json['apple_pay_enabled'] ?? false,
-      alipayEnabled: json['alipay_enabled'] ?? false,
+      otherPayEnabled: json['other_pay_enabled'] ?? false,
       translateEnabled: json['translate_enabled'] ?? false,
       mailEnabled: json['mail_enabled'] ?? false,
       openaiEnabled: json['openai_enabled'] ?? false,
@@ -78,7 +78,7 @@ class Capabilities {
   Map<String, dynamic> toJson() {
     return {
       'apple_pay_enabled': applePayEnabled,
-      'alipay_enabled': alipayEnabled,
+      'other_pay_enabled': otherPayEnabled,
       'translate_enabled': translateEnabled,
       'mail_enabled': mailEnabled,
       'openai_enabled': openaiEnabled,

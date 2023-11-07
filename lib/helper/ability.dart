@@ -71,9 +71,9 @@ class Ability {
         (!capabilities.disableChat || !capabilities.disableDigitalHuman);
   }
 
-  /// 是否支持支付宝
-  bool get enableAlipay {
-    return capabilities.alipayEnabled;
+  /// 是否支持 IOS 外支付
+  bool get enableOtherPay {
+    return capabilities.otherPayEnabled;
   }
 
   /// 是否支持 ApplePay
@@ -83,7 +83,7 @@ class Ability {
 
   /// 是否支持支付功能
   bool get enablePayment {
-    if (!enableApplePay && !enableAlipay) {
+    if (!enableApplePay && !enableOtherPay) {
       return false;
     }
 
@@ -91,7 +91,7 @@ class Ability {
       return true;
     }
 
-    return enableAlipay;
+    return enableOtherPay;
   }
 
   /// 是否支持API Server
