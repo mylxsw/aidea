@@ -904,7 +904,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
         // ignore: use_build_context_synchronously
         openConfirmDialog(
           context,
-          '【测试专用】\n本次请求预计消耗 ${res.cost} 个智慧果，是否继续操作？',
+          '本次请求预计消耗 ${res.cost} 个智慧果，是否继续操作？',
           () => request(res.waitDuration ?? 60),
         );
       } else {
