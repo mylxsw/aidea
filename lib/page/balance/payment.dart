@@ -66,6 +66,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
     List<PurchaseDetails> purchaseDetailsList,
   ) async {
     for (var purchaseDetails in purchaseDetailsList) {
+      Logger.instance.d({
+        'status': purchaseDetails.status,
+        'productID': purchaseDetails.productID,
+        'purchaseID': purchaseDetails.purchaseID,
+        'transactionDate': purchaseDetails.transactionDate,
+        'verificationData': purchaseDetails.verificationData,
+      });
       switch (purchaseDetails.status) {
         case PurchaseStatus.pending:
           await APIServer().updateApplePay(
