@@ -934,10 +934,10 @@ class APIServer {
     );
   }
 
-  /// 支付宝支付项目列表
-  Future<ApplePayProducts> alipayProducts() async {
+  /// 其它支付项目列表
+  Future<ApplePayProducts> otherPayProducts() async {
     return sendGetRequest(
-      '/v1/payment/alipay/products',
+      '/v1/payment/others/products',
       (resp) => ApplePayProducts.fromJson(resp.data),
     );
   }
@@ -953,12 +953,12 @@ class APIServer {
     );
   }
 
-  /// 发起 Alipay
-  Future<AlipayCreatedReponse> createAlipay(String productId,
+  /// 发起支付
+  Future<OtherPayCreatedReponse> createOtherPay(String productId,
       {required String source}) async {
     return sendPostRequest(
-      '/v1/payment/alipay',
-      (resp) => AlipayCreatedReponse.fromJson(resp.data),
+      '/v1/payment/others',
+      (resp) => OtherPayCreatedReponse.fromJson(resp.data),
       formData: Map<String, dynamic>.from({
         'product_id': productId,
         'source': source,
@@ -966,10 +966,10 @@ class APIServer {
     );
   }
 
-  /// 支付宝支付客户端确认
-  Future<String> alipayClientConfirm(Map<String, dynamic> params) async {
+  /// 其它支付客户端确认
+  Future<String> otherPayClientConfirm(Map<String, dynamic> params) async {
     return sendPostRequest(
-      '/v1/payment/alipay/client-confirm',
+      '/v1/payment/others/client-confirm',
       (resp) => resp.data['status'],
       formData: params,
     );

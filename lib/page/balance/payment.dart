@@ -5,16 +5,15 @@ import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/balance/price_block.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/chat/markdown.dart';
-import 'package:askaide/page/component/coin.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
-import 'package:askaide/repo/api/payment.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -50,7 +49,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         showErrorMessage(resolveError(context, error));
       });
     } else {
-      // 支付宝支付
+      // 其它支付
     }
 
     // 加载支付产品列表
@@ -412,15 +411,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  /// 创建支付宝付款（Web 或 Wap）
+  /// 创建其它付款（Web 或 Wap）
   Future<void> createWebOrWapAlipay({required String source}) async {
-    final created = await APIServer().createAlipay(
+    final created = await APIServer().createOtherPay(
       selectedProduct!.id,
       source: source,
     );
     paymentId = created.paymentId;
 
-    // 调起支付宝支付
+    // 调起其它支付
     launchUrlString(created.params).then((value) {
       _closePaymentLoading();
       openConfirmDialog(
@@ -464,10 +463,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
     });
   }
 
-  /// 创建支付宝付款（App）
+  /// 创建其它付款（App）
   Future<void> createAppAlipay() async {
-    // 支付宝支付
-    final created = await APIServer().createAlipay(
+    // 其它支付
+    final created = await APIServer().createOtherPay(
       selectedProduct!.id,
       source: 'app',
     );
@@ -476,7 +475,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     // 沙箱环境支持
     final env = created.sandbox ? AliPayEvn.SANDBOX : AliPayEvn.ONLINE;
 
-    // 调起支付宝支付
+    // 调起其它支付
     final aliPayRes = await aliPay(
       created.params,
       evn: env,
@@ -485,7 +484,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     print(aliPayRes);
     print(aliPayRes["resultStatus"]);
     if (aliPayRes['resultStatus'] == '9000') {
-      await APIServer().alipayClientConfirm(
+      await APIServer().otherPayClientConfirm(
         aliPayRes.map((key, value) => MapEntry(key.toString(), value)),
       );
 
@@ -513,129 +512,5 @@ class _PaymentScreenState extends State<PaymentScreen> {
       }
     }
     print("-----------------");
-  }
-}
-
-class PriceBlock extends StatelessWidget {
-  final CustomColors customColors;
-  final ProductDetails detail;
-  final ProductDetails? selectedProduct;
-  final AppleProduct product;
-  final bool loading;
-
-  const PriceBlock({
-    super.key,
-    required this.customColors,
-    required this.detail,
-    this.selectedProduct,
-    required this.product,
-    required this.loading,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final customColors = Theme.of(context).extension<CustomColors>()!;
-    return Stack(
-      children: [
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          padding: const EdgeInsets.all(20),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: customColors.paymentItemBackgroundColor,
-            border: Border.all(
-              color:
-                  (selectedProduct != null && selectedProduct!.id == detail.id)
-                      ? customColors.linkColor ?? Colors.green
-                      : customColors.paymentItemBackgroundColor!,
-            ),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Coin(
-                    count: product.quota,
-                    color: customColors.paymentItemTitleColor,
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.info_outline_rounded,
-                        size: 11,
-                        color: Color.fromARGB(255, 224, 170, 7),
-                      ),
-                      const SizedBox(width: 1),
-                      Text(
-                        '${product.expirePolicyText}内有效',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: Color.fromARGB(255, 224, 170, 7),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              loading
-                  ? const Text('加载中...')
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        if (detail.price != product.retailPriceText)
-                          Text(
-                            product.retailPriceText,
-                            style: TextStyle(
-                              fontSize: 13,
-                              decoration: TextDecoration.lineThrough,
-                              color: customColors.paymentItemDescriptionColor
-                                  ?.withAlpha(200),
-                            ),
-                          ),
-                        if (detail.price != product.retailPriceText)
-                          const SizedBox(width: 10),
-                        Text(
-                          detail.price,
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: customColors.linkColor,
-                          ),
-                        ),
-                      ],
-                    ),
-            ],
-          ),
-        ),
-        if (product.recommend)
-          Positioned(
-            right: 11,
-            top: 6,
-            child: Container(
-              decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 224, 68, 7),
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(8),
-                  bottomLeft: Radius.circular(8),
-                ),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-              child: const Text(
-                'Best Deal',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                ),
-              ),
-            ),
-          )
-      ],
-    );
   }
 }

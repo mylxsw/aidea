@@ -69,7 +69,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
           loading: false,
         ));
       } else {
-        final products = await APIServer().alipayProducts();
+        final products = await APIServer().otherPayProducts();
         if (products.consume.isEmpty) {
           emit(PaymentAppleProductsLoaded(
             const <ProductDetails>[],
