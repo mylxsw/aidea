@@ -103,7 +103,6 @@ dependencies:
   flutter_local_notifications: ^14.1.1
   flutter_drawing_board: ^0.4.4+2
   loading_more_list: ^5.0.3
-  tobias: ^2.4.2
   flutter_sticky_header: ^0.6.5
   audioplayers: ^5.0.0
   flutter_tts: ^3.7.0
@@ -207,6 +206,3 @@ flutter_native_splash:
   image: assets/app-splash.png
   color: "#ffffff"
   android_disable_fullscreen: true
-
-tobias:
-  url_scheme: alipay2021004101661425
