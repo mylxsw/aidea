@@ -49,7 +49,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         showErrorMessage(resolveError(context, error));
       });
     } else {
-      // 支付宝支付
+      // 其它支付
     }
 
     // 加载支付产品列表
@@ -411,15 +411,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  /// 创建支付宝付款（Web 或 Wap）
+  /// 创建其它付款（Web 或 Wap）
   Future<void> createWebOrWapAlipay({required String source}) async {
-    final created = await APIServer().createAlipay(
+    final created = await APIServer().createOtherPay(
       selectedProduct!.id,
       source: source,
     );
     paymentId = created.paymentId;
 
-    // 调起支付宝支付
+    // 调起其它支付
     launchUrlString(created.params).then((value) {
       _closePaymentLoading();
       openConfirmDialog(
@@ -463,10 +463,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
     });
   }
 
-  /// 创建支付宝付款（App）
+  /// 创建其它付款（App）
   Future<void> createAppAlipay() async {
-    // 支付宝支付
-    final created = await APIServer().createAlipay(
+    // 其它支付
+    final created = await APIServer().createOtherPay(
       selectedProduct!.id,
       source: 'app',
     );
@@ -475,7 +475,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     // 沙箱环境支持
     final env = created.sandbox ? AliPayEvn.SANDBOX : AliPayEvn.ONLINE;
 
-    // 调起支付宝支付
+    // 调起其它支付
     final aliPayRes = await aliPay(
       created.params,
       evn: env,
@@ -484,7 +484,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     print(aliPayRes);
     print(aliPayRes["resultStatus"]);
     if (aliPayRes['resultStatus'] == '9000') {
-      await APIServer().alipayClientConfirm(
+      await APIServer().otherPayClientConfirm(
         aliPayRes.map((key, value) => MapEntry(key.toString(), value)),
       );
 

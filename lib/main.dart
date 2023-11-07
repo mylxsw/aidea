@@ -181,7 +181,7 @@ void main() async {
       settingRepo,
       Capabilities(
         applePayEnabled: true,
-        alipayEnabled: true,
+        otherPayEnabled: true,
         translateEnabled: true,
         mailEnabled: true,
         openaiEnabled: true,
