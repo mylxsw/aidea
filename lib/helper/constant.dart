@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // 客户端应用版本号
-const clientVersion = '1.0.8';
+const clientVersion = '1.0.9';
 // 本地数据库版本号
 const databaseVersion = 25;
 

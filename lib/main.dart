@@ -6,6 +6,7 @@ import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/bloc/gallery_bloc.dart';
 import 'package:askaide/bloc/group_chat_bloc.dart';
 import 'package:askaide/bloc/payment_bloc.dart';
+import 'package:askaide/bloc/user_api_keys_bloc.dart';
 import 'package:askaide/bloc/version_bloc.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/cache.dart';
@@ -55,6 +56,7 @@ import 'package:askaide/page/balance/payment_history.dart';
 import 'package:askaide/page/setting/retrieve_password_screen.dart';
 import 'package:askaide/page/auth/signup_screen.dart';
 import 'package:askaide/page/lab/user_center.dart';
+import 'package:askaide/page/setting/user_api_keys.dart';
 import 'package:askaide/repo/api/info.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/cache_repo.dart';
@@ -839,6 +841,22 @@ class MyApp extends StatefulWidget {
                       setting: settingRepo,
                       groupId: int.tryParse(state.pathParameters['group_id']!)!,
                     ),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'user-api-keys',
+              path: '/setting/user-api-keys',
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: ((context) => UserApiKeysBloc()),
+                      ),
+                    ],
+                    child: UserAPIKeysScreen(setting: settingRepo),
                   ),
                 );
               },
