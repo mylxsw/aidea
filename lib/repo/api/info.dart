@@ -27,6 +27,9 @@ class Capabilities {
   /// 是否支持 Websocket
   final bool supportWebsocket;
 
+  /// 是否支持 API Keys 功能
+  final bool supportAPIKeys;
+
   /// 是否显示绘玩
   final bool disableGallery;
 
@@ -49,6 +52,7 @@ class Capabilities {
     this.homeRoute = '/chat-chat',
     this.showHomeModelDescription = true,
     this.supportWebsocket = false,
+    this.supportAPIKeys = false,
     this.disableGallery = false,
     this.disableCreationIsland = false,
     this.disableDigitalHuman = false,
@@ -68,6 +72,7 @@ class Capabilities {
       homeRoute: json['home_route'] ?? '/chat-chat',
       showHomeModelDescription: json['show_home_model_description'] ?? true,
       supportWebsocket: json['support_websocket'] ?? false,
+      supportAPIKeys: json['support_api_keys'] ?? false,
       disableGallery: json['disable_gallery'] ?? false,
       disableCreationIsland: json['disable_creation_island'] ?? false,
       disableDigitalHuman: json['disable_digital_human'] ?? false,
@@ -86,6 +91,7 @@ class Capabilities {
       'home_route': homeRoute,
       'show_home_model_description': showHomeModelDescription,
       'support_websocket': supportWebsocket,
+      'support_api_keys': supportAPIKeys,
       'disable_gallery': disableGallery,
       'disable_creation_island': disableCreationIsland,
       'disable_digital_human': disableDigitalHuman,

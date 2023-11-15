@@ -98,7 +98,8 @@ class _SettingScreenState extends State<SettingScreen> {
                     if (Ability().enableOpenAI)
                       _buildOpenAISelfHostedSetting(customColors),
                     // 用户 API Keys 配置
-                    _buildUserAPIKeySetting(customColors),
+                    if (Ability().supportAPIKeys)
+                      _buildUserAPIKeySetting(customColors),
                   ],
                 ),
 

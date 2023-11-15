@@ -256,7 +256,7 @@ class OpenAIRepository {
 
     try {
       bool canUseWebsocket = true;
-      if (Ability().enableLocalOpenAI()) {
+      if (Ability().enableLocalOpenAI) {
         if (supportForChat.containsKey(model) || model.startsWith('openai:')) {
           canUseWebsocket = false;
         }
@@ -266,7 +266,7 @@ class OpenAIRepository {
         canUseWebsocket = false;
       }
 
-      if (Ability().supportWebSocket() && canUseWebsocket) {
+      if (Ability().supportWebSocket && canUseWebsocket) {
         final serverURL = settings.getDefault(settingServerURL, apiServerURL);
         final wsURL = serverURL.startsWith('https://')
             ? serverURL.replaceFirst('https://', 'wss://')
@@ -332,7 +332,7 @@ class OpenAIRepository {
           'temperature': temperature,
           'user': user,
           'max_tokens': maxTokens,
-          'n': Ability().enableLocalOpenAI() &&
+          'n': Ability().enableLocalOpenAI &&
                   (model.startsWith('openai:') || model.startsWith('gpt-'))
               ? null
               : roomId, // n 参数暂时用不到，复用作为 roomId
@@ -344,7 +344,7 @@ class OpenAIRepository {
           temperature: temperature,
           user: user,
           maxTokens: maxTokens,
-          n: Ability().enableLocalOpenAI()
+          n: Ability().enableLocalOpenAI
               ? null
               : roomId, // n 参数暂时用不到，复用作为 roomId
         );

@@ -628,7 +628,7 @@ class _ChatPreviewState extends State<ChatPreview> {
               ],
             ),
           ),
-          if (Ability().supportTranslate())
+          if (Ability().supportTranslate)
             TextButton.icon(
                 onPressed: () {
                   cancel();
@@ -798,7 +798,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                 ],
               ),
             ),
-          if (Ability().supportSpeak() && widget.onSpeakEvent != null)
+          if (Ability().supportSpeak && widget.onSpeakEvent != null)
             TextButton.icon(
               onPressed: () {
                 cancel();

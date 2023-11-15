@@ -143,7 +143,7 @@ class _ChatInputState extends State<ChatInput> {
                     Row(
                       children: [
                         if (widget.enableImageUpload &&
-                            Ability().supportImageUploader())
+                            Ability().supportImageUploader)
                           _buildImageUploadButton(
                               context, setting, customColors),
                         if (widget.leftSideToolsBuilder != null)
