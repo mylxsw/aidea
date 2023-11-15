@@ -284,6 +284,7 @@ class MyApp extends StatefulWidget {
           routes: [
             GoRoute(
               path: '/login',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -298,6 +299,7 @@ class MyApp extends StatefulWidget {
             ),
             GoRoute(
               path: '/signin-or-signup',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -314,18 +316,21 @@ class MyApp extends StatefulWidget {
             ),
             GoRoute(
               path: '/user/change-password',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 ChangePasswordScreen(setting: settingRepo),
               ),
             ),
             GoRoute(
               path: '/user/destroy',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 DestroyAccountScreen(setting: settingRepo),
               ),
             ),
             GoRoute(
               path: '/signup',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 SignupScreen(
                   settings: settingRepo,
@@ -335,6 +340,7 @@ class MyApp extends StatefulWidget {
             ),
             GoRoute(
               path: '/retrieve-password',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 RetrievePasswordScreen(
                   username: state.queryParameters['username'],
@@ -345,6 +351,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'chat_anywhere',
               path: '/chat-anywhere',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -378,6 +385,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'chat_chat',
               path: '/chat-chat',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -398,6 +406,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'chat_chat_history',
               path: '/chat-chat/history',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -413,12 +422,14 @@ class MyApp extends StatefulWidget {
             ),
             GoRoute(
               path: '/lab/avatar-selector',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 const AvatarSelectorScreen(usage: AvatarUsage.room),
               ),
             ),
             GoRoute(
               path: '/lab/draw-board',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 const DrawboardScreen(),
               ),
@@ -426,6 +437,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'characters',
               path: '/',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [BlocProvider.value(value: chatRoomBloc)],
@@ -436,6 +448,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'create-room',
               path: '/create-room',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [BlocProvider.value(value: chatRoomBloc)],
@@ -446,6 +459,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'chat',
               path: '/room/:room_id/chat',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 final roomId = int.parse(state.pathParameters['room_id']!);
                 return transitionResolver(
@@ -470,6 +484,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'room_setting',
               path: '/room/:room_id/setting',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 final roomId = int.parse(state.pathParameters['room_id']!);
                 return transitionResolver(
@@ -488,6 +503,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'account-security-setting',
               path: '/setting/account-security',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -502,6 +518,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'lab-user-center',
               path: '/lab/user-center',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -516,6 +533,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'setting',
               path: '/setting',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -529,6 +547,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'setting-background-selector',
               path: '/setting/background-selector',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 BlocProvider(
                   create: (context) => BackgroundImageBloc(),
@@ -539,6 +558,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'setting-openai-custom',
               path: '/setting/openai-custom',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 OpenAISettingScreen(
                   settings: settingRepo,
@@ -549,6 +569,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-draw',
               path: '/creative-draw',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -563,6 +584,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-upscale',
               path: '/creative-draw/create-upscale',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -580,6 +602,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-colorize',
               path: '/creative-draw/create-colorize',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -597,6 +620,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-draw-gallery-preview',
               path: '/creative-draw/gallery/:id',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -612,6 +636,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-draw-create',
               path: '/creative-draw/create',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -631,6 +656,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-island-history-all',
               path: '/creative-island/history',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
@@ -648,6 +674,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-island-models',
               path: '/creative-island/models',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
@@ -662,6 +689,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-island-history-item',
               path: '/creative-island/:id/history/:item_id',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 final id = state.pathParameters['id']!;
                 final itemId = int.tryParse(state.pathParameters['item_id']!);
@@ -685,6 +713,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'quota-details',
               path: '/quota-details',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 PaymentHistoryScreen(setting: settingRepo),
               ),
@@ -692,6 +721,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'quota-usage-statistics',
               path: '/quota-usage-statistics',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 QuotaUsageStatisticsScreen(setting: settingRepo),
               ),
@@ -699,6 +729,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'quota-usage-daily-details',
               path: '/quota-usage-daily-details',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 QuotaUsageDetailScreen(
                   setting: settingRepo,
@@ -710,6 +741,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'prompt-editor',
               path: '/prompt-editor',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 var prompt = state.queryParameters['prompt'] ?? '';
                 return transitionResolver(PromptScreen(prompt: prompt));
@@ -718,6 +750,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'payment',
               path: '/payment',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
@@ -732,6 +765,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'bind-phone',
               path: '/bind-phone',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
@@ -749,6 +783,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-gallery',
               path: '/creative-gallery',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -761,6 +796,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'diagnosis',
               path: '/diagnosis',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 DiagnosisScreen(setting: settingRepo),
               ),
@@ -768,6 +804,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'free-statistics',
               path: '/free-statistics',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [BlocProvider.value(value: freeCountBloc)],
@@ -778,6 +815,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'custom-home-models',
               path: '/setting/custom-home-models',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 CustomHomeModelsPage(setting: settingRepo),
               ),
@@ -785,6 +823,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'group-chat-chat',
               path: '/group-chat/:group_id/chat',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 final groupId = int.tryParse(state.pathParameters['group_id']!);
 
@@ -809,6 +848,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'group-chat-create',
               path: '/group-chat-create',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
@@ -827,6 +867,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'group-chat-edit',
               path: '/group-chat/:group_id/edit',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
@@ -848,6 +889,7 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'user-api-keys',
               path: '/setting/user-api-keys',
+              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(

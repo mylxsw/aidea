@@ -172,7 +172,10 @@ class _GroupChatPageState extends State<GroupChatPage> {
                         : ChatInput(
                             enableNotifier: _inputEnabled,
                             enableImageUpload: false,
-                            onSubmit: _handleSubmit,
+                            onSubmit: (value) {
+                              _handleSubmit(value);
+                              FocusManager.instance.primaryFocus?.unfocus();
+                            },
                             onNewChat: () => handleResetContext(context),
                             hintText: '有问题尽管问我',
                             onVoiceRecordTappedEvent: () {

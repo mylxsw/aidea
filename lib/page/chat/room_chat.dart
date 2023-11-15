@@ -160,7 +160,10 @@ class _RoomChatPageState extends State<RoomChatPage> {
                             : ChatInput(
                                 enableNotifier: _inputEnabled,
                                 enableImageUpload: false,
-                                onSubmit: _handleSubmit,
+                                onSubmit: (value) {
+                                  _handleSubmit(value);
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                },
                                 onNewChat: () => handleResetContext(context),
                                 hintText: hintText,
                                 onVoiceRecordTappedEvent: () {

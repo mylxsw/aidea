@@ -328,7 +328,10 @@ class _HomeChatPageState extends State<HomeChatPage> {
                 return SafeArea(
                   child: ChatInput(
                     enableNotifier: _inputEnabled,
-                    onSubmit: _handleSubmit,
+                    onSubmit: (value) {
+                      _handleSubmit(value);
+                      FocusManager.instance.primaryFocus?.unfocus();
+                    },
                     enableImageUpload: false,
                     hintText: hintText,
                     onVoiceRecordTappedEvent: () {

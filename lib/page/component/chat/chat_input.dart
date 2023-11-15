@@ -327,7 +327,5 @@ class _ChatInputState extends State<ChatInput> {
       widget.onSubmit(text);
       _textController.clear();
     }
-
-    _focusNode.requestFocus();
   }
 }
