@@ -17,6 +17,7 @@ import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/data/migrate.dart';
 import 'package:askaide/page/balance/quota_usage_details.dart';
+import 'package:askaide/page/creative_island/draw/artistic_text.dart';
 import 'package:askaide/page/setting/account_security.dart';
 import 'package:askaide/page/app_scaffold.dart';
 import 'package:askaide/page/lab/avatar_selector.dart';
@@ -648,6 +649,26 @@ class MyApp extends StatefulWidget {
                       state.queryParameters['gallery_copy_id'] ?? '',
                     ),
                     mode: state.queryParameters['mode']!,
+                    id: state.queryParameters['id']!,
+                  ),
+                ),
+              ),
+            ),
+            GoRoute(
+              name: 'creative-artistic-text',
+              path: '/creative-draw/artistic-text',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) => transitionResolver(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider.value(value: galleryBloc),
+                  ],
+                  child: ArtisticTextScreen(
+                    setting: settingRepo,
+                    galleryCopyId: int.tryParse(
+                      state.queryParameters['gallery_copy_id'] ?? '',
+                    ),
+                    type: state.queryParameters['type']!,
                     id: state.queryParameters['id']!,
                   ),
                 ),

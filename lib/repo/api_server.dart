@@ -690,6 +690,18 @@ class APIServer {
     );
   }
 
+  Future<String> creativeIslandArtisticTextCompletionsAsyncV2(
+      Map<String, dynamic> params) async {
+    return sendPostRequest(
+      '/v2/creative-island/completions/artistic-text',
+      (resp) {
+        final cicResp = CreativeIslandCompletionAsyncResp.fromJson(resp.data);
+        return cicResp.taskId;
+      },
+      formData: params,
+    );
+  }
+
   Future<String> creativeIslandImageDirectEdit(
     String endpoint,
     Map<String, dynamic> params,
