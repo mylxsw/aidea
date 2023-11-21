@@ -930,7 +930,15 @@ class _MyAppState extends State<MyApp> {
                   theme: createLightThemeData(),
                   darkTheme: createDarkThemeData(),
                   debugShowCheckedModeBanner: false,
-                  builder: BotToastInit(),
+                  builder: (context, child) {
+                    // 这里设置了全局字体固定大小，不随系统设置变更
+                    // TODO 后面要增加一个设置项，允许用户自定义字体大小
+                    return MediaQuery(
+                      data:
+                          MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                      child: BotToastInit()(context, child),
+                    );
+                  },
                   routerConfig: widget._router,
                   supportedLocales: widget.localization.supportedLocales,
                   localizationsDelegates:
