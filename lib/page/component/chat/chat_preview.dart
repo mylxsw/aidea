@@ -9,8 +9,10 @@ import 'package:askaide/helper/helper.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/attached_button_panel.dart';
 import 'package:askaide/page/component/chat/chat_share.dart';
+import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/page/component/image_preview.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -231,226 +233,247 @@ class _ChatPreviewState extends State<ChatPreview> {
           message.role == Role.sender ? Alignment.topRight : Alignment.topLeft,
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: _chatBoxMaxWidth(context)),
-        child: Row(
+        child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            // 消息头像
-            buildAvatar(message),
-            // 消息内容部分
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: _chatBoxMaxWidth(context) - 80,
+            if (message.images != null && message.images!.isNotEmpty)
+              Container(
+                margin: message.role == Role.sender
+                    ? const EdgeInsets.fromLTRB(0, 0, 10, 7)
+                    : const EdgeInsets.fromLTRB(10, 0, 0, 7),
+                child: ConstrainedBox(
+                  constraints:
+                      BoxConstraints(maxWidth: _chatBoxMaxWidth(context) / 2),
+                  child: FileUploadPreview(images: message.images ?? []),
+                ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 发送人名称
-                  if (message.role == Role.receiver &&
-                      widget.senderNameBuilder != null)
-                    widget.senderNameBuilder!(message) ?? const SizedBox(),
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.end,
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 消息头像
+                buildAvatar(message),
+                // 消息内容部分
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: _chatBoxMaxWidth(context) - 80,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 错误指示器
-                      if (message.role == Role.sender &&
-                          message.statusIsFailed())
-                        buildErrorIndicator(message, state, context, index),
-                      // 消息主体
-                      GestureDetector(
-                        // 选择模式下，单击切换选择与否
-                        // 非选择模式下，单击隐藏键盘
-                        onTap: () {
-                          if (widget.controller.selectMode) {
-                            widget.controller
-                                .toggleMessageSelected(message.id!);
-                          }
-                          FocusScope.of(context).requestFocus(FocusNode());
-                        },
-                        // 长按或者双击显示上下文菜单
-                        onLongPressStart: (detail) {
-                          _handleMessageTapControl(
-                            context,
-                            detail.globalPosition,
-                            message,
-                            state,
-                            index,
-                          );
-                        },
-                        onDoubleTapDown: (details) {
-                          _handleMessageTapControl(
-                            context,
-                            details.globalPosition,
-                            message,
-                            state,
-                            index,
-                          );
-                        },
-                        child: Stack(
-                          children: [
-                            Container(
-                              margin: message.role == Role.sender
-                                  ? const EdgeInsets.fromLTRB(0, 0, 10, 7)
-                                  : const EdgeInsets.fromLTRB(10, 0, 0, 7),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: message.role == Role.receiver
-                                    ? customColors.chatRoomReplyBackground
-                                    : customColors.chatRoomSenderBackground,
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 13,
-                                vertical: 13,
-                              ),
-                              child: Builder(
-                                builder: (context) {
-                                  if ((message.statusPending() ||
-                                          !message.isReady) &&
-                                      message.text.isEmpty) {
-                                    return LoadingAnimationWidget.waveDots(
-                                      color: customColors.weakLinkColor!,
-                                      size: 25,
-                                    );
-                                  }
+                      // 发送人名称
+                      if (message.role == Role.receiver &&
+                          widget.senderNameBuilder != null)
+                        widget.senderNameBuilder!(message) ?? const SizedBox(),
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.end,
+                        children: [
+                          // 错误指示器
+                          if (message.role == Role.sender &&
+                              message.statusIsFailed())
+                            buildErrorIndicator(message, state, context, index),
+                          // 消息主体
+                          GestureDetector(
+                            // 选择模式下，单击切换选择与否
+                            // 非选择模式下，单击隐藏键盘
+                            onTap: () {
+                              if (widget.controller.selectMode) {
+                                widget.controller
+                                    .toggleMessageSelected(message.id!);
+                              }
+                              FocusScope.of(context).requestFocus(FocusNode());
+                            },
+                            // 长按或者双击显示上下文菜单
+                            onLongPressStart: (detail) {
+                              _handleMessageTapControl(
+                                context,
+                                detail.globalPosition,
+                                message,
+                                state,
+                                index,
+                              );
+                            },
+                            onDoubleTapDown: (details) {
+                              _handleMessageTapControl(
+                                context,
+                                details.globalPosition,
+                                message,
+                                state,
+                                index,
+                              );
+                            },
+                            child: Stack(
+                              children: [
+                                Container(
+                                  margin: message.role == Role.sender
+                                      ? const EdgeInsets.fromLTRB(0, 0, 10, 7)
+                                      : const EdgeInsets.fromLTRB(10, 0, 0, 7),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: message.role == Role.receiver
+                                        ? customColors.chatRoomReplyBackground
+                                        : customColors.chatRoomSenderBackground,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 8,
+                                  ),
+                                  child: Builder(
+                                    builder: (context) {
+                                      if ((message.statusPending() ||
+                                              !message.isReady) &&
+                                          message.text.isEmpty) {
+                                        return LoadingAnimationWidget.waveDots(
+                                          color: customColors.weakLinkColor!,
+                                          size: 25,
+                                        );
+                                      }
 
-                                  var text = message.text;
-                                  if (!message.isReady && text != '') {
-                                    text += ' ▌';
-                                  }
-                                  return Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      state.showMarkdown
-                                          ? Markdown(
-                                              data: text.trim(),
-                                              onUrlTap: (value) =>
-                                                  launchUrlString(value),
-                                            )
-                                          : SelectableText(
-                                              text,
-                                              style: TextStyle(
-                                                color: customColors
-                                                    .chatRoomSenderText,
-                                              ),
-                                            ),
-                                      if (message.quotaConsumed != null &&
-                                          message.quotaConsumed! > 0)
-                                        Row(
-                                          children: [
-                                            const Icon(Icons.check_circle,
-                                                size: 12, color: Colors.green),
-                                            const SizedBox(width: 5),
-                                            Expanded(
-                                              child: Text(
-                                                '共 ${message.tokenConsumed} 个 Token， 消耗 ${message.quotaConsumed} 个智慧果',
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: customColors
-                                                      .weakTextColor,
+                                      var text = message.text;
+                                      if (!message.isReady && text != '') {
+                                        text += ' ▌';
+                                      }
+                                      return Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          state.showMarkdown
+                                              ? Markdown(
+                                                  data: text.trim(),
+                                                  onUrlTap: (value) =>
+                                                      launchUrlString(value),
+                                                )
+                                              : SelectableText(
+                                                  text,
+                                                  style: TextStyle(
+                                                    color: customColors
+                                                        .chatRoomSenderText,
+                                                  ),
                                                 ),
-                                              ),
+                                          if (message.quotaConsumed != null &&
+                                              message.quotaConsumed! > 0)
+                                            Row(
+                                              children: [
+                                                const Icon(Icons.check_circle,
+                                                    size: 12,
+                                                    color: Colors.green),
+                                                const SizedBox(width: 5),
+                                                Expanded(
+                                                  child: Text(
+                                                    '共 ${message.tokenConsumed} 个 Token， 消耗 ${message.quotaConsumed} 个智慧果',
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      color: customColors
+                                                          .weakTextColor,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                    ],
-                                  );
-                                },
-                              ),
-                            ),
-                            if (extraInfo.isNotEmpty)
-                              Positioned(
-                                top: 5,
-                                right: 5,
-                                child: InkWell(
-                                  onTap: () {
-                                    showCustomBeautyDialog(
-                                      context,
-                                      type: QuickAlertType.warning,
-                                      confirmBtnText:
-                                          AppLocale.gotIt.getString(context),
-                                      showCancelBtn: false,
-                                      title: '温馨提示',
-                                      child: Markdown(
-                                        data: extraInfo,
-                                        onUrlTap: (value) {
-                                          onMarkdownUrlTap(value);
-                                          context.pop();
-                                        },
-                                        textStyle: TextStyle(
-                                          fontSize: 14,
-                                          color: customColors
-                                              .dialogDefaultTextColor,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: Icon(
-                                    Icons.info_outline,
-                                    size: 16,
-                                    color: customColors.weakLinkColor
-                                        ?.withAlpha(50),
+                                        ],
+                                      );
+                                    },
                                   ),
                                 ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (showTranslate)
-                    Container(
-                      margin: message.role == Role.sender
-                          ? const EdgeInsets.fromLTRB(7, 10, 14, 7)
-                          : const EdgeInsets.fromLTRB(10, 10, 0, 7),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: message.role == Role.receiver
-                            ? customColors.chatRoomReplyBackgroundSecondary
-                            : customColors.chatRoomSenderBackgroundSecondary,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      child: Builder(
-                        builder: (context) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              state.showMarkdown
-                                  ? Markdown(data: state.translateText!)
-                                  : SelectableText(
-                                      state.translateText!,
-                                      style: TextStyle(
-                                        color: customColors.chatRoomSenderText,
+                                if (extraInfo.isNotEmpty)
+                                  Positioned(
+                                    top: 5,
+                                    right: 5,
+                                    child: InkWell(
+                                      onTap: () {
+                                        showCustomBeautyDialog(
+                                          context,
+                                          type: QuickAlertType.warning,
+                                          confirmBtnText: AppLocale.gotIt
+                                              .getString(context),
+                                          showCancelBtn: false,
+                                          title: '温馨提示',
+                                          child: Markdown(
+                                            data: extraInfo,
+                                            onUrlTap: (value) {
+                                              onMarkdownUrlTap(value);
+                                              context.pop();
+                                            },
+                                            textStyle: TextStyle(
+                                              fontSize: 14,
+                                              color: customColors
+                                                  .dialogDefaultTextColor,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Icon(
+                                        Icons.info_outline,
+                                        size: 16,
+                                        color: customColors.weakLinkColor
+                                            ?.withAlpha(50),
                                       ),
                                     ),
-                              const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.check_circle,
-                                    size: 12,
-                                    color: Colors.green,
                                   ),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    '翻译完成',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Color.fromARGB(255, 145, 145, 145),
-                                    ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (showTranslate)
+                        Container(
+                          margin: message.role == Role.sender
+                              ? const EdgeInsets.fromLTRB(7, 10, 14, 7)
+                              : const EdgeInsets.fromLTRB(10, 10, 0, 7),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: message.role == Role.receiver
+                                ? customColors.chatRoomReplyBackgroundSecondary
+                                : customColors
+                                    .chatRoomSenderBackgroundSecondary,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          child: Builder(
+                            builder: (context) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  state.showMarkdown
+                                      ? Markdown(data: state.translateText!)
+                                      : SelectableText(
+                                          state.translateText!,
+                                          style: TextStyle(
+                                            color:
+                                                customColors.chatRoomSenderText,
+                                          ),
+                                        ),
+                                  const Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.check_circle,
+                                        size: 12,
+                                        color: Colors.green,
+                                      ),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        '翻译完成',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Color.fromARGB(
+                                              255, 145, 145, 145),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    )
-                ],
-              ),
+                              );
+                            },
+                          ),
+                        )
+                    ],
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -703,6 +726,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                     var q = questions.first;
                     messages.add(ChatShareMessage(
                       content: q.message.text,
+                      images: q.message.images,
                       leftSide: false,
                     ));
                   }
@@ -710,6 +734,7 @@ class _ChatPreviewState extends State<ChatPreview> {
 
                 messages.add(ChatShareMessage(
                   content: message.text,
+                  images: message.images,
                   leftSide: message.role == Role.receiver,
                   avatarURL: message.avatarUrl,
                   username: message.senderName,
@@ -723,6 +748,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                     for (var a in answers) {
                       messages.add(ChatShareMessage(
                         content: a.message.text,
+                        images: a.message.images,
                         leftSide: true,
                         avatarURL: a.message.avatarUrl,
                         username: a.message.senderName,

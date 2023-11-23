@@ -1,15 +1,18 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:askaide/bloc/chat_chat_bloc.dart';
 import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/color.dart';
+import 'package:askaide/helper/global_store.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/cache.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/chat/empty.dart';
+import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/voice_record.dart';
 import 'package:askaide/page/component/column_block.dart';
 import 'package:askaide/page/component/enhanced_textfield.dart';
@@ -24,6 +27,7 @@ import 'package:askaide/repo/model/chat_history.dart';
 import 'package:askaide/repo/model/misc.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -88,6 +92,8 @@ class _HomePageState extends State<HomePage> {
   /// 是否显示提示消息对话框
   bool showFreeModelNotifyMessage = false;
 
+  List<FileUpload> selectedImageFiles = [];
+
   /// 促销事件
   PromotionEvent? promotionEvent;
 
@@ -125,6 +131,7 @@ class _HomePageState extends State<HomePage> {
                 description: e.desc,
                 icon: e.powerful ? Icons.auto_awesome : Icons.bolt,
                 activeColor: stringToColor(e.color),
+                supportVision: e.supportVision,
               ))
           .toList();
     }
@@ -140,6 +147,7 @@ class _HomePageState extends State<HomePage> {
                   description: e.desc,
                   icon: e.powerful ? Icons.auto_awesome : Icons.bolt,
                   activeColor: stringToColor(e.color),
+                  supportVision: e.supportVision,
                 ))
             .toList();
 
@@ -503,6 +511,68 @@ class _HomePageState extends State<HomePage> {
                         customColors,
                       ),
                     ),
+                    if (selectedImageFiles.isNotEmpty &&
+                        currentModel != null &&
+                        currentModel!.supportVision)
+                      SizedBox(
+                        height: 110,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: selectedImageFiles
+                              .map(
+                                (e) => Container(
+                                  margin: const EdgeInsets.only(right: 8),
+                                  padding: const EdgeInsets.all(5),
+                                  child: Stack(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(5),
+                                        child: e.file.bytes != null
+                                            ? Image.memory(
+                                                e.file.bytes!,
+                                                fit: BoxFit.cover,
+                                                width: 100,
+                                                height: 100,
+                                              )
+                                            : Image.file(
+                                                File(e.file.path!),
+                                                fit: BoxFit.cover,
+                                                width: 100,
+                                                height: 100,
+                                              ),
+                                      ),
+                                      Positioned(
+                                        right: 5,
+                                        top: 5,
+                                        child: InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              selectedImageFiles.remove(e);
+                                            });
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.all(3),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              color: customColors
+                                                  .chatRoomBackground,
+                                            ),
+                                            child: Icon(
+                                              Icons.close,
+                                              size: 10,
+                                              color: customColors.weakTextColor,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      )
                   ],
                 )
               ],
@@ -707,30 +777,66 @@ class _HomePageState extends State<HomePage> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        InkWell(
-          onTap: () {
-            HapticFeedbackHelper.mediumImpact();
+        Row(
+          children: [
+            InkWell(
+              onTap: () {
+                HapticFeedbackHelper.mediumImpact();
 
-            openModalBottomSheet(
-              context,
-              (context) {
-                return VoiceRecord(
-                  onFinished: (text) {
-                    _textController.text = _textController.text + text;
-                    Navigator.pop(context);
+                openModalBottomSheet(
+                  context,
+                  (context) {
+                    return VoiceRecord(
+                      onFinished: (text) {
+                        _textController.text = _textController.text + text;
+                        Navigator.pop(context);
+                      },
+                      onStart: () {},
+                    );
                   },
-                  onStart: () {},
+                  isScrollControlled: false,
+                  heightFactor: 0.8,
                 );
               },
-              isScrollControlled: false,
-              heightFactor: 0.8,
-            );
-          },
-          child: Icon(
-            Icons.mic,
-            color: customColors.chatInputPanelText,
-            size: 28,
-          ),
+              child: Icon(
+                Icons.mic,
+                color: customColors.chatInputPanelText,
+                size: 28,
+              ),
+            ),
+            const SizedBox(width: 10),
+            if (currentModel != null && currentModel!.supportVision)
+              InkWell(
+                onTap: () async {
+                  // 上传图片
+                  HapticFeedbackHelper.mediumImpact();
+                  if (selectedImageFiles.length >= 4) {
+                    showSuccessMessage('最多只能上传 4 张图片');
+                    return;
+                  }
+
+                  FilePickerResult? result =
+                      await FilePicker.platform.pickFiles(
+                    type: FileType.image,
+                    allowMultiple: true,
+                  );
+                  if (result != null && result.files.isNotEmpty) {
+                    final files = selectedImageFiles;
+                    files.addAll(
+                        result.files.map((e) => FileUpload(file: e)).toList());
+                    setState(() {
+                      selectedImageFiles =
+                          files.sublist(0, files.length > 4 ? 4 : files.length);
+                    });
+                  }
+                },
+                child: Icon(
+                  Icons.camera_alt,
+                  color: customColors.chatInputPanelText,
+                  size: 28,
+                ),
+              ),
+          ],
         ),
         BlocBuilder<FreeCountBloc, FreeCountState>(
           buildWhen: (previous, current) => current is FreeCountLoadedState,
@@ -776,6 +882,12 @@ class _HomePageState extends State<HomePage> {
       return;
     }
 
+    if (currentModel != null && currentModel!.supportVision) {
+      GlobalStore().uploadedFiles = selectedImageFiles;
+    }
+
+    selectedImageFiles = [];
+
     context
         .push(Uri(path: '/chat-anywhere', queryParameters: {
       'init_message': text,
@@ -783,6 +895,8 @@ class _HomePageState extends State<HomePage> {
     }).toString())
         .whenComplete(() {
       _textController.clear();
+      GlobalStore().uploadedFiles.clear();
+
       FocusScope.of(context).requestFocus(FocusNode());
       context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
     });

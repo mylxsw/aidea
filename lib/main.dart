@@ -71,6 +71,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:fluwx/fluwx.dart';
 import 'package:go_router/go_router.dart';
@@ -1024,6 +1025,17 @@ class _MyAppState extends State<MyApp> {
                   supportedLocales: widget.localization.supportedLocales,
                   localizationsDelegates:
                       widget.localization.localizationsDelegates,
+                  scrollBehavior:
+                      PlatformTool.isAndroid() || PlatformTool.isIOS()
+                          ? null
+                          : const MaterialScrollBehavior().copyWith(
+                              dragDevices: {
+                                PointerDeviceKind.touch,
+                                PointerDeviceKind.mouse,
+                                PointerDeviceKind.stylus,
+                                PointerDeviceKind.trackpad,
+                              },
+                            ),
                 );
               },
             );

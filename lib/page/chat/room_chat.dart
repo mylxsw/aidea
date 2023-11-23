@@ -2,16 +2,20 @@ import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/image.dart';
+import 'package:askaide/helper/model.dart';
+import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/chat/chat_share.dart';
 import 'package:askaide/page/component/chat/empty.dart';
+import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/help_tips.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/effect/glass.dart';
 import 'package:askaide/page/component/enhanced_popup_menu.dart';
 import 'package:askaide/page/component/enhanced_textfield.dart';
+import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
@@ -24,11 +28,13 @@ import 'package:askaide/repo/model/message.dart';
 import 'package:askaide/repo/model/misc.dart';
 import 'package:askaide/repo/model/room.dart';
 import 'package:askaide/repo/settings_repo.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_initicon/flutter_initicon.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
+import 'package:askaide/repo/model/model.dart' as mm;
 
 import '../component/dialog.dart';
 
@@ -53,8 +59,11 @@ class _RoomChatPageState extends State<RoomChatPage> {
   final ValueNotifier<bool> _inputEnabled = ValueNotifier(true);
   final ChatPreviewController _chatPreviewController = ChatPreviewController();
   final AudioPlayerController _audioPlayerController =
-      AudioPlayerController(useRemoteAPI: false);
+      AudioPlayerController(useRemoteAPI: true);
   bool showAudioPlayer = false;
+  bool audioLoadding = false;
+
+  List<FileUpload> selectedImageFiles = [];
 
   @override
   void initState() {
@@ -75,6 +84,11 @@ class _RoomChatPageState extends State<RoomChatPage> {
     _audioPlayerController.onPlayAudioStarted = () {
       setState(() {
         showAudioPlayer = true;
+      });
+    };
+    _audioPlayerController.onPlayAudioLoading = (loading) {
+      setState(() {
+        audioLoadding = loading;
       });
     };
   }
@@ -101,6 +115,8 @@ class _RoomChatPageState extends State<RoomChatPage> {
     );
   }
 
+  mm.Model? roomModel;
+
   Widget _buildChatComponents(CustomColors customColors) {
     return BlocConsumer<RoomBloc, RoomState>(
       listenWhen: (previous, current) => current is RoomLoaded,
@@ -110,6 +126,14 @@ class _RoomChatPageState extends State<RoomChatPage> {
           context
               .read<FreeCountBloc>()
               .add(FreeCountReloadEvent(model: state.room.model));
+        }
+
+        if (state is RoomLoaded) {
+          ModelAggregate.model(state.room.model).then((value) {
+            setState(() {
+              roomModel = value;
+            });
+          });
         }
       },
       buildWhen: (previous, current) => current is RoomLoaded,
@@ -122,7 +146,10 @@ class _RoomChatPageState extends State<RoomChatPage> {
               children: [
                 // 语音输出中提示
                 if (showAudioPlayer)
-                  EnhancedAudioPlayer(controller: _audioPlayerController),
+                  EnhancedAudioPlayer(
+                    controller: _audioPlayerController,
+                    loading: audioLoadding,
+                  ),
                 // 聊天内容窗口
                 Expanded(
                   child: _buildChatPreviewArea(
@@ -159,11 +186,18 @@ class _RoomChatPageState extends State<RoomChatPage> {
                               )
                             : ChatInput(
                                 enableNotifier: _inputEnabled,
-                                enableImageUpload: false,
                                 onSubmit: (value) {
                                   _handleSubmit(value);
                                   FocusManager.instance.primaryFocus?.unfocus();
                                 },
+                                enableImageUpload: roomModel != null &&
+                                    roomModel!.supportVision,
+                                onImageSelected: (files) {
+                                  setState(() {
+                                    selectedImageFiles = files;
+                                  });
+                                },
+                                selectedImageFiles: selectedImageFiles,
                                 onNewChat: () => handleResetContext(context),
                                 hintText: hintText,
                                 onVoiceRecordTappedEvent: () {
@@ -191,8 +225,13 @@ class _RoomChatPageState extends State<RoomChatPage> {
   ) {
     return BlocConsumer<ChatMessageBloc, ChatMessageState>(
       listener: (context, state) {
+        if (state is ChatMessagesLoaded && state.error == null) {
+          setState(() {
+            selectedImageFiles = [];
+          });
+        }
         // 显示错误提示
-        if (state is ChatMessagesLoaded && state.error != null) {
+        else if (state is ChatMessagesLoaded && state.error != null) {
           showErrorMessageEnhanced(context, state.error);
         } else if (state is ChatMessageUpdated) {
           // 聊天内容窗口滚动到底部
@@ -400,11 +439,57 @@ class _RoomChatPageState extends State<RoomChatPage> {
     messagetType = MessageType.text,
     int? index,
     bool isResent = false,
-  }) {
+  }) async {
     setState(() {
       _inputEnabled.value = false;
     });
 
+    if (selectedImageFiles.isNotEmpty) {
+      final cancel = BotToast.showCustomLoading(
+        toastBuilder: (cancel) {
+          return const LoadingIndicator(
+            message: '正在上传图片，请稍后...',
+          );
+        },
+        allowClick: false,
+      );
+
+      try {
+        final uploader = ImageUploader(widget.setting);
+
+        for (var file in selectedImageFiles) {
+          if (file.uploaded) {
+            continue;
+          }
+
+          if (file.file.bytes != null) {
+            final res = await uploader.base64(
+              imageData: file.file.bytes,
+              maxSize: 1024 * 1024,
+              compressWidth: 512,
+              compressHeight: 512,
+            );
+            file.setUrl(res);
+          } else {
+            final res = await uploader.base64(
+              path: file.file.path!,
+              maxSize: 1024 * 1024,
+              compressWidth: 512,
+              compressHeight: 512,
+            );
+            file.setUrl(res);
+          }
+        }
+      } catch (e) {
+        // ignore: use_build_context_synchronously
+        showErrorMessageEnhanced(context, e);
+        return;
+      } finally {
+        cancel();
+      }
+    }
+
+    // ignore: use_build_context_synchronously
     context.read<ChatMessageBloc>().add(
           ChatMessageSendEvent(
             Message(
@@ -413,13 +498,19 @@ class _RoomChatPageState extends State<RoomChatPage> {
               user: 'me',
               ts: DateTime.now(),
               type: messagetType,
+              images: selectedImageFiles
+                  .where((e) => e.uploaded)
+                  .map((e) => e.url!)
+                  .toList(),
             ),
             index: index,
             isResent: isResent,
           ),
         );
 
+    // ignore: use_build_context_synchronously
     context.read<NotifyBloc>().add(NotifyResetEvent());
+    // ignore: use_build_context_synchronously
     context
         .read<RoomBloc>()
         .add(RoomLoadEvent(widget.roomId, cascading: false));
@@ -610,6 +701,7 @@ Widget buildSelectModeToolbars(
                             username: e.message.senderName,
                             avatarURL: e.message.avatarUrl,
                             leftSide: e.message.role == Role.receiver,
+                            images: e.message.images,
                           ))
                       .toList(),
                 ),

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // 客户端应用版本号
 const clientVersion = '1.0.9';
 // 本地数据库版本号
-const databaseVersion = 25;
+const databaseVersion = 26;
 
 const maxRoomNumForNonVIP = 50;
 const coinSign = '个';

@@ -117,12 +117,16 @@ class HomeModel {
   /// 是否是强大的模型
   final bool powerful;
 
+  /// 是否支持视觉
+  final bool supportVision;
+
   HomeModel({
     required this.name,
     required this.modelId,
     required this.desc,
     required this.color,
     this.powerful = false,
+    this.supportVision = false,
   });
 
   factory HomeModel.fromJson(Map<String, dynamic> json) => HomeModel(
@@ -131,6 +135,7 @@ class HomeModel {
         desc: json["desc"] ?? '',
         color: json["color"] ?? 'FF67AC5C',
         powerful: json['powerful'] ?? false,
+        supportVision: json['support_vision'] ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -139,5 +144,6 @@ class HomeModel {
         "desc": desc,
         "color": color,
         "powerful": powerful,
+        "support_vision": supportVision,
       };
 }

@@ -5,6 +5,7 @@ import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/env.dart';
 import 'package:askaide/helper/platform.dart';
+import 'package:askaide/repo/model/chat_message.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
 import 'package:dart_openai/openai.dart';
 import 'package:askaide/repo/data/settings_data.dart';
@@ -244,7 +245,7 @@ class OpenAIRepository {
   }
 
   Future<void> chatStream(
-    List<OpenAIChatCompletionChoiceMessageModel> messages,
+    List<ChatMessage> messages,
     void Function(ChatStreamRespData data) onData, {
     double temperature = 1.0,
     user = 'user',
