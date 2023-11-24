@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/helper.dart';
@@ -10,7 +8,6 @@ import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/markdown.dart';
 import 'package:askaide/page/component/enhanced_popup_menu.dart';
 import 'package:askaide/page/component/image.dart';
-import 'package:askaide/page/component/image_preview.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/share.dart';
@@ -181,7 +178,7 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
         alignment: Alignment.topCenter,
         child: ConstrainedBox(
           constraints: const BoxConstraints(
-            maxWidth: CustomSize.smallWindowSize,
+            maxWidth: CustomSize.maxWindowSize,
           ),
           child: SafeArea(
             child: SingleChildScrollView(
@@ -211,25 +208,21 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
 
   Widget buildShareWindow(CustomColors customColors, BuildContext context,
       AsyncSnapshot<ShareInfo> snapshot) {
-    return Column(
-      children: [
-        WidgetsToImage(
-          controller: controller,
-          child: Container(
-            color: customColors.backgroundContainerColor,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                usingChatStyle
-                    ? buildChatPreview(context, customColors)
-                    : buildListPreview(context, customColors),
-                if (showQRCode) buildQRCodePanel(customColors, snapshot),
-              ],
-            ),
-          ),
+    return WidgetsToImage(
+      controller: controller,
+      child: Container(
+        color: customColors.backgroundContainerColor,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            usingChatStyle
+                ? buildChatPreview(context, customColors)
+                : buildListPreview(context, customColors),
+            if (showQRCode) buildQRCodePanel(customColors, snapshot),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -306,7 +299,8 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                       margin: const EdgeInsets.fromLTRB(0, 10, 10, 0),
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
-                            maxWidth: _chatBoxMaxWidth(context) / 2),
+                            maxWidth: _chatBoxImagePreviewWidth(
+                                context, (message.images ?? []).length)),
                         child: FileUploadPreview(images: message.images ?? []),
                       ),
                     ),
@@ -383,7 +377,8 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                               margin: const EdgeInsets.fromLTRB(0, 0, 10, 7),
                               child: ConstrainedBox(
                                 constraints: BoxConstraints(
-                                    maxWidth: _chatBoxMaxWidth(context) / 2),
+                                    maxWidth: _chatBoxImagePreviewWidth(context,
+                                        (message.images ?? []).length)),
                                 child: FileUploadPreview(
                                     images: message.images ?? []),
                               ),
@@ -437,11 +432,18 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
   /// 获取聊天框的最大宽度
   double _chatBoxMaxWidth(BuildContext context) {
     var screenWidth = MediaQuery.of(context).size.width;
-    if (screenWidth >= CustomSize.smallWindowSize) {
-      return CustomSize.smallWindowSize;
+    if (screenWidth >= CustomSize.maxWindowSize) {
+      return CustomSize.maxWindowSize;
     }
 
     return screenWidth;
+  }
+
+  /// 获取图片预览的最大宽度
+  double _chatBoxImagePreviewWidth(BuildContext context, int imageCount) {
+    final expect = _chatBoxMaxWidth(context) / 1.3;
+    final max = imageCount > 1 ? 500.0 : 300.0;
+    return expect > max ? max : expect;
   }
 
   Widget _buildAvatar({String? avatarUrl, int? id, int size = 30}) {

@@ -793,6 +793,7 @@ class CreativeIslandItemV2 {
   String routeUri;
   String tag;
   String? note;
+  String size;
 
   CreativeIslandItemV2({
     required this.id,
@@ -802,6 +803,7 @@ class CreativeIslandItemV2 {
     required this.routeUri,
     this.tag = '',
     this.note,
+    this.size = 'large',
   });
 
   toJson() => {
@@ -812,6 +814,7 @@ class CreativeIslandItemV2 {
         'route_uri': routeUri,
         'tag': tag,
         'note': note,
+        'size': size,
       };
 
   static CreativeIslandItemV2 fromJson(Map<String, dynamic> json) {
@@ -823,6 +826,7 @@ class CreativeIslandItemV2 {
       routeUri: json['route_uri'],
       tag: json['tag'] ?? '',
       note: json['note'],
+      size: json['size'] ?? 'large',
     );
   }
 }

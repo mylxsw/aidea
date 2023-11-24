@@ -268,10 +268,12 @@ void openImagePreviewDialog(
   BuildContext context,
   CustomColors customColors, {
   required ImageProvider imageProvider,
-  required String imageUrl,
+  String? imageUrl,
   String? originalURL,
   String? description,
 }) {
+  final downloadUrl = originalURL ?? imageUrl;
+
   Navigator.of(context).push(
     MaterialPageRoute(
       fullscreenDialog: true,
@@ -285,90 +287,127 @@ void openImagePreviewDialog(
             },
           ),
           actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    fullscreenDialog: true,
-                    builder: (context) => GalleryItemShareScreen(
-                      images: [imageUrl],
+            if (imageUrl != null)
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      fullscreenDialog: true,
+                      builder: (context) => GalleryItemShareScreen(
+                        images: [imageUrl],
+                      ),
                     ),
-                  ),
-                );
-              },
-              icon: Icon(
-                Icons.share,
-                size: 16,
-                color: customColors.weakLinkColor,
+                  );
+                },
+                icon: Icon(
+                  Icons.share,
+                  size: 16,
+                  color: customColors.weakLinkColor,
+                ),
               ),
-            ),
-            IconButton(
-              onPressed: () async {
-                final cancel = BotToast.showCustomLoading(
-                  toastBuilder: (cancel) {
-                    return const LoadingIndicator(
-                      message: '下载中，请稍候...',
-                    );
-                  },
-                  allowClick: false,
-                  duration: const Duration(seconds: 120),
-                );
+            if (downloadUrl != null)
+              IconButton(
+                onPressed: () async {
+                  final cancel = BotToast.showCustomLoading(
+                    toastBuilder: (cancel) {
+                      return const LoadingIndicator(
+                        message: '下载中，请稍候...',
+                      );
+                    },
+                    allowClick: false,
+                    duration: const Duration(seconds: 120),
+                  );
 
-                try {
-                  final saveFile = await DefaultCacheManager()
-                      .getSingleFile(originalURL ?? imageUrl);
+                  try {
+                    final saveFile =
+                        await DefaultCacheManager().getSingleFile(downloadUrl);
 
-                  if (PlatformTool.isIOS() || PlatformTool.isAndroid()) {
+                    if (PlatformTool.isIOS() || PlatformTool.isAndroid()) {
+                      await ImageGallerySaver.saveImage(
+                        saveFile.readAsBytesSync(),
+                        quality: 100,
+                      );
+
+                      showSuccessMessage('图片保存成功');
+                    } else {
+                      var ext = saveFile.path.toLowerCase().split('.').last;
+                      MimeType mimeType;
+                      switch (ext) {
+                        case 'jpg':
+                        case 'jpeg':
+                          mimeType = MimeType.jpeg;
+                          break;
+                        case 'png':
+                          mimeType = MimeType.png;
+                          break;
+                        case 'gif':
+                          mimeType = MimeType.gif;
+                          break;
+                        default:
+                          mimeType = MimeType.other;
+                      }
+
+                      FileSaver.instance
+                          .saveFile(
+                        name: filenameWithoutExt(saveFile.path.split('/').last),
+                        filePath: saveFile.path,
+                        ext: ext,
+                        mimeType: mimeType,
+                      )
+                          .then((value) {
+                        showSuccessMessage('文件保存成功');
+                      });
+                    }
+                  } catch (e) {
+                    // ignore: use_build_context_synchronously
+                    showErrorMessageEnhanced(context, '图片保存失败，请稍后再试');
+                    Logger.instance.e('下载图片原图失败', error: e);
+                  } finally {
+                    cancel();
+                  }
+                },
+                icon: Icon(
+                  Icons.download_sharp,
+                  size: 16,
+                  color: customColors.weakLinkColor,
+                ),
+              ),
+            if (downloadUrl == null &&
+                (PlatformTool.isIOS() || PlatformTool.isAndroid()))
+              IconButton(
+                onPressed: () async {
+                  final cancel = BotToast.showCustomLoading(
+                    toastBuilder: (cancel) {
+                      return const LoadingIndicator(
+                        message: '下载中，请稍候...',
+                      );
+                    },
+                    allowClick: false,
+                    duration: const Duration(seconds: 120),
+                  );
+
+                  try {
                     await ImageGallerySaver.saveImage(
-                      saveFile.readAsBytesSync(),
+                      (imageProvider as MemoryImage).bytes,
                       quality: 100,
                     );
 
                     showSuccessMessage('图片保存成功');
-                  } else {
-                    var ext = saveFile.path.toLowerCase().split('.').last;
-                    MimeType mimeType;
-                    switch (ext) {
-                      case 'jpg':
-                      case 'jpeg':
-                        mimeType = MimeType.jpeg;
-                        break;
-                      case 'png':
-                        mimeType = MimeType.png;
-                        break;
-                      case 'gif':
-                        mimeType = MimeType.gif;
-                        break;
-                      default:
-                        mimeType = MimeType.other;
-                    }
-
-                    FileSaver.instance
-                        .saveFile(
-                      name: filenameWithoutExt(saveFile.path.split('/').last),
-                      filePath: saveFile.path,
-                      ext: ext,
-                      mimeType: mimeType,
-                    )
-                        .then((value) {
-                      showSuccessMessage('文件保存成功');
-                    });
+                  } catch (e) {
+                    // ignore: use_build_context_synchronously
+                    showErrorMessageEnhanced(context, '图片保存失败，请稍后再试');
+                    Logger.instance.e('下载图片原图失败', error: e);
+                  } finally {
+                    cancel();
                   }
-                } catch (e) {
-                  // ignore: use_build_context_synchronously
-                  showErrorMessageEnhanced(context, '图片保存失败，请稍后再试');
-                  Logger.instance.e('下载图片原图失败', error: e);
-                } finally {
-                  cancel();
-                }
-              },
-              icon: Icon(
-                Icons.download_sharp,
-                size: 16,
-                color: customColors.weakLinkColor,
-              ),
-            ),
+                },
+                icon: Icon(
+                  Icons.download_sharp,
+                  size: 16,
+                  color: customColors.weakLinkColor,
+                ),
+              )
           ],
         ),
         backgroundColor: customColors.backgroundContainerColor,
@@ -382,4 +421,33 @@ void openImagePreviewDialog(
       ),
     ),
   );
+}
+
+class ImageProviderPreviewer extends StatelessWidget {
+  final ImageProvider imageProvider;
+  final BorderRadius? borderRadius;
+  const ImageProviderPreviewer({
+    super.key,
+    required this.imageProvider,
+    this.borderRadius,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final customColors = Theme.of(context).extension<CustomColors>()!;
+    return ClipRRect(
+      borderRadius: borderRadius ?? BorderRadius.circular(8),
+      child: InkWell(
+        borderRadius: borderRadius ?? BorderRadius.circular(8),
+        child: Image(image: imageProvider, fit: BoxFit.cover),
+        onTap: () {
+          openImagePreviewDialog(
+            context,
+            customColors,
+            imageProvider: imageProvider,
+          );
+        },
+      ),
+    );
+  }
 }

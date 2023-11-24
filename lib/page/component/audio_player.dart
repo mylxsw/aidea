@@ -140,50 +140,50 @@ class EnhancedAudioPlayer extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const SizedBox(),
-        Padding(
-          padding: const EdgeInsets.only(left: 70),
-          child: loading
-              ? Row(
-                  children: [
-                    Text(
-                      '语音合成中，请稍候',
-                      style: TextStyle(
-                        color: customColors.weakTextColor,
-                        fontSize: 12,
-                      ),
+        const SizedBox(width: 100),
+        loading
+            ? Row(
+                children: [
+                  Text(
+                    '语音合成中，请稍候',
+                    style: TextStyle(
+                      color: customColors.weakTextColor,
+                      fontSize: 12,
                     ),
-                    const SizedBox(width: 10),
-                    LoadingAnimationWidget.bouncingBall(
-                      color: const Color.fromARGB(255, 254, 170, 74),
-                      size: 25,
-                    ),
-                  ],
-                )
-              : LoadingAnimationWidget.staggeredDotsWave(
-                  color: const Color.fromARGB(255, 254, 170, 74),
-                  size: 25,
-                ),
-        ),
+                  ),
+                  const SizedBox(width: 10),
+                  LoadingAnimationWidget.fourRotatingDots(
+                    color: const Color.fromARGB(255, 254, 170, 74),
+                    size: 12,
+                  ),
+                ],
+              )
+            : LoadingAnimationWidget.staggeredDotsWave(
+                color: const Color.fromARGB(255, 254, 170, 74),
+                size: 25,
+              ),
         if (!loading)
-          TextButton.icon(
-            onPressed: () {
-              controller.stop();
-            },
-            icon: Icon(
-              Icons.stop_circle_outlined,
-              color: customColors.weakLinkColor,
-            ),
-            label: Text(
-              '停止',
-              style: TextStyle(
+          SizedBox(
+            width: 100,
+            child: TextButton.icon(
+              onPressed: () {
+                controller.stop();
+              },
+              icon: Icon(
+                Icons.stop_circle_outlined,
                 color: customColors.weakLinkColor,
-                fontSize: 12,
+              ),
+              label: Text(
+                '停止',
+                style: TextStyle(
+                  color: customColors.weakLinkColor,
+                  fontSize: 12,
+                ),
               ),
             ),
           )
         else
-          const SizedBox(),
+          const SizedBox(width: 100),
       ],
     );
   }

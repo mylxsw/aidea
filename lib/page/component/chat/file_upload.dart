@@ -33,11 +33,10 @@ class FileUploadPreview extends StatelessWidget {
           }
 
           if (e.startsWith('data:')) {
-            return ClipRRect(
+            return ImageProviderPreviewer(
               borderRadius: BorderRadius.circular(5),
-              child: Image.memory(
+              imageProvider: MemoryImage(
                 const Base64Decoder().convert(e.split(',')[1]),
-                fit: BoxFit.cover,
               ),
             );
           }
@@ -49,6 +48,19 @@ class FileUploadPreview extends StatelessWidget {
             ))
         .toList();
     if (children.length > 1) {
+      if (children.length % 2 == 1) {
+        return Column(
+          children: [
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              children: children.sublist(0, children.length - 1),
+            ),
+            children.last,
+          ],
+        );
+      }
+
       return GridView.count(
         crossAxisCount: 2,
         shrinkWrap: true,

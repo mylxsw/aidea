@@ -12,7 +12,6 @@ import 'package:askaide/page/component/chat/chat_share.dart';
 import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/dialog.dart';
-import 'package:askaide/page/component/image_preview.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -201,25 +200,6 @@ class _ChatPreviewState extends State<ChatPreview> {
       );
     }
 
-    // 初始消息
-    // if (message.isInitMessage()) {
-    //   return Align(
-    //     alignment: Alignment.center,
-    //     child: Container(
-    //       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-    //       margin: const EdgeInsets.symmetric(horizontal: 30),
-    //       decoration: BoxDecoration(
-    //         borderRadius: BorderRadius.circular(10),
-    //         color: customColors.chatRoomReplyBackground,
-    //       ),
-    //       child: Text(
-    //         message.text,
-    //         style: Theme.of(context).textTheme.bodySmall,
-    //       ),
-    //     ),
-    //   );
-    // }
-
     final showTranslate = state.showTranslate &&
         state.translateText != null &&
         state.translateText != '';
@@ -243,8 +223,12 @@ class _ChatPreviewState extends State<ChatPreview> {
                     ? const EdgeInsets.fromLTRB(0, 0, 10, 7)
                     : const EdgeInsets.fromLTRB(10, 0, 0, 7),
                 child: ConstrainedBox(
-                  constraints:
-                      BoxConstraints(maxWidth: _chatBoxMaxWidth(context) / 2),
+                  constraints: BoxConstraints(
+                    maxWidth: _chatBoxImagePreviewWidth(
+                      context,
+                      (message.images ?? []).length,
+                    ),
+                  ),
                   child: FileUploadPreview(images: message.images ?? []),
                 ),
               ),
@@ -881,6 +865,13 @@ class _ChatPreviewState extends State<ChatPreview> {
     }
 
     return screenWidth;
+  }
+
+  /// 获取图片预览的最大宽度
+  double _chatBoxImagePreviewWidth(BuildContext context, int imageCount) {
+    final expect = _chatBoxMaxWidth(context) / 1.3;
+    final max = imageCount > 1 ? 400.0 : 300.0;
+    return expect > max ? max : expect;
   }
 }
 
