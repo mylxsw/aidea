@@ -33,6 +33,7 @@ class ModelAggregate {
               category: e.category,
               tag: e.tag,
               avatarUrl: e.avatarUrl,
+              supportVision: e.supportVision,
             ),
           )
           .toList());
@@ -63,25 +64,10 @@ class ModelAggregate {
 
   /// 根据模型唯一id查找模型
   static Future<mm.Model> model(String uid) async {
-    if (uid.split(':').length == 1) {
-      uid = '$modelTypeOpenAI:$uid';
-    }
-
     final supportModels = await models();
-    // if (uid.startsWith('$modelTypeOpenAI:')) {
-    //   models.addAll(OpenAIRepository.supportModels());
-    // }
-
-    // if (uid.startsWith('$modelTypeDeepAI:')) {
-    //   models.addAll(DeepAIRepository.supportModels());
-    // }
-
-    // if (uid.startsWith('$modelTypeStabilityAI:')) {
-    //   models.addAll(StabilityAIRepository.supportModels());
-    // }
 
     return supportModels.firstWhere(
-      (element) => element.uid() == uid,
+      (element) => element.uid() == uid || element.id == uid,
       orElse: () => mm.Model(defaultChatModel, defaultChatModel, 'openai',
           category: modelTypeOpenAI),
     );

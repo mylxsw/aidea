@@ -203,6 +203,7 @@ mixin AppLocale {
   static const String discover = 'discover';
 
   static const String customHomeModels = 'custom-home-models';
+  static const String userApiKeys = "user-api-keys";
 
   static const Map<String, dynamic> zh = {
     required: '必填',
@@ -396,6 +397,7 @@ mixin AppLocale {
     toPay: '立即支付',
     discover: '绘玩',
     customHomeModels: '常用模型',
+    userApiKeys: 'API Keys',
   };
 
   static const Map<String, dynamic> en = {
@@ -604,6 +606,7 @@ mixin AppLocale {
     toPay: 'To pay',
     discover: 'Discover',
     customHomeModels: 'Favorite Models',
+    userApiKeys: 'API Keys',
   };
 }
 

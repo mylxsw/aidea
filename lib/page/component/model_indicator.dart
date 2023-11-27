@@ -7,6 +7,7 @@ class ModelIndicatorInfo {
   String modelId;
   String modelName;
   String description;
+  bool supportVision;
 
   ModelIndicatorInfo({
     required this.modelName,
@@ -14,6 +15,7 @@ class ModelIndicatorInfo {
     required this.description,
     required this.icon,
     required this.activeColor,
+    this.supportVision = false,
   });
 }
 

@@ -19,9 +19,10 @@ class ImageUploader {
     _qiniuUploader = QiniuUploader(setting);
   }
 
-  final _compressWidth = 1920;
-  final _compressHeight = 1080;
+  final _compressWidth = 1024;
+  final _compressHeight = 1024;
 
+  /// 上传文件
   Future<UploadedFile> upload(String path, {String? usage}) async {
     Uint8List? data = await _imageCompress(path);
     if (data == null || data.isEmpty) {
@@ -31,6 +32,42 @@ class ImageUploader {
     return _qiniuUploader!.upload(path, data, usage: usage);
   }
 
+  /// 文件压缩后转为 base64
+  Future<String> base64({
+    String? path,
+    Uint8List? imageData,
+    int? compressWidth,
+    int? compressHeight,
+    int? maxSize,
+  }) async {
+    if (imageData != null) {
+      Uint8List? data = await _imageDataCompress(
+        imageData,
+        compressWidth: compressWidth,
+        compressHeight: compressHeight,
+        maxSize: maxSize ?? 1024 * 1024 * 2,
+      );
+      if (data == null || data.isEmpty) {
+        throw Exception('图片读取失败');
+      }
+
+      return 'data:image/png;base64,${base64Encode(data)}';
+    }
+
+    Uint8List? data = await _imageCompress(
+      path!,
+      compressWidth: compressWidth,
+      compressHeight: compressHeight,
+      maxSize: maxSize ?? 1024 * 1024 * 2,
+    );
+    if (data == null || data.isEmpty) {
+      throw Exception('图片读取失败');
+    }
+
+    return 'data:image/png;base64,${base64Encode(data)}';
+  }
+
+  // 上传文件数据
   Future<UploadedFile> uploadData(Uint8List imageData, {String? usage}) async {
     Uint8List? data = await _imageDataCompress(imageData);
     if (data == null || data.isEmpty) {
@@ -40,16 +77,20 @@ class ImageUploader {
     return _qiniuUploader!.upload("${randomId()}.jpg", data, usage: usage);
   }
 
-  Future<Uint8List?> _imageDataCompress(Uint8List imageData) async {
+  Future<Uint8List?> _imageDataCompress(Uint8List imageData,
+      {int? compressWidth,
+      int? compressHeight,
+      int quality = 80,
+      int maxSize = 1024 * 1024 * 2}) async {
     Uint8List? data = imageData;
     // 优先使用平台支持的压缩工具
     if (PlatformTool.isAndroid() || PlatformTool.isIOS()) {
       try {
         data = await FlutterImageCompress.compressWithList(
           data,
-          quality: 80,
-          minWidth: _compressWidth,
-          minHeight: _compressHeight,
+          quality: quality,
+          minWidth: compressWidth ?? _compressWidth,
+          minHeight: compressHeight ?? _compressHeight,
         );
       } catch (e) {
         // ignore
@@ -58,8 +99,9 @@ class ImageUploader {
       if (data == null || data.isEmpty) {
         try {
           data = await IsolateImage.data(data!).compress(
-            maxResolution: ImageResolution(_compressWidth, _compressHeight),
-            maxSize: 1024 * 1024 * 2,
+            maxResolution: ImageResolution(compressWidth ?? _compressWidth,
+                compressHeight ?? _compressHeight),
+            maxSize: maxSize,
           );
         } catch (e) {
           // ignore
@@ -68,8 +110,11 @@ class ImageUploader {
     } else {
       try {
         data = await IsolateImage.data(data).compress(
-          maxResolution: ImageResolution(_compressWidth, _compressHeight),
-          maxSize: 1024 * 1024 * 2,
+          maxResolution: ImageResolution(
+            compressWidth ?? _compressWidth,
+            compressHeight ?? _compressHeight,
+          ),
+          maxSize: maxSize,
         );
       } catch (e) {
         // ignore
@@ -83,11 +128,14 @@ class ImageUploader {
         if (img != null) {
           Image thumbnail = copyResize(
             img,
-            width: img.width > img.height ? _compressWidth : null,
-            height: img.width <= img.height ? _compressHeight : null,
+            width:
+                img.width > img.height ? compressWidth ?? _compressWidth : null,
+            height: img.width <= img.height
+                ? compressHeight ?? _compressHeight
+                : null,
           );
 
-          data = encodeJpg(thumbnail, quality: 80);
+          data = encodeJpg(thumbnail, quality: quality);
         }
       } catch (e) {
         // ignore
@@ -102,7 +150,11 @@ class ImageUploader {
     return data;
   }
 
-  Future<Uint8List?> _imageCompress(String path) async {
+  Future<Uint8List?> _imageCompress(String path,
+      {int? compressWidth,
+      int? compressHeight,
+      int quality = 80,
+      int maxSize = 1024 * 1024 * 2}) async {
     Uint8List? data;
 
     // 优先使用平台支持的压缩工具
@@ -110,9 +162,9 @@ class ImageUploader {
       try {
         data = await FlutterImageCompress.compressWithFile(
           path,
-          quality: 80,
-          minWidth: _compressWidth,
-          minHeight: _compressHeight,
+          quality: quality,
+          minWidth: compressWidth ?? _compressWidth,
+          minHeight: compressHeight ?? _compressHeight,
         );
       } catch (e) {
         // ignore
@@ -121,8 +173,9 @@ class ImageUploader {
       if (data == null || data.isEmpty) {
         try {
           data = await IsolateImage.path(path).compress(
-            maxResolution: ImageResolution(_compressWidth, _compressHeight),
-            maxSize: 1024 * 1024 * 2,
+            maxResolution: ImageResolution(compressWidth ?? _compressWidth,
+                compressHeight ?? _compressHeight),
+            maxSize: maxSize,
           );
         } catch (e) {
           // ignore
@@ -131,8 +184,11 @@ class ImageUploader {
     } else {
       try {
         data = await IsolateImage.path(path).compress(
-          maxResolution: ImageResolution(_compressWidth, _compressHeight),
-          maxSize: 1024 * 1024 * 2,
+          maxResolution: ImageResolution(
+            compressWidth ?? _compressWidth,
+            compressHeight ?? _compressHeight,
+          ),
+          maxSize: maxSize,
         );
       } catch (e) {
         // ignore
@@ -146,13 +202,16 @@ class ImageUploader {
         if (img != null) {
           Image thumbnail = copyResize(
             img,
-            width: img.width > img.height ? _compressWidth : null,
-            height: img.width <= img.height ? _compressHeight : null,
+            width:
+                img.width > img.height ? compressWidth ?? _compressWidth : null,
+            height: img.width <= img.height
+                ? compressHeight ?? _compressHeight
+                : null,
           );
 
           var n = path.toLowerCase();
           if (n.endsWith('.jpg') || n.endsWith('.jpeg')) {
-            data = encodeJpg(thumbnail, quality: 80);
+            data = encodeJpg(thumbnail, quality: quality);
           } else if (n.endsWith('.png')) {
             data = encodePng(thumbnail, level: 4);
           } else {

@@ -84,7 +84,7 @@ class _RoomsPageState extends State<RoomsPage> {
                           },
                         ),
                         if (Ability().enableAPIServer() &&
-                            !Ability().enableLocalOpenAI())
+                            !Ability().enableLocalOpenAI)
                           EnhancedPopupMenuItem(
                             title: '发起群聊',
                             icon: Icons.chat_bubble_outline,

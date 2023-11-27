@@ -87,33 +87,83 @@ class _DrawListScreenState extends State<DrawListScreen> {
             current is CreativeIslandItemsV2Loaded,
         builder: (context, state) {
           if (state is CreativeIslandItemsV2Loaded) {
-            return GridView.count(
-              padding: const EdgeInsets.only(top: 0),
-              crossAxisCount: _calCrossAxisCount(context),
-              childAspectRatio: 2,
-              children: state.items
-                  .map((e) => CreativeItem(
-                        imageURL: e.previewImage,
-                        title: e.title,
-                        titleColor: stringToColor(e.titleColor),
-                        tag: e.tag,
-                        onTap: () {
-                          if (userSignedIn) {
-                            var uri = Uri.tryParse(e.routeUri);
-                            if (e.note != null && e.note != '') {
-                              uri = uri!.replace(
-                                  queryParameters: <String, String>{
-                                'note': e.note!,
-                              }..addAll(uri.queryParameters));
-                            }
-
-                            context.push(uri.toString());
-                          } else {
-                            context.push('/login');
+            final items = state.items
+                .map((e) => CreativeItem(
+                      imageURL: e.previewImage,
+                      title: e.title,
+                      titleColor: stringToColor(e.titleColor),
+                      tag: e.tag,
+                      onTap: () {
+                        if (userSignedIn) {
+                          var uri = Uri.tryParse(e.routeUri);
+                          if (e.note != null && e.note != '') {
+                            uri = uri!.replace(
+                                queryParameters: <String, String>{
+                              'note': e.note!,
+                            }..addAll(uri.queryParameters));
                           }
-                        },
-                      ))
-                  .toList(),
+
+                          context.push(uri.toString());
+                        } else {
+                          context.push('/login');
+                        }
+                      },
+                      size: e.size,
+                    ))
+                .toList();
+            final largeItems = items.where((e) => e.size == 'large').toList();
+            final mediumItems = items.where((e) => e.size == 'medium').toList();
+            final otherItems = items
+                .where((e) => e.size != 'large' && e.size != 'medium')
+                .toList();
+
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  GridView.count(
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.only(top: 0, left: 10, right: 10),
+                    crossAxisCount: _calCrossAxisCount(context),
+                    childAspectRatio: 2,
+                    shrinkWrap: true,
+                    children: largeItems
+                        .map((e) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 5, vertical: 10),
+                              child: e,
+                            ))
+                        .toList(),
+                  ),
+                  GridView.count(
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
+                    crossAxisCount: _calCrossAxisCount(context) * 2,
+                    childAspectRatio: 1,
+                    shrinkWrap: true,
+                    children: mediumItems
+                        .map((e) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 5, vertical: 5),
+                              child: e,
+                            ))
+                        .toList(),
+                  ),
+                  GridView.count(
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
+                    crossAxisCount: _calCrossAxisCount(context) * 2,
+                    childAspectRatio: 2,
+                    shrinkWrap: true,
+                    children: otherItems
+                        .map((e) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 5, vertical: 5),
+                              child: e,
+                            ))
+                        .toList(),
+                  ),
+                ],
+              ),
             );
           }
 
@@ -131,6 +181,6 @@ class _DrawListScreenState extends State<DrawListScreen> {
       width = CustomSize.maxWindowSize;
     }
 
-    return (width / 400).round();
+    return (width / 400).round() > 2 ? 2 : (width / 400).round();
   }
 }

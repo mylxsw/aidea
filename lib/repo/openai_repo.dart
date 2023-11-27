@@ -5,6 +5,7 @@ import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/env.dart';
 import 'package:askaide/helper/platform.dart';
+import 'package:askaide/repo/model/chat_message.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
 import 'package:dart_openai/openai.dart';
 import 'package:askaide/repo/data/settings_data.dart';
@@ -244,7 +245,7 @@ class OpenAIRepository {
   }
 
   Future<void> chatStream(
-    List<OpenAIChatCompletionChoiceMessageModel> messages,
+    List<ChatMessage> messages,
     void Function(ChatStreamRespData data) onData, {
     double temperature = 1.0,
     user = 'user',
@@ -256,7 +257,7 @@ class OpenAIRepository {
 
     try {
       bool canUseWebsocket = true;
-      if (Ability().enableLocalOpenAI()) {
+      if (Ability().enableLocalOpenAI) {
         if (supportForChat.containsKey(model) || model.startsWith('openai:')) {
           canUseWebsocket = false;
         }
@@ -266,7 +267,7 @@ class OpenAIRepository {
         canUseWebsocket = false;
       }
 
-      if (Ability().supportWebSocket() && canUseWebsocket) {
+      if (Ability().supportWebSocket && canUseWebsocket) {
         final serverURL = settings.getDefault(settingServerURL, apiServerURL);
         final wsURL = serverURL.startsWith('https://')
             ? serverURL.replaceFirst('https://', 'wss://')
@@ -332,7 +333,7 @@ class OpenAIRepository {
           'temperature': temperature,
           'user': user,
           'max_tokens': maxTokens,
-          'n': Ability().enableLocalOpenAI() &&
+          'n': Ability().enableLocalOpenAI &&
                   (model.startsWith('openai:') || model.startsWith('gpt-'))
               ? null
               : roomId, // n 参数暂时用不到，复用作为 roomId
@@ -344,7 +345,7 @@ class OpenAIRepository {
           temperature: temperature,
           user: user,
           maxTokens: maxTokens,
-          n: Ability().enableLocalOpenAI()
+          n: Ability().enableLocalOpenAI
               ? null
               : roomId, // n 参数暂时用不到，复用作为 roomId
         );

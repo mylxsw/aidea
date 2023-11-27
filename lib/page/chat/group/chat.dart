@@ -49,8 +49,9 @@ class _GroupChatPageState extends State<GroupChatPage> {
   final ValueNotifier<bool> _inputEnabled = ValueNotifier(true);
   final ChatPreviewController _chatPreviewController = ChatPreviewController();
   final AudioPlayerController _audioPlayerController =
-      AudioPlayerController(useRemoteAPI: false);
+      AudioPlayerController(useRemoteAPI: true);
   bool showAudioPlayer = false;
+  bool audioLoadding = false;
 
   List<GroupMember>? selectedMembers = [];
   List<GroupMessage> messages = [];
@@ -77,6 +78,12 @@ class _GroupChatPageState extends State<GroupChatPage> {
     _audioPlayerController.onPlayAudioStarted = () {
       setState(() {
         showAudioPlayer = true;
+      });
+    };
+
+    _audioPlayerController.onPlayAudioLoading = (loading) {
+      setState(() {
+        audioLoadding = loading;
       });
     };
   }
@@ -143,7 +150,10 @@ class _GroupChatPageState extends State<GroupChatPage> {
               children: [
                 // 语音输出中提示
                 if (showAudioPlayer)
-                  EnhancedAudioPlayer(controller: _audioPlayerController),
+                  EnhancedAudioPlayer(
+                    controller: _audioPlayerController,
+                    loading: audioLoadding,
+                  ),
                 // 聊天内容窗口
                 Expanded(
                   child: _buildChatPreviewArea(
@@ -172,7 +182,10 @@ class _GroupChatPageState extends State<GroupChatPage> {
                         : ChatInput(
                             enableNotifier: _inputEnabled,
                             enableImageUpload: false,
-                            onSubmit: _handleSubmit,
+                            onSubmit: (value) {
+                              _handleSubmit(value);
+                              FocusManager.instance.primaryFocus?.unfocus();
+                            },
                             onNewChat: () => handleResetContext(context),
                             hintText: '有问题尽管问我',
                             onVoiceRecordTappedEvent: () {
@@ -601,6 +614,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
                               username: e.message.senderName,
                               avatarURL: e.message.avatarUrl,
                               leftSide: e.message.role == Role.receiver,
+                              images: e.message.images,
                             ))
                         .toList(),
                   ),

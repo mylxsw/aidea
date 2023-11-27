@@ -61,6 +61,9 @@ class Message {
   /// 消息发送者的名称，不需要持久化
   String? senderName;
 
+  /// 消息图片列表
+  List<String>? images;
+
   Message(
     this.role,
     this.text, {
@@ -80,6 +83,7 @@ class Message {
     this.tokenConsumed,
     this.avatarUrl,
     this.senderName,
+    this.images,
   });
 
   /// 获取消息附加信息
@@ -133,6 +137,15 @@ class Message {
     return status == 0;
   }
 
+  String get markdownWithImages {
+    var t = text;
+    if (images != null && images!.isNotEmpty) {
+      t = images!.map((e) => '![img]($e)\n\n').join('') + t;
+    }
+
+    return t;
+  }
+
   Map<String, Object?> toMap() {
     return {
       'id': id,
@@ -151,6 +164,7 @@ class Message {
       'status': status,
       'token_consumed': tokenConsumed,
       'quota_consumed': quotaConsumed,
+      'images': images != null ? jsonEncode(images) : null,
     };
   }
 
@@ -172,7 +186,11 @@ class Message {
         ts = map['ts'] == null
             ? null
             : DateTime.fromMillisecondsSinceEpoch(map['ts'] as int),
-        roomId = map['room_id'] as int?;
+        roomId = map['room_id'] as int?,
+        images = map['images'] == null
+            ? null
+            : (jsonDecode(map['images'] as String) as List<dynamic>)
+                .cast<String>();
 }
 
 enum Role {

@@ -23,7 +23,7 @@ Object? resolveHTTPStatusCode(int statusCode,
     case 400:
       return const LanguageText('请求参数错误');
     case 401:
-      if (Ability().enableLocalOpenAI()) {
+      if (Ability().enableLocalOpenAI) {
         return const LanguageText(AppLocale.openAIAuthFailed);
       }
 
