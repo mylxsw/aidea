@@ -109,11 +109,13 @@ showBeautyDialog(
   BuildContext context, {
   required QuickAlertType type,
   required String text,
+  String? title,
   String confirmBtnText = '确定',
   String? cancelBtnText,
   Function()? onConfirmBtnTap,
   Function()? onCancelBtnTap,
   bool showCancelBtn = false,
+  bool barrierDismissible = false, // 禁止点击外部关闭
 }) {
   final customColors = Theme.of(context).extension<CustomColors>()!;
 
@@ -122,7 +124,7 @@ showBeautyDialog(
     type: type,
     text: text,
     width: MediaQuery.of(context).size.width > 600 ? 400 : null,
-    barrierDismissible: false, // 禁止点击外部关闭
+    barrierDismissible: barrierDismissible,
     showCancelBtn: showCancelBtn,
     confirmBtnText: confirmBtnText,
     cancelBtnText: cancelBtnText ?? AppLocale.cancel.getString(context),
@@ -134,7 +136,8 @@ showBeautyDialog(
       color: Colors.white,
       fontWeight: FontWeight.normal,
     ),
-    title: '',
+    title: title ?? '',
+    titleColor: customColors.dialogDefaultTextColor!,
     textColor: customColors.dialogDefaultTextColor!,
     cancelBtnTextStyle: TextStyle(
       color: customColors.dialogDefaultTextColor,

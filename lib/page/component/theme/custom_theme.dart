@@ -343,7 +343,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     columnBlockBorderColor: Color.fromARGB(255, 72, 72, 72),
     columnBlockBackgroundColor: Color.fromARGB(255, 52, 52, 52),
     columnBlockDividerColor: Color.fromARGB(160, 60, 60, 60),
-    textfieldHintColor: Color.fromARGB(255, 84, 84, 84),
+    textfieldHintColor: Color.fromARGB(255, 105, 105, 105),
     textfieldHintDeepColor: Color.fromARGB(255, 170, 170, 170),
     textfieldLabelColor: Color.fromARGB(255, 218, 218, 218),
     textfieldValueColor: Color.fromARGB(255, 207, 207, 207),

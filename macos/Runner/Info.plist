@@ -30,6 +30,8 @@
 	<string>NSApplication</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>We need to access to the microphone to record audio file</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need to access to the photo library to pick files for upload</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>

@@ -1,13 +1,14 @@
+import 'dart:io';
+
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/platform.dart';
-import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/voice_record.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/repo/settings_repo.dart';
-import 'package:bot_toast/bot_toast.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,6 +23,8 @@ class ChatInput extends StatefulWidget {
   final ValueNotifier<bool> enableNotifier;
   final Widget? toolbar;
   final bool enableImageUpload;
+  final Function(List<FileUpload> files)? onImageSelected;
+  final List<FileUpload>? selectedImageFiles;
   final Function()? onNewChat;
   final String hintText;
   final Function()? onVoiceRecordTappedEvent;
@@ -37,6 +40,8 @@ class ChatInput extends StatefulWidget {
     this.hintText = '',
     this.onVoiceRecordTappedEvent,
     this.leftSideToolsBuilder,
+    this.onImageSelected,
+    this.selectedImageFiles,
   });
 
   @override
@@ -99,20 +104,70 @@ class _ChatInputState extends State<ChatInput> {
         final setting = context.read<SettingRepository>();
         return Column(
           children: [
-            // 工具栏
-            if (widget.toolbar != null)
-              Row(
-                children: [
-                  Expanded(child: widget.toolbar!),
-                  Text(
-                    "${_textController.text.length}/$maxLength",
-                    textScaleFactor: 0.8,
-                    style: TextStyle(
-                      color: customColors.chatInputPanelText,
-                    ),
-                  ),
-                ],
+            if (widget.selectedImageFiles != null &&
+                widget.selectedImageFiles!.isNotEmpty)
+              SizedBox(
+                height: 110,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: widget.selectedImageFiles!
+                      .map(
+                        (e) => Container(
+                          margin: const EdgeInsets.only(right: 8),
+                          padding: const EdgeInsets.all(5),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(5),
+                                child: e.file.bytes != null
+                                    ? Image.memory(
+                                        e.file.bytes!,
+                                        fit: BoxFit.cover,
+                                        width: 100,
+                                        height: 100,
+                                      )
+                                    : Image.file(
+                                        File(e.file.path!),
+                                        fit: BoxFit.cover,
+                                        width: 100,
+                                        height: 100,
+                                      ),
+                              ),
+                              if (widget.enableNotifier.value)
+                                Positioned(
+                                  right: 5,
+                                  top: 5,
+                                  child: InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        widget.selectedImageFiles!.remove(e);
+                                        widget.onImageSelected
+                                            ?.call(widget.selectedImageFiles!);
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(3),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: customColors.chatRoomBackground,
+                                      ),
+                                      child: Icon(
+                                        Icons.close,
+                                        size: 10,
+                                        color: customColors.weakTextColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
               ),
+            // 工具栏
+            if (widget.toolbar != null) widget.toolbar!,
             // if (widget.toolbar != null)
             const SizedBox(height: 8),
             // 聊天内容输入栏
@@ -142,8 +197,11 @@ class _ChatInputState extends State<ChatInput> {
                     // 聊天功能按钮
                     Row(
                       children: [
-                        if (widget.enableImageUpload &&
-                            Ability().supportImageUploader())
+                        if (widget.enableNotifier.value &&
+                            widget.enableImageUpload &&
+                            Ability().supportImageUploader &&
+                            widget.onImageSelected != null &&
+                            Ability().supportWebSocket)
                           _buildImageUploadButton(
                               context, setting, customColors),
                         if (widget.leftSideToolsBuilder != null)
@@ -257,42 +315,21 @@ class _ChatInputState extends State<ChatInput> {
     return IconButton(
       onPressed: () async {
         HapticFeedbackHelper.mediumImpact();
-        FilePickerResult? result =
-            await FilePicker.platform.pickFiles(type: FileType.image);
+        if (widget.selectedImageFiles != null &&
+            widget.selectedImageFiles!.length >= 4) {
+          showSuccessMessage('最多只能上传 4 张图片');
+          return;
+        }
+
+        FilePickerResult? result = await FilePicker.platform.pickFiles(
+          type: FileType.image,
+          allowMultiple: true,
+        );
         if (result != null && result.files.isNotEmpty) {
-          var cancel = BotToast.showCustomLoading(
-              toastBuilder: (void Function() cancelFunc) {
-            return Container(
-              padding: const EdgeInsets.all(15),
-              decoration: const BoxDecoration(
-                  color: Colors.black54,
-                  borderRadius: BorderRadius.all(Radius.circular(8))),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    AppLocale.uploading.getString(context),
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  const SizedBox(height: 10),
-                  const CircularProgressIndicator(
-                    backgroundColor: Colors.white,
-                  ),
-                ],
-              ),
-            );
-          });
-
-          var upload = ImageUploader(setting).upload(result.files.single.path!);
-
-          upload.then((value) {
-            _handleSubmited(
-              '![${value.name}](${value.url})',
-              notSend: true,
-            );
-          }).onError((error, stackTrace) {
-            showErrorMessageEnhanced(context, error!);
-          }).whenComplete(() => cancel());
+          final files = widget.selectedImageFiles ?? [];
+          files.addAll(result.files.map((e) => FileUpload(file: e)).toList());
+          widget.onImageSelected
+              ?.call(files.sublist(0, files.length > 4 ? 4 : files.length));
         }
       },
       icon: const Icon(Icons.camera_alt),
@@ -327,7 +364,5 @@ class _ChatInputState extends State<ChatInput> {
       widget.onSubmit(text);
       _textController.clear();
     }
-
-    _focusNode.requestFocus();
   }
 }

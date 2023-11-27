@@ -16,6 +16,7 @@ class AudioPlayerController {
 
   Function()? onPlayStopped;
   Function()? onPlayAudioStarted;
+  Function(bool loading)? onPlayAudioLoading;
 
   final bool useRemoteAPI;
 
@@ -88,8 +89,9 @@ class AudioPlayerController {
       if (onPlayAudioStarted != null) {
         onPlayAudioStarted!();
       }
-
+      onPlayAudioLoading?.call(true);
       resetAudioSourcesForPlayer(await APIServer().textToVoice(text: text));
+      onPlayAudioLoading?.call(false);
       playNextAudioForPlayer();
     } else {
       flutterTts.speak(text);
@@ -128,7 +130,9 @@ class AudioPlayerController {
 
 class EnhancedAudioPlayer extends StatelessWidget {
   final AudioPlayerController controller;
-  const EnhancedAudioPlayer({super.key, required this.controller});
+  final bool loading;
+  const EnhancedAudioPlayer(
+      {super.key, required this.controller, this.loading = false});
 
   @override
   Widget build(BuildContext context) {
@@ -136,30 +140,50 @@ class EnhancedAudioPlayer extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const SizedBox(),
-        Padding(
-          padding: const EdgeInsets.only(left: 70),
-          child: LoadingAnimationWidget.staggeredDotsWave(
-            color: const Color.fromARGB(255, 254, 170, 74),
-            size: 25,
-          ),
-        ),
-        TextButton.icon(
-          onPressed: () {
-            controller.stop();
-          },
-          icon: Icon(
-            Icons.stop_circle_outlined,
-            color: customColors.weakLinkColor,
-          ),
-          label: Text(
-            '停止',
-            style: TextStyle(
-              color: customColors.weakLinkColor,
-              fontSize: 12,
+        const SizedBox(width: 100),
+        loading
+            ? Row(
+                children: [
+                  Text(
+                    '语音合成中，请稍候',
+                    style: TextStyle(
+                      color: customColors.weakTextColor,
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  LoadingAnimationWidget.fourRotatingDots(
+                    color: const Color.fromARGB(255, 254, 170, 74),
+                    size: 12,
+                  ),
+                ],
+              )
+            : LoadingAnimationWidget.staggeredDotsWave(
+                color: const Color.fromARGB(255, 254, 170, 74),
+                size: 25,
+              ),
+        if (!loading)
+          SizedBox(
+            width: 100,
+            child: TextButton.icon(
+              onPressed: () {
+                controller.stop();
+              },
+              icon: Icon(
+                Icons.stop_circle_outlined,
+                color: customColors.weakLinkColor,
+              ),
+              label: Text(
+                '停止',
+                style: TextStyle(
+                  color: customColors.weakLinkColor,
+                  fontSize: 12,
+                ),
+              ),
             ),
-          ),
-        ),
+          )
+        else
+          const SizedBox(width: 100),
       ],
     );
   }

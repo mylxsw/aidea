@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/page/component/chat/markdown/latex.dart';
 import 'package:askaide/page/component/image_preview.dart';
@@ -80,7 +82,10 @@ class Markdown extends StatelessWidget {
           );
         }
 
-        return Image.network(uri.toString());
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(5),
+          child: Image.network(uri.toString()),
+        );
       },
       extensionSet: ExtensionSet.gitHubFlavored,
       data: data,
@@ -138,6 +143,16 @@ class MarkdownPlus extends StatelessWidget {
           builder: (url, attributes) {
             if (url.isEmpty) {
               return const SizedBox();
+            }
+
+            if (url.startsWith('data:')) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Image.memory(
+                  const Base64Decoder().convert(url.split(',')[1]),
+                  fit: BoxFit.cover,
+                ),
+              );
             }
 
             return NetworkImagePreviewer(

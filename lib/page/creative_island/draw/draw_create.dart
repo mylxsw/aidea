@@ -53,7 +53,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
   String? selectedImagePath;
   Uint8List? selectedImageData;
 
-  bool enableAIRewrite = true;
+  bool enableAIRewrite = false;
   int generationImageCount = 1;
   CreativeIslandVendorModel? selectedModel;
   String? upscaleBy;

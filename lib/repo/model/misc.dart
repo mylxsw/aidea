@@ -511,6 +511,7 @@ class Model {
   bool disabled;
   String? tag;
   String? avatarUrl;
+  bool supportVision;
 
   String get realModelId {
     return id.split(':').last;
@@ -527,6 +528,7 @@ class Model {
     this.disabled = false,
     this.tag,
     this.avatarUrl,
+    this.supportVision = false,
   });
 
   toJson() => {
@@ -540,6 +542,7 @@ class Model {
         'disabled': disabled,
         'tag': tag,
         'avatar_url': avatarUrl,
+        'support_vision': supportVision,
       };
 
   static Model fromJson(Map<String, dynamic> json) {
@@ -554,6 +557,7 @@ class Model {
       disabled: json['disabled'] ?? false,
       tag: json['tag'],
       avatarUrl: json['avatar_url'],
+      supportVision: json['support_vision'] ?? false,
     );
   }
 }
