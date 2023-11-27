@@ -22,6 +22,12 @@ https://aidea.aicode.cc
 - 客户端：https://github.com/mylxsw/aidea
 - 服务端：https://github.com/mylxsw/aidea-server
 
+## 开发、编译运行环境
+
+搭建开发环境，用来编译和打包 APP，可以参考下面的文章，更多文章后面有时间了会持续更新。
+
+- [AIdea 项目开发环境部署教程（一）前端 Flutter 环境搭建](https://mp.weixin.qq.com/s/bgAIH6s7t5IREusK_WtpRg)
+
 ## 私有化部署
 
 如果你不想使用托管的云服务，可以自己部署服务端，[部署请看这里](https://github.com/mylxsw/aidea-server/blob/main/docs/deploy.md)。
