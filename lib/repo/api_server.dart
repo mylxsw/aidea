@@ -6,10 +6,12 @@ import 'package:askaide/helper/error.dart';
 import 'package:askaide/helper/http.dart';
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
+import 'package:askaide/repo/api/article.dart';
 import 'package:askaide/repo/api/creative.dart';
 import 'package:askaide/repo/api/image_model.dart';
 import 'package:askaide/repo/api/info.dart';
 import 'package:askaide/repo/api/keys.dart';
+import 'package:askaide/repo/api/notification.dart';
 import 'package:askaide/repo/api/page.dart';
 import 'package:askaide/repo/api/payment.dart';
 import 'package:askaide/repo/api/quota.dart';
@@ -1779,5 +1781,50 @@ class APIServer {
   /// 删除 API Key
   Future<void> deleteAPIKey({required int id}) async {
     return sendDeleteRequest('/v1/api-keys/$id', (data) {});
+  }
+
+  /// 消息通知 ////////////////////////////////////////////////////////////////////
+  /// 消息通知列表
+  Future<OffsetPageData<NotifyMessage>> notifications({
+    int startId = 0,
+    int? perPage = 20,
+    bool cache = true,
+  }) async {
+    return sendCachedGetRequest(
+      '/v1/notifications',
+      (resp) {
+        var res = <NotifyMessage>[];
+        for (var item in resp.data['data']) {
+          res.add(NotifyMessage.fromJson(item));
+        }
+
+        return OffsetPageData(
+          data: res,
+          lastId: resp.data['last_id'],
+          startId: resp.data['start_id'],
+          perPage: resp.data['per_page'],
+        );
+      },
+      queryParameters: {
+        'start_id': startId,
+        'per_page': perPage,
+      },
+      forceRefresh: !cache,
+    );
+  }
+
+  /// 文章 ////////////////////////////////////////////////////////////////////
+  /// 文章详情
+  Future<Article> article({
+    required int id,
+    bool cache = true,
+  }) async {
+    return sendCachedGetRequest(
+      '/v1/articles/$id',
+      (resp) {
+        return Article.fromJson(resp.data['data']);
+      },
+      forceRefresh: !cache,
+    );
   }
 }
