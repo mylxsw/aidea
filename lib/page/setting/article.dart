@@ -77,6 +77,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                 children: [
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

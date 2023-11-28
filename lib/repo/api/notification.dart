@@ -1,5 +1,6 @@
 class NotifyMessage {
   int id;
+  int articleId;
   String title;
   String content;
   String? type;
@@ -9,6 +10,7 @@ class NotifyMessage {
     required this.id,
     required this.title,
     required this.content,
+    required this.articleId,
     this.type,
     this.createdAt,
   });
@@ -16,6 +18,7 @@ class NotifyMessage {
   factory NotifyMessage.fromJson(Map<String, dynamic> json) {
     return NotifyMessage(
       id: json['id'],
+      articleId: json['article_id'] ?? json['id'],
       title: json['title'],
       content: json['content'],
       type: json['type'],
@@ -28,6 +31,7 @@ class NotifyMessage {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'article_id': articleId,
       'title': title,
       'content': content,
       'type': type,

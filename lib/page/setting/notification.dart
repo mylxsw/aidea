@@ -63,10 +63,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     message: item,
                     customColors: customColors,
                     onTap: () {
-                      context.push(Uri(
-                              path: '/article',
-                              queryParameters: {'id': item.id.toString()})
-                          .toString());
+                      context.push(Uri(path: '/article', queryParameters: {
+                        'id': item.articleId.toString()
+                      }).toString());
                     },
                   );
                 },
