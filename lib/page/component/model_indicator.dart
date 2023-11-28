@@ -58,7 +58,7 @@ class ModelIndicator extends StatelessWidget {
                     Text(
                       model.modelName,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 15,
                         color: selected
                             ? Colors.white
                             : customColors.weakLinkColor,
