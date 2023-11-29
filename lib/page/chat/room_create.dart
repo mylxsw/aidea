@@ -138,6 +138,7 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                                 const EdgeInsets.only(right: 5, left: 10),
                             overlayColor:
                                 MaterialStateProperty.all(Colors.transparent),
+                            tabAlignment: TabAlignment.center,
                           ),
                         ),
                         Expanded(

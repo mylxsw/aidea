@@ -21,6 +21,7 @@ import 'package:askaide/page/creative_island/draw/artistic_text.dart';
 import 'package:askaide/page/setting/account_security.dart';
 import 'package:askaide/page/app_scaffold.dart';
 import 'package:askaide/page/lab/avatar_selector.dart';
+import 'package:askaide/page/setting/article.dart';
 import 'package:askaide/page/setting/background_selector.dart';
 import 'package:askaide/page/setting/bind_phone_page.dart';
 import 'package:askaide/page/setting/change_password.dart';
@@ -46,6 +47,7 @@ import 'package:askaide/page/creative_island/draw/image_edit_direct.dart';
 import 'package:askaide/page/lab/draw_board.dart';
 import 'package:askaide/page/creative_island/gallery/gallery.dart';
 import 'package:askaide/page/creative_island/gallery/gallery_item.dart';
+import 'package:askaide/page/setting/notification.dart';
 import 'package:askaide/page/setting/openai_setting.dart';
 import 'package:askaide/page/balance/payment.dart';
 import 'package:askaide/page/lab/prompt.dart';
@@ -921,6 +923,29 @@ class MyApp extends StatefulWidget {
                       ),
                     ],
                     child: UserAPIKeysScreen(setting: settingRepo),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'notifications',
+              path: '/notifications',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  NotificationScreen(setting: settingRepo),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'articles',
+              path: '/article',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  ArticleScreen(
+                    settings: settingRepo,
+                    id: int.tryParse(state.queryParameters['id'] ?? '') ?? 0,
                   ),
                 );
               },

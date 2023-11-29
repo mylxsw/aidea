@@ -66,6 +66,14 @@ class _SettingScreenState extends State<SettingScreen> {
               color: customColors.backgroundInvertedColor,
             ),
           ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                context.push('/notifications');
+              },
+              icon: const Icon(Icons.notifications_outlined),
+            ),
+          ],
           child: BlocBuilder<AccountBloc, AccountState>(
             builder: (_, state) {
               return buildSettingsList([
