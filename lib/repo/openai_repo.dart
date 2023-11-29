@@ -268,14 +268,19 @@ class OpenAIRepository {
       }
 
       if (Ability().supportWebSocket && canUseWebsocket) {
-        final serverURL = settings.getDefault(settingServerURL, apiServerURL);
+        var serverURL = settings.getDefault(settingServerURL, apiServerURL);
+        if (PlatformTool.isWeb() && (serverURL == '' || serverURL == '/')) {
+          serverURL =
+              '${Uri.base.scheme}://${Uri.base.host}${Uri.base.hasPort ? ':${Uri.base.port}' : ''}';
+        }
+
         final wsURL = serverURL.startsWith('https://')
             ? serverURL.replaceFirst('https://', 'wss://')
             : serverURL.replaceFirst('http://', 'ws://');
+        final wsUri = Uri.parse('$wsURL/v1/chat/completions');
 
         final apiToken = settings.getDefault(settingAPIServerToken, '');
 
-        final wsUri = Uri.parse('$wsURL/v1/chat/completions');
         var channel = WebSocketChannel.connect(Uri(
           scheme: wsUri.scheme,
           host: wsUri.host,
