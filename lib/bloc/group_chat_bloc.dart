@@ -23,10 +23,14 @@ class GroupChatBloc extends Bloc<GroupChatEvent, GroupChatState> {
           await APIServer().chatGroup(event.groupId, cache: !event.forceUpdate);
       final states = await stateManager.loadRoomStates(event.groupId);
 
+      final defaultChatMembers = await loadDefaultChatMembers(event.groupId);
+
       emit(GroupChatLoaded(
         group: group,
         states: states,
-        defaultChatMembers: await loadDefaultChatMembers(event.groupId),
+        defaultChatMembers: defaultChatMembers.isEmpty
+            ? group.members.map((e) => e.id!).toList()
+            : defaultChatMembers,
       ));
     });
 
@@ -67,8 +71,6 @@ class GroupChatBloc extends Bloc<GroupChatEvent, GroupChatState> {
             memberIds: event.members,
           ),
         );
-
-        Logger.instance.d(resp.toJson());
 
         // 记录默认聊天成员
         updateDefaultChatMembers(

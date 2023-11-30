@@ -21,8 +21,13 @@ class Ability {
   }
 
   /// 是否支持 Websocket
-  bool supportWebSocket() {
+  bool get supportWebSocket {
     return capabilities.supportWebsocket;
+  }
+
+  /// 是否支持 API Keys 功能
+  bool get supportAPIKeys {
+    return capabilities.supportAPIKeys;
   }
 
   /// 更新能力
@@ -100,7 +105,7 @@ class Ability {
   }
 
   /// 是否启用了 OpenAI 自定义设置
-  bool enableLocalOpenAI() {
+  bool get enableLocalOpenAI {
     return setting.boolDefault(settingOpenAISelfHosted, false);
   }
 
@@ -111,13 +116,13 @@ class Ability {
   }
 
   /// 是否支持翻译功能
-  bool supportTranslate() {
+  bool get supportTranslate {
     return false;
     // return setting.stringDefault(settingAPIServerToken, '') != '';
   }
 
   /// 是否支持语音合成功能
-  bool supportSpeak() {
+  bool get supportSpeak {
     // return setting.stringDefault(settingAPIServerToken, '') != '';
     if (PlatformTool.isWeb()) {
       return false;
@@ -127,7 +132,7 @@ class Ability {
   }
 
   /// 是否支持图片上传功能
-  bool supportImageUploader() {
+  bool get supportImageUploader {
     return supportImglocUploader() || supportQiniuUploader();
   }
 

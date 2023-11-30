@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
 # 应用正式发布时，需要同步修改 lib/helper/constant.dart 中的 VERSION 值
-version: 1.0.8+1
+version: 1.0.9+1
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -116,7 +116,7 @@ dependencies:
   web_socket_channel: ^2.4.0
   flutter_initicon: ^3.0.0+1
   markdown_widget: ^2.3.1
-  flutter_math_fork: ^0.7.1
+  flutter_math_fork: ^0.7.2
   
 dev_dependencies:
   flutter_test:

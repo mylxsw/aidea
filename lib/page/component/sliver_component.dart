@@ -29,6 +29,7 @@ class SliverSingleComponent extends StatelessWidget {
     return CustomScrollView(
       slivers: [
         SliverAppBar(
+          automaticallyImplyLeading: false,
           expandedHeight: expendedHeight,
           floating: false,
           pinned: true,
@@ -90,6 +91,7 @@ class SliverComponent extends StatelessWidget {
       headerSliverBuilder: (context, innerBoxIsScrolled) {
         return [
           SliverAppBar(
+            automaticallyImplyLeading: false,
             toolbarHeight: CustomSize.toolbarHeight,
             expandedHeight: expendedHeight,
             floating: false,

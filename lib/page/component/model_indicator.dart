@@ -7,6 +7,7 @@ class ModelIndicatorInfo {
   String modelId;
   String modelName;
   String description;
+  bool supportVision;
 
   ModelIndicatorInfo({
     required this.modelName,
@@ -14,6 +15,7 @@ class ModelIndicatorInfo {
     required this.description,
     required this.icon,
     required this.activeColor,
+    this.supportVision = false,
   });
 }
 
@@ -56,7 +58,7 @@ class ModelIndicator extends StatelessWidget {
                     Text(
                       model.modelName,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 15,
                         color: selected
                             ? Colors.white
                             : customColors.weakLinkColor,

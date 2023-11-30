@@ -66,6 +66,14 @@ class _SettingScreenState extends State<SettingScreen> {
               color: customColors.backgroundInvertedColor,
             ),
           ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                context.push('/notifications');
+              },
+              icon: const Icon(Icons.notifications_outlined),
+            ),
+          ],
           child: BlocBuilder<AccountBloc, AccountState>(
             builder: (_, state) {
               return buildSettingsList([
@@ -97,6 +105,9 @@ class _SettingScreenState extends State<SettingScreen> {
                     // OpenAI 自定义配置
                     if (Ability().enableOpenAI)
                       _buildOpenAISelfHostedSetting(customColors),
+                    // 用户 API Keys 配置
+                    if (Ability().supportAPIKeys)
+                      _buildUserAPIKeySetting(customColors),
                   ],
                 ),
 
@@ -579,6 +590,16 @@ class _SettingScreenState extends State<SettingScreen> {
       title: Text(AppLocale.customHomeModels.getString(context)),
       onPressed: (context) {
         context.push('/setting/custom-home-models');
+      },
+    );
+  }
+
+  /// 用户 API Key 配置
+  SettingsTile _buildUserAPIKeySetting(CustomColors customColors) {
+    return SettingsTile.navigation(
+      title: Text(AppLocale.userApiKeys.getString(context)),
+      onPressed: (context) {
+        context.push('/setting/user-api-keys');
       },
     );
   }

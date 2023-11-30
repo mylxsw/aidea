@@ -5,6 +5,7 @@ import 'package:askaide/helper/error.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/deepai_repo.dart';
+import 'package:askaide/repo/model/chat_message.dart';
 import 'package:askaide/repo/model/message.dart';
 import 'package:askaide/repo/model/room.dart';
 import 'package:askaide/repo/openai_repo.dart';
@@ -172,7 +173,7 @@ class ModelResolver {
   }
 
   /// 构建机器人请求上下文
-  List<OpenAIChatCompletionChoiceMessageModel> _buildRequestContext(
+  List<ChatMessage> _buildRequestContext(
     Room room,
     List<Message> messages,
   ) {
@@ -192,10 +193,14 @@ class ModelResolver {
         .where((e) => !e.isSystem() && !e.isInitMessage())
         .where((e) => !e.statusIsFailed())
         .map((e) => e.role == Role.receiver
-            ? OpenAIChatCompletionChoiceMessageModel(
-                role: OpenAIChatMessageRole.assistant, content: e.text)
-            : OpenAIChatCompletionChoiceMessageModel(
-                role: OpenAIChatMessageRole.user, content: e.text))
+            ? ChatMessage(
+                role: OpenAIChatMessageRole.assistant,
+                content: e.text,
+                images: e.images)
+            : ChatMessage(
+                role: OpenAIChatMessageRole.user,
+                content: e.text,
+                images: e.images))
         .toList();
 
     if (contextMessages.length > room.maxContext * 2) {
@@ -206,7 +211,7 @@ class ModelResolver {
     if (room.systemPrompt != null && room.systemPrompt != '') {
       contextMessages.insert(
         0,
-        OpenAIChatCompletionChoiceMessageModel(
+        ChatMessage(
           role: OpenAIChatMessageRole.system,
           content: room.systemPrompt!,
         ),

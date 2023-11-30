@@ -5,6 +5,7 @@ import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/env.dart';
 import 'package:askaide/helper/platform.dart';
+import 'package:askaide/repo/model/chat_message.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
 import 'package:dart_openai/openai.dart';
 import 'package:askaide/repo/data/settings_data.dart';
@@ -244,7 +245,7 @@ class OpenAIRepository {
   }
 
   Future<void> chatStream(
-    List<OpenAIChatCompletionChoiceMessageModel> messages,
+    List<ChatMessage> messages,
     void Function(ChatStreamRespData data) onData, {
     double temperature = 1.0,
     user = 'user',
@@ -256,7 +257,7 @@ class OpenAIRepository {
 
     try {
       bool canUseWebsocket = true;
-      if (Ability().enableLocalOpenAI()) {
+      if (Ability().enableLocalOpenAI) {
         if (supportForChat.containsKey(model) || model.startsWith('openai:')) {
           canUseWebsocket = false;
         }
@@ -266,15 +267,20 @@ class OpenAIRepository {
         canUseWebsocket = false;
       }
 
-      if (Ability().supportWebSocket() && canUseWebsocket) {
-        final serverURL = settings.getDefault(settingServerURL, apiServerURL);
+      if (Ability().supportWebSocket && canUseWebsocket) {
+        var serverURL = settings.getDefault(settingServerURL, apiServerURL);
+        if (PlatformTool.isWeb() && (serverURL == '' || serverURL == '/')) {
+          serverURL =
+              '${Uri.base.scheme}://${Uri.base.host}${Uri.base.hasPort ? ':${Uri.base.port}' : ''}';
+        }
+
         final wsURL = serverURL.startsWith('https://')
             ? serverURL.replaceFirst('https://', 'wss://')
             : serverURL.replaceFirst('http://', 'ws://');
+        final wsUri = Uri.parse('$wsURL/v1/chat/completions');
 
         final apiToken = settings.getDefault(settingAPIServerToken, '');
 
-        final wsUri = Uri.parse('$wsURL/v1/chat/completions');
         var channel = WebSocketChannel.connect(Uri(
           scheme: wsUri.scheme,
           host: wsUri.host,
@@ -332,7 +338,7 @@ class OpenAIRepository {
           'temperature': temperature,
           'user': user,
           'max_tokens': maxTokens,
-          'n': Ability().enableLocalOpenAI() &&
+          'n': Ability().enableLocalOpenAI &&
                   (model.startsWith('openai:') || model.startsWith('gpt-'))
               ? null
               : roomId, // n 参数暂时用不到，复用作为 roomId
@@ -344,7 +350,7 @@ class OpenAIRepository {
           temperature: temperature,
           user: user,
           maxTokens: maxTokens,
-          n: Ability().enableLocalOpenAI()
+          n: Ability().enableLocalOpenAI
               ? null
               : roomId, // n 参数暂时用不到，复用作为 roomId
         );

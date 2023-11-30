@@ -9,6 +9,7 @@ class Model {
   bool disabled;
   String? tag;
   String? avatarUrl;
+  bool supportVision = false;
 
   Model(
     this.id,
@@ -21,6 +22,7 @@ class Model {
     this.disabled = false,
     this.tag,
     this.avatarUrl,
+    this.supportVision = false,
   });
 
   String uid() {

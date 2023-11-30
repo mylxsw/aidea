@@ -137,6 +137,7 @@ class CreativeIslandCapacity {
   List<String> allowUpscaleBy;
   bool showImageStrength;
   List<CreativeIslandImageFilter> filters;
+  List<CreativeIslandArtisticStyle> artisticStyles;
 
   CreativeIslandCapacity({
     required this.showAIRewrite,
@@ -151,6 +152,7 @@ class CreativeIslandCapacity {
     this.allowUpscaleBy = const [],
     this.showImageStrength = false,
     this.filters = const [],
+    this.artisticStyles = const [],
   });
 
   toJson() => {
@@ -166,6 +168,7 @@ class CreativeIslandCapacity {
         'allow_upscale_by': allowUpscaleBy,
         'show_image_strength': showImageStrength,
         'filters': filters.map((e) => e.toJson()).toList(),
+        'artistic_styles': artisticStyles.map((e) => e.toJson()).toList(),
       };
 
   static CreativeIslandCapacity fromJson(Map<String, dynamic> json) {
@@ -190,6 +193,35 @@ class CreativeIslandCapacity {
       filters: ((json['filters'] ?? []) as List<dynamic>)
           .map((e) => CreativeIslandImageFilter.fromJson(e))
           .toList(),
+      artisticStyles: ((json['artistic_styles'] ?? []) as List<dynamic>)
+          .map((e) => CreativeIslandArtisticStyle.fromJson(e))
+          .toList(),
+    );
+  }
+}
+
+class CreativeIslandArtisticStyle {
+  String id;
+  String name;
+  String? previewImage;
+
+  CreativeIslandArtisticStyle({
+    required this.id,
+    required this.name,
+    this.previewImage,
+  });
+
+  toJson() => {
+        'id': id,
+        'name': name,
+        'preview_image': previewImage,
+      };
+
+  static CreativeIslandArtisticStyle fromJson(Map<String, dynamic> json) {
+    return CreativeIslandArtisticStyle(
+      id: json['id'],
+      name: json['name'],
+      previewImage: json['preview_image'],
     );
   }
 }
@@ -761,6 +793,7 @@ class CreativeIslandItemV2 {
   String routeUri;
   String tag;
   String? note;
+  String size;
 
   CreativeIslandItemV2({
     required this.id,
@@ -770,6 +803,7 @@ class CreativeIslandItemV2 {
     required this.routeUri,
     this.tag = '',
     this.note,
+    this.size = 'large',
   });
 
   toJson() => {
@@ -780,6 +814,7 @@ class CreativeIslandItemV2 {
         'route_uri': routeUri,
         'tag': tag,
         'note': note,
+        'size': size,
       };
 
   static CreativeIslandItemV2 fromJson(Map<String, dynamic> json) {
@@ -791,6 +826,7 @@ class CreativeIslandItemV2 {
       routeUri: json['route_uri'],
       tag: json['tag'] ?? '',
       note: json['note'],
+      size: json['size'] ?? 'large',
     );
   }
 }
