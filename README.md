@@ -21,6 +21,7 @@ https://aidea.aicode.cc
 
 - 客户端：https://github.com/mylxsw/aidea
 - 服务端：https://github.com/mylxsw/aidea-server
+- Docker 部署：https://github.com/mylxsw/aidea-docker
 
 ## 开发、编译运行环境
 
