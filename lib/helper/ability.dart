@@ -20,6 +20,11 @@ class Ability {
     return _instance;
   }
 
+  /// 服务状态页
+  String get serviceStatusPage {
+    return capabilities.serviceStatusPage;
+  }
+
   /// 是否支持 Websocket
   bool get supportWebSocket {
     return capabilities.supportWebsocket;
