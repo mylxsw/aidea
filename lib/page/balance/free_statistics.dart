@@ -65,7 +65,17 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
                 listener: (BuildContext context, FreeCountState state) {
                   if (state is FreeCountLoadedState) {
                     if (state.needSignin) {
-                      context.go('/login');
+                      showBeautyDialog(
+                        context,
+                        type: QuickAlertType.warning,
+                        text: '免费模型需登录账号后使用',
+                        confirmBtnText: '去登录',
+                        onConfirmBtnTap: () {
+                          context.pop();
+                          context.go('/login');
+                        },
+                        showCancelBtn: true,
+                      );
                     }
                   }
                 },

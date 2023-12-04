@@ -15,7 +15,7 @@ class FreeCountBloc extends Bloc<FreeCountEvent, FreeCountState> {
     on<FreeCountReloadAllEvent>((event, emit) async {
       if (!Ability().enableAPIServer()) {
         emit(FreeCountLoadedState(
-          counts: counts,
+          counts: await APIServer().freeChatCounts(),
           needSignin: event.checkSigninStatus,
         ));
         return;

@@ -72,7 +72,8 @@ class APIServer {
 
         if (resp.data is Map &&
             resp.data['error'] != null &&
-            resp.statusCode != 402) {
+            resp.statusCode != 402 &&
+            resp.statusCode != 401) {
           return resp.data['error'] ?? e.toString();
         }
 
@@ -1582,6 +1583,20 @@ class APIServer {
   Future<List<FreeModelCount>> userFreeStatistics() async {
     return sendGetRequest(
       '/v1/users/stat/free-chat-counts',
+      (resp) {
+        var items = <FreeModelCount>[];
+        for (var item in resp.data['data']) {
+          items.add(FreeModelCount.fromJson(item));
+        }
+        return items;
+      },
+    );
+  }
+
+  /// 免费聊天次数统计(登录不登录都可以访问)
+  Future<List<FreeModelCount>> freeChatCounts() async {
+    return sendGetRequest(
+      '/public/info/free-chat-counts',
       (resp) {
         var items = <FreeModelCount>[];
         for (var item in resp.data['data']) {

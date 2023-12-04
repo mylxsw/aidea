@@ -94,19 +94,15 @@ class _DrawListScreenState extends State<DrawListScreen> {
                       titleColor: stringToColor(e.titleColor),
                       tag: e.tag,
                       onTap: () {
-                        if (userSignedIn) {
-                          var uri = Uri.tryParse(e.routeUri);
-                          if (e.note != null && e.note != '') {
-                            uri = uri!.replace(
-                                queryParameters: <String, String>{
-                              'note': e.note!,
-                            }..addAll(uri.queryParameters));
-                          }
-
-                          context.push(uri.toString());
-                        } else {
-                          context.push('/login');
+                        var uri = Uri.tryParse(e.routeUri);
+                        if (e.note != null && e.note != '') {
+                          uri = uri!.replace(
+                              queryParameters: <String, String>{
+                            'note': e.note!,
+                          }..addAll(uri.queryParameters));
                         }
+
+                        context.push(uri.toString());
                       },
                       size: e.size,
                     ))
