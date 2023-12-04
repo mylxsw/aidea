@@ -1,4 +1,5 @@
 import 'package:askaide/bloc/free_count_bloc.dart';
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/image.dart';
@@ -15,6 +16,7 @@ import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/effect/glass.dart';
 import 'package:askaide/page/component/enhanced_popup_menu.dart';
 import 'package:askaide/page/component/enhanced_textfield.dart';
+import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
@@ -144,6 +146,8 @@ class _RoomChatPageState extends State<RoomChatPage> {
             bottom: false,
             child: Column(
               children: [
+                if (Ability().showGlobalAlert)
+                  const GlobalAlert(pageKey: 'chat'),
                 // 语音输出中提示
                 if (showAudioPlayer)
                   EnhancedAudioPlayer(

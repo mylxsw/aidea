@@ -20,6 +20,11 @@ class Ability {
     return _instance;
   }
 
+  /// 是否显示全局警告信息
+  bool get showGlobalAlert {
+    return true;
+  }
+
   /// 服务状态页
   String get serviceStatusPage {
     return capabilities.serviceStatusPage;

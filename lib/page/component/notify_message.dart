@@ -6,6 +6,7 @@ class NotifyMessageWidget extends StatelessWidget {
   final Function()? onClose;
   final Widget child;
   final String? backgroundImageUrl;
+  final Color? backgroundColor;
   final double height;
   final Widget? title;
   final bool closeable;
@@ -17,6 +18,7 @@ class NotifyMessageWidget extends StatelessWidget {
     this.height = 100,
     this.title,
     this.closeable = true,
+    this.backgroundColor,
   });
 
   @override
@@ -38,7 +40,7 @@ class NotifyMessageWidget extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           // gradient: buildGradientStyle(),
-          // color: Color.fromARGB(255, 252, 188, 188),
+          color: backgroundColor,
           image: backgroundImageUrl != null
               ? DecorationImage(
                   fit: BoxFit.cover,
