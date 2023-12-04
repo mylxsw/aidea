@@ -106,7 +106,9 @@ class _SettingScreenState extends State<SettingScreen> {
                     if (Ability().enableOpenAI)
                       _buildOpenAISelfHostedSetting(customColors),
                     // 用户 API Keys 配置
-                    if (Ability().supportAPIKeys)
+                    if (state is AccountLoaded &&
+                        state.user != null &&
+                        Ability().supportAPIKeys)
                       _buildUserAPIKeySetting(customColors),
                   ],
                 ),
@@ -115,6 +117,19 @@ class _SettingScreenState extends State<SettingScreen> {
                 SettingsSection(
                   title: Text(AppLocale.systemInfo.getString(context)),
                   tiles: [
+                    // 服务状态
+                    if (Ability().serviceStatusPage != '')
+                      SettingsTile(
+                        title: const Text('服务状态'),
+                        trailing: Icon(
+                          CupertinoIcons.chevron_forward,
+                          size: MediaQuery.of(context).textScaleFactor * 18,
+                          color: Colors.grey,
+                        ),
+                        onPressed: (_) {
+                          launchUrlString(Ability().serviceStatusPage);
+                        },
+                      ),
                     // 清空缓存
                     SettingsTile(
                       title: Text(AppLocale.clearCache.getString(context)),

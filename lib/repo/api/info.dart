@@ -42,6 +42,9 @@ class Capabilities {
   /// 是否禁用聊天
   final bool disableChat;
 
+  /// 服务状态页
+  final String serviceStatusPage;
+
   Capabilities({
     required this.applePayEnabled,
     required this.otherPayEnabled,
@@ -57,6 +60,7 @@ class Capabilities {
     this.disableCreationIsland = false,
     this.disableDigitalHuman = false,
     this.disableChat = false,
+    this.serviceStatusPage = '',
   });
 
   factory Capabilities.fromJson(Map<String, dynamic> json) {
@@ -77,6 +81,7 @@ class Capabilities {
       disableCreationIsland: json['disable_creation_island'] ?? false,
       disableDigitalHuman: json['disable_digital_human'] ?? false,
       disableChat: json['disable_chat'] ?? false,
+      serviceStatusPage: json['service_status_page'] ?? '',
     );
   }
 
@@ -96,6 +101,7 @@ class Capabilities {
       'disable_creation_island': disableCreationIsland,
       'disable_digital_human': disableDigitalHuman,
       'disable_chat': disableChat,
+      'service_status_page': serviceStatusPage,
     };
   }
 }
