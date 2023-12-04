@@ -313,13 +313,42 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                              '   购买说明：',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: customColors.paymentItemTitleColor
-                                    ?.withOpacity(0.5),
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '   购买说明：',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: customColors.paymentItemTitleColor
+                                        ?.withOpacity(0.5),
+                                  ),
+                                ),
+                                TextButton(
+                                  style: ButtonStyle(
+                                    overlayColor: MaterialStateProperty.all(
+                                        Colors.transparent),
+                                  ),
+                                  onPressed: () {
+                                    _startPaymentLoading();
+                                    // 恢复购买
+                                    InAppPurchase.instance
+                                        .restorePurchases()
+                                        .whenComplete(() {
+                                      _closePaymentLoading();
+                                      showSuccessMessage('已恢复');
+                                    });
+                                  },
+                                  child: Text(
+                                    '恢复购买',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: customColors.paymentItemTitleColor
+                                          ?.withOpacity(0.5),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                             Markdown(
                               data: state.note!,
