@@ -11,12 +11,16 @@ class GlobalEvent {
   final Map<String, List<Function(dynamic data)>> _listeners = {};
 
   /// 监听事件
-  void on(String event, Function(dynamic data) callback) {
+  Function() on(String event, Function(dynamic data) callback) {
     if (_listeners[event] == null) {
       _listeners[event] = [];
     }
 
     _listeners[event]!.add(callback);
+
+    return () {
+      _listeners[event]!.remove(callback);
+    };
   }
 
   /// 触发事件

@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/env.dart';
 import 'package:askaide/helper/error.dart';
+import 'package:askaide/helper/event.dart';
 import 'package:askaide/helper/http.dart';
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
+import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/repo/api/article.dart';
 import 'package:askaide/repo/api/creative.dart';
 import 'package:askaide/repo/api/image_model.dart';
@@ -31,6 +33,11 @@ class APIServer {
   factory APIServer() {
     return _instance;
   }
+
+  GlobalAlertEvent _globalAlertEvent =
+      GlobalAlertEvent(id: '', type: 'info', pages: [], message: '');
+
+  GlobalAlertEvent get globalAlertEvent => _globalAlertEvent;
 
   late String url;
   late String apiToken;
@@ -292,7 +299,31 @@ class APIServer {
         return Future.error(resp.data['error']);
       }
 
-      // Logger.instance.d("API Response: ${resp.data}");
+      try {
+        var msg = resp.headers.value('aidea-global-alert-msg');
+        if (msg != null) {
+          msg = utf8.decode(base64Decode(msg));
+        }
+
+        // Logger.instance.d("API Response: ${resp.data}");
+        final globalAlertEvent = GlobalAlertEvent(
+          id: resp.headers.value('aidea-global-alert-id') ?? '',
+          type: resp.headers.value('aidea-global-alert-type') ?? 'info',
+          pages: (resp.headers.value('aidea-global-alert-pages') ?? '')
+              .split(',')
+              .where((e) => e != '')
+              .toList(),
+          message: msg,
+        );
+
+        if (globalAlertEvent.id != '' &&
+            globalAlertEvent.id != _globalAlertEvent.id) {
+          _globalAlertEvent = globalAlertEvent;
+          GlobalEvent().emit('global-alert', _globalAlertEvent);
+        }
+      } catch (e) {
+        Logger.instance.e(e);
+      }
 
       return parser(resp);
     } catch (e, stackTrace) {

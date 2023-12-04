@@ -16,6 +16,7 @@ import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/voice_record.dart';
 import 'package:askaide/page/component/column_block.dart';
 import 'package:askaide/page/component/enhanced_textfield.dart';
+import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/model_indicator.dart';
 import 'package:askaide/page/component/notify_message.dart';
 import 'package:askaide/page/component/sliver_component.dart';
@@ -409,8 +410,9 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 首页通知消息组件
+          if (Ability().showGlobalAlert) const GlobalAlert(pageKey: 'home'),
           if (showFreeModelNotifyMessage && promotionEvent != null)
+            // 首页通知消息组件
             buildNotifyMessageWidget(context),
           // 模型选择
           Container(
