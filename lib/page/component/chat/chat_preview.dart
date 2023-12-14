@@ -868,7 +868,7 @@ class _ChatPreviewState extends State<ChatPreview> {
   /// 获取图片预览的最大宽度
   double _chatBoxImagePreviewWidth(BuildContext context, int imageCount) {
     final expect = _chatBoxMaxWidth(context) / 1.3;
-    final max = imageCount > 1 ? 400.0 : 300.0;
+    final max = imageCount > 1 ? 600.0 : 400.0;
     return expect > max ? max : expect;
   }
 }
