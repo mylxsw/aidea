@@ -20,7 +20,7 @@ class OtherPayCreatedReponse {
   }
 }
 
-class AppleProduct {
+class PaymentProduct {
   String id;
   String name;
   int quota;
@@ -30,7 +30,7 @@ class AppleProduct {
   bool recommend;
   String? description;
 
-  AppleProduct({
+  PaymentProduct({
     required this.id,
     required this.name,
     required this.quota,
@@ -54,8 +54,8 @@ class AppleProduct {
         'description': description,
       };
 
-  static AppleProduct fromJson(Map<String, dynamic> json) {
-    return AppleProduct(
+  static PaymentProduct fromJson(Map<String, dynamic> json) {
+    return PaymentProduct(
       id: json['id'],
       name: json['name'],
       quota: json['quota'],
@@ -68,21 +68,21 @@ class AppleProduct {
   }
 }
 
-class ApplePayProducts {
-  final List<AppleProduct> consume;
+class PaymentProducts {
+  final List<PaymentProduct> consume;
   final String? note;
 
-  ApplePayProducts(this.consume, {this.note});
+  PaymentProducts(this.consume, {this.note});
 
   toJson() => {
         'consume': consume,
         'note': note,
       };
 
-  static ApplePayProducts fromJson(Map<String, dynamic> json) {
-    return ApplePayProducts(
+  static PaymentProducts fromJson(Map<String, dynamic> json) {
+    return PaymentProducts(
       (json['consume'] as List<dynamic>)
-          .map((e) => AppleProduct.fromJson(e))
+          .map((e) => PaymentProduct.fromJson(e))
           .toList(),
       note: json['note'],
     );

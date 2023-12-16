@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:askaide/bloc/payment_bloc.dart';
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
@@ -22,6 +23,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:quickalert/models/quickalert_type.dart';
 import 'package:tobias/tobias.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -181,37 +183,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
           ),
         ),
         actions: [
-          TextButton(
-            style: ButtonStyle(
-              overlayColor: MaterialStateProperty.all(Colors.transparent),
+          if (Ability().isUserLogon())
+            TextButton(
+              style: ButtonStyle(
+                overlayColor: MaterialStateProperty.all(Colors.transparent),
+              ),
+              onPressed: () {
+                context.push('/quota-details');
+              },
+              child: Text(
+                AppLocale.paymentHistory.getString(context),
+                style: TextStyle(color: customColors.weakLinkColor),
+                textScaleFactor: 0.9,
+              ),
             ),
-            onPressed: () {
-              context.push('/quota-details');
-            },
-            child: Text(
-              AppLocale.paymentHistory.getString(context),
-              style: TextStyle(color: customColors.weakLinkColor),
-              textScaleFactor: 0.9,
-            ),
-          ),
-          // TextButton(
-          //   style: ButtonStyle(
-          //     overlayColor: MaterialStateProperty.all(Colors.transparent),
-          //   ),
-          //   onPressed: () {
-          //     _startPaymentLoading();
-          //     // 恢复购买
-          //     InAppPurchase.instance.restorePurchases().whenComplete(() {
-          //       _closePaymentLoading();
-          //       showSuccessMessage('恢复完成');
-          //     });
-          //   },
-          //   child: Text(
-          //     '恢复购买',
-          //     style: TextStyle(color: customColors.weakLinkColor),
-          //     textScaleFactor: 0.9,
-          //   ),
-          // ),
         ],
       ),
       backgroundColor: customColors.backgroundContainerColor,
@@ -309,6 +294,21 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           }
                           if (selectedProduct == null) {
                             showErrorMessage('请选择购买的产品');
+                            return;
+                          }
+
+                          if (!Ability().isUserLogon()) {
+                            showBeautyDialog(
+                              context,
+                              type: QuickAlertType.warning,
+                              text: '该功能需要登录账号后使用',
+                              onConfirmBtnTap: () {
+                                context.pop();
+                                context.push('/login');
+                              },
+                              showCancelBtn: true,
+                              confirmBtnText: '立即登录',
+                            );
                             return;
                           }
 

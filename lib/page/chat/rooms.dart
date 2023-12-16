@@ -84,7 +84,7 @@ class _RoomsPageState extends State<RoomsPage> {
                             });
                           },
                         ),
-                        if (Ability().enableAPIServer() &&
+                        if (Ability().isUserLogon() &&
                             !Ability().enableLocalOpenAI)
                           EnhancedPopupMenuItem(
                             title: '发起群聊',

@@ -973,19 +973,11 @@ class APIServer {
     );
   }
 
-  /// Apple 支付项目列表
-  Future<ApplePayProducts> applePayProducts() async {
+  /// 支付项目列表
+  Future<PaymentProducts> paymentProducts() async {
     return sendGetRequest(
-      '/v1/payment/apple/products',
-      (resp) => ApplePayProducts.fromJson(resp.data),
-    );
-  }
-
-  /// 其它支付项目列表
-  Future<ApplePayProducts> otherPayProducts() async {
-    return sendGetRequest(
-      '/v1/payment/others/products',
-      (resp) => ApplePayProducts.fromJson(resp.data),
+      '/v1/payment/products',
+      (resp) => PaymentProducts.fromJson(resp.data),
     );
   }
 

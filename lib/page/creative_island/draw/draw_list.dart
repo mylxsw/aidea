@@ -24,7 +24,7 @@ class DrawListScreen extends StatefulWidget {
 class _DrawListScreenState extends State<DrawListScreen> {
   @override
   void initState() {
-    if (Ability().enableAPIServer()) {
+    if (Ability().isUserLogon()) {
       userSignedIn = true;
     }
 

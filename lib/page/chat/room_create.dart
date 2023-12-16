@@ -75,7 +75,7 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
   void initState() {
     super.initState();
 
-    if (Ability().enableAPIServer()) {
+    if (Ability().isUserLogon()) {
       APIServer().avatars().then((value) {
         avatarPresets = value;
       });
@@ -111,7 +111,7 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
         maxWidth: 0,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Ability().enableAPIServer()
+          child: Ability().isUserLogon()
               ? SafeArea(
                   top: false,
                   child: DefaultTabController(
@@ -288,7 +288,7 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                 hintText: AppLocale.required.getString(context),
                 textDirection: TextDirection.rtl,
               ),
-              if (Ability().enableAPIServer())
+              if (Ability().isUserLogon())
                 EnhancedInput(
                   padding: const EdgeInsets.only(top: 10, bottom: 5),
                   title: Text(

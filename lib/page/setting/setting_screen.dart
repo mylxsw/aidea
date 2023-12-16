@@ -21,6 +21,7 @@ import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/page/component/theme/theme.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/repo/api/user.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/cupertino.dart';
@@ -78,8 +79,7 @@ class _SettingScreenState extends State<SettingScreen> {
             builder: (_, state) {
               return buildSettingsList([
                 // 智慧果信息、充值入口
-                if (state is AccountLoaded && state.user != null)
-                  _buildAccountQuotaCard(context, state),
+                _buildAccountQuotaCard(context, state),
 
                 // 账号信息
                 SettingsSection(
@@ -100,7 +100,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     // 语言设置
                     _buildCommonLanguageSetting(),
                     // 常用模型
-                    if (Ability().enableAPIServer())
+                    if (Ability().isUserLogon())
                       _buildCustomHomeModelsSetting(customColors),
                     // OpenAI 自定义配置
                     if (Ability().enableOpenAI)
@@ -307,17 +307,21 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   CustomSettingsSection _buildAccountQuotaCard(
-      BuildContext context, AccountLoaded state) {
-    if (state.user == null) {
-      return CustomSettingsSection(
-        child: Container(),
-      );
+    BuildContext context,
+    AccountState state,
+  ) {
+    UserInfo? userInfo;
+    if (state is AccountLoaded) {
+      userInfo = state.user;
     }
+
     return CustomSettingsSection(
       child: AccountQuotaCard(
-        userInfo: state.user!,
+        userInfo: userInfo,
         onPaymentReturn: () {
-          context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
+          if (userInfo != null) {
+            context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
+          }
         },
       ),
     );
