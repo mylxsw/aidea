@@ -8,7 +8,7 @@ class PriceBlock extends StatelessWidget {
   final CustomColors customColors;
   final ProductDetails detail;
   final ProductDetails? selectedProduct;
-  final AppleProduct product;
+  final PaymentProduct product;
   final bool loading;
 
   const PriceBlock({

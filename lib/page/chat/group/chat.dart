@@ -514,8 +514,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
     return RandomAvatar(
       id: id ?? 0,
       size: size,
-      usage:
-          Ability().enableAPIServer() ? AvatarUsage.room : AvatarUsage.legacy,
+      usage: Ability().isUserLogon() ? AvatarUsage.room : AvatarUsage.legacy,
     );
   }
 

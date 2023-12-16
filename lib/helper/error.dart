@@ -27,7 +27,7 @@ Object? resolveHTTPStatusCode(int statusCode,
         return const LanguageText(AppLocale.openAIAuthFailed);
       }
 
-      if (Ability().enableAPIServer()) {
+      if (Ability().isUserLogon()) {
         return const LanguageText(AppLocale.accountNeedReSignin,
             action: 're-signin');
       }

@@ -109,8 +109,8 @@ class Ability {
     return enableOtherPay;
   }
 
-  /// 是否支持API Server
-  bool enableAPIServer() {
+  /// 是否用户已经登陆
+  bool isUserLogon() {
     return setting.stringDefault(settingAPIServerToken, '') != '';
   }
 

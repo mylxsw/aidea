@@ -263,7 +263,7 @@ class OpenAIRepository {
         }
       }
 
-      if (!Ability().enableAPIServer()) {
+      if (!Ability().isUserLogon()) {
         canUseWebsocket = false;
       }
 
