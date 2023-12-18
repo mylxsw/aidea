@@ -341,7 +341,8 @@ class _HomeChatPageState extends State<HomeChatPage> {
               builder: (context, freeState) {
                 var hintText = '有问题尽管问我';
                 if (freeState is FreeCountLoadedState) {
-                  final matched = freeState.model(room.room.model);
+                  final matched =
+                      freeState.model(widget.model ?? room.room.model);
                   if (matched != null &&
                       matched.leftCount > 0 &&
                       matched.maxCount > 0) {
