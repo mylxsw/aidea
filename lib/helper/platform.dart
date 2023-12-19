@@ -39,6 +39,14 @@ class PlatformTool {
     }
   }
 
+  static bool isLinux() {
+    try {
+      return Platform.isLinux;
+    } catch (e) {
+      return false;
+    }
+  }
+
   static String operatingSystem() {
     try {
       return Platform.operatingSystem;
