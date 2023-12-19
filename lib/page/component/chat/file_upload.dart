@@ -54,6 +54,7 @@ class FileUploadPreview extends StatelessWidget {
             GridView.count(
               crossAxisCount: 2,
               shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
               children: children.sublist(0, children.length - 1),
             ),
             children.last,
@@ -64,12 +65,14 @@ class FileUploadPreview extends StatelessWidget {
       return GridView.count(
         crossAxisCount: 2,
         shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
         children: children,
       );
     }
 
     return ListView(
       shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       children: children,
     );
   }

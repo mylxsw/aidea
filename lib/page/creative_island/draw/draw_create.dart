@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/upload.dart';
@@ -9,6 +10,7 @@ import 'package:askaide/page/component/column_block.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/enhanced_input.dart';
 import 'package:askaide/page/component/enhanced_textfield.dart';
+import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/prompt_tags_selector.dart';
@@ -192,12 +194,21 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
         setting: widget.setting,
         enabled: true,
         maxWidth: CustomSize.smallWindowSize,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          height: double.infinity,
-          child: SingleChildScrollView(
-            child: buildEditPanel(context, customColors),
-          ),
+        child: Column(
+          children: [
+            if (Ability().showGlobalAlert)
+              const GlobalAlert(pageKey: 'creative_create'),
+            Expanded(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                height: double.infinity,
+                child: SingleChildScrollView(
+                  child: buildEditPanel(context, customColors),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -284,7 +284,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
     // 更新 Room 最后活跃时间
     // 这里没有使用 await，因为不需要等待更新完成，让 room 的更新异步的去处理吧
-    if (!Ability().enableAPIServer()) {
+    if (!Ability().isUserLogon()) {
       chatMsgRepo.updateRoomLastActiveTime(roomId);
     }
 
@@ -488,7 +488,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 Future<Room?> queryRoomById(
     ChatMessageRepository chatMsgRepo, int roomId) async {
   Room? room;
-  if (Ability().enableAPIServer()) {
+  if (Ability().isUserLogon()) {
     final roomInServer = await APIServer().room(roomId: roomId);
     room = Room(
       roomInServer.name,

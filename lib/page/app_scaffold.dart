@@ -24,9 +24,21 @@ class AppScaffold extends StatefulWidget {
 class _AppScaffoldState extends State<AppScaffold> {
   var _showBottomNavigatorBar = true;
 
+  Function? cancelHideBottomNavigatorBarEventListener;
+  Function? cancelShowBottomNavigatorBarEventListener;
+
+  @override
+  void dispose() {
+    cancelHideBottomNavigatorBarEventListener?.call();
+    cancelShowBottomNavigatorBarEventListener?.call();
+
+    super.dispose();
+  }
+
   @override
   void initState() {
-    GlobalEvent().on("hideBottomNavigatorBar", (data) {
+    cancelHideBottomNavigatorBarEventListener =
+        GlobalEvent().on("hideBottomNavigatorBar", (data) {
       if (mounted) {
         setState(() {
           _showBottomNavigatorBar = false;
@@ -34,7 +46,8 @@ class _AppScaffoldState extends State<AppScaffold> {
       }
     });
 
-    GlobalEvent().on("showBottomNavigatorBar", (data) {
+    cancelShowBottomNavigatorBarEventListener =
+        GlobalEvent().on("showBottomNavigatorBar", (data) {
       if (mounted) {
         setState(() {
           _showBottomNavigatorBar = true;

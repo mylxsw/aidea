@@ -7,7 +7,7 @@ class PaymentInitial extends PaymentState {}
 
 class PaymentAppleProductsLoaded extends PaymentState {
   final List<ProductDetails> products;
-  final List<AppleProduct> localProducts;
+  final List<PaymentProduct> localProducts;
   final Object? error;
   final bool loading;
   final String? note;

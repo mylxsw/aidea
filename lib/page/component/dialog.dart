@@ -52,7 +52,17 @@ showErrorMessageEnhanced(
         return;
       // 需要登录
       case 'sign-in':
-        context.push('/login');
+        showBeautyDialog(
+          context,
+          type: QuickAlertType.warning,
+          text: '该功能需要登录账号后使用',
+          onConfirmBtnTap: () {
+            context.pop();
+            context.push('/login');
+          },
+          showCancelBtn: true,
+          confirmBtnText: '立即登录',
+        );
         return;
     }
 

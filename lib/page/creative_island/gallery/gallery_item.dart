@@ -1,5 +1,4 @@
 import 'package:askaide/bloc/gallery_bloc.dart';
-import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
@@ -237,12 +236,8 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                                     child: EnhancedButton(
                                       title: '制作同款',
                                       onPressed: () {
-                                        if (Ability().enableAPIServer()) {
-                                          context.push(
-                                              '/creative-draw/create?mode=text-to-image&id=${state.item.creativeId}&gallery_copy_id=${state.item.id}');
-                                        } else {
-                                          context.push('/login');
-                                        }
+                                        context.push(
+                                            '/creative-draw/create?mode=text-to-image&id=${state.item.creativeId}&gallery_copy_id=${state.item.id}');
                                       },
                                     ),
                                   ),
@@ -327,9 +322,9 @@ class _TextItemState extends State<TextItem> {
                         cancel();
                       },
                       label: const Text(''),
-                      icon: Column(
+                      icon: const Column(
                         mainAxisSize: MainAxisSize.min,
-                        children: const [
+                        children: [
                           Icon(
                             Icons.copy,
                             color: Color.fromARGB(255, 255, 255, 255),
@@ -355,9 +350,9 @@ class _TextItemState extends State<TextItem> {
                         });
                       },
                       label: const Text(''),
-                      icon: Column(
+                      icon: const Column(
                         mainAxisSize: MainAxisSize.min,
-                        children: const [
+                        children: [
                           Icon(
                             Icons.translate,
                             color: Color.fromARGB(255, 255, 255, 255),
@@ -434,9 +429,9 @@ class _TextItemState extends State<TextItem> {
                               cancel();
                             },
                             label: const Text(''),
-                            icon: Column(
+                            icon: const Column(
                               mainAxisSize: MainAxisSize.min,
-                              children: const [
+                              children: [
                                 Icon(
                                   Icons.copy,
                                   color: Color.fromARGB(255, 255, 255, 255),

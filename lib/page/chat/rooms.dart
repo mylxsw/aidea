@@ -6,6 +6,7 @@ import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/enhanced_error.dart';
 import 'package:askaide/page/component/enhanced_popup_menu.dart';
+import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/room_card.dart';
 import 'package:askaide/page/component/sliver_component.dart';
@@ -83,7 +84,7 @@ class _RoomsPageState extends State<RoomsPage> {
                             });
                           },
                         ),
-                        if (Ability().enableAPIServer() &&
+                        if (Ability().isUserLogon() &&
                             !Ability().enableLocalOpenAI)
                           EnhancedPopupMenuItem(
                             title: '发起群聊',
@@ -152,7 +153,13 @@ class _RoomsPageState extends State<RoomsPage> {
                         .add(RoomsLoadEvent(forceRefresh: true));
                   },
                   displacement: 20,
-                  child: buildBody(customColors, state, context),
+                  child: Column(
+                    children: [
+                      if (Ability().showGlobalAlert)
+                        const GlobalAlert(pageKey: 'rooms'),
+                      Expanded(child: buildBody(customColors, state, context)),
+                    ],
+                  ),
                 ),
               );
             }

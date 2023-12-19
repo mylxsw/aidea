@@ -11,10 +11,9 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AccountQuotaCard extends StatelessWidget {
-  final UserInfo userInfo;
+  final UserInfo? userInfo;
   final VoidCallback? onPaymentReturn;
-  const AccountQuotaCard(
-      {super.key, required this.userInfo, this.onPaymentReturn});
+  const AccountQuotaCard({super.key, this.userInfo, this.onPaymentReturn});
 
   @override
   Widget build(BuildContext context) {
@@ -32,15 +31,20 @@ class AccountQuotaCard extends StatelessWidget {
             offset: const Offset(0, 5),
           ),
         ],
-        image: userInfo.control.userCardBg != null
+        image: userInfo != null && userInfo!.control.userCardBg != null
             ? DecorationImage(
                 // opacity: 0.83,
                 image: CachedNetworkImageProviderEnhanced(
-                    userInfo.control.userCardBg!),
+                    userInfo!.control.userCardBg!),
                 fit: BoxFit.cover,
               )
-            : null,
-        gradient: userInfo.control.userCardBg == null
+            : DecorationImage(
+                image: CachedNetworkImageProviderEnhanced(
+                  "https://ssl.aicode.cc/ai-server/assets/quota-card-bg.webp-thumb1000",
+                ),
+                fit: BoxFit.cover,
+              ),
+        gradient: userInfo == null || userInfo!.control.userCardBg == null
             ? const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -94,20 +98,26 @@ class AccountQuotaCard extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Coin(count: userInfo.quota.quotaRemain()),
+                    if (userInfo != null)
+                      Coin(
+                        count: userInfo!.quota.quotaRemain(),
+                      )
+                    else
+                      const Text('-'),
                     const SizedBox(width: 5),
-                    InkWell(
-                      onTap: () {
-                        context.push('/quota-usage-statistics');
-                      },
-                      child: Text(
-                        AppLocale.coinsUsage.getString(context),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color.fromARGB(129, 220, 220, 220),
+                    if (userInfo != null)
+                      InkWell(
+                        onTap: () {
+                          context.push('/quota-usage-statistics');
+                        },
+                        child: Text(
+                          AppLocale.coinsUsage.getString(context),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color.fromARGB(129, 220, 220, 220),
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 )
               ],

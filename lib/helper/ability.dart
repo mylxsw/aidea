@@ -20,6 +20,11 @@ class Ability {
     return _instance;
   }
 
+  /// 是否显示全局警告信息
+  bool get showGlobalAlert {
+    return true;
+  }
+
   /// 服务状态页
   String get serviceStatusPage {
     return capabilities.serviceStatusPage;
@@ -104,8 +109,8 @@ class Ability {
     return enableOtherPay;
   }
 
-  /// 是否支持API Server
-  bool enableAPIServer() {
+  /// 是否用户已经登陆
+  bool isUserLogon() {
     return setting.stringDefault(settingAPIServerToken, '') != '';
   }
 

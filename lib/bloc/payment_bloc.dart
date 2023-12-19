@@ -12,7 +12,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   PaymentBloc() : super(PaymentInitial()) {
     on<PaymentLoadAppleProducts>((event, emit) async {
       if (PlatformTool.isIOS()) {
-        final products = await APIServer().applePayProducts();
+        final products = await APIServer().paymentProducts();
         if (products.consume.isEmpty) {
           emit(PaymentAppleProductsLoaded(
             const <ProductDetails>[],
@@ -69,7 +69,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
           loading: false,
         ));
       } else {
-        final products = await APIServer().otherPayProducts();
+        final products = await APIServer().paymentProducts();
         if (products.consume.isEmpty) {
           emit(PaymentAppleProductsLoaded(
             const <ProductDetails>[],

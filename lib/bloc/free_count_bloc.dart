@@ -13,9 +13,9 @@ class FreeCountBloc extends Bloc<FreeCountEvent, FreeCountState> {
   FreeCountBloc() : super(FreeCountInitial()) {
     // 重新加载所有的模型免费使用次数
     on<FreeCountReloadAllEvent>((event, emit) async {
-      if (!Ability().enableAPIServer()) {
+      if (!Ability().isUserLogon()) {
         emit(FreeCountLoadedState(
-          counts: counts,
+          counts: await APIServer().freeChatCounts(),
           needSignin: event.checkSigninStatus,
         ));
         return;
@@ -28,7 +28,7 @@ class FreeCountBloc extends Bloc<FreeCountEvent, FreeCountState> {
     // 重新加载指定模型的免费使用次数
     on<FreeCountReloadEvent>((event, emit) async {
       if (Ability().usingLocalOpenAIModel(event.model) ||
-          !Ability().enableAPIServer()) {
+          !Ability().isUserLogon()) {
         emit(FreeCountLoadedState(counts: counts));
         return;
       }

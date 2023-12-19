@@ -13,6 +13,7 @@ import 'package:askaide/page/component/chat/chat_share.dart';
 import 'package:askaide/page/component/chat/help_tips.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/enhanced_popup_menu.dart';
+import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/multi_item_selector.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/dialog.dart';
@@ -148,6 +149,8 @@ class _GroupChatPageState extends State<GroupChatPage> {
             bottom: false,
             child: Column(
               children: [
+                if (Ability().showGlobalAlert)
+                  const GlobalAlert(pageKey: 'chat'),
                 // 语音输出中提示
                 if (showAudioPlayer)
                   EnhancedAudioPlayer(
@@ -511,8 +514,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
     return RandomAvatar(
       id: id ?? 0,
       size: size,
-      usage:
-          Ability().enableAPIServer() ? AvatarUsage.room : AvatarUsage.legacy,
+      usage: Ability().isUserLogon() ? AvatarUsage.room : AvatarUsage.legacy,
     );
   }
 

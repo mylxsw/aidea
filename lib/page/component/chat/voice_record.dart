@@ -136,9 +136,11 @@ class _VoiceRecordState extends State<VoiceRecord> {
               backgroundColor: _voiceRecording
                   ? customColors.linkColor
                   : customColors.linkColor!.withAlpha(200),
-              child: _voiceRecording
-                  ? const Icon(Icons.mic, size: 50)
-                  : const Icon(Icons.mic, size: 50),
+              child: const Icon(
+                Icons.mic,
+                size: 50,
+                color: Colors.white,
+              ),
             ),
           ),
         ),
@@ -162,7 +164,7 @@ class _VoiceRecordState extends State<VoiceRecord> {
     }
 
     final voiceDuration = DateTime.now().difference(_voiceStartTime!).inSeconds;
-    if (voiceDuration < 2) {
+    if (voiceDuration < 1) {
       showErrorMessage('说话时间太短');
       _voiceStartTime = null;
       File.fromUri(Uri.parse(resPath)).delete();

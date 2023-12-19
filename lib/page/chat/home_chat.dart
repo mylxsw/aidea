@@ -2,6 +2,7 @@ import 'package:askaide/bloc/chat_message_bloc.dart';
 import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/bloc/notify_bloc.dart';
 import 'package:askaide/bloc/room_bloc.dart';
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/global_store.dart';
 import 'package:askaide/helper/model.dart';
@@ -17,6 +18,7 @@ import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/help_tips.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/enhanced_error.dart';
+import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/dialog.dart';
@@ -258,6 +260,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
   ) {
     return Column(
       children: [
+        if (Ability().showGlobalAlert) const GlobalAlert(pageKey: 'chat'),
         if (showAudioPlayer)
           EnhancedAudioPlayer(
             controller: _audioPlayerController,
@@ -338,7 +341,8 @@ class _HomeChatPageState extends State<HomeChatPage> {
               builder: (context, freeState) {
                 var hintText = '有问题尽管问我';
                 if (freeState is FreeCountLoadedState) {
-                  final matched = freeState.model(room.room.model);
+                  final matched =
+                      freeState.model(widget.model ?? room.room.model);
                   if (matched != null &&
                       matched.leftCount > 0 &&
                       matched.maxCount > 0) {

@@ -1,9 +1,11 @@
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
+import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/message_box.dart';
 import 'package:askaide/page/creative_island/draw/components/content_preview.dart';
@@ -68,12 +70,21 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
         setting: widget.setting,
         enabled: true,
         maxWidth: CustomSize.smallWindowSize,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          height: double.infinity,
-          child: SingleChildScrollView(
-            child: buildEditPanel(context, customColors),
-          ),
+        child: Column(
+          children: [
+            if (Ability().showGlobalAlert)
+              const GlobalAlert(pageKey: 'creative_create'),
+            Expanded(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                height: double.infinity,
+                child: SingleChildScrollView(
+                  child: buildEditPanel(context, customColors),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
