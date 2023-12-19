@@ -118,7 +118,7 @@ void main() async {
   if (kIsWeb) {
     databaseFactory = databaseFactoryFfiWeb;
   } else {
-    if (PlatformTool.isWindows()) {
+    if (PlatformTool.isWindows() || PlatformTool.isLinux()) {
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
     }
