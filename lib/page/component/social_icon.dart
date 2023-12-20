@@ -20,11 +20,21 @@ class SocialIconGroup extends StatelessWidget {
 
   final List<SocialItem> items = [
     SocialItem(
-      image: 'assets/weibo.png',
-      name: '官方微博',
+      image: 'assets/app-256-transparent.png',
+      name: '官方网站',
       onTap: () {
         launchUrlString(
-          'https://weibo.com/code404',
+          'https://ai.aicode.cc/social/home',
+          mode: LaunchMode.externalApplication,
+        );
+      },
+    ),
+    SocialItem(
+      image: 'assets/weibo.png',
+      name: '新浪微博',
+      onTap: () {
+        launchUrlString(
+          'https://ai.aicode.cc/social/weibo',
           mode: LaunchMode.externalApplication,
         );
       },
@@ -34,7 +44,7 @@ class SocialIconGroup extends StatelessWidget {
       name: '微信公众号',
       onTap: () {
         launchUrlString(
-          'https://mp.weixin.qq.com/s/4CHh_rKxBqi-npDEnmLWmA',
+          'https://ai.aicode.cc/social/wechat-platform',
           mode: LaunchMode.externalApplication,
         );
       },
@@ -44,7 +54,7 @@ class SocialIconGroup extends StatelessWidget {
       name: 'Twitter(X)',
       onTap: () {
         launchUrlString(
-          'https://twitter.com/mylxsw',
+          'https://ai.aicode.cc/social/x',
           mode: LaunchMode.externalApplication,
         );
       },
@@ -54,7 +64,7 @@ class SocialIconGroup extends StatelessWidget {
       name: 'Github',
       onTap: () {
         launchUrlString(
-          'http://github.com/mylxsw/aidea',
+          'https://ai.aicode.cc/social/github',
           mode: LaunchMode.externalApplication,
         );
       },
@@ -64,7 +74,7 @@ class SocialIconGroup extends StatelessWidget {
       name: '小红书',
       onTap: () {
         launchUrlString(
-          'https://www.xiaohongshu.com/user/profile/63c65968000000002702abcd?xhsshare=CopyLink&appuid=63c65968000000002702abcd&apptime=1696648278',
+          'https://ai.aicode.cc/social/xiaohongshu',
           mode: LaunchMode.externalApplication,
         );
       },
