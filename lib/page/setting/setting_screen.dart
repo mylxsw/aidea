@@ -117,6 +117,22 @@ class _SettingScreenState extends State<SettingScreen> {
                 SettingsSection(
                   title: Text(AppLocale.systemInfo.getString(context)),
                   tiles: [
+                    // 只有 Web 端才展示 App 下载
+                    if (PlatformTool.isWeb())
+                      SettingsTile(
+                        title: const Text('APP 下载'),
+                        trailing: Icon(
+                          Icons.download,
+                          size: MediaQuery.of(context).textScaleFactor * 18,
+                          color: Colors.grey,
+                        ),
+                        onPressed: (context) {
+                          launchUrlString(
+                            'https://aidea.aicode.cc',
+                            mode: LaunchMode.externalApplication,
+                          );
+                        },
+                      ),
                     // 服务状态
                     if (Ability().serviceStatusPage != '')
                       SettingsTile(
