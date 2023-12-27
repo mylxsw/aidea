@@ -41,6 +41,7 @@ class DrawCreateScreen extends StatefulWidget {
   final String mode;
   final String id;
   final String? note;
+  final String? initImage;
 
   const DrawCreateScreen({
     super.key,
@@ -49,6 +50,7 @@ class DrawCreateScreen extends StatefulWidget {
     this.galleryCopyId,
     required this.mode,
     this.note,
+    this.initImage,
   });
 
   @override
@@ -89,6 +91,10 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
 
   @override
   void initState() {
+    if (widget.initImage != null) {
+      selectedImagePath = widget.initImage;
+    }
+
     APIServer()
         .creativeIslandCapacity(mode: widget.mode, id: widget.id)
         .then((cap) {
@@ -240,12 +246,14 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                     if (path != null) {
                       setState(() {
                         selectedImagePath = path;
+                        selectedImageData = null;
                       });
                     }
 
                     if (data != null) {
                       setState(() {
                         selectedImageData = data;
+                        selectedImagePath = null;
                       });
                     }
                   },
@@ -811,7 +819,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
       'prompt': prompt,
       'negative_prompt': negativePromptController.text,
       'prompt_tags': selectedTags.map((e) => e.value).join(','),
-      'filter_id': selectedStyle == null ? null : selectedStyle!.id,
+      'filter_id': selectedStyle?.id,
       'image_ratio': selectedImageSize,
       'image_count': generationImageCount,
       'ai_rewrite': enableAIRewrite,
@@ -855,17 +863,24 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
             allowClick: false,
           );
 
-          if (selectedImagePath != null && selectedImagePath!.isNotEmpty) {
-            final uploadRes = await ImageUploader(widget.setting)
-                .upload(selectedImagePath!)
-                .whenComplete(() => cancel());
-            params['image'] = uploadRes.url;
-          } else if (selectedImageData != null &&
-              selectedImageData!.isNotEmpty) {
-            final uploadRes = await ImageUploader(widget.setting)
-                .uploadData(selectedImageData!)
-                .whenComplete(() => cancel());
-            params['image'] = uploadRes.url;
+          if (selectedImagePath != null &&
+              (selectedImagePath!.startsWith('http://') ||
+                  selectedImagePath!.startsWith('https://'))) {
+            params['image'] = selectedImagePath;
+            cancel();
+          } else {
+            if (selectedImagePath != null && selectedImagePath!.isNotEmpty) {
+              final uploadRes = await ImageUploader(widget.setting)
+                  .upload(selectedImagePath!)
+                  .whenComplete(() => cancel());
+              params['image'] = uploadRes.url;
+            } else if (selectedImageData != null &&
+                selectedImageData!.isNotEmpty) {
+              final uploadRes = await ImageUploader(widget.setting)
+                  .uploadData(selectedImageData!)
+                  .whenComplete(() => cancel());
+              params['image'] = uploadRes.url;
+            }
           }
         }
 

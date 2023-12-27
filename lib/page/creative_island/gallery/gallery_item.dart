@@ -9,6 +9,7 @@ import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/gallery_item_share.dart';
+import 'package:askaide/page/component/image_action.dart';
 import 'package:askaide/page/component/image_preview.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/dialog.dart';
@@ -211,7 +212,7 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                                   EnhancedButton(
                                     title: '分享',
                                     icon: const Icon(Icons.share, size: 14),
-                                    width: 100,
+                                    width: 80,
                                     color: customColors.backgroundInvertedColor,
                                     backgroundColor:
                                         customColors.backgroundColor,
@@ -228,6 +229,22 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                                                 state.item.negativePrompt,
                                           ),
                                         ),
+                                      );
+                                    },
+                                  ),
+                                  const SizedBox(width: 10),
+                                  EnhancedButton(
+                                    title: '动作',
+                                    icon: const Icon(Icons.webhook, size: 14),
+                                    width: 80,
+                                    color: customColors.backgroundInvertedColor,
+                                    backgroundColor:
+                                        customColors.backgroundColor,
+                                    onPressed: () {
+                                      openImageWorkflowActionDialog(
+                                        context,
+                                        customColors,
+                                        state.item.images.first,
                                       );
                                     },
                                   ),

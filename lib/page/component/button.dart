@@ -8,6 +8,7 @@ class Button extends StatelessWidget {
 
   final Color? backgroundColor;
   final Color? color;
+  final Widget? icon;
 
   const Button({
     super.key,
@@ -16,6 +17,7 @@ class Button extends StatelessWidget {
     this.size = const ButtonSize.small(),
     this.backgroundColor,
     this.color,
+    this.icon,
   });
 
   @override
@@ -28,6 +30,7 @@ class Button extends StatelessWidget {
       onPressed: onPressed,
       backgroundColor: backgroundColor,
       color: color,
+      icon: icon,
     );
   }
 }

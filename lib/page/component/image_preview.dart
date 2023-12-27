@@ -4,18 +4,23 @@ import 'package:askaide/helper/image.dart';
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/component/button.dart';
 import 'package:askaide/page/component/gallery_item_share.dart';
 import 'package:askaide/page/component/image.dart';
+import 'package:askaide/page/component/image_action.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/repo/api/creative.dart';
+import 'package:askaide/repo/api_server.dart';
 import 'package:before_after/before_after.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -132,6 +137,36 @@ class _NetworkImagePreviewerState extends State<NetworkImagePreviewer> {
                           images: [widget.url],
                         ),
                       ),
+                    );
+                  },
+                ),
+                IconButton(
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  icon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.webhook,
+                        size: 14,
+                        color: customColors.weakLinkColor,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        '动作',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: customColors.weakLinkColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  onPressed: () {
+                    openImageWorkflowActionDialog(
+                      context,
+                      customColors,
+                      widget.url,
                     );
                   },
                 ),

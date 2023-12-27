@@ -28,6 +28,8 @@ class ImageEditDirectScreen extends StatefulWidget {
   final String apiEndpoint;
   final String? note;
   final int initWaitDuration;
+  final String? initImage;
+
   const ImageEditDirectScreen({
     super.key,
     required this.setting,
@@ -35,6 +37,7 @@ class ImageEditDirectScreen extends StatefulWidget {
     required this.apiEndpoint,
     this.note,
     this.initWaitDuration = 30,
+    this.initImage,
   });
 
   @override
@@ -47,6 +50,15 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
 
   /// 是否停止周期性查询任务执行状态
   var stopPeriodQuery = false;
+
+  @override
+  void initState() {
+    if (widget.initImage != null && widget.initImage!.isNotEmpty) {
+      selectedImagePath = widget.initImage;
+    }
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,12 +125,14 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
                   if (path != null) {
                     setState(() {
                       selectedImagePath = path;
+                      selectedImageData = null;
                     });
                   }
 
                   if (data != null) {
                     setState(() {
                       selectedImageData = data;
+                      selectedImagePath = null;
                     });
                   }
                 },
@@ -182,16 +196,24 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
           allowClick: false,
         );
 
-        if (selectedImagePath != null && selectedImagePath!.isNotEmpty) {
-          final uploadRes = await ImageUploader(widget.setting)
-              .upload(selectedImagePath!)
-              .whenComplete(() => cancel());
-          params['image'] = uploadRes.url;
-        } else if (selectedImageData != null && selectedImageData!.isNotEmpty) {
-          final uploadRes = await ImageUploader(widget.setting)
-              .uploadData(selectedImageData!)
-              .whenComplete(() => cancel());
-          params['image'] = uploadRes.url;
+        if (selectedImagePath != null &&
+            (selectedImagePath!.startsWith('http://') ||
+                selectedImagePath!.startsWith('https://'))) {
+          params['image'] = selectedImagePath;
+          cancel();
+        } else {
+          if (selectedImagePath != null && selectedImagePath!.isNotEmpty) {
+            final uploadRes = await ImageUploader(widget.setting)
+                .upload(selectedImagePath!)
+                .whenComplete(() => cancel());
+            params['image'] = uploadRes.url;
+          } else if (selectedImageData != null &&
+              selectedImageData!.isNotEmpty) {
+            final uploadRes = await ImageUploader(widget.setting)
+                .uploadData(selectedImageData!)
+                .whenComplete(() => cancel());
+            params['image'] = uploadRes.url;
+          }
         }
 
         final taskId = await APIServer().creativeIslandImageDirectEdit(
