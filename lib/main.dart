@@ -100,9 +100,11 @@ import 'page/component/theme/theme.dart';
 import 'package:sizer/sizer.dart';
 import 'package:askaide/helper/http.dart' as httpx;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:media_kit/media_kit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MediaKit.ensureInitialized();
   httpx.HttpClient.init();
 
   // FlutterError.onError = (FlutterErrorDetails details) {
@@ -226,7 +228,6 @@ class MyApp extends StatefulWidget {
 
   // Bloc
   late final RoomBloc chatRoomBloc;
-  late final CreativeIslandBloc creativeIslandBloc;
   late final GalleryBloc galleryBloc;
   late final AccountBloc accountBloc;
   late final VersionBloc versionBloc;
@@ -248,7 +249,6 @@ class MyApp extends StatefulWidget {
   }) {
     chatRoomBloc =
         RoomBloc(chatMsgRepo: chatMsgRepo, stateManager: messageStateManager);
-    creativeIslandBloc = CreativeIslandBloc(creativeIslandRepo);
     accountBloc = AccountBloc(settingRepo);
     versionBloc = VersionBloc();
     galleryBloc = GalleryBloc();
@@ -527,7 +527,9 @@ class MyApp extends StatefulWidget {
                 MultiBlocProvider(
                   providers: [
                     BlocProvider.value(value: accountBloc),
-                    BlocProvider.value(value: creativeIslandBloc),
+                    BlocProvider(
+                        create: (context) =>
+                            CreativeIslandBloc(creativeIslandRepo)),
                   ],
                   child: UserCenterScreen(
                       settings: context.read<SettingRepository>()),
@@ -577,7 +579,9 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
-                    BlocProvider.value(value: creativeIslandBloc),
+                    BlocProvider(
+                        create: (context) =>
+                            CreativeIslandBloc(creativeIslandRepo)),
                   ],
                   child: DrawListScreen(
                     setting: settingRepo,
@@ -592,13 +596,16 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
-                    BlocProvider.value(value: creativeIslandBloc),
+                    BlocProvider(
+                        create: (context) =>
+                            CreativeIslandBloc(creativeIslandRepo)),
                   ],
                   child: ImageEditDirectScreen(
                     setting: settingRepo,
                     title: AppLocale.superResolution.getString(context),
                     apiEndpoint: 'upscale',
                     note: state.queryParameters['note'],
+                    initWaitDuration: 15,
                   ),
                 ),
               ),
@@ -610,13 +617,37 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
-                    BlocProvider.value(value: creativeIslandBloc),
+                    BlocProvider(
+                        create: (context) =>
+                            CreativeIslandBloc(creativeIslandRepo)),
                   ],
                   child: ImageEditDirectScreen(
                     setting: settingRepo,
                     title: AppLocale.colorizeImage.getString(context),
                     apiEndpoint: 'colorize',
                     note: state.queryParameters['note'],
+                    initWaitDuration: 15,
+                  ),
+                ),
+              ),
+            ),
+            GoRoute(
+              name: 'creative-video',
+              path: '/creative-draw/create-video',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) => transitionResolver(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider(
+                        create: (context) =>
+                            CreativeIslandBloc(creativeIslandRepo)),
+                  ],
+                  child: ImageEditDirectScreen(
+                    setting: settingRepo,
+                    title: '图生视频',
+                    apiEndpoint: 'image-to-video',
+                    note: state.queryParameters['note'],
+                    initWaitDuration: 60,
                   ),
                 ),
               ),
@@ -653,6 +684,7 @@ class MyApp extends StatefulWidget {
                     ),
                     mode: state.queryParameters['mode']!,
                     id: state.queryParameters['id']!,
+                    note: state.queryParameters['note'],
                   ),
                 ),
               ),
@@ -673,6 +705,7 @@ class MyApp extends StatefulWidget {
                     ),
                     type: state.queryParameters['type']!,
                     id: state.queryParameters['id']!,
+                    note: state.queryParameters['note'],
                   ),
                 ),
               ),
@@ -685,7 +718,9 @@ class MyApp extends StatefulWidget {
                 return transitionResolver(
                   MultiBlocProvider(
                     providers: [
-                      BlocProvider.value(value: creativeIslandBloc),
+                      BlocProvider(
+                          create: (context) =>
+                              CreativeIslandBloc(creativeIslandRepo)),
                     ],
                     child: MyCreationScreen(
                       setting: settingRepo,
@@ -703,7 +738,9 @@ class MyApp extends StatefulWidget {
                 return transitionResolver(
                   MultiBlocProvider(
                     providers: [
-                      BlocProvider.value(value: creativeIslandBloc),
+                      BlocProvider(
+                          create: (context) =>
+                              CreativeIslandBloc(creativeIslandRepo)),
                     ],
                     child: CreativeModelScreen(setting: settingRepo),
                   ),
@@ -722,7 +759,9 @@ class MyApp extends StatefulWidget {
                 return transitionResolver(
                   MultiBlocProvider(
                     providers: [
-                      BlocProvider.value(value: creativeIslandBloc),
+                      BlocProvider(
+                          create: (context) =>
+                              CreativeIslandBloc(creativeIslandRepo)),
                     ],
                     child: MyCreationItemPage(
                       setting: settingRepo,

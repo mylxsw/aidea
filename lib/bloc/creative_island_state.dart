@@ -67,6 +67,8 @@ class CreativeIslandListLoaded extends CreativeIslandState {
   get error => _error;
 }
 
+class CreativeIslandHistoryItemLoading extends CreativeIslandState {}
+
 class CreativeIslandHistoryItemLoaded extends CreativeIslandState {
   final Object? error;
   final CreativeItemInServer? item;

@@ -11,6 +11,7 @@ import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/loading.dart';
+import 'package:askaide/page/component/message_box.dart';
 import 'package:askaide/page/component/prompt_tags_selector.dart';
 import 'package:askaide/page/creative_island/draw/components/artistic_style_selector.dart';
 import 'package:askaide/page/creative_island/draw/components/content_preview.dart';
@@ -35,12 +36,15 @@ class ArtisticTextScreen extends StatefulWidget {
   final int? galleryCopyId;
   final String type;
   final String id;
+  final String? note;
+
   const ArtisticTextScreen({
     super.key,
     required this.id,
     required this.setting,
     this.galleryCopyId,
     required this.type,
+    this.note,
   });
 
   @override
@@ -175,6 +179,12 @@ class _ArtisticTextScreenState extends State<ArtisticTextScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (widget.note != null && widget.note != '')
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child:
+                  MessageBox(message: widget.note!, type: MessageBoxType.info),
+            ),
           ColumnBlock(
             innerPanding: 10,
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),

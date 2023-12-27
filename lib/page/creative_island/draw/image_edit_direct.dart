@@ -27,12 +27,14 @@ class ImageEditDirectScreen extends StatefulWidget {
   final String title;
   final String apiEndpoint;
   final String? note;
+  final int initWaitDuration;
   const ImageEditDirectScreen({
     super.key,
     required this.setting,
     required this.title,
     required this.apiEndpoint,
     this.note,
+    this.initWaitDuration = 30,
   });
 
   @override
@@ -228,7 +230,7 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
     }
 
     try {
-      request(30);
+      request(widget.initWaitDuration);
     } catch (e) {
       cancelOutside();
       showErrorMessageEnhanced(context, e);

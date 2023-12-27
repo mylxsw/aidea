@@ -13,6 +13,7 @@ import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/loading.dart';
+import 'package:askaide/page/component/message_box.dart';
 import 'package:askaide/page/component/prompt_tags_selector.dart';
 import 'package:askaide/page/creative_island/draw/components/content_preview.dart';
 import 'package:askaide/page/creative_island/draw/draw_result.dart';
@@ -39,12 +40,15 @@ class DrawCreateScreen extends StatefulWidget {
   final int? galleryCopyId;
   final String mode;
   final String id;
+  final String? note;
+
   const DrawCreateScreen({
     super.key,
     required this.id,
     required this.setting,
     this.galleryCopyId,
     required this.mode,
+    this.note,
   });
 
   @override
@@ -219,6 +223,12 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (widget.note != null && widget.note != '')
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child:
+                  MessageBox(message: widget.note!, type: MessageBoxType.info),
+            ),
           ColumnBlock(
             innerPanding: 10,
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
