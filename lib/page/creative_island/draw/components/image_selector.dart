@@ -63,6 +63,7 @@ class ImageSelector extends StatelessWidget {
         if (title != null) const SizedBox(height: 10),
         Material(
           borderRadius: BorderRadius.circular(8),
+          color: customColors.backgroundColor,
           child: InkWell(
             borderRadius: BorderRadius.circular(8),
             onTap: () async {
@@ -140,9 +141,9 @@ class ImageSelector extends StatelessWidget {
                               child: Container(
                                 color: const Color.fromARGB(80, 255, 255, 255),
                                 height: 50,
-                                child: Row(
+                                child: const Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
+                                  children: [
                                     Icon(
                                       Icons.camera_alt,
                                       size: 30,
