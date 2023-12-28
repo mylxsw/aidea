@@ -362,14 +362,19 @@ class AsyncTaskResp {
   List<String>? errors;
   List<String>? resources;
   String? originImage;
+  int? width;
+  int? height;
 
-  AsyncTaskResp(this.status, {this.errors, this.resources, this.originImage});
+  AsyncTaskResp(this.status,
+      {this.errors, this.resources, this.originImage, this.width, this.height});
 
   toJson() => {
         'status': status,
         'errors': errors,
         'resources': resources,
         'origin_image': originImage,
+        'width': width,
+        'height': height,
       };
 
   static AsyncTaskResp fromJson(Map<String, dynamic> json) {
@@ -384,6 +389,8 @@ class AsyncTaskResp {
               .toList()
           : null,
       originImage: json['origin_image'],
+      width: json['width'],
+      height: json['height'],
     );
   }
 }

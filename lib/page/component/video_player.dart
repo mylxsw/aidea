@@ -14,7 +14,16 @@ import 'package:media_kit_video/media_kit_video.dart';
 
 class VideoPlayer extends StatefulWidget {
   final String url;
-  const VideoPlayer({super.key, required this.url});
+  final double? aspectRatio;
+  final int? width;
+  final int? height;
+
+  const VideoPlayer(
+      {super.key,
+      required this.url,
+      this.width,
+      this.height,
+      this.aspectRatio});
 
   @override
   State<VideoPlayer> createState() => _VideoPlayerState();
@@ -27,6 +36,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
   @override
   void initState() {
     super.initState();
+    player.setPlaylistMode(PlaylistMode.single);
     player.open(Media(widget.url));
   }
 
@@ -56,8 +66,17 @@ class _VideoPlayerState extends State<VideoPlayer> {
             child: Center(
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.width * 9.0 / 16.0,
-                child: Video(controller: controller),
+                height: widget.width != null && widget.height != null
+                    ? MediaQuery.of(context).size.width *
+                        widget.height! /
+                        widget.width!
+                    : MediaQuery.of(context).size.width,
+                child: Video(
+                  controller: controller,
+                  width: widget.width?.toDouble(),
+                  height: widget.height?.toDouble(),
+                  aspectRatio: widget.aspectRatio,
+                ),
               ),
             ),
           ),

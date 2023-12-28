@@ -104,7 +104,14 @@ class _CreativeIslandContentPreviewState
     Map<String, dynamic> params,
     String e,
   ) {
-    return VideoPlayer(url: e);
+    int? width = params['width'] == null ? null : params['width'] as int;
+    int? height = params['height'] == null ? null : params['height'] as int;
+
+    return VideoPlayer(
+      url: e,
+      width: width,
+      height: height,
+    );
   }
 
   Widget _buildImagePreviewer(

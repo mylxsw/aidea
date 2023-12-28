@@ -5,6 +5,7 @@ import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
+import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/message_box.dart';
@@ -17,10 +18,11 @@ import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quickalert/models/quickalert_type.dart';
 
 class ImageEditDirectScreen extends StatefulWidget {
   final SettingRepository setting;
@@ -48,6 +50,12 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
   String? selectedImagePath;
   Uint8List? selectedImageData;
 
+  TextEditingController seedController = TextEditingController();
+  double? cfgScale = 0.0;
+  int? motionBucketId = 0;
+
+  bool showAdvancedOptions = false;
+
   /// 是否停止周期性查询任务执行状态
   var stopPeriodQuery = false;
 
@@ -58,6 +66,12 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
     }
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    seedController.dispose();
+    super.dispose();
   }
 
   @override
@@ -143,10 +157,172 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
               ),
             ],
           ),
+          if (showAdvancedOptions)
+            ColumnBlock(
+              innerPanding: 10,
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              children: [
+                // Cfg Scale
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        const Text('Cfg Scale'),
+                        const SizedBox(width: 5),
+                        InkWell(
+                          onTap: () {
+                            showBeautyDialog(
+                              context,
+                              type: QuickAlertType.info,
+                              text:
+                                  'How strongly the video sticks to the original image. \nUse lower values to allow the model more freedom to make changes and higher values to correct motion distortions',
+                              confirmBtnText:
+                                  AppLocale.gotIt.getString(context),
+                              showCancelBtn: false,
+                            );
+                          },
+                          child: Icon(
+                            Icons.help_outline,
+                            size: 16,
+                            color: customColors.weakLinkColor?.withAlpha(150),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Slider(
+                            value: cfgScale ?? 0.0,
+                            min: 0,
+                            max: 10,
+                            divisions: 20,
+                            label: cfgScaleText(cfgScale),
+                            activeColor: customColors.linkColor,
+                            onChanged: (value) {
+                              setState(() {
+                                if (value > 0 && value < 1) {
+                                  value = 1;
+                                }
+
+                                cfgScale = value;
+                              });
+                            },
+                          ),
+                        ),
+                        Text(
+                          cfgScaleText(cfgScale),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: customColors.weakTextColor,
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                // Motion Bucket ID
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        const Text('Motion Bucket ID'),
+                        const SizedBox(width: 5),
+                        InkWell(
+                          onTap: () {
+                            showBeautyDialog(
+                              context,
+                              type: QuickAlertType.info,
+                              text:
+                                  'Lower values generally result in less motion in the output video, \nwhile higher values generally result in more motion',
+                              confirmBtnText:
+                                  AppLocale.gotIt.getString(context),
+                              showCancelBtn: false,
+                            );
+                          },
+                          child: Icon(
+                            Icons.help_outline,
+                            size: 16,
+                            color: customColors.weakLinkColor?.withAlpha(150),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Slider(
+                            value: (motionBucketId ?? 0).toDouble(),
+                            min: 0,
+                            max: 255,
+                            divisions: 51,
+                            label: motionBucketIdText(motionBucketId),
+                            activeColor: customColors.linkColor,
+                            onChanged: (value) {
+                              setState(() {
+                                if (value > 0 && value < 1) {
+                                  value = 1;
+                                }
+
+                                motionBucketId = value.toInt();
+                              });
+                            },
+                          ),
+                        ),
+                        Text(
+                          motionBucketIdText(motionBucketId),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: customColors.weakTextColor,
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                // Seed
+                EnhancedTextField(
+                  controller: seedController,
+                  customColors: customColors,
+                  labelText: 'Seed',
+                  labelPosition: LabelPosition.left,
+                  showCounter: false,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  hintText: '默认随机',
+                  textDirection: TextDirection.rtl,
+                ),
+              ],
+            ),
           // 生成按钮
           const SizedBox(height: 20),
           Row(
             children: [
+              if (widget.apiEndpoint == 'image-to-video')
+                EnhancedButton(
+                  title: showAdvancedOptions
+                      ? AppLocale.simpleMode.getString(context)
+                      : AppLocale.professionalMode.getString(context),
+                  width: 120,
+                  backgroundColor: Colors.transparent,
+                  color: customColors.weakLinkColor,
+                  fontSize: 15,
+                  icon: Icon(
+                    showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
+                    color: customColors.weakLinkColor,
+                    size: 15,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      showAdvancedOptions = !showAdvancedOptions;
+                    });
+                  },
+                ),
+              if (widget.apiEndpoint == 'image-to-video')
+                const SizedBox(width: 10),
               Expanded(
                 flex: 1,
                 child: EnhancedButton(
@@ -162,6 +338,16 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
     );
   }
 
+  String cfgScaleText(double? cfgScale) {
+    cfgScale ??= 0;
+    return cfgScale == 0 ? 'Auto' : cfgScale.toStringAsFixed(1);
+  }
+
+  String motionBucketIdText(int? motionBucketId) {
+    motionBucketId ??= 0;
+    return motionBucketId == 0 ? 'Auto' : motionBucketId.toString();
+  }
+
   void onGenerate() async {
     FocusScope.of(context).requestFocus(FocusNode());
     HapticFeedbackHelper.mediumImpact();
@@ -172,6 +358,14 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
     }
 
     var params = <String, dynamic>{};
+
+    if (cfgScale != null && cfgScale! >= 1) {
+      params['cfg_scale'] = cfgScale;
+    }
+
+    if (motionBucketId != null && motionBucketId! >= 1) {
+      params['motion_bucket_id'] = motionBucketId;
+    }
 
     final cancelOutside = BotToast.showCustomLoading(
       toastBuilder: (cancel) {
@@ -277,6 +471,13 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
             resp.originImage != '') {
           params['image'] = resp.originImage;
         }
+        if (params != null && resp.width != null) {
+          params['width'] = resp.width;
+        }
+        if (params != null && resp.height != null) {
+          params['height'] = resp.height;
+        }
+
         return IslandResult(
           result: resp.resources ?? const [],
           params: params,
