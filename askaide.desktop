@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=Ask aide
+Comment=Ask aide!
+Icon=app
+Exec=askaide %U
+Terminal=false
+Type=Application
+Categories=Utility;
+Keywords=Internet;
+StartupNotify=false
