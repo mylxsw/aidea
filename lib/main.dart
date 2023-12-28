@@ -1,3 +1,5 @@
+import 'package:path/path.dart';
+
 import 'package:askaide/bloc/account_bloc.dart';
 import 'package:askaide/bloc/background_image_bloc.dart';
 import 'package:askaide/bloc/chat_chat_bloc.dart';
@@ -101,6 +103,8 @@ import 'package:sizer/sizer.dart';
 import 'package:askaide/helper/http.dart' as httpx;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
+import 'package:askaide/helper/env.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   httpx.HttpClient.init();
@@ -121,6 +125,8 @@ void main() async {
     if (PlatformTool.isWindows() || PlatformTool.isLinux()) {
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
+      var path=absolute(join(getDbBasePath, '.aideal', 'databases'));
+      databaseFactory.setDatabasesPath(path);
     }
   }
 
