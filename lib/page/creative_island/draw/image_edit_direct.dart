@@ -1,4 +1,5 @@
 import 'package:askaide/helper/ability.dart';
+import 'package:askaide/helper/cache.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
@@ -23,6 +24,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/quickalert.dart';
 
 class ImageEditDirectScreen extends StatefulWidget {
   final SettingRepository setting;
@@ -63,6 +65,55 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
   void initState() {
     if (widget.initImage != null && widget.initImage!.isNotEmpty) {
       selectedImagePath = widget.initImage;
+    }
+
+    if (widget.note != null && widget.apiEndpoint == 'image-to-video') {
+      Cache()
+          .boolGet(key: 'creative:tutorials:${widget.apiEndpoint}:dialog')
+          .then((show) {
+        if (!show) {
+          return;
+        }
+
+        final customColors = Theme.of(context).extension<CustomColors>()!;
+
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.custom,
+          barrierDismissible: true,
+          confirmBtnText: AppLocale.gotIt.getString(context),
+          customAsset: 'assets/text-to-video.gif',
+          widget: Text('      ${widget.note!}'),
+          titleColor: customColors.dialogDefaultTextColor!,
+          textColor: customColors.dialogDefaultTextColor!,
+          confirmBtnColor: customColors.linkColor!,
+          borderRadius: 10,
+          buttonBorderRadius: 10,
+          backgroundColor: customColors.dialogBackgroundColor!,
+          width: MediaQuery.of(context).size.width > 600 ? 400 : null,
+          confirmBtnTextStyle: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.normal,
+          ),
+          onConfirmBtnTap: () async {
+            Cache().setBool(
+              key: 'creative:tutorials:${widget.apiEndpoint}:dialog',
+              value: false,
+              duration: const Duration(days: 30),
+            );
+            context.pop();
+          },
+          cancelBtnTextStyle: TextStyle(
+            color: customColors.dialogDefaultTextColor,
+            fontWeight: FontWeight.normal,
+          ),
+          showCancelBtn: true,
+          cancelBtnText: AppLocale.cancel.getString(context),
+          onCancelBtnTap: () async {
+            context.pop();
+          },
+        );
+      });
     }
 
     super.initState();
