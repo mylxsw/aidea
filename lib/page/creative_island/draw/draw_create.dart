@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:askaide/helper/ability.dart';
+import 'package:askaide/helper/cache.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/upload.dart';
@@ -175,7 +176,39 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
       }
     });
 
+    if (widget.note != null) {
+      Cache()
+          .boolGet(key: 'creative:tutorials:${widget.mode}:dialog')
+          .then((show) {
+        if (!show) {
+          return;
+        }
+
+        openDefaultTutorials(onConfirm: () {
+          Cache().setBool(
+            key: 'creative:tutorials:${widget.mode}:dialog',
+            value: false,
+            duration: const Duration(days: 30),
+          );
+        });
+      });
+    }
+
     super.initState();
+  }
+
+  void openDefaultTutorials({Function? onConfirm}) {
+    showBeautyDialog(
+      context,
+      type: QuickAlertType.info,
+      text: '     ${widget.note!}',
+      onConfirmBtnTap: () async {
+        onConfirm?.call();
+        context.pop();
+      },
+      showCancelBtn: true,
+      confirmBtnText: AppLocale.gotIt.getString(context),
+    );
   }
 
   @override
@@ -198,6 +231,15 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
         ),
         toolbarHeight: CustomSize.toolbarHeight,
         backgroundColor: customColors.backgroundContainerColor,
+        actions: [
+          if (widget.note != null)
+            IconButton(
+              onPressed: () {
+                openDefaultTutorials();
+              },
+              icon: const Icon(Icons.help_outline),
+            )
+        ],
       ),
       backgroundColor: customColors.backgroundContainerColor,
       body: BackgroundContainer(
@@ -229,12 +271,6 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (widget.note != null && widget.note != '')
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child:
-                  MessageBox(message: widget.note!, type: MessageBoxType.info),
-            ),
           ColumnBlock(
             innerPanding: 10,
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),

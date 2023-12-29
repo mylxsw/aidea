@@ -1,11 +1,19 @@
 import 'dart:io';
 
+import 'package:askaide/helper/image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-ImageProvider resolveImageProvider(String imageUrl) {
+ImageProvider resolveImageProvider(
+  String imageUrl, {
+  bool useThumbnail = true,
+}) {
   if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    if (useThumbnail) {
+      imageUrl = imageURL(imageUrl, 'thumb');
+    }
+
     return CachedNetworkImageProviderEnhanced(imageUrl);
   }
 

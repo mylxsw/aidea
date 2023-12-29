@@ -19,7 +19,7 @@ Future<dynamic> openImageWorkflowActionDialog(
     (context) {
       return Column(
         children: [
-          Text('请选择要执行的操作',
+          Text('选择要执行的操作',
               style: TextStyle(
                 color: customColors.weakTextColorPlus,
               )),

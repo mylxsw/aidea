@@ -11,6 +11,7 @@ import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/gallery_item_share.dart';
 import 'package:askaide/page/component/image_action.dart';
 import 'package:askaide/page/component/image_preview.dart';
+import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
@@ -241,11 +242,52 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                                     backgroundColor:
                                         customColors.backgroundColor,
                                     onPressed: () {
-                                      openImageWorkflowActionDialog(
-                                        context,
-                                        customColors,
-                                        state.item.images.first,
-                                      );
+                                      if (state.item.images.length > 1) {
+                                        List<SelectorItem<String>> items = [];
+                                        for (var i = 0;
+                                            i < state.item.images.length;
+                                            i++) {
+                                          items.add(SelectorItem(
+                                            NetworkImagePreviewer(
+                                              url: state.item.images[i],
+                                              notClickable: true,
+                                              hidePreviewButton: true,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            state.item.images[i],
+                                          ));
+                                        }
+                                        openListSelectDialog(
+                                          context,
+                                          items,
+                                          (selected) {
+                                            context.pop();
+
+                                            openImageWorkflowActionDialog(
+                                              context,
+                                              customColors,
+                                              selected.value,
+                                            );
+
+                                            return false;
+                                          },
+                                          horizontal: true,
+                                          horizontalCount: 2,
+                                          heightFactor: 0.8,
+                                          innerPadding:
+                                              const EdgeInsets.symmetric(
+                                            vertical: 10,
+                                          ),
+                                          title: '选择要执行动作的图片',
+                                        );
+                                      } else {
+                                        openImageWorkflowActionDialog(
+                                          context,
+                                          customColors,
+                                          state.item.images.first,
+                                        );
+                                      }
                                     },
                                   ),
                                   const SizedBox(width: 10),

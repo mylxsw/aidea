@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:askaide/helper/ability.dart';
+import 'package:askaide/helper/cache.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
@@ -11,7 +12,6 @@ import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/loading.dart';
-import 'package:askaide/page/component/message_box.dart';
 import 'package:askaide/page/component/prompt_tags_selector.dart';
 import 'package:askaide/page/creative_island/draw/components/artistic_style_selector.dart';
 import 'package:askaide/page/creative_island/draw/components/content_preview.dart';
@@ -127,6 +127,24 @@ class _ArtisticTextScreenState extends State<ArtisticTextScreen> {
       }
     });
 
+    if (widget.note != null) {
+      Cache()
+          .boolGet(key: 'creative:tutorials:${widget.type}:dialog')
+          .then((show) {
+        if (!show) {
+          return;
+        }
+
+        openDefaultTutorials(onConfirm: () {
+          Cache().setBool(
+            key: 'creative:tutorials:${widget.type}:dialog',
+            value: false,
+            duration: const Duration(days: 30),
+          );
+        });
+      });
+    }
+
     super.initState();
   }
 
@@ -148,6 +166,15 @@ class _ArtisticTextScreenState extends State<ArtisticTextScreen> {
         ),
         toolbarHeight: CustomSize.toolbarHeight,
         backgroundColor: customColors.backgroundContainerColor,
+        actions: [
+          if (widget.note != null)
+            IconButton(
+              onPressed: () {
+                openDefaultTutorials();
+              },
+              icon: const Icon(Icons.help_outline),
+            )
+        ],
       ),
       backgroundColor: customColors.backgroundContainerColor,
       body: BackgroundContainer(
@@ -174,17 +201,25 @@ class _ArtisticTextScreenState extends State<ArtisticTextScreen> {
     );
   }
 
+  void openDefaultTutorials({Function? onConfirm}) {
+    showBeautyDialog(
+      context,
+      type: QuickAlertType.info,
+      text: '     ${widget.note!}',
+      onConfirmBtnTap: () async {
+        onConfirm?.call();
+        context.pop();
+      },
+      showCancelBtn: true,
+      confirmBtnText: AppLocale.gotIt.getString(context),
+    );
+  }
+
   Widget buildEditPanel(BuildContext context, CustomColors customColors) {
     return SafeArea(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (widget.note != null && widget.note != '')
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child:
-                  MessageBox(message: widget.note!, type: MessageBoxType.info),
-            ),
           ColumnBlock(
             innerPanding: 10,
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),

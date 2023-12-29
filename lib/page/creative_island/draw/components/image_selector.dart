@@ -49,15 +49,6 @@ class ImageSelector extends StatelessWidget {
                   if (titleHelper != null) titleHelper!,
                 ],
               ),
-              // IconButton(
-              //   onPressed: () {
-              //     HapticFeedbackHelper.mediumImpact();
-              //     onImageSelected(null);
-              //   },
-              //   icon: const Icon(Icons.refresh),
-              //   iconSize: 15,
-              //   tooltip: '重置',
-              // )
             ],
           ),
         if (title != null) const SizedBox(height: 10),
