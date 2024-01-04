@@ -59,7 +59,8 @@ class _MyCreationItemPageState extends State<MyCreationItemPage>
 
     return BlocBuilder<CreativeIslandBloc, CreativeIslandState>(
       buildWhen: (previous, current) =>
-          current is CreativeIslandHistoryItemLoaded,
+          current is CreativeIslandHistoryItemLoaded ||
+          current is CreativeIslandHistoryItemLoading,
       builder: (context, state) {
         if (state is CreativeIslandHistoryItemLoaded) {
           return Scaffold(
@@ -144,7 +145,9 @@ class _MyCreationItemPageState extends State<MyCreationItemPage>
           );
         }
 
-        return Container();
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
       },
     );
   }

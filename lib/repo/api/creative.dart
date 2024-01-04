@@ -39,6 +39,8 @@ class CreativeGallery {
   DateTime? createdAt;
   DateTime? updatedAt;
 
+  String? previewImage;
+
   CreativeGallery({
     required this.id,
     this.userId,
@@ -54,6 +56,7 @@ class CreativeGallery {
     this.starLevel = 0,
     this.hotValue = 0,
     this.status = 0,
+    this.previewImage,
     this.createdAt,
     this.updatedAt,
   });
@@ -79,6 +82,19 @@ class CreativeGallery {
     }
   }
 
+  /// 封面图
+  String get preview {
+    if (previewImage != null && previewImage != '') {
+      return previewImage!;
+    }
+
+    if (images.isNotEmpty) {
+      return images.first;
+    }
+
+    return '';
+  }
+
   toJson() => {
         'id': id,
         'user_id': userId,
@@ -94,6 +110,7 @@ class CreativeGallery {
         'star_level': starLevel,
         'hot_value': hotValue,
         'status': status,
+        'preview_image': previewImage,
         'created_at': createdAt?.toIso8601String(),
         'updated_at': updatedAt?.toIso8601String(),
       };
@@ -114,6 +131,7 @@ class CreativeGallery {
       starLevel: json['star_level'] ?? 0,
       hotValue: json['hot_value'] ?? 0,
       status: json['status'] ?? 0,
+      previewImage: json['preview_image'],
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : null,
@@ -665,9 +683,14 @@ class CreativeItemInServer {
   bool get isImageType =>
       islandType != null && (islandType == 2 || islandType! >= 5);
 
+  bool get isVideoType => islandType != null && islandType == 3;
+
   List<String> get images {
     try {
-      if (isImageType && answer != null && answer != '' && isSuccessful) {
+      if ((isImageType || isVideoType) &&
+          answer != null &&
+          answer != '' &&
+          isSuccessful) {
         return (jsonDecode(answer!) as List<dynamic>).cast<String>();
       }
       return [];
@@ -704,6 +727,11 @@ class CreativeItemInServer {
     }
 
     return {};
+  }
+
+  /// 上传的原图
+  String? get originalImage {
+    return params['image'];
   }
 
   String get markdownAnswer {

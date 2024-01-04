@@ -328,7 +328,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                                               ? Markdown(
                                                   data: text.trim(),
                                                   onUrlTap: (value) =>
-                                                      launchUrlString(value),
+                                                      onMarkdownUrlTap(value),
                                                 )
                                               : SelectableText(
                                                   text,

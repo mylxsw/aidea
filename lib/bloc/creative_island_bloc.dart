@@ -104,6 +104,7 @@ class CreativeIslandBloc
     });
 
     on<CreativeIslandHistoryItemLoadEvent>((event, emit) async {
+      emit(CreativeIslandHistoryItemLoading());
       emit(CreativeIslandHistoryItemLoaded(
         item: await APIServer().creativeHistoryItem(
           hisId: event.itemId,

@@ -18,6 +18,15 @@ build-macos:
 	codesign -f -s "Developer ID Application: YIYAO  GUAN (N95437SZ2A)" build/macos/Build/Products/Release/AIdea.app
 	open build/macos/Build/Products/Release/
 
+build-appimage:
+	flutter build linux --no-tree-shake-icons --release 
+	mkdir -p aidea_app.AppDir
+	cp -r build/linux/x64/release/bundle/* aidea_app.AppDir
+	cp assets/app.png aidea_app.AppDir/
+	cp AppRun aidea_app.AppDir/
+	cp askaide.desktop aidea_app.AppDir/
+	appimagetool aidea_app.AppDir/
+
 build-web:
 	flutter build web --web-renderer canvaskit --release --dart-define=FLUTTER_WEB_CANVASKIT_URL=https://resources.aicode.cc/canvaskit/
 	cd scripts && go run main.go ../build/web/main.dart.js && cd ..
