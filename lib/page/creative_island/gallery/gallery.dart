@@ -81,7 +81,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                 ListConfig<CreativeGallery>(
                   itemBuilder: (context, item, index) {
                     return ImageCard(
-                      images: item.images,
+                      images: [item.preview],
                       username: item.username,
                       userId: item.userId,
                       hotValue: item.hotValue,

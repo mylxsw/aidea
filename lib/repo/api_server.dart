@@ -736,6 +736,18 @@ class APIServer {
     );
   }
 
+  Future<String> creativeIslandImageToVideoCompletionsAsyncV2(
+      Map<String, dynamic> params) async {
+    return sendPostRequest(
+      '/v2/creative-island/completions/image-to-video',
+      (resp) {
+        final cicResp = CreativeIslandCompletionAsyncResp.fromJson(resp.data);
+        return cicResp.taskId;
+      },
+      formData: params,
+    );
+  }
+
   Future<String> creativeIslandImageDirectEdit(
     String endpoint,
     Map<String, dynamic> params,

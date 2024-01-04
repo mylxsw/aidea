@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:askaide/helper/ability.dart';
+import 'package:askaide/helper/cache.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
@@ -35,12 +36,15 @@ class ArtisticTextScreen extends StatefulWidget {
   final int? galleryCopyId;
   final String type;
   final String id;
+  final String? note;
+
   const ArtisticTextScreen({
     super.key,
     required this.id,
     required this.setting,
     this.galleryCopyId,
     required this.type,
+    this.note,
   });
 
   @override
@@ -123,6 +127,24 @@ class _ArtisticTextScreenState extends State<ArtisticTextScreen> {
       }
     });
 
+    if (widget.note != null) {
+      Cache()
+          .boolGet(key: 'creative:tutorials:${widget.type}:dialog')
+          .then((show) {
+        if (!show) {
+          return;
+        }
+
+        openDefaultTutorials(onConfirm: () {
+          Cache().setBool(
+            key: 'creative:tutorials:${widget.type}:dialog',
+            value: false,
+            duration: const Duration(days: 30),
+          );
+        });
+      });
+    }
+
     super.initState();
   }
 
@@ -144,6 +166,15 @@ class _ArtisticTextScreenState extends State<ArtisticTextScreen> {
         ),
         toolbarHeight: CustomSize.toolbarHeight,
         backgroundColor: customColors.backgroundContainerColor,
+        actions: [
+          if (widget.note != null)
+            IconButton(
+              onPressed: () {
+                openDefaultTutorials();
+              },
+              icon: const Icon(Icons.help_outline),
+            )
+        ],
       ),
       backgroundColor: customColors.backgroundContainerColor,
       body: BackgroundContainer(
@@ -167,6 +198,20 @@ class _ArtisticTextScreenState extends State<ArtisticTextScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void openDefaultTutorials({Function? onConfirm}) {
+    showBeautyDialog(
+      context,
+      type: QuickAlertType.info,
+      text: '     ${widget.note!}',
+      onConfirmBtnTap: () async {
+        onConfirm?.call();
+        context.pop();
+      },
+      showCancelBtn: true,
+      confirmBtnText: AppLocale.gotIt.getString(context),
     );
   }
 

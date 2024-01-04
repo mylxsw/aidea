@@ -6,6 +6,7 @@ import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/gallery_item_share.dart';
 import 'package:askaide/page/component/image.dart';
+import 'package:askaide/page/component/image_action.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
@@ -132,6 +133,36 @@ class _NetworkImagePreviewerState extends State<NetworkImagePreviewer> {
                           images: [widget.url],
                         ),
                       ),
+                    );
+                  },
+                ),
+                IconButton(
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  icon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.webhook,
+                        size: 14,
+                        color: customColors.weakLinkColor,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        '动作',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: customColors.weakLinkColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  onPressed: () {
+                    openImageWorkflowActionDialog(
+                      context,
+                      customColors,
+                      widget.url,
                     );
                   },
                 ),

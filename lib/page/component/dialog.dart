@@ -118,8 +118,10 @@ showCustomBeautyDialog(
 showBeautyDialog(
   BuildContext context, {
   required QuickAlertType type,
-  required String text,
+  String? text,
   String? title,
+  String? customAsset,
+  Widget? widget,
   String confirmBtnText = '确定',
   String? cancelBtnText,
   Function()? onConfirmBtnTap,
@@ -133,6 +135,8 @@ showBeautyDialog(
     context: context,
     type: type,
     text: text,
+    customAsset: customAsset,
+    widget: widget,
     width: MediaQuery.of(context).size.width > 600 ? 400 : null,
     barrierDismissible: barrierDismissible,
     showCancelBtn: showCancelBtn,

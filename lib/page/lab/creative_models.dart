@@ -262,10 +262,18 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                                             .startsWith('https://'))
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(10),
-                                        child: CachedNetworkImageEnhanced(
-                                          imageUrl: e.firstImagePreview,
-                                          fit: BoxFit.cover,
-                                        ),
+                                        child: e.firstImagePreview
+                                                .endsWith('.mp4')
+                                            ? CachedNetworkImageEnhanced(
+                                                imageUrl: e.params['image'] ??
+                                                    e.firstImagePreview,
+                                                fit: BoxFit.cover,
+                                                height: double.infinity,
+                                              )
+                                            : CachedNetworkImageEnhanced(
+                                                imageUrl: e.firstImagePreview,
+                                                fit: BoxFit.cover,
+                                              ),
                                       )
                                     else if (e.isProcessing)
                                       Container(
@@ -332,7 +340,33 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                                           ),
                                         ),
                                       ),
-                                    )
+                                    ),
+                                    if (e.islandName != null)
+                                      Positioned(
+                                        left: 0,
+                                        top: 0,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 5,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                const BorderRadius.only(
+                                              topLeft: Radius.circular(5),
+                                              bottomRight: Radius.circular(5),
+                                            ),
+                                            color: customColors.linkColor,
+                                          ),
+                                          child: Text(
+                                            e.islandName!,
+                                            style: const TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      )
                                   ],
                                 ),
                               ),

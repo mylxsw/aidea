@@ -300,7 +300,37 @@ class _MyCreationScreenState extends State<MyCreationScreen> {
     BuildContext context,
     CreativeItemInServer item,
   ) {
-    if (item.isImageType && item.images.isNotEmpty) {
+    if (item.isVideoType && item.originalImage != null) {
+      return ConstrainedBox(
+        constraints: const BoxConstraints(
+          minHeight: 100,
+        ),
+        child: Stack(
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(8),
+                topRight: Radius.circular(8),
+              ),
+              child: CachedNetworkImageEnhanced(
+                imageUrl:
+                    imageURL(item.originalImage!, qiniuImageTypeThumbMedium),
+                fit: BoxFit.cover,
+              ),
+            ),
+            Positioned(
+              right: 10,
+              bottom: 10,
+              child: Image.asset(
+                'assets/play.png',
+                width: 40,
+                opacity: const AlwaysStoppedAnimation(0.7),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else if (item.isImageType && item.images.isNotEmpty) {
       return ConstrainedBox(
         constraints: const BoxConstraints(
           minHeight: 100,
