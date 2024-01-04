@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:askaide/helper/ability.dart';
+import 'package:askaide/helper/cache.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/upload.dart';
@@ -13,6 +14,7 @@ import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/loading.dart';
+import 'package:askaide/page/component/message_box.dart';
 import 'package:askaide/page/component/prompt_tags_selector.dart';
 import 'package:askaide/page/creative_island/draw/components/content_preview.dart';
 import 'package:askaide/page/creative_island/draw/draw_result.dart';
@@ -39,12 +41,17 @@ class DrawCreateScreen extends StatefulWidget {
   final int? galleryCopyId;
   final String mode;
   final String id;
+  final String? note;
+  final String? initImage;
+
   const DrawCreateScreen({
     super.key,
     required this.id,
     required this.setting,
     this.galleryCopyId,
     required this.mode,
+    this.note,
+    this.initImage,
   });
 
   @override
@@ -85,6 +92,10 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
 
   @override
   void initState() {
+    if (widget.initImage != null) {
+      selectedImagePath = widget.initImage;
+    }
+
     APIServer()
         .creativeIslandCapacity(mode: widget.mode, id: widget.id)
         .then((cap) {
@@ -165,7 +176,39 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
       }
     });
 
+    if (widget.note != null) {
+      Cache()
+          .boolGet(key: 'creative:tutorials:${widget.mode}:dialog')
+          .then((show) {
+        if (!show) {
+          return;
+        }
+
+        openDefaultTutorials(onConfirm: () {
+          Cache().setBool(
+            key: 'creative:tutorials:${widget.mode}:dialog',
+            value: false,
+            duration: const Duration(days: 30),
+          );
+        });
+      });
+    }
+
     super.initState();
+  }
+
+  void openDefaultTutorials({Function? onConfirm}) {
+    showBeautyDialog(
+      context,
+      type: QuickAlertType.info,
+      text: '     ${widget.note!}',
+      onConfirmBtnTap: () async {
+        onConfirm?.call();
+        context.pop();
+      },
+      showCancelBtn: true,
+      confirmBtnText: AppLocale.gotIt.getString(context),
+    );
   }
 
   @override
@@ -188,6 +231,15 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
         ),
         toolbarHeight: CustomSize.toolbarHeight,
         backgroundColor: customColors.backgroundContainerColor,
+        actions: [
+          if (widget.note != null)
+            IconButton(
+              onPressed: () {
+                openDefaultTutorials();
+              },
+              icon: const Icon(Icons.help_outline),
+            )
+        ],
       ),
       backgroundColor: customColors.backgroundContainerColor,
       body: BackgroundContainer(
@@ -230,12 +282,14 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                     if (path != null) {
                       setState(() {
                         selectedImagePath = path;
+                        selectedImageData = null;
                       });
                     }
 
                     if (data != null) {
                       setState(() {
                         selectedImageData = data;
+                        selectedImagePath = null;
                       });
                     }
                   },
@@ -801,7 +855,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
       'prompt': prompt,
       'negative_prompt': negativePromptController.text,
       'prompt_tags': selectedTags.map((e) => e.value).join(','),
-      'filter_id': selectedStyle == null ? null : selectedStyle!.id,
+      'filter_id': selectedStyle?.id,
       'image_ratio': selectedImageSize,
       'image_count': generationImageCount,
       'ai_rewrite': enableAIRewrite,
@@ -845,17 +899,24 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
             allowClick: false,
           );
 
-          if (selectedImagePath != null && selectedImagePath!.isNotEmpty) {
-            final uploadRes = await ImageUploader(widget.setting)
-                .upload(selectedImagePath!)
-                .whenComplete(() => cancel());
-            params['image'] = uploadRes.url;
-          } else if (selectedImageData != null &&
-              selectedImageData!.isNotEmpty) {
-            final uploadRes = await ImageUploader(widget.setting)
-                .uploadData(selectedImageData!)
-                .whenComplete(() => cancel());
-            params['image'] = uploadRes.url;
+          if (selectedImagePath != null &&
+              (selectedImagePath!.startsWith('http://') ||
+                  selectedImagePath!.startsWith('https://'))) {
+            params['image'] = selectedImagePath;
+            cancel();
+          } else {
+            if (selectedImagePath != null && selectedImagePath!.isNotEmpty) {
+              final uploadRes = await ImageUploader(widget.setting)
+                  .upload(selectedImagePath!)
+                  .whenComplete(() => cancel());
+              params['image'] = uploadRes.url;
+            } else if (selectedImageData != null &&
+                selectedImageData!.isNotEmpty) {
+              final uploadRes = await ImageUploader(widget.setting)
+                  .uploadData(selectedImageData!)
+                  .whenComplete(() => cancel());
+              params['image'] = uploadRes.url;
+            }
           }
         }
 

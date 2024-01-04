@@ -2,6 +2,7 @@ import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/image.dart';
 import 'package:askaide/page/component/image_preview.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/video_player.dart';
 import 'package:askaide/repo/api/creative.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -80,16 +81,37 @@ class _CreativeIslandContentPreviewState
                           vertical: 5,
                           horizontal: 10,
                         ),
-                        child: _buildImagePreviewer(
-                          widget.result.params ?? {},
-                          e,
-                        ),
+                        child: (widget.item != null &&
+                                    (widget.item!.isVideoType)) ||
+                                e.endsWith('.mp4')
+                            ? _buildVideoPreviewer(
+                                widget.result.params ?? {},
+                                e,
+                              )
+                            : _buildImagePreviewer(
+                                widget.result.params ?? {},
+                                e,
+                              ),
                       ),
                     )
                     .toList()),
               ],
             ),
           );
+  }
+
+  Widget _buildVideoPreviewer(
+    Map<String, dynamic> params,
+    String e,
+  ) {
+    int? width = params['width'] == null ? null : params['width'] as int;
+    int? height = params['height'] == null ? null : params['height'] as int;
+
+    return VideoPlayer(
+      url: e,
+      width: width,
+      height: height,
+    );
   }
 
   Widget _buildImagePreviewer(
