@@ -124,10 +124,12 @@ void main() async {
   if (kIsWeb) {
     databaseFactory = databaseFactoryFfiWeb;
   } else {
-    if (PlatformTool.isWindows() || PlatformTool.isLinux()) {
+    if (PlatformTool.isWindows() ||
+        PlatformTool.isLinux() ||
+        PlatformTool.isMacOS()) {
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
-      var path=absolute(join(getDbBasePath, '.aideal', 'databases'));
+      var path = absolute(join(getDbBasePath, '.aideal', 'databases'));
       databaseFactory.setDatabasesPath(path);
     }
   }
