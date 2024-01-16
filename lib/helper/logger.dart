@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:askaide/helper/env.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:logger/logger.dart' as logger;
 
@@ -8,6 +9,7 @@ class Logger {
     printer: logger.PrettyPrinter(
       lineLength: 120,
       printTime: true,
+      colors: false,
       noBoxingByDefault: true,
     ),
     output: logger.MultiOutput(
@@ -15,9 +17,7 @@ class Logger {
         logger.ConsoleOutput(),
         if (!PlatformTool.isWeb())
           logger.FileOutput(
-            file: File(
-              '${Directory.systemTemp.path}/log.txt',
-            ),
+            file: File('$getHomePath/aidea.log'),
             overrideExisting: true,
           ),
       ],

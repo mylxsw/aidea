@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:askaide/helper/env.dart';
+import 'package:askaide/helper/logger.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
@@ -9,7 +11,9 @@ import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class DiagnosisScreen extends StatefulWidget {
   final SettingRepository setting;
@@ -28,7 +32,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
   @override
   void initState() {
     super.initState();
-    File('${Directory.systemTemp.path}/log.txt').exists().then(
+    File('$getHomePath/aidea.log').exists().then(
           (exist) => {
             if (exist)
               File('${Directory.systemTemp.path}/log.txt')
@@ -72,6 +76,48 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
           ),
           centerTitle: true,
           actions: [
+            TextButton(
+              onPressed: () {
+                openConfirmDialog(
+                  context,
+                  '该操作将会清空所有设置和数据，是否继续？',
+                  () async {
+                    final databasePath =
+                        await databaseFactory.getDatabasesPath();
+
+                    Logger.instance.d('databasePath: $databasePath');
+
+                    // 删除数据库目录
+                    await Directory(databasePath).delete(
+                      recursive: true,
+                    );
+
+                    showSuccessMessage(
+                      // ignore: use_build_context_synchronously
+                      AppLocale.operateSuccess.getString(context),
+                    );
+
+                    try {
+                      SystemChannels.platform
+                          .invokeMethod('SystemNavigator.pop');
+                    } catch (e) {
+                      Logger.instance.e(e);
+                      showErrorMessage('应用重启失败，请手动重启');
+                    }
+                  },
+                  danger: true,
+                );
+              },
+              child: Text(
+                '重置系统',
+                style: TextStyle(
+                  color: isUploaded
+                      ? customColors.weakTextColor?.withAlpha(100)
+                      : customColors.weakLinkColor,
+                  fontSize: 12,
+                ),
+              ),
+            ),
             if (diagnosisInfo.isNotEmpty)
               TextButton(
                 onPressed: () {

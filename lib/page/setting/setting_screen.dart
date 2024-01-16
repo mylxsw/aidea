@@ -170,18 +170,22 @@ class _SettingScreenState extends State<SettingScreen> {
                         );
                       },
                     ),
+
                     // 诊断
-                    // SettingsTile(
-                    //   title: Text(AppLocale.diagnostic.getString(context)),
-                    //   trailing: Icon(
-                    //     CupertinoIcons.chevron_forward,
-                    //     size: MediaQuery.of(context).textScaleFactor * 18,
-                    //     color: Colors.grey,
-                    //   ),
-                    //   onPressed: (context) {
-                    //     context.push('/diagnosis');
-                    //   },
-                    // ),
+                    if (PlatformTool.isMacOS() ||
+                        PlatformTool.isLinux() ||
+                        PlatformTool.isWindows())
+                      SettingsTile(
+                        title: Text(AppLocale.diagnostic.getString(context)),
+                        trailing: Icon(
+                          CupertinoIcons.chevron_forward,
+                          size: MediaQuery.of(context).textScaleFactor * 18,
+                          color: Colors.grey,
+                        ),
+                        onPressed: (context) {
+                          context.push('/diagnosis');
+                        },
+                      ),
                     // 检查更新
                     if (!PlatformTool.isIOS())
                       SettingsTile(

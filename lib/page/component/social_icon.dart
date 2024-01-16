@@ -1,3 +1,4 @@
+import 'package:askaide/helper/platform.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -7,11 +8,13 @@ class SocialItem {
   final String image;
   final String name;
   final Function? onTap;
+  final bool nonIOS;
 
   const SocialItem({
     required this.image,
     required this.name,
     required this.onTap,
+    this.nonIOS = false,
   });
 }
 
@@ -22,6 +25,7 @@ class SocialIconGroup extends StatelessWidget {
     SocialItem(
       image: 'assets/app-256-transparent.png',
       name: '官方网站',
+      nonIOS: true,
       onTap: () {
         launchUrlString(
           'https://ai.aicode.cc/social/home',
@@ -92,6 +96,13 @@ class SocialIconGroup extends StatelessWidget {
       return SettingsSection(
         title: const Text('关注我们'),
         tiles: items
+            .where((e) {
+              if (e.nonIOS) {
+                return !PlatformTool.isIOS();
+              }
+
+              return true;
+            })
             .map(
               (e) => SettingsTile(
                 title: Row(children: [
