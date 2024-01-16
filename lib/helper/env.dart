@@ -21,13 +21,13 @@ String get apiServerURL {
   return url;
 }
 
-String get getDbBasePath {
+String get getHomePath {
   Map<String, String> envVars = Platform.environment;
   if (PlatformTool.isMacOS() || PlatformTool.isLinux()) {
-    return envVars['HOME'] ?? '';
+    return '${envVars['HOME'] ?? ''}/.aidea';
   } else if (PlatformTool.isWindows()) {
-    return envVars['UserProfile'] ?? '';
+    return '${envVars['UserProfile'] ?? ''}/.aidea';
   }
 
-  return '';
+  return '.aidea';
 }

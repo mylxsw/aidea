@@ -133,7 +133,7 @@ void main() async {
         PlatformTool.isMacOS()) {
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
-      var path = absolute(join(getDbBasePath, '.aideal', 'databases'));
+      var path = absolute(join(getHomePath, 'databases'));
       databaseFactory.setDatabasesPath(path);
     }
   }

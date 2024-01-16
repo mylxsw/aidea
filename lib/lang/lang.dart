@@ -339,7 +339,7 @@ mixin AppLocale {
     originalImage: '原始图片',
     superResolution: '高清修复',
     colorizeImage: '图片上色',
-    errorLog: '故障日志',
+    errorLog: '故障诊断',
     report: '上报',
     latestVersion: '当前已是最新版本',
     aIdeaApp: 'AIdea是一款能够让你与 AI 对话的应用，应用代码完全开源。',
