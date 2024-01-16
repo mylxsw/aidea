@@ -245,7 +245,7 @@ mixin AppLocale {
     usage: '智慧果',
     validBefore: '有效期至',
     custom: '自定义',
-    clearCache: '清除缓存',
+    clearCache: '清空缓存',
     about: '关于',
     diagnostic: '故障诊断',
     userTerms: '用户协议',

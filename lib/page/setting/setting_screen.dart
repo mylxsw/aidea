@@ -32,6 +32,7 @@ import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -165,6 +166,43 @@ class _SettingScreenState extends State<SettingScreen> {
                               // ignore: use_build_context_synchronously
                               AppLocale.operateSuccess.getString(context),
                             );
+                          },
+                          danger: true,
+                        );
+                      },
+                    ),
+                    SettingsTile(
+                      title: const Text('清空所有设置'),
+                      trailing: Icon(
+                        Icons.restore,
+                        size: MediaQuery.of(context).textScaleFactor * 18,
+                        color: Colors.grey,
+                      ),
+                      onPressed: (_) {
+                        openConfirmDialog(
+                          context,
+                          '该操作将会清空所有设置和数据，是否继续？',
+                          () async {
+                            final databasePath =
+                                await databaseFactory.getDatabasesPath();
+
+                            // 删除数据库目录
+                            await Directory(databasePath).delete(
+                              recursive: true,
+                            );
+
+                            showSuccessMessage(
+                              // ignore: use_build_context_synchronously
+                              AppLocale.operateSuccess.getString(context),
+                            );
+
+                            try {
+                              SystemChannels.platform
+                                  .invokeMethod('SystemNavigator.pop');
+                            } catch (e) {
+                              Logger.instance.e(e);
+                              showErrorMessage('应用重启失败，请手动重启');
+                            }
                           },
                           danger: true,
                         );
