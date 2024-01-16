@@ -111,15 +111,19 @@ void main() async {
   MediaKit.ensureInitialized();
   httpx.HttpClient.init();
 
-  // FlutterError.onError = (FlutterErrorDetails details) {
-  //   if (details.library == 'rendering library' ||
-  //       details.library == 'image resource service') {
-  //     return;
-  //   }
+  FlutterError.onError = (FlutterErrorDetails details) {
+    if (details.library == 'rendering library' ||
+        details.library == 'image resource service') {
+      return;
+    }
 
-  //   Logger.instance.e(details.summary, details.exception, details.stack);
-  //   print(details.stack);
-  // };
+    Logger.instance.e(
+      details.summary,
+      error: details.exception,
+      stackTrace: details.stack,
+    );
+    print(details.stack);
+  };
 
   if (kIsWeb) {
     databaseFactory = databaseFactoryFfiWeb;
