@@ -81,7 +81,7 @@ dependencies:
   dio_smart_retry: ^1.4.0
   qiniu_flutter_sdk: ^0.4.0
   sign_in_with_apple: ^4.3.0
-  record: ^4.4.4
+  record: ^5.0.4
   animations: ^2.0.7
   animated_text_kit: ^4.2.2
   flutter_localization: ^0.1.11
