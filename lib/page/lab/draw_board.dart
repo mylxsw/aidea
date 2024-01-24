@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:askaide/helper/helper.dart';
+import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/column_block.dart';
@@ -66,15 +67,37 @@ class _DrawboardScreenState extends State<DrawboardScreen> {
 
                                 showSuccessMessage('图片保存成功');
                               } else {
-                                FileSaver.instance
-                                    .saveFile(
-                                  name: randomId(),
-                                  ext: 'png',
-                                  bytes: imageData.buffer.asUint8List(),
-                                )
-                                    .then((value) {
-                                  showSuccessMessage('文件保存成功');
-                                });
+                                if (PlatformTool.isWindows()) {
+                                  FileSaver.instance
+                                    .saveAs(
+                                    name: randomId(),
+                                    ext: '.png',
+                                    bytes: imageData.buffer.asUint8List(),
+                                    mimeType: MimeType.png,
+                                  )
+                                      .then((value) async {
+                                    if (value == null) {
+                                      return ;
+                                    }
+
+                                    await File(value).writeAsBytes(imageData.buffer.asUint8List());
+
+                                    Logger.instance.d('文件保存成功: $value');
+                                    showSuccessMessage('文件保存成功');
+                                  });
+                                } else {
+                                  FileSaver.instance
+                                      .saveFile(
+                                    name: randomId(),
+                                    ext: 'png',
+                                    bytes: imageData.buffer.asUint8List(),
+                                    mimeType: MimeType.png,
+                                  )
+                                      .then((value) {
+                                    showSuccessMessage('文件保存成功');
+                                  });
+                                }
+                                
                               }
                             },
                             icon: const Icon(Icons.save),

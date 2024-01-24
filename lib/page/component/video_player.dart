@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
@@ -129,17 +131,37 @@ class _VideoPlayerState extends State<VideoPlayer> {
                       } else {
                         var ext = saveFile.path.toLowerCase().split('.').last;
 
-                        FileSaver.instance
-                            .saveFile(
-                          name:
-                              filenameWithoutExt(saveFile.path.split('/').last),
-                          filePath: saveFile.path,
-                          ext: ext,
-                          mimeType: MimeType.mpeg,
-                        )
-                            .then((value) {
-                          showSuccessMessage('文件保存成功');
-                        });
+                        if (PlatformTool.isWindows()) {
+                          FileSaver.instance
+                            .saveAs(
+                            name: filenameWithoutExt(saveFile.path.split('/').last),
+                            filePath: saveFile.path,
+                            ext: '.$ext',
+                            mimeType: MimeType.mpeg,
+                          )
+                              .then((value) async {
+                            if (value == null) {
+                              return ;
+                            }
+
+                            await File(value).writeAsBytes(await saveFile.readAsBytes());
+
+                            Logger.instance.d('文件保存成功: $value');
+                            showSuccessMessage('文件保存成功');
+                          });
+                        } else {
+                          FileSaver.instance
+                              .saveFile(
+                            name:
+                                filenameWithoutExt(saveFile.path.split('/').last),
+                            filePath: saveFile.path,
+                            ext: ext,
+                            mimeType: MimeType.mpeg,
+                          )
+                              .then((value) {
+                            showSuccessMessage('文件保存成功');
+                          });
+                      }
                       }
                     } catch (e) {
                       // ignore: use_build_context_synchronously
