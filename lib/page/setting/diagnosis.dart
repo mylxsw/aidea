@@ -84,7 +84,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                   '该操作将会清空所有设置和数据，是否继续？',
                   () async {
                     final databasePath =
-                        await databaseFactory.getDatabasesPath();
+                        (await databaseFactory.getDatabasesPath()).replaceAll('\\', '/');
 
                     Logger.instance.d('databasePath: $databasePath');
 
@@ -192,7 +192,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                       future: databaseFactory.getDatabasesPath(),
                       builder: (context, snapshot) {
                         return Text(
-                          '本地数据库: ${snapshot.data}',
+                          '本地数据库: ${snapshot.data?.replaceAll('\\', '/')}',
                           style: const TextStyle(
                             fontSize: 10,
                           ),

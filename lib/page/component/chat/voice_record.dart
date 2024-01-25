@@ -116,8 +116,8 @@ class _VoiceRecordState extends State<VoiceRecord> {
               });
               // Start recording
               await record.start(
-                const RecordConfig(
-                  encoder: AudioEncoder.wav,
+                 RecordConfig(
+                  encoder: PlatformTool.isWindows() ? AudioEncoder.aacLc : AudioEncoder.wav,
                 ),
                 path: "${PathHelper().getCachePath}/${randomId()}.m4a",
               );
@@ -168,7 +168,7 @@ class _VoiceRecordState extends State<VoiceRecord> {
             child: CircleAvatar(
               backgroundColor: _voiceRecording
                   ? customColors.linkColor
-                  : customColors.linkColor!.withAlpha(200),
+                  : customColors.linkColor?.withAlpha(200),
               child: const Icon(
                 Icons.mic,
                 size: 50,
@@ -189,17 +189,17 @@ class _VoiceRecordState extends State<VoiceRecord> {
 
   deleteTempFile(String path) {
     // 删除临时文件
-    if (!path.startsWith('blob:')) {
-      try {
-        File.fromUri(Uri.parse(path)).deleteSync();
-      } catch (e) {
-        try {
-          File(path).deleteSync();
-        } catch (e) {
-          // ignore
-        }
-      }
-    }
+    // if (!path.startsWith('blob:')) {
+    //   try {
+    //     File.fromUri(Uri.parse(path)).deleteSync();
+    //   } catch (e) {
+    //     try {
+    //       File(path).deleteSync();
+    //     } catch (e) {
+    //       // ignore
+    //     }
+    //   }
+    // }
   }
 
   Future onRecordStop() async {
@@ -210,6 +210,8 @@ class _VoiceRecordState extends State<VoiceRecord> {
       showErrorMessage('语音输入失败');
       return;
     }
+
+    resPath = resPath.replaceAll('\\', '/');
 
     final voiceDuration = DateTime.now().difference(_voiceStartTime!).inSeconds;
     if (voiceDuration < 1) {

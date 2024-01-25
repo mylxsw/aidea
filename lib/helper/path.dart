@@ -9,19 +9,19 @@ class PathHelper {
 
   init() async {
     try {
-      cachePath = (await getApplicationCacheDirectory()).path;
+      cachePath = (await getApplicationCacheDirectory()).path.replaceAll('\\', '/');
     } catch (e) {
       cachePath = '';
     }
 
     try {
-      documentsPath = (await getApplicationDocumentsDirectory()).path;
+      documentsPath = (await getApplicationDocumentsDirectory()).path.replaceAll('\\', '/');
     } catch (e) {
       documentsPath = '';
     }
 
     try {
-      supportPath = (await getApplicationSupportDirectory()).path;
+      supportPath = (await getApplicationSupportDirectory()).path.replaceAll('\\', '/');
     } catch (e) {
       supportPath = '';
     }
@@ -37,11 +37,11 @@ class PathHelper {
   String get getHomePath {
     Map<String, String> envVars = Platform.environment;
     if (PlatformTool.isMacOS() || PlatformTool.isLinux()) {
-      return '${envVars['HOME'] ?? ''}/.aidea';
+      return '${envVars['HOME'] ?? ''}/.aidea'.replaceAll('\\', '/');
     } else if (PlatformTool.isWindows()) {
-      return '${envVars['UserProfile'] ?? ''}/.aidea';
+      return '${envVars['UserProfile'] ?? ''}/.aidea'.replaceAll('\\', '/');
     } else if (PlatformTool.isAndroid()) {
-      return '$documentsPath/.aidea';
+      return '$documentsPath/.aidea'.replaceAll('\\', '/');
     }
 
     return '.aidea';
