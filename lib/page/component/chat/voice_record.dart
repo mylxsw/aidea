@@ -116,10 +116,8 @@ class _VoiceRecordState extends State<VoiceRecord> {
               });
               // Start recording
               await record.start(
-                RecordConfig(
-                  encoder: PlatformTool.isWeb()
-                      ? AudioEncoder.wav
-                      : AudioEncoder.wav,
+                const RecordConfig(
+                  encoder: AudioEncoder.wav,
                 ),
                 path: "${PathHelper().getCachePath}/${randomId()}.m4a",
               );
