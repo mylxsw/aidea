@@ -9,19 +9,22 @@ class PathHelper {
 
   init() async {
     try {
-      cachePath = (await getApplicationCacheDirectory()).path.replaceAll('\\', '/');
+      cachePath =
+          (await getApplicationCacheDirectory()).path.replaceAll('\\', '/');
     } catch (e) {
       cachePath = '';
     }
 
     try {
-      documentsPath = (await getApplicationDocumentsDirectory()).path.replaceAll('\\', '/');
+      documentsPath =
+          (await getApplicationDocumentsDirectory()).path.replaceAll('\\', '/');
     } catch (e) {
       documentsPath = '';
     }
 
     try {
-      supportPath = (await getApplicationSupportDirectory()).path.replaceAll('\\', '/');
+      supportPath =
+          (await getApplicationSupportDirectory()).path.replaceAll('\\', '/');
     } catch (e) {
       supportPath = '';
     }
@@ -40,7 +43,7 @@ class PathHelper {
       return '${envVars['HOME'] ?? ''}/.aidea'.replaceAll('\\', '/');
     } else if (PlatformTool.isWindows()) {
       return '${envVars['UserProfile'] ?? ''}/.aidea'.replaceAll('\\', '/');
-    } else if (PlatformTool.isAndroid()) {
+    } else if (PlatformTool.isAndroid() || PlatformTool.isIOS()) {
       return '$documentsPath/.aidea'.replaceAll('\\', '/');
     }
 

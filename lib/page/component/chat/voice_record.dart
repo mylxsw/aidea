@@ -116,8 +116,10 @@ class _VoiceRecordState extends State<VoiceRecord> {
               });
               // Start recording
               await record.start(
-                 RecordConfig(
-                  encoder: PlatformTool.isWindows() ? AudioEncoder.aacLc : AudioEncoder.wav,
+                RecordConfig(
+                  encoder: PlatformTool.isWindows() || PlatformTool.isIOS()
+                      ? AudioEncoder.aacLc
+                      : AudioEncoder.wav,
                 ),
                 path: "${PathHelper().getCachePath}/${randomId()}.m4a",
               );
@@ -189,17 +191,17 @@ class _VoiceRecordState extends State<VoiceRecord> {
 
   deleteTempFile(String path) {
     // 删除临时文件
-    // if (!path.startsWith('blob:')) {
-    //   try {
-    //     File.fromUri(Uri.parse(path)).deleteSync();
-    //   } catch (e) {
-    //     try {
-    //       File(path).deleteSync();
-    //     } catch (e) {
-    //       // ignore
-    //     }
-    //   }
-    // }
+    if (!path.startsWith('blob:')) {
+      try {
+        File.fromUri(Uri.parse(path)).deleteSync();
+      } catch (e) {
+        try {
+          File(path).deleteSync();
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
   }
 
   Future onRecordStop() async {
