@@ -4,15 +4,20 @@ import 'dart:io';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/model_resolver.dart';
+import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/component/chat/markdown.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:go_router/go_router.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:quickalert/quickalert.dart';
 import 'package:record/record.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class VoiceRecord extends StatefulWidget {
   final Function(String text) onFinished;
@@ -74,6 +79,31 @@ class _VoiceRecordState extends State<VoiceRecord> {
         const SizedBox(height: 10),
         GestureDetector(
           onLongPressStart: (details) async {
+            if (PlatformTool.isWeb()) {
+              showCustomBeautyDialog(
+                context,
+                type: QuickAlertType.warning,
+                confirmBtnText: AppLocale.gotIt.getString(context),
+                showCancelBtn: false,
+                title: '温馨提示',
+                child: Markdown(
+                  data:
+                      'Web 端暂不支持语音输入，敬请期待。\n\n要体验完整功能，您可[点击这里下载 AIdea APP](https://aidea.aicode.cc)。',
+                  onUrlTap: (value) {
+                    launchUrlString(
+                      value,
+                      mode: LaunchMode.externalApplication,
+                    );
+                  },
+                  textStyle: TextStyle(
+                    fontSize: 14,
+                    color: customColors.dialogDefaultTextColor,
+                  ),
+                ),
+              );
+              return;
+            }
+
             widget.onStart();
 
             if (await record.hasPermission()) {
@@ -86,7 +116,11 @@ class _VoiceRecordState extends State<VoiceRecord> {
               });
               // Start recording
               await record.start(
-                const RecordConfig(),
+                RecordConfig(
+                  encoder: PlatformTool.isWeb()
+                      ? AudioEncoder.wav
+                      : AudioEncoder.aacLc,
+                ),
                 path: "${randomId()}.m4a",
               );
 
@@ -163,7 +197,7 @@ class _VoiceRecordState extends State<VoiceRecord> {
       } catch (e) {
         try {
           File(path).deleteSync();
-        } catch(e) {
+        } catch (e) {
           // ignore
         }
       }

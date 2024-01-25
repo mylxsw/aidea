@@ -9,7 +9,6 @@ import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/loading.dart';
-import 'package:askaide/page/component/message_box.dart';
 import 'package:askaide/page/creative_island/draw/components/content_preview.dart';
 import 'package:askaide/page/creative_island/draw/draw_result.dart';
 import 'package:askaide/page/component/dialog.dart';
