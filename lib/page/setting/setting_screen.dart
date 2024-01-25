@@ -174,7 +174,8 @@ class _SettingScreenState extends State<SettingScreen> {
                     // 诊断
                     if (PlatformTool.isMacOS() ||
                         PlatformTool.isLinux() ||
-                        PlatformTool.isWindows())
+                        PlatformTool.isWindows() ||
+                        PlatformTool.isAndroid())
                       SettingsTile(
                         title: Text(AppLocale.diagnostic.getString(context)),
                         trailing: Icon(

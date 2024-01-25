@@ -1,3 +1,4 @@
+import 'package:askaide/helper/path.dart';
 import 'package:askaide/page/creative_island/draw/artistic_wordart.dart';
 import 'package:path/path.dart';
 
@@ -105,12 +106,13 @@ import 'package:askaide/helper/http.dart' as httpx;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:media_kit/media_kit.dart';
 
-import 'package:askaide/helper/env.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
   httpx.HttpClient.init();
+
+  // 初始化路径，获取到系统相关的文档、缓存目录
+  await PathHelper().init();
 
   FlutterError.onError = (FlutterErrorDetails details) {
     if (details.library == 'rendering library' ||
@@ -134,7 +136,7 @@ void main() async {
         PlatformTool.isMacOS()) {
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
-      var path = absolute(join(getHomePath, 'databases'));
+      var path = absolute(join(PathHelper().getHomePath, 'databases'));
       databaseFactory.setDatabasesPath(path);
     }
   }

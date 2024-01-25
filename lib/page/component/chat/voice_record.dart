@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/model_resolver.dart';
+import 'package:askaide/helper/path.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/chat/markdown.dart';
@@ -118,9 +119,9 @@ class _VoiceRecordState extends State<VoiceRecord> {
                 RecordConfig(
                   encoder: PlatformTool.isWeb()
                       ? AudioEncoder.wav
-                      : AudioEncoder.aacLc,
+                      : AudioEncoder.wav,
                 ),
-                path: "${randomId()}.m4a",
+                path: "${PathHelper().getCachePath}/${randomId()}.m4a",
               );
 
               setState(() {

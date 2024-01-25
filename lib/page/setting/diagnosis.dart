@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:askaide/helper/constant.dart';
-import 'package:askaide/helper/env.dart';
 import 'package:askaide/helper/logger.dart';
+import 'package:askaide/helper/path.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
@@ -35,10 +35,10 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
   @override
   void initState() {
     super.initState();
-    File('$getHomePath/aidea.log').exists().then(
+    File(PathHelper().getLogfilePath).exists().then(
           (exist) => {
             if (exist)
-              File('$getHomePath/aidea.log').readAsString().then((value) {
+              File(PathHelper().getLogfilePath).readAsString().then((value) {
                 setState(() {
                   diagnosisInfo = value;
                 });
@@ -189,18 +189,30 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                       ),
                     ),
                     FutureBuilder(
-                        future: databaseFactory.getDatabasesPath(),
-                        builder: (context, snapshot) {
-                          return Text(
-                            '本地数据库目录: ${snapshot.data}',
-                            style: const TextStyle(
-                              fontSize: 10,
-                            ),
-                          );
-                        },
-                        ),
-                        Text(
-                      '日志文件: $getHomePath/aidea.log',
+                      future: databaseFactory.getDatabasesPath(),
+                      builder: (context, snapshot) {
+                        return Text(
+                          '本地数据库: ${snapshot.data}',
+                          style: const TextStyle(
+                            fontSize: 10,
+                          ),
+                        );
+                      },
+                    ),
+                    Text(
+                      '日志文件: ${PathHelper().getLogfilePath}',
+                      style: const TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                    Text(
+                      '缓存目录: ${PathHelper().getCachePath}',
+                      style: const TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                    Text(
+                      '主目录: ${PathHelper().getHomePath}',
                       style: const TextStyle(
                         fontSize: 10,
                       ),
