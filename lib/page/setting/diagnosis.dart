@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/path.dart';
@@ -84,7 +85,8 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                   '该操作将会清空所有设置和数据，是否继续？',
                   () async {
                     final databasePath =
-                        (await databaseFactory.getDatabasesPath()).replaceAll('\\', '/');
+                        (await databaseFactory.getDatabasesPath())
+                            .replaceAll('\\', '/');
 
                     Logger.instance.d('databasePath: $databasePath');
 
@@ -163,6 +165,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
               children: [
                 ColumnBlock(
                   innerPanding: 5,
+                  padding: const EdgeInsets.all(10),
                   children: [
                     Text(
                       '服务器: ${APIServer().url}',
@@ -184,6 +187,12 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                     ),
                     Text(
                       '操作系统: ${PlatformTool.operatingSystem()} | ${PlatformTool.operatingSystemVersion()}',
+                      style: const TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                    Text(
+                      'OpenAI 自定义: ${Ability().enableLocalOpenAI}',
                       style: const TextStyle(
                         fontSize: 10,
                       ),
