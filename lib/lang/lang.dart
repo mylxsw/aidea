@@ -338,7 +338,7 @@ mixin AppLocale {
     keywordsSeparatedByCommas: '你想象画面的关键词，以逗号隔开。',
     originalImage: '原始图片',
     superResolution: '高清修复',
-    colorizeImage: '图片上色',
+    colorizeImage: '旧照片上色',
     errorLog: '故障诊断',
     report: '上报',
     latestVersion: '当前已是最新版本',

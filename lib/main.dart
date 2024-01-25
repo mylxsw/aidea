@@ -1,3 +1,4 @@
+import 'package:askaide/page/creative_island/draw/artistic_wordart.dart';
 import 'package:path/path.dart';
 
 import 'package:askaide/bloc/account_bloc.dart';
@@ -19,7 +20,7 @@ import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/data/migrate.dart';
 import 'package:askaide/page/balance/quota_usage_details.dart';
-import 'package:askaide/page/creative_island/draw/artistic_text.dart';
+import 'package:askaide/page/creative_island/draw/artistic_qr.dart';
 import 'package:askaide/page/setting/account_security.dart';
 import 'package:askaide/page/app_scaffold.dart';
 import 'package:askaide/page/lab/avatar_selector.dart';
@@ -714,12 +715,32 @@ class MyApp extends StatefulWidget {
                   providers: [
                     BlocProvider.value(value: galleryBloc),
                   ],
-                  child: ArtisticTextScreen(
+                  child: ArtisticQRScreen(
                     setting: settingRepo,
                     galleryCopyId: int.tryParse(
                       state.queryParameters['gallery_copy_id'] ?? '',
                     ),
                     type: state.queryParameters['type']!,
+                    id: state.queryParameters['id']!,
+                    note: state.queryParameters['note'],
+                  ),
+                ),
+              ),
+            ),
+            GoRoute(
+              name: 'creative-artistic-wordart',
+              path: '/creative-draw/artistic-wordart',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) => transitionResolver(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider.value(value: galleryBloc),
+                  ],
+                  child: ArtisticWordArtScreen(
+                    setting: settingRepo,
+                    galleryCopyId: int.tryParse(
+                      state.queryParameters['gallery_copy_id'] ?? '',
+                    ),
                     id: state.queryParameters['id']!,
                     note: state.queryParameters['note'],
                   ),
