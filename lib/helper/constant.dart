@@ -12,6 +12,8 @@ const settingAPIServerToken = 'api-token';
 const settingUserInfo = 'user-info';
 const settingUsingGuestMode = 'using-guest-mode';
 
+const settingForceShowLab = 'force-show-lab';
+
 const chatAnywhereModel = 'openai:gpt-3.5-turbo';
 const chatAnywhereRoomId = 1;
 
