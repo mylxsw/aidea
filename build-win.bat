@@ -1,0 +1,1 @@
+dart run msix:create --release
