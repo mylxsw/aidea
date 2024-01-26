@@ -156,6 +156,8 @@ class CreativeIslandCapacity {
   bool showImageStrength;
   List<CreativeIslandImageFilter> filters;
   List<CreativeIslandArtisticStyle> artisticStyles;
+  List<CreativeIslandArtisticStyle> artisticTextStyles;
+  List<CreativeIslandArtisticStyle> artisticTextFonts;
 
   CreativeIslandCapacity({
     required this.showAIRewrite,
@@ -171,6 +173,8 @@ class CreativeIslandCapacity {
     this.showImageStrength = false,
     this.filters = const [],
     this.artisticStyles = const [],
+    this.artisticTextStyles = const [],
+    this.artisticTextFonts = const [],
   });
 
   toJson() => {
@@ -187,6 +191,10 @@ class CreativeIslandCapacity {
         'show_image_strength': showImageStrength,
         'filters': filters.map((e) => e.toJson()).toList(),
         'artistic_styles': artisticStyles.map((e) => e.toJson()).toList(),
+        'artistic_text_styles':
+            artisticTextStyles.map((e) => e.toJson()).toList(),
+        'artistic_text_fonts':
+            artisticTextFonts.map((e) => e.toJson()).toList(),
       };
 
   static CreativeIslandCapacity fromJson(Map<String, dynamic> json) {
@@ -212,6 +220,13 @@ class CreativeIslandCapacity {
           .map((e) => CreativeIslandImageFilter.fromJson(e))
           .toList(),
       artisticStyles: ((json['artistic_styles'] ?? []) as List<dynamic>)
+          .map((e) => CreativeIslandArtisticStyle.fromJson(e))
+          .toList(),
+      artisticTextStyles:
+          ((json['artistic_text_styles'] ?? []) as List<dynamic>)
+              .map((e) => CreativeIslandArtisticStyle.fromJson(e))
+              .toList(),
+      artisticTextFonts: ((json['artistic_text_fonts'] ?? []) as List<dynamic>)
           .map((e) => CreativeIslandArtisticStyle.fromJson(e))
           .toList(),
     );

@@ -31,14 +31,14 @@ import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 
-class ArtisticTextScreen extends StatefulWidget {
+class ArtisticQRScreen extends StatefulWidget {
   final SettingRepository setting;
   final int? galleryCopyId;
   final String type;
   final String id;
   final String? note;
 
-  const ArtisticTextScreen({
+  const ArtisticQRScreen({
     super.key,
     required this.id,
     required this.setting,
@@ -48,10 +48,10 @@ class ArtisticTextScreen extends StatefulWidget {
   });
 
   @override
-  State<ArtisticTextScreen> createState() => _ArtisticTextScreenState();
+  State<ArtisticQRScreen> createState() => _ArtisticQRScreenState();
 }
 
-class _ArtisticTextScreenState extends State<ArtisticTextScreen> {
+class _ArtisticQRScreenState extends State<ArtisticQRScreen> {
   bool enableAIRewrite = false;
   bool showAdvancedOptions = false;
 
@@ -154,7 +154,7 @@ class _ArtisticTextScreenState extends State<ArtisticTextScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.type == 'qr' ? '艺术二维码' : '艺术字',
+          widget.type == 'qr' ? '艺术二维码' : '图文融合',
           style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,

@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
 # 应用正式发布时，需要同步修改 lib/helper/constant.dart 中的 VERSION 值
-version: 1.0.11+1
+version: 1.0.12+1
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -66,7 +66,10 @@ dependencies:
   isolate_image_compress: ^2.0.0
   image: ^4.0.15
   flutter_cache_manager: ^3.3.0
-  file_saver: ^0.2.1
+  file_saver:
+    git:
+      url: https://github.com/incrediblezayed/file_saver
+      ref: main
   image_gallery_saver: ^1.7.1
   tiktoken: ^1.0.3
   flutter_colorpicker: ^1.0.3
@@ -78,7 +81,7 @@ dependencies:
   dio_smart_retry: ^1.4.0
   qiniu_flutter_sdk: ^0.4.0
   sign_in_with_apple: ^4.3.0
-  record: ^4.4.4
+  record: ^5.0.4
   animations: ^2.0.7
   animated_text_kit: ^4.2.2
   flutter_localization: ^0.1.11
@@ -120,6 +123,7 @@ dependencies:
   media_kit: ^1.1.10
   media_kit_video: ^1.2.4
   media_kit_libs_video: ^1.0.4
+  path: ^1.8.3
   
 dev_dependencies:
   flutter_test:

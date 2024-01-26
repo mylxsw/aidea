@@ -11,12 +11,14 @@ class ArtisticStyleSelector extends StatelessWidget {
   final List<CreativeIslandArtisticStyle> styles;
   final Function(CreativeIslandArtisticStyle style) onSelected;
   final CreativeIslandArtisticStyle? selectedStyle;
+  final String? title;
 
   const ArtisticStyleSelector({
     super.key,
     required this.styles,
     required this.onSelected,
     this.selectedStyle,
+    this.title,
   });
 
   @override
@@ -24,7 +26,7 @@ class ArtisticStyleSelector extends StatelessWidget {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return EnhancedInput(
       title: Text(
-        AppLocale.style.getString(context),
+        title ?? AppLocale.style.getString(context),
         style: TextStyle(
           color: customColors.textfieldLabelColor,
           fontSize: 16,
