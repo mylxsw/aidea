@@ -240,16 +240,16 @@ class _SettingScreenState extends State<SettingScreen> {
                         color: Colors.grey,
                       ),
                       onPressed: (_) {
-                        if (userHasLabPermission(state)) {
-                          return;
-                        }
-
                         var tapCount = 0;
                         showAboutDialog(
                           context: context,
                           applicationName: 'AIdea',
                           applicationIcon: GestureDetector(
                             onTap: () {
+                              if (userHasLabPermission(state)) {
+                                return;
+                              }
+
                               tapCount++;
 
                               if (tapCount > 5) {
