@@ -1,7 +1,10 @@
 import 'dart:io';
 
-import 'package:askaide/helper/env.dart';
+import 'package:askaide/helper/ability.dart';
+import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/logger.dart';
+import 'package:askaide/helper/path.dart';
+import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
@@ -13,6 +16,7 @@ import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:quickalert/quickalert.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class DiagnosisScreen extends StatefulWidget {
@@ -32,12 +36,10 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
   @override
   void initState() {
     super.initState();
-    File('$getHomePath/aidea.log').exists().then(
+    File(PathHelper().getLogfilePath).exists().then(
           (exist) => {
             if (exist)
-              File('${Directory.systemTemp.path}/log.txt')
-                  .readAsString()
-                  .then((value) {
+              File(PathHelper().getLogfilePath).readAsString().then((value) {
                 setState(() {
                   diagnosisInfo = value;
                 });
@@ -83,26 +85,32 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                   '该操作将会清空所有设置和数据，是否继续？',
                   () async {
                     final databasePath =
-                        await databaseFactory.getDatabasesPath();
+                        (await databaseFactory.getDatabasesPath())
+                            .replaceAll('\\', '/');
 
                     Logger.instance.d('databasePath: $databasePath');
 
-                    // 删除数据库目录
-                    await Directory(databasePath).delete(
-                      recursive: true,
-                    );
-
-                    showSuccessMessage(
-                      // ignore: use_build_context_synchronously
-                      AppLocale.operateSuccess.getString(context),
-                    );
-
                     try {
+                      // 删除数据库目录
+                      await Directory(databasePath).delete(
+                        recursive: true,
+                      );
+
+                      showSuccessMessage(
+                        // ignore: use_build_context_synchronously
+                        AppLocale.operateSuccess.getString(context),
+                      );
+
                       SystemChannels.platform
                           .invokeMethod('SystemNavigator.pop');
                     } catch (e) {
                       Logger.instance.e(e);
-                      showErrorMessage('应用重启失败，请手动重启');
+                      // ignore: use_build_context_synchronously
+                      showBeautyDialog(
+                        context,
+                        type: QuickAlertType.error,
+                        text: '数据文件删除失败，请先关闭应用后，手动删除目录 $databasePath 之后再重启应用',
+                      );
                     }
                   },
                   danger: true,
@@ -153,13 +161,82 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
           padding: const EdgeInsets.all(10),
           child: SingleChildScrollView(
             controller: _controller,
-            child: ColumnBlock(
+            child: Column(
               children: [
-                Text(
-                  diagnosisInfo,
-                  style: const TextStyle(
-                    fontSize: 10,
-                  ),
+                ColumnBlock(
+                  innerPanding: 5,
+                  padding: const EdgeInsets.all(10),
+                  children: [
+                    Text(
+                      '服务器: ${APIServer().url}',
+                      style: const TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                    Text(
+                      '当前用户 ID: ${APIServer().localUserID()}',
+                      style: const TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                    const Text(
+                      '客户端版本: $clientVersion',
+                      style: TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                    Text(
+                      '操作系统: ${PlatformTool.operatingSystem()} | ${PlatformTool.operatingSystemVersion()}',
+                      style: const TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                    Text(
+                      'OpenAI 自定义: ${Ability().enableLocalOpenAI}',
+                      style: const TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                    FutureBuilder(
+                      future: databaseFactory.getDatabasesPath(),
+                      builder: (context, snapshot) {
+                        return Text(
+                          '本地数据库: ${snapshot.data?.replaceAll('\\', '/')}',
+                          style: const TextStyle(
+                            fontSize: 10,
+                          ),
+                        );
+                      },
+                    ),
+                    Text(
+                      '日志文件: ${PathHelper().getLogfilePath}',
+                      style: const TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                    Text(
+                      '缓存目录: ${PathHelper().getCachePath}',
+                      style: const TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                    Text(
+                      '主目录: ${PathHelper().getHomePath}',
+                      style: const TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
+                ),
+                ColumnBlock(
+                  children: [
+                    Text(
+                      diagnosisInfo,
+                      style: const TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

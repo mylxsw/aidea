@@ -171,21 +171,6 @@ class _SettingScreenState extends State<SettingScreen> {
                       },
                     ),
 
-                    // 诊断
-                    if (PlatformTool.isMacOS() ||
-                        PlatformTool.isLinux() ||
-                        PlatformTool.isWindows())
-                      SettingsTile(
-                        title: Text(AppLocale.diagnostic.getString(context)),
-                        trailing: Icon(
-                          CupertinoIcons.chevron_forward,
-                          size: MediaQuery.of(context).textScaleFactor * 18,
-                          color: Colors.grey,
-                        ),
-                        onPressed: (context) {
-                          context.push('/diagnosis');
-                        },
-                      ),
                     // 检查更新
                     if (!PlatformTool.isIOS())
                       SettingsTile(
@@ -255,11 +240,33 @@ class _SettingScreenState extends State<SettingScreen> {
                         color: Colors.grey,
                       ),
                       onPressed: (_) {
+                        var tapCount = 0;
                         showAboutDialog(
                           context: context,
                           applicationName: 'AIdea',
-                          applicationIcon:
-                              Image.asset('assets/app.png', width: 40),
+                          applicationIcon: GestureDetector(
+                            onTap: () {
+                              if (userHasLabPermission(state)) {
+                                return;
+                              }
+
+                              tapCount++;
+
+                              if (tapCount > 5) {
+                                tapCount = 0;
+
+                                final showLab = forceShowLab();
+                                widget.settings.set(settingForceShowLab,
+                                    showLab ? 'false' : 'true');
+
+                                showSuccessMessage(
+                                    showLab ? '已关闭实验室功能' : '已启用实验室功能');
+
+                                setState(() {});
+                              }
+                            },
+                            child: Image.asset('assets/app.png', width: 40),
+                          ),
                           applicationVersion: clientVersion,
                           children: [
                             Text(AppLocale.aIdeaApp.getString(context)),
@@ -270,50 +277,49 @@ class _SettingScreenState extends State<SettingScreen> {
                   ],
                 ),
 
-                if (state is AccountLoaded &&
-                    state.error == null &&
-                    state.user != null &&
-                    state.user!.control.withLab)
+                if (userHasLabPermission(state) || forceShowLab())
                   SettingsSection(
                     title: const Text('实验室'),
                     tiles: [
-                      SettingsTile(
-                        title: const Text('模型 Gallery'),
-                        trailing: Icon(
-                          CupertinoIcons.chevron_forward,
-                          size: MediaQuery.of(context).textScaleFactor * 18,
-                          color: Colors.grey,
+                      if (userHasLabPermission(state))
+                        SettingsTile(
+                          title: const Text('模型 Gallery'),
+                          trailing: Icon(
+                            CupertinoIcons.chevron_forward,
+                            size: MediaQuery.of(context).textScaleFactor * 18,
+                            color: Colors.grey,
+                          ),
+                          onPressed: (context) {
+                            context.push('/creative-island/models');
+                          },
                         ),
-                        onPressed: (context) {
-                          context.push('/creative-island/models');
-                        },
-                      ),
-                      SettingsTile(
-                        title: const Text('画板'),
-                        trailing: Icon(
-                          CupertinoIcons.chevron_forward,
-                          size: MediaQuery.of(context).textScaleFactor * 18,
-                          color: Colors.grey,
+                      if (userHasLabPermission(state))
+                        SettingsTile(
+                          title: const Text('画板'),
+                          trailing: Icon(
+                            CupertinoIcons.chevron_forward,
+                            size: MediaQuery.of(context).textScaleFactor * 18,
+                            color: Colors.grey,
+                          ),
+                          onPressed: (context) {
+                            context.push('/lab/draw-board');
+                          },
                         ),
-                        onPressed: (context) {
-                          context.push('/lab/draw-board');
-                        },
-                      ),
-
-                      // SettingsTile(
-                      //   title: const Text('用户中心'),
-                      //   trailing: Icon(
-                      //     CupertinoIcons.chevron_forward,
-                      //     size: MediaQuery.of(context).textScaleFactor * 18,
-                      //     color: Colors.grey,
-                      //   ),
-                      //   onPressed: (context) {
-                      //     context.push('/lab/user-center');
-                      //   },
-                      // ),
 
                       // 自定义服务器
                       _buildServerSelfHostedSetting(customColors),
+                      // 诊断
+                      SettingsTile(
+                        title: Text(AppLocale.diagnostic.getString(context)),
+                        trailing: Icon(
+                          CupertinoIcons.chevron_forward,
+                          size: MediaQuery.of(context).textScaleFactor * 18,
+                          color: Colors.grey,
+                        ),
+                        onPressed: (context) {
+                          context.push('/diagnosis');
+                        },
+                      ),
                     ],
                   ),
                 // 社交媒体图标
@@ -324,6 +330,19 @@ class _SettingScreenState extends State<SettingScreen> {
         ),
       ),
     );
+  }
+
+  /// 用户是否有实验室访问权限
+  bool userHasLabPermission(AccountState state) {
+    return state is AccountLoaded &&
+        state.error == null &&
+        state.user != null &&
+        state.user!.control.withLab;
+  }
+
+  /// 是否强制显示实验室功能
+  bool forceShowLab() {
+    return widget.settings.boolDefault(settingForceShowLab, false);
   }
 
   CustomSettingsSection _buildAccountQuotaCard(

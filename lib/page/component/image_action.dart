@@ -144,7 +144,7 @@ Widget actionsBuilder(
               const SizedBox(height: 10),
             if (itemsMap.containsKey('image-colorize'))
               Button(
-                title: '图片上色',
+                title: '旧照片上色',
                 icon: Icon(
                   Icons.palette_outlined,
                   size: 16,

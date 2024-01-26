@@ -2,8 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:askaide/helper/haptic_feedback.dart';
+import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/model_resolver.dart';
+import 'package:askaide/helper/path.dart';
+import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/component/chat/markdown.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
@@ -11,7 +15,9 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:quickalert/quickalert.dart';
 import 'package:record/record.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class VoiceRecord extends StatefulWidget {
   final Function(String text) onFinished;
@@ -25,7 +31,7 @@ class VoiceRecord extends StatefulWidget {
 
 class _VoiceRecordState extends State<VoiceRecord> {
   var _voiceRecording = false;
-  final record = Record();
+  final record = AudioRecorder();
   DateTime? _voiceStartTime;
   Timer? _timer;
   var _millSeconds = 0;
@@ -43,6 +49,7 @@ class _VoiceRecordState extends State<VoiceRecord> {
   @override
   void dispose() {
     _timer?.cancel();
+    record.dispose();
     super.dispose();
   }
 
@@ -72,6 +79,31 @@ class _VoiceRecordState extends State<VoiceRecord> {
         const SizedBox(height: 10),
         GestureDetector(
           onLongPressStart: (details) async {
+            if (PlatformTool.isWeb()) {
+              showCustomBeautyDialog(
+                context,
+                type: QuickAlertType.warning,
+                confirmBtnText: AppLocale.gotIt.getString(context),
+                showCancelBtn: false,
+                title: '温馨提示',
+                child: Markdown(
+                  data:
+                      'Web 端暂不支持语音输入，敬请期待。\n\n要体验完整功能，您可[点击这里下载 AIdea APP](https://aidea.aicode.cc)。',
+                  onUrlTap: (value) {
+                    launchUrlString(
+                      value,
+                      mode: LaunchMode.externalApplication,
+                    );
+                  },
+                  textStyle: TextStyle(
+                    fontSize: 14,
+                    color: customColors.dialogDefaultTextColor,
+                  ),
+                ),
+              );
+              return;
+            }
+
             widget.onStart();
 
             if (await record.hasPermission()) {
@@ -84,9 +116,12 @@ class _VoiceRecordState extends State<VoiceRecord> {
               });
               // Start recording
               await record.start(
-                encoder: AudioEncoder.aacLc, // by default
-                bitRate: 128000, // by default
-                samplingRate: 44100, // by default
+                RecordConfig(
+                  encoder: PlatformTool.isWindows() || PlatformTool.isIOS()
+                      ? AudioEncoder.aacLc
+                      : AudioEncoder.wav,
+                ),
+                path: "${PathHelper().getCachePath}/${randomId()}.m4a",
               );
 
               setState(() {
@@ -135,7 +170,7 @@ class _VoiceRecordState extends State<VoiceRecord> {
             child: CircleAvatar(
               backgroundColor: _voiceRecording
                   ? customColors.linkColor
-                  : customColors.linkColor!.withAlpha(200),
+                  : customColors.linkColor?.withAlpha(200),
               child: const Icon(
                 Icons.mic,
                 size: 50,
@@ -154,6 +189,21 @@ class _VoiceRecordState extends State<VoiceRecord> {
     );
   }
 
+  deleteTempFile(String path) {
+    // 删除临时文件
+    if (!path.startsWith('blob:')) {
+      try {
+        File.fromUri(Uri.parse(path)).deleteSync();
+      } catch (e) {
+        try {
+          File(path).deleteSync();
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
+  }
+
   Future onRecordStop() async {
     _timer?.cancel();
 
@@ -163,18 +213,20 @@ class _VoiceRecordState extends State<VoiceRecord> {
       return;
     }
 
+    resPath = resPath.replaceAll('\\', '/');
+
     final voiceDuration = DateTime.now().difference(_voiceStartTime!).inSeconds;
     if (voiceDuration < 1) {
       showErrorMessage('说话时间太短');
       _voiceStartTime = null;
-      File.fromUri(Uri.parse(resPath)).delete();
+      deleteTempFile(resPath);
       return;
     }
 
     if (voiceDuration > 60) {
       showErrorMessage('说话时间太长');
       _voiceStartTime = null;
-      File.fromUri(Uri.parse(resPath)).delete();
+      deleteTempFile(resPath);
       return;
     }
 
@@ -191,17 +243,20 @@ class _VoiceRecordState extends State<VoiceRecord> {
     );
 
     try {
-      final audioFile = File.fromUri(Uri.parse(resPath));
+      File audioFile;
+      try {
+        audioFile = File.fromUri(Uri.parse(resPath));
+      } catch (e) {
+        audioFile = File(resPath);
+      }
+
       widget.onFinished(await ModelResolver.instance.audioToText(audioFile));
     } catch (e) {
       // ignore: use_build_context_synchronously
       showErrorMessageEnhanced(context, e);
     } finally {
       cancel();
-      // 删除临时文件
-      if (!resPath.startsWith('blob:')) {
-        File.fromUri(Uri.parse(resPath)).delete();
-      }
+      deleteTempFile(resPath);
     }
   }
 }

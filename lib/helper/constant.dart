@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // 客户端应用版本号
-const clientVersion = '1.0.11';
+const clientVersion = '1.0.12';
 // 本地数据库版本号
 const databaseVersion = 26;
 
@@ -11,6 +11,8 @@ const coinSign = '个';
 const settingAPIServerToken = 'api-token';
 const settingUserInfo = 'user-info';
 const settingUsingGuestMode = 'using-guest-mode';
+
+const settingForceShowLab = 'force-show-lab';
 
 const chatAnywhereModel = 'openai:gpt-3.5-turbo';
 const chatAnywhereRoomId = 1;

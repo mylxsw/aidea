@@ -112,22 +112,30 @@ class EnhancedTextField extends StatefulWidget {
 class _EnhancedTextFieldState extends State<EnhancedTextField> {
   var textLength = 0;
 
+  late final Function() listener;
+
   @override
   void initState() {
     super.initState();
 
-    widget.controller?.addListener(() {
+    listener = () {
       if (mounted) {
         setState(() {
           textLength = widget.controller!.text.length;
         });
       }
-    });
+    };
+
+    if (widget.showCounter) {
+      widget.controller?.addListener(listener);
+    }
   }
 
   @override
   void dispose() {
-    widget.controller?.removeListener(() {});
+    if (widget.showCounter) {
+      widget.controller?.removeListener(listener);
+    }
     super.dispose();
   }
 

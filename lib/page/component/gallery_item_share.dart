@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/image.dart';
+import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/column_block.dart';
@@ -120,16 +123,38 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
 
                         showSuccessMessage('图片保存成功');
                       } else {
-                        FileSaver.instance
-                            .saveFile(
-                          name: randomId(),
-                          bytes: data,
-                          ext: 'png',
-                          mimeType: MimeType.png,
-                        )
-                            .then((value) {
-                          showSuccessMessage('文件保存成功');
-                        });
+                        if (PlatformTool.isWindows()) {
+                          FileSaver.instance
+                            .saveAs(
+                            name: randomId(),
+                            bytes: data,
+                            ext: '.png',
+                            mimeType: MimeType.png,
+                          )
+                              .then((value) async {
+                            if (value == null) {
+                              return ;
+                            }
+
+                            await File(value).writeAsBytes(data);
+
+                            Logger.instance.d('文件保存成功: $value');
+                            showSuccessMessage('文件保存成功');
+                          });
+                        }  else {
+                          FileSaver.instance
+                              .saveFile(
+                            name: randomId(),
+                            bytes: data,
+                            ext: 'png',
+                            mimeType: MimeType.png,
+                          )
+                              .then((value) {
+                            Logger.instance.d('文件保存成功: $value');
+                            showSuccessMessage('文件保存成功');
+                          });
+                        }
+                        
                       }
                     }
                   } finally {

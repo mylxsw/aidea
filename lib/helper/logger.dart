@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:askaide/helper/env.dart';
+import 'package:askaide/helper/path.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:logger/logger.dart' as logger;
 
@@ -17,7 +17,7 @@ class Logger {
         logger.ConsoleOutput(),
         if (!PlatformTool.isWeb())
           logger.FileOutput(
-            file: File('$getHomePath/aidea.log'),
+            file: File(PathHelper().getLogfilePath),
             overrideExisting: true,
           ),
       ],

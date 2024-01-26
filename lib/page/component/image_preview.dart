@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/image.dart';
@@ -379,16 +381,38 @@ void openImagePreviewDialog(
                           mimeType = MimeType.other;
                       }
 
-                      FileSaver.instance
+                      if (PlatformTool.isWindows()) {
+                        FileSaver.instance
+                          .saveAs(
+                          name: filenameWithoutExt(saveFile.path.split('/').last),
+                          filePath: saveFile.path,
+                          ext: '.$ext',
+                          mimeType: mimeType,
+                        )
+                            .then((value) async {
+                          if (value == null) {
+                            return ;
+                          }
+
+                          await File(value).writeAsBytes(await saveFile.readAsBytes());
+
+                          Logger.instance.d('文件保存成功: $value');
+                          showSuccessMessage('文件保存成功');
+                        });
+                      } else {
+                        FileSaver.instance
                           .saveFile(
-                        name: filenameWithoutExt(saveFile.path.split('/').last),
-                        filePath: saveFile.path,
-                        ext: ext,
-                        mimeType: mimeType,
-                      )
-                          .then((value) {
-                        showSuccessMessage('文件保存成功');
-                      });
+                          name: filenameWithoutExt(saveFile.path.split('/').last),
+                          filePath: saveFile.path,
+                          ext: ext,
+                          mimeType: mimeType,
+                        )
+                            .then((value) {
+                          Logger.instance.d('文件保存成功: $value');
+                          showSuccessMessage('文件保存成功');
+                        });
+                      }
+                      
                     }
                   } catch (e) {
                     // ignore: use_build_context_synchronously

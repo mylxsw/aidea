@@ -1,3 +1,5 @@
+import 'package:askaide/helper/path.dart';
+import 'package:askaide/page/creative_island/draw/artistic_wordart.dart';
 import 'package:path/path.dart';
 
 import 'package:askaide/bloc/account_bloc.dart';
@@ -19,7 +21,7 @@ import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/data/migrate.dart';
 import 'package:askaide/page/balance/quota_usage_details.dart';
-import 'package:askaide/page/creative_island/draw/artistic_text.dart';
+import 'package:askaide/page/creative_island/draw/artistic_qr.dart';
 import 'package:askaide/page/setting/account_security.dart';
 import 'package:askaide/page/app_scaffold.dart';
 import 'package:askaide/page/lab/avatar_selector.dart';
@@ -104,12 +106,13 @@ import 'package:askaide/helper/http.dart' as httpx;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:media_kit/media_kit.dart';
 
-import 'package:askaide/helper/env.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
   httpx.HttpClient.init();
+
+  // 初始化路径，获取到系统相关的文档、缓存目录
+  await PathHelper().init();
 
   FlutterError.onError = (FlutterErrorDetails details) {
     if (details.library == 'rendering library' ||
@@ -133,7 +136,7 @@ void main() async {
         PlatformTool.isMacOS()) {
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
-      var path = absolute(join(getHomePath, 'databases'));
+      var path = absolute(join(PathHelper().getHomePath, 'databases'));
       databaseFactory.setDatabasesPath(path);
     }
   }
@@ -714,12 +717,32 @@ class MyApp extends StatefulWidget {
                   providers: [
                     BlocProvider.value(value: galleryBloc),
                   ],
-                  child: ArtisticTextScreen(
+                  child: ArtisticQRScreen(
                     setting: settingRepo,
                     galleryCopyId: int.tryParse(
                       state.queryParameters['gallery_copy_id'] ?? '',
                     ),
                     type: state.queryParameters['type']!,
+                    id: state.queryParameters['id']!,
+                    note: state.queryParameters['note'],
+                  ),
+                ),
+              ),
+            ),
+            GoRoute(
+              name: 'creative-artistic-wordart',
+              path: '/creative-draw/artistic-wordart',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) => transitionResolver(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider.value(value: galleryBloc),
+                  ],
+                  child: ArtisticWordArtScreen(
+                    setting: settingRepo,
+                    galleryCopyId: int.tryParse(
+                      state.queryParameters['gallery_copy_id'] ?? '',
+                    ),
                     id: state.queryParameters['id']!,
                     note: state.queryParameters['note'],
                   ),

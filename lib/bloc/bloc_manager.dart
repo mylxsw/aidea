@@ -1,3 +1,5 @@
+// ignore_for_file: must_call_super
+
 import 'package:askaide/bloc/chat_message_bloc.dart';
 import 'package:askaide/helper/lru.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
