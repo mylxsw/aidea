@@ -652,7 +652,9 @@ openTextFieldDialog(
     },
   ).whenComplete(() {
     GlobalEvent().emit('showBottomNavigatorBar');
-    controller.dispose();
+    Future.delayed(const Duration(seconds: 1), () {
+      controller.dispose();
+    });
   });
 }
 
