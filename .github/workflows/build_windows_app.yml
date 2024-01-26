@@ -19,7 +19,7 @@ jobs:
 
       - name: Build Windows app
         #run: flutter build windows --release
-        run: dart run msix:create --release -v --output-path build/windows/runner --output-name AIdea
+        run: dart run msix:create --release -v --output-path build/windows/runner --output-name AIdea --install-certificate false
 
       # - name: Copy dependencies
       #   run: copy .\windows\sqlite3.dll .\build\windows\runner\Release\
