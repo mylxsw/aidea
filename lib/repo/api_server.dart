@@ -428,6 +428,19 @@ class APIServer {
     );
   }
 
+  /// 使用 微信账号登录
+  Future<SignInResp> signInWithWechat({
+    required String code,
+  }) async {
+    return sendPostRequest(
+      '/v1/auth/sign-in-wechat/',
+      (resp) => SignInResp.fromJson(resp.data),
+      formData: Map<String, dynamic>.from({
+        'code': code,
+      }),
+    );
+  }
+
   /// 获取代理服务器列表
   Future<List<String>> proxyServers(String service) async {
     return sendCachedGetRequest(

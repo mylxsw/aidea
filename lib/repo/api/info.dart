@@ -3,6 +3,9 @@ class Capabilities {
   /// 是否支持 Apple Pay
   final bool applePayEnabled;
 
+  /// 是否支持微信登录
+  final bool wechatSigninEnabled;
+
   /// 是否支持其它
   final bool otherPayEnabled;
 
@@ -61,10 +64,12 @@ class Capabilities {
     this.disableDigitalHuman = false,
     this.disableChat = false,
     this.serviceStatusPage = '',
+    this.wechatSigninEnabled = false,
   });
 
   factory Capabilities.fromJson(Map<String, dynamic> json) {
     return Capabilities(
+      wechatSigninEnabled: json['wechat_signin_enabled'] ?? false,
       applePayEnabled: json['apple_pay_enabled'] ?? false,
       otherPayEnabled: json['other_pay_enabled'] ?? false,
       translateEnabled: json['translate_enabled'] ?? false,
@@ -87,6 +92,7 @@ class Capabilities {
 
   Map<String, dynamic> toJson() {
     return {
+      'wechat_signin_enabled': wechatSigninEnabled,
       'apple_pay_enabled': applePayEnabled,
       'other_pay_enabled': otherPayEnabled,
       'translate_enabled': translateEnabled,

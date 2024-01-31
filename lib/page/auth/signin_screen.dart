@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:fluwx/fluwx.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -50,6 +51,56 @@ class _SignInScreenState extends State<SignInScreen> {
     super.initState();
     if (widget.username != null) {
       _usernameController.text = widget.username!;
+    }
+
+    if (PlatformTool.isAndroid() || PlatformTool.isIOS()) {
+      weChatResponseEventHandler.distinct((a, b) => a == b).listen((event) {
+        if (event is WeChatAuthResponse) {
+          if (event.errCode != 0) {
+            showErrorMessage(event.errStr!);
+            return;
+          }
+
+          if (event.code == null) {
+            showErrorMessage(AppLocale.signInFailed.getString(context));
+            return;
+          }
+
+          processing = true;
+
+          try {
+            APIServer().signInWithWechat(code: event.code!).then((value) async {
+              await widget.settings.set(settingAPIServerToken, value.token);
+              await widget.settings.set(settingUserInfo, jsonEncode(value));
+
+              HttpClient.cacheManager.clearAll().then((_) {
+                if (value.needBindPhone) {
+                  if (context.mounted) {
+                    context.push('/bind-phone').then((value) async {
+                      if (value == 'logout') {
+                        await widget.settings.set(settingAPIServerToken, '');
+                        await widget.settings.set(settingUserInfo, '');
+                      }
+                    });
+                  }
+                  return;
+                } else {
+                  context.go(
+                      '${Ability().homeRoute}?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
+                }
+              });
+            }).catchError((e) {
+              Logger.instance.e(e);
+              showErrorMessage(AppLocale.signInFailed.getString(context));
+            }).onError((error, stackTrace) {
+              Logger.instance.e(error);
+              showErrorMessage(AppLocale.signInFailed.getString(context));
+            });
+          } finally {
+            processing = false;
+          }
+        }
+      });
     }
 
     context.read<VersionBloc>().add(VersionCheckEvent());
@@ -322,18 +373,48 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Widget _buildThirdPartySignInButtons(
       BuildContext context, CustomColors customColors) {
-    final signInItems = <Widget>[
-      if (Ability().enableApplePay &&
-          (PlatformTool.isIOS() ||
-              PlatformTool.isAndroid() ||
-              PlatformTool.isMacOS()))
-        SignInButton(
-          Buttons.appleDark,
-          mini: true,
-          shape: const CircleBorder(),
-          onPressed: onAppleSigninSubmit,
-        ),
-    ];
+    final signInItems = <Widget>[];
+
+    if (Ability().enableApplePay &&
+        (PlatformTool.isIOS() ||
+            PlatformTool.isAndroid() ||
+            PlatformTool.isMacOS())) {
+      signInItems.add(SignInButton(
+        Buttons.appleDark,
+        mini: true,
+        shape: const CircleBorder(),
+        onPressed: onAppleSigninSubmit,
+      ));
+    }
+
+    // 微信登录功能
+    if (Ability().enableWechatSignin &&
+        (PlatformTool.isAndroid() || PlatformTool.isIOS())) {
+      signInItems.add(SignInButtonBuilder(
+        mini: true,
+        shape: const CircleBorder(),
+        onPressed: () async {
+          if (processing) {
+            return;
+          }
+
+          if (!agreeProtocol) {
+            showErrorMessage(
+                AppLocale.pleaseReadAgreeProtocol.getString(context));
+            return;
+          }
+
+          final ok = await sendWeChatAuth(
+              scope: "snsapi_userinfo", state: "wechat_sdk_demo_test");
+          if (!ok) {
+            showErrorMessage('请先安装微信后再使用改功能');
+          }
+        },
+        backgroundColor: Colors.green,
+        text: '微信',
+        icon: Icons.wechat,
+      ));
+    }
 
     if (signInItems.isEmpty) {
       return Container();
@@ -351,7 +432,10 @@ class _SignInScreenState extends State<SignInScreen> {
         const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: signInItems,
+          mainAxisSize: MainAxisSize.min,
+          children: signInItems
+              .map((e) => Padding(padding: const EdgeInsets.all(10), child: e))
+              .toList(),
         ),
       ],
     );
