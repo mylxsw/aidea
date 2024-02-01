@@ -96,9 +96,18 @@ class Ability {
     return capabilities.applePayEnabled;
   }
 
+  /// 是否显示 Apple 登录
+  bool get enableAppleSignin {
+    return enableApplePay &&
+        (PlatformTool.isIOS() ||
+            PlatformTool.isAndroid() ||
+            PlatformTool.isMacOS());
+  }
+
   /// 是否支持微信登录
   bool get enableWechatSignin {
-    return capabilities.wechatSigninEnabled;
+    return capabilities.wechatSigninEnabled &&
+        (PlatformTool.isIOS() || PlatformTool.isAndroid());
   }
 
   /// 是否支持支付功能

@@ -8,6 +8,7 @@ class User {
   String? inviteCode;
   String? avatar;
   int? invitedBy;
+  String? unionId;
 
   User(
     this.id,
@@ -17,6 +18,7 @@ class User {
     this.inviteCode,
     this.avatar,
     this.invitedBy,
+    this.unionId,
   });
 
   /// 是否需要绑定手机号码
@@ -46,6 +48,7 @@ class User {
         'invite_code': inviteCode,
         'avatar': avatar,
         'invited_by': invitedBy,
+        'union_id': unionId,
       };
 
   static fromJson(Map<String, dynamic> json) {
@@ -57,6 +60,7 @@ class User {
       inviteCode: json['invite_code'],
       avatar: json['avatar'],
       invitedBy: json['invited_by'],
+      unionId: json['union_id'],
     );
   }
 }

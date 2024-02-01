@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:askaide/bloc/account_bloc.dart';
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
@@ -6,11 +9,13 @@ import 'package:askaide/page/component/enhanced_popup_menu.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:fluwx/fluwx.dart';
 import 'package:go_router/go_router.dart';
 import 'package:settings_ui/settings_ui.dart';
 
@@ -23,9 +28,54 @@ class AccountSecurityScreen extends StatefulWidget {
 }
 
 class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
+  StreamSubscription<BaseWeChatResponse>? _weChatResponse;
+
+  @override
+  void dispose() {
+    _weChatResponse?.cancel();
+    super.dispose();
+  }
+
+  var wechatInstalled = false;
+
   @override
   void initState() {
     context.read<AccountBloc>().add(AccountLoadEvent());
+
+    if (Ability().enableWechatSignin) {
+      isWeChatInstalled.then((installed) {
+        setState(() {
+          wechatInstalled = installed;
+        });
+
+        if (!installed) {
+          return;
+        }
+
+        _weChatResponse = weChatResponseEventHandler
+            .distinct((a, b) => a == b)
+            .listen((event) {
+          if (event is WeChatAuthResponse) {
+            if (event.errCode != 0) {
+              showErrorMessage(event.errStr!);
+              return;
+            }
+
+            if (event.code == null) {
+              showErrorMessage(AppLocale.signInFailed.getString(context));
+              return;
+            }
+
+            APIServer().bindWechat(code: event.code!).then((_) {
+              context.read<AccountBloc>().add(AccountLoadEvent());
+              showSuccessMessage('绑定成功');
+            }).onError((error, stackTrace) {
+              showErrorMessageEnhanced(context, error!);
+            });
+          }
+        });
+      });
+    }
 
     super.initState();
   }
@@ -145,11 +195,55 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
                           ],
                         ),
                         onPressed: (context) {
-                          context
-                              .push('/bind-phone?is_signin=false')
-                              .then((value) => Logger.instance.d(value));
+                          if (state.user!.user.phone == null ||
+                              state.user!.user.phone == '') {
+                            context
+                                .push('/bind-phone?is_signin=false')
+                                .then((value) => Logger.instance.d(value));
+                          }
                         },
                       ),
+                      if (Ability().enableWechatSignin && wechatInstalled)
+                        SettingsTile(
+                          title: const Text('微信账号'),
+                          trailing: Row(
+                            children: [
+                              Text(
+                                state.user!.user.unionId == null ||
+                                        state.user!.user.unionId == ''
+                                    ? '绑定'
+                                    : '已绑定',
+                                style: TextStyle(
+                                  color: customColors.weakTextColor
+                                      ?.withAlpha(200),
+                                  fontSize: 13,
+                                ),
+                              ),
+                              if (state.user!.user.unionId == null ||
+                                  state.user!.user.unionId == '')
+                                const SizedBox(width: 5),
+                              if (state.user!.user.unionId == null ||
+                                  state.user!.user.unionId == '')
+                                Icon(
+                                  CupertinoIcons.chevron_forward,
+                                  size: MediaQuery.of(context).textScaleFactor *
+                                      18,
+                                  color: Colors.grey,
+                                ),
+                            ],
+                          ),
+                          onPressed: (context) async {
+                            if (state.user!.user.unionId == null ||
+                                state.user!.user.unionId == '') {
+                              final ok = await sendWeChatAuth(
+                                  scope: "snsapi_userinfo",
+                                  state: "wechat_sdk_demo_test");
+                              if (!ok) {
+                                showErrorMessage('请先安装微信后再使用改功能');
+                              }
+                            }
+                          },
+                        ),
                       SettingsTile(
                         title: Text(state.user!.control.isSetPassword
                             ? '修改密码'

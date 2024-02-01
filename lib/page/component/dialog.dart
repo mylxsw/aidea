@@ -115,7 +115,7 @@ showCustomBeautyDialog(
   );
 }
 
-showBeautyDialog(
+Future<dynamic> showBeautyDialog(
   BuildContext context, {
   required QuickAlertType type,
   String? text,
@@ -131,7 +131,7 @@ showBeautyDialog(
 }) {
   final customColors = Theme.of(context).extension<CustomColors>()!;
 
-  QuickAlert.show(
+  return QuickAlert.show(
     context: context,
     type: type,
     text: text,

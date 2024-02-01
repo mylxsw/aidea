@@ -329,6 +329,7 @@ class MyApp extends StatefulWidget {
                     username: state.queryParameters['username']!,
                     isSignup: state.queryParameters['is_signup'] == 'true',
                     signInMethod: state.queryParameters['sign_in_method']!,
+                    wechatBindToken: state.queryParameters['wechat_bind_token'],
                   ),
                 ),
               ),

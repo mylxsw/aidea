@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -22,6 +23,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:fluwx/fluwx.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quickalert/models/quickalert_type.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:askaide/helper/http.dart';
@@ -46,6 +48,11 @@ class _SignInScreenState extends State<SignInScreen> {
 
   var agreeProtocol = false;
 
+  StreamSubscription<BaseWeChatResponse>? _weChatResponse;
+
+  /// 微信登录 token，用于自动绑定微信
+  String? wechatBindToken;
+
   @override
   void initState() {
     super.initState();
@@ -53,8 +60,9 @@ class _SignInScreenState extends State<SignInScreen> {
       _usernameController.text = widget.username!;
     }
 
-    if (PlatformTool.isAndroid() || PlatformTool.isIOS()) {
-      weChatResponseEventHandler.distinct((a, b) => a == b).listen((event) {
+    if (Ability().enableWechatSignin) {
+      _weChatResponse =
+          weChatResponseEventHandler.distinct((a, b) => a == b).listen((event) {
         if (event is WeChatAuthResponse) {
           if (event.errCode != 0) {
             showErrorMessage(event.errStr!);
@@ -68,37 +76,34 @@ class _SignInScreenState extends State<SignInScreen> {
 
           processing = true;
 
-          try {
-            APIServer().signInWithWechat(code: event.code!).then((value) async {
-              await widget.settings.set(settingAPIServerToken, value.token);
-              await widget.settings.set(settingUserInfo, jsonEncode(value));
-
-              HttpClient.cacheManager.clearAll().then((_) {
-                if (value.needBindPhone) {
-                  if (context.mounted) {
-                    context.push('/bind-phone').then((value) async {
-                      if (value == 'logout') {
-                        await widget.settings.set(settingAPIServerToken, '');
-                        await widget.settings.set(settingUserInfo, '');
-                      }
-                    });
-                  }
-                  return;
-                } else {
-                  context.go(
-                      '${Ability().homeRoute}?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
-                }
-              });
-            }).catchError((e) {
-              Logger.instance.e(e);
-              showErrorMessage(AppLocale.signInFailed.getString(context));
-            }).onError((error, stackTrace) {
-              Logger.instance.e(error);
-              showErrorMessage(AppLocale.signInFailed.getString(context));
-            });
-          } finally {
-            processing = false;
-          }
+          APIServer()
+              .trySignInWithWechat(code: event.code!)
+              .then((tryRes) async {
+            if (tryRes.exist) {
+              await confirmWeChatSignin(tryRes.token);
+            } else {
+              await showBeautyDialog(
+                context,
+                type: QuickAlertType.confirm,
+                title: '提示',
+                text: '该微信未绑定任何账号，是否直接登录？\n（自动创建账号）',
+                confirmBtnText: '直接登录',
+                onConfirmBtnTap: () async {
+                  await confirmWeChatSignin(tryRes.token);
+                  // ignore: use_build_context_synchronously
+                  context.pop();
+                },
+                showCancelBtn: true,
+                cancelBtnText: '绑定已有账号',
+                onCancelBtnTap: () {
+                  setState(() {
+                    wechatBindToken = tryRes.token;
+                  });
+                  context.pop();
+                },
+              );
+            }
+          }).whenComplete(() => processing = false);
         }
       });
     }
@@ -106,9 +111,40 @@ class _SignInScreenState extends State<SignInScreen> {
     context.read<VersionBloc>().add(VersionCheckEvent());
   }
 
+  confirmWeChatSignin(String token) async {
+    try {
+      final value = await APIServer().signInWithWechat(token: token);
+
+      await widget.settings.set(settingAPIServerToken, value.token);
+      await widget.settings.set(settingUserInfo, jsonEncode(value));
+
+      await HttpClient.cacheManager.clearAll();
+
+      if (value.needBindPhone) {
+        if (context.mounted) {
+          context.push('/bind-phone').then((value) async {
+            if (value == 'logout') {
+              await widget.settings.set(settingAPIServerToken, '');
+              await widget.settings.set(settingUserInfo, '');
+            }
+          });
+        }
+      } else {
+        // ignore: use_build_context_synchronously
+        context.go(
+            '${Ability().homeRoute}?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
+      }
+    } catch (e) {
+      Logger.instance.e(e);
+      // ignore: use_build_context_synchronously
+      showErrorMessage(AppLocale.signInFailed.getString(context));
+    }
+  }
+
   @override
   void dispose() {
     _usernameController.dispose();
+    _weChatResponse?.cancel();
     super.dispose();
   }
 
@@ -373,71 +409,75 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Widget _buildThirdPartySignInButtons(
       BuildContext context, CustomColors customColors) {
-    final signInItems = <Widget>[];
+    return FutureBuilder(
+      future: isWeChatInstalled,
+      builder: (context, installed) {
+        final signInItems = <Widget>[];
 
-    if (Ability().enableApplePay &&
-        (PlatformTool.isIOS() ||
-            PlatformTool.isAndroid() ||
-            PlatformTool.isMacOS())) {
-      signInItems.add(SignInButton(
-        Buttons.appleDark,
-        mini: true,
-        shape: const CircleBorder(),
-        onPressed: onAppleSigninSubmit,
-      ));
-    }
+        if (Ability().enableAppleSignin) {
+          signInItems.add(SignInButton(
+            Buttons.appleDark,
+            mini: true,
+            shape: const CircleBorder(),
+            onPressed: onAppleSigninSubmit,
+          ));
+        }
 
-    // 微信登录功能
-    if (Ability().enableWechatSignin &&
-        (PlatformTool.isAndroid() || PlatformTool.isIOS())) {
-      signInItems.add(SignInButtonBuilder(
-        mini: true,
-        shape: const CircleBorder(),
-        onPressed: () async {
-          if (processing) {
-            return;
+        // 微信登录功能
+        if (Ability().enableWechatSignin) {
+          if (PlatformTool.isAndroid() || installed.data == true) {
+            signInItems.add(SignInButtonBuilder(
+              mini: true,
+              shape: const CircleBorder(),
+              onPressed: () async {
+                if (processing) {
+                  return;
+                }
+
+                if (!agreeProtocol) {
+                  showErrorMessage(
+                      AppLocale.pleaseReadAgreeProtocol.getString(context));
+                  return;
+                }
+
+                final ok = await sendWeChatAuth(
+                    scope: "snsapi_userinfo", state: "wechat_sdk_demo_test");
+                if (!ok) {
+                  showErrorMessage('请先安装微信后再使用改功能');
+                }
+              },
+              backgroundColor: Colors.green,
+              text: '微信',
+              icon: Icons.wechat,
+            ));
           }
+        }
 
-          if (!agreeProtocol) {
-            showErrorMessage(
-                AppLocale.pleaseReadAgreeProtocol.getString(context));
-            return;
-          }
+        if (signInItems.isEmpty) {
+          return Container();
+        }
 
-          final ok = await sendWeChatAuth(
-              scope: "snsapi_userinfo", state: "wechat_sdk_demo_test");
-          if (!ok) {
-            showErrorMessage('请先安装微信后再使用改功能');
-          }
-        },
-        backgroundColor: Colors.green,
-        text: '微信',
-        icon: Icons.wechat,
-      ));
-    }
-
-    if (signInItems.isEmpty) {
-      return Container();
-    }
-
-    return Column(
-      children: [
-        Text(
-          '其它登录方式',
-          style: TextStyle(
-            fontSize: 13,
-            color: customColors.weakTextColor?.withAlpha(80),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: signInItems
-              .map((e) => Padding(padding: const EdgeInsets.all(10), child: e))
-              .toList(),
-        ),
-      ],
+        return Column(
+          children: [
+            Text(
+              '其它登录方式',
+              style: TextStyle(
+                fontSize: 13,
+                color: customColors.weakTextColor?.withAlpha(80),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: signInItems
+                  .map((e) =>
+                      Padding(padding: const EdgeInsets.all(10), child: e))
+                  .toList(),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -476,6 +516,7 @@ class _SignInScreenState extends State<SignInScreen> {
         familyName: credential.familyName,
         givenName: credential.givenName,
         email: credential.email,
+        wechatBindToken: wechatBindToken,
       )
           .then((value) async {
         await widget.settings.set(settingAPIServerToken, value.token);
@@ -537,7 +578,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
     APIServer().checkPhoneExists(username).then((resp) async {
       context.push(
-          '/signin-or-signup?username=$username&is_signup=${resp.exist ? "false" : "true"}&sign_in_method=${resp.signInMethod}');
+          '/signin-or-signup?username=$username&is_signup=${resp.exist ? "false" : "true"}&sign_in_method=${resp.signInMethod}${wechatBindToken != null ? '&wechat_bind_token=$wechatBindToken' : ''}');
     }).catchError((e) {
       showErrorMessage(resolveError(context, e));
     }).whenComplete(() => processing = false);
