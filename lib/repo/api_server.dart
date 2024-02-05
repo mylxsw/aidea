@@ -48,6 +48,8 @@ class APIServer {
     language = setting.stringDefault(settingLanguage, 'zh');
     url = setting.stringDefault(settingServerURL, apiServerURL);
 
+    Logger.instance.d('API Server URL: $url');
+
     setting.listen((settings, key, value) {
       if (key == settingAPIServerToken) {
         apiToken = settings.getDefault(settingAPIServerToken, '');
@@ -59,6 +61,7 @@ class APIServer {
 
       if (key == settingServerURL) {
         url = settings.getDefault(settingServerURL, apiServerURL);
+        Logger.instance.d('API Server URL Changed: $url');
       }
     });
   }
@@ -378,6 +381,7 @@ class APIServer {
     required String verifyCodeId,
     required String verifyCode,
     String? inviteCode,
+    String? wechatBindToken,
   }) async {
     return sendPostRequest(
       '/v1/auth/2in1/sign-inup',
@@ -387,19 +391,24 @@ class APIServer {
         'verify_code_id': verifyCodeId,
         'verify_code': verifyCode,
         'invite_code': inviteCode,
+        'wechat_bind_token': wechatBindToken,
       }),
     );
   }
 
   /// 使用密码登录
   Future<SignInResp> signInWithPassword(
-      String username, String password) async {
+    String username,
+    String password, {
+    String? wechatBindToken,
+  }) async {
     return sendPostRequest(
       '/v1/auth/sign-in',
       (resp) => SignInResp.fromJson(resp.data),
       formData: Map<String, dynamic>.from({
         'username': username,
         'password': password,
+        'wechat_bind_token': wechatBindToken,
       }),
     );
   }
@@ -412,6 +421,7 @@ class APIServer {
     String? email,
     String? authorizationCode,
     String? identityToken,
+    String? wechatBindToken,
   }) async {
     return sendPostRequest(
       '/v1/auth/sign-in-apple/',
@@ -424,6 +434,44 @@ class APIServer {
         'authorization_code': authorizationCode,
         'identity_token': identityToken,
         'is_ios': PlatformTool.isIOS() || PlatformTool.isMacOS(),
+        'wechat_bind_token': wechatBindToken,
+      }),
+    );
+  }
+
+  /// 尝试使用 微信账号登录
+  Future<TrySignInResp> trySignInWithWechat({
+    required String code,
+  }) async {
+    return sendPostRequest(
+      '/v1/auth/sign-in-wechat/try',
+      (resp) => TrySignInResp.fromJson(resp.data),
+      formData: Map<String, dynamic>.from({
+        'code': code,
+      }),
+    );
+  }
+
+  /// 使用 微信账号登录
+  Future<SignInResp> signInWithWechat({
+    required String token,
+  }) async {
+    return sendPostRequest(
+      '/v1/auth/sign-in-wechat/',
+      (resp) => SignInResp.fromJson(resp.data),
+      formData: Map<String, dynamic>.from({
+        'token': token,
+      }),
+    );
+  }
+
+  /// 绑定微信账号
+  Future<void> bindWechat({required String code}) async {
+    return sendPostRequest(
+      '/v1/auth/bind-wechat/',
+      (resp) => {},
+      formData: Map<String, dynamic>.from({
+        'code': code,
       }),
     );
   }
