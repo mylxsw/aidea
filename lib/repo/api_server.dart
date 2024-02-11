@@ -13,6 +13,7 @@ import 'package:askaide/repo/api/creative.dart';
 import 'package:askaide/repo/api/image_model.dart';
 import 'package:askaide/repo/api/info.dart';
 import 'package:askaide/repo/api/keys.dart';
+import 'package:askaide/repo/api/model.dart';
 import 'package:askaide/repo/api/notification.dart';
 import 'package:askaide/repo/api/page.dart';
 import 'package:askaide/repo/api/payment.dart';
@@ -638,7 +639,7 @@ class APIServer {
   /// 获取模型支持的提示语示例
   Future<List<ChatExample>> example(String model) async {
     return sendCachedGetRequest(
-      '/v1/examples/$model',
+      '/v1/examples/${Uri.encodeComponent(model)}',
       (resp) {
         var examples = <ChatExample>[];
         for (var example in resp.data) {
@@ -1694,7 +1695,7 @@ class APIServer {
   Future<FreeModelCount> userFreeStatisticsForModel(
       {required String model}) async {
     return sendGetRequest(
-      '/v1/users/stat/free-chat-counts/$model',
+      '/v1/users/stat/free-chat-counts/${Uri.encodeComponent(model)}',
       (resp) => FreeModelCount.fromJson(resp.data),
     );
   }
@@ -1728,6 +1729,48 @@ class APIServer {
   Future<void> updateCustomHomeModels({required List<String> models}) async {
     return sendPostRequest(
       '/v1/users/custom/home-models',
+      (value) => {},
+      formData: {
+        'models': models.join(','),
+      },
+    );
+  }
+
+  /// 自定义首页模型 v2
+  Future<List<HomeModelV2>> customHomeModelsV2({bool cache = true}) async {
+    return sendCachedGetRequest(
+      '/v2/models/home-models/all',
+      (value) {
+        var res = <HomeModelV2>[];
+        for (var item in value.data['data']) {
+          res.add(HomeModelV2.fromJson(item));
+        }
+
+        return res;
+      },
+      forceRefresh: !cache,
+    );
+  }
+
+  /// 自定义首页模型 v2 详情
+  Future<HomeModelV2> customHomeModelsItemV2({
+    bool cache = true,
+    required String uniqueKey,
+  }) async {
+    return sendCachedGetRequest(
+      '/v2/models/home-models/${Uri.decodeComponent(uniqueKey)}',
+      (value) {
+        return HomeModelV2.fromJson(value.data['data']);
+      },
+      forceRefresh: !cache,
+    );
+  }
+
+  /// 更新自定义模型 v2
+  /// 模型 ID 使用 type:id 形式
+  Future<void> updateCustomHomeModelsV2({required List<String> models}) async {
+    return sendPostRequest(
+      '/v2/users/custom/home-models',
       (value) => {},
       formData: {
         'models': models.join(','),

@@ -58,7 +58,9 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
               lastActiveTime: room.lastActiveTime,
               systemPrompt: room.systemPrompt,
               priority: room.priority ?? 0,
-              model: '${room.vendor}:${room.model}',
+              model: room.model.startsWith('v2@')
+                  ? room.model
+                  : '${room.vendor}:${room.model}',
               initMessage: room.initMessage,
               maxContext: room.maxContext,
               avatarId: room.avatarId,
@@ -81,7 +83,9 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
               lastActiveTime: room.lastActiveTime,
               systemPrompt: room.systemPrompt,
               priority: room.priority ?? 0,
-              model: '${room.vendor}:${room.model}',
+              model: room.model.startsWith('v2@')
+                  ? room.model
+                  : '${room.vendor}:${room.model}',
               initMessage: room.initMessage,
               maxContext: room.maxContext,
               avatarId: room.avatarId,
@@ -89,7 +93,11 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
               roomType: room.roomType,
             ),
             states,
-            examples: await APIServer().example('${room.vendor}:${room.model}'),
+            examples: await APIServer().example(
+              room.model.startsWith('v2@')
+                  ? room.model
+                  : '${room.vendor}:${room.model}',
+            ),
             cascading: event.cascading,
           ));
           return;
@@ -131,8 +139,12 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
         if (Ability().isUserLogon()) {
           await APIServer().createRoom(
             name: event.name,
-            vendor: event.model.split(':').first,
-            model: event.model.split(':').last,
+            vendor: event.model.startsWith('v2@')
+                ? ''
+                : event.model.split(':').first,
+            model: event.model.startsWith('v2@')
+                ? event.model
+                : event.model.split(':').last,
             systemPrompt: event.prompt,
             avatarId: event.avatarId,
             avatarUrl: event.avatarUrl,
@@ -184,8 +196,12 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
         final room = await APIServer().updateRoom(
           roomId: event.roomId,
           name: event.name!,
-          model: event.model!.split(':').last,
-          vendor: event.model!.split(':').first,
+          model: event.model!.startsWith('v2@')
+              ? event.model!
+              : event.model!.split(':').last,
+          vendor: event.model!.startsWith('v2@')
+              ? ''
+              : event.model!.split(':').first,
           systemPrompt: event.prompt!,
           avatarId: event.avatarId,
           avatarUrl: event.avatarUrl,
@@ -206,7 +222,9 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
               lastActiveTime: room.lastActiveTime,
               systemPrompt: room.systemPrompt,
               priority: room.priority ?? 0,
-              model: '${room.vendor}:${room.model}',
+              model: room.model.startsWith('v2@')
+                  ? room.model
+                  : '${room.vendor}:${room.model}',
               avatarId: room.avatarId,
               avatarUrl: room.avatarUrl,
               initMessage: room.initMessage,
@@ -325,7 +343,9 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
                     lastActiveTime: room.lastActiveTime,
                     systemPrompt: room.systemPrompt,
                     priority: room.priority ?? 0,
-                    model: '${room.vendor}:${room.model}',
+                    model: room.model.startsWith('v2@')
+                        ? room.model
+                        : '${room.vendor}:${room.model}',
                     avatarId: room.avatarId,
                     avatarUrl: room.avatarUrl,
                     roomType: room.roomType,
