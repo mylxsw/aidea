@@ -1,3 +1,5 @@
+import 'package:askaide/repo/api/model.dart';
+
 /// 服务器支持的能力信息
 class Capabilities {
   /// 是否支持 Apple Pay
@@ -19,7 +21,7 @@ class Capabilities {
   final bool openaiEnabled;
 
   /// 首页显示的模型信息
-  final List<HomeModel> homeModels;
+  final List<HomeModelV2> homeModels;
 
   /// 是否显示首页模型描述
   final bool showHomeModelDescription;
@@ -75,8 +77,8 @@ class Capabilities {
       translateEnabled: json['translate_enabled'] ?? false,
       mailEnabled: json['mail_enabled'] ?? false,
       openaiEnabled: json['openai_enabled'] ?? false,
-      homeModels: ((json['home_models'] ?? []) as List<dynamic>)
-          .map((e) => HomeModel.fromJson(e))
+      homeModels: ((json['home_models_v2'] ?? []) as List<dynamic>)
+          .map((e) => HomeModelV2.fromJson(e))
           .toList(),
       homeRoute: json['home_route'] ?? '/chat-chat',
       showHomeModelDescription: json['show_home_model_description'] ?? true,

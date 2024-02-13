@@ -1,5 +1,19 @@
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/repo/api/model.dart';
 import 'package:flutter/material.dart';
+
+class IconAndColor {
+  final IconData icon;
+  final Color color;
+
+  IconAndColor(this.icon, this.color);
+}
+
+final iconAndColors = [
+  IconAndColor(Icons.bolt, Colors.green),
+  IconAndColor(Icons.auto_awesome, const Color.fromARGB(255, 120, 73, 223)),
+  IconAndColor(Icons.extension, const Color.fromARGB(255, 255, 122, 13)),
+];
 
 class ModelIndicatorInfo {
   IconData icon;
@@ -20,66 +34,57 @@ class ModelIndicatorInfo {
 }
 
 class ModelIndicator extends StatelessWidget {
-  final ModelIndicatorInfo model;
+  final HomeModelV2 model;
+  final IconAndColor iconAndColor;
   final bool selected;
-  final bool showDescription;
+  final int itemCount;
 
   const ModelIndicator({
     super.key,
     required this.model,
+    required this.iconAndColor,
     this.selected = false,
-    this.showDescription = true,
+    this.itemCount = 2,
   });
 
   @override
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding: EdgeInsets.symmetric(horizontal: itemCount > 2 ? 10 : 15),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: Icon(
-              model.icon,
-              color: selected ? Colors.white : customColors.weakLinkColor,
-              size: 20,
-            ),
+          Icon(
+            iconAndColor.icon,
+            color: selected ? Colors.white : customColors.weakLinkColor,
+            size: itemCount > 2 ? 16 : 20,
           ),
+          SizedBox(width: itemCount > 2 ? 5 : 10),
           Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      model.modelName,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: selected
-                            ? Colors.white
-                            : customColors.weakLinkColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    if (showDescription)
-                      Text(
-                        model.description,
+            child: Center(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        model.name,
+                        maxLines: 1,
                         style: TextStyle(
-                          fontSize: 10,
+                          fontSize: itemCount > 2 ? 14 : 15,
                           color: selected
                               ? Colors.white
-                              : customColors.weakTextColor,
+                              : customColors.weakLinkColor,
+                          fontWeight: FontWeight.w600,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                  ],
-                ),
-                const SizedBox(width: 15),
-              ],
+                    ),
+                  ),
+                  SizedBox(width: itemCount > 2 ? 16 : 20),
+                ],
+              ),
             ),
           ),
         ],
