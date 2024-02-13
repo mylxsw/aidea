@@ -36,24 +36,26 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
   @override
   void initState() {
     super.initState();
-    File(PathHelper().getLogfilePath).exists().then(
-          (exist) => {
-            if (exist)
-              File(PathHelper().getLogfilePath).readAsString().then((value) {
-                setState(() {
-                  diagnosisInfo = value;
-                });
+    if (!PlatformTool.isWeb()) {
+      File(PathHelper().getLogfilePath).exists().then(
+            (exist) => {
+              if (exist)
+                File(PathHelper().getLogfilePath).readAsString().then((value) {
+                  setState(() {
+                    diagnosisInfo = value;
+                  });
 
-                Future.delayed(const Duration(milliseconds: 100), () {
-                  _controller.jumpTo(_controller.position.maxScrollExtent);
-                });
-              })
-            else
-              setState(() {
-                diagnosisInfo = 'No log file found';
-              })
-          },
-        );
+                  Future.delayed(const Duration(milliseconds: 100), () {
+                    _controller.jumpTo(_controller.position.maxScrollExtent);
+                  });
+                })
+              else
+                setState(() {
+                  diagnosisInfo = 'No log file found';
+                })
+            },
+          );
+    }
   }
 
   @override

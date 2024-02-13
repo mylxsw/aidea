@@ -1,7 +1,12 @@
+import 'package:askaide/repo/api/model.dart';
+
 /// 服务器支持的能力信息
 class Capabilities {
   /// 是否支持 Apple Pay
   final bool applePayEnabled;
+
+  /// 是否支持微信登录
+  final bool wechatSigninEnabled;
 
   /// 是否支持其它
   final bool otherPayEnabled;
@@ -16,7 +21,7 @@ class Capabilities {
   final bool openaiEnabled;
 
   /// 首页显示的模型信息
-  final List<HomeModel> homeModels;
+  final List<HomeModelV2> homeModels;
 
   /// 是否显示首页模型描述
   final bool showHomeModelDescription;
@@ -61,17 +66,19 @@ class Capabilities {
     this.disableDigitalHuman = false,
     this.disableChat = false,
     this.serviceStatusPage = '',
+    this.wechatSigninEnabled = false,
   });
 
   factory Capabilities.fromJson(Map<String, dynamic> json) {
     return Capabilities(
+      wechatSigninEnabled: json['wechat_signin_enabled'] ?? false,
       applePayEnabled: json['apple_pay_enabled'] ?? false,
       otherPayEnabled: json['other_pay_enabled'] ?? false,
       translateEnabled: json['translate_enabled'] ?? false,
       mailEnabled: json['mail_enabled'] ?? false,
       openaiEnabled: json['openai_enabled'] ?? false,
-      homeModels: ((json['home_models'] ?? []) as List<dynamic>)
-          .map((e) => HomeModel.fromJson(e))
+      homeModels: ((json['home_models_v2'] ?? []) as List<dynamic>)
+          .map((e) => HomeModelV2.fromJson(e))
           .toList(),
       homeRoute: json['home_route'] ?? '/chat-chat',
       showHomeModelDescription: json['show_home_model_description'] ?? true,
@@ -87,6 +94,7 @@ class Capabilities {
 
   Map<String, dynamic> toJson() {
     return {
+      'wechat_signin_enabled': wechatSigninEnabled,
       'apple_pay_enabled': applePayEnabled,
       'other_pay_enabled': otherPayEnabled,
       'translate_enabled': translateEnabled,

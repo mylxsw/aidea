@@ -23,6 +23,7 @@ import 'package:askaide/page/component/sliver_component.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/repo/api/model.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/model/chat_history.dart';
 import 'package:askaide/repo/model/misc.dart';
@@ -71,22 +72,27 @@ class ChatModel {
 class _HomePageState extends State<HomePage> {
   final TextEditingController _textController = TextEditingController();
 
-  ModelIndicatorInfo? currentModel;
+  ModelIndicator? currentModel;
 
-  List<ModelIndicatorInfo> models = [
-    ModelIndicatorInfo(
-      modelId: "gpt-3.5-turbo",
+  List<HomeModelV2> models = [
+    HomeModelV2(
+      modelId: "openai:gpt-3.5-turbo",
       modelName: 'GPT-3.5',
-      description: '速度快，成本低',
-      icon: Icons.bolt,
-      activeColor: Colors.green,
+      type: 'model',
+      id: 'openai:gpt-3.5-turbo',
+      supportVision: false,
+      name: 'GPT-3.5',
+      avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt35.png',
     ),
-    ModelIndicatorInfo(
-      modelId: "gpt-4",
+    HomeModelV2(
+      modelId: "openai:gpt-4",
       modelName: 'GPT-4',
-      description: '能力强，更精准',
-      icon: Icons.auto_awesome,
-      activeColor: const Color.fromARGB(255, 120, 73, 223),
+      type: 'model',
+      id: 'openai:gpt-4',
+      supportVision: false,
+      name: 'GPT-4',
+      avatarUrl:
+          'https://ssl.aicode.cc/ai-server/assets/avatar/gpt4-preview.png',
     ),
   ];
 
@@ -124,40 +130,21 @@ class _HomePageState extends State<HomePage> {
     context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
 
     if (Ability().homeModels.isNotEmpty) {
-      models = Ability()
-          .homeModels
-          .map((e) => ModelIndicatorInfo(
-                modelId: e.modelId,
-                modelName: e.name,
-                description: e.desc,
-                icon: e.powerful ? Icons.auto_awesome : Icons.bolt,
-                activeColor: stringToColor(e.color),
-                supportVision: e.supportVision,
-              ))
-          .toList();
+      models = Ability().homeModels;
     }
 
     APIServer().capabilities().then((cap) {
       Ability().updateCapabilities(cap);
 
       if (cap.homeModels.isNotEmpty) {
-        models = cap.homeModels
-            .map((e) => ModelIndicatorInfo(
-                  modelId: e.modelId,
-                  modelName: e.name,
-                  description: e.desc,
-                  icon: e.powerful ? Icons.auto_awesome : Icons.bolt,
-                  activeColor: stringToColor(e.color),
-                  supportVision: e.supportVision,
-                ))
-            .toList();
+        models = cap.homeModels;
 
         if (mounted) {
           // 加载免费模型剩余使用次数
-          if (currentModel != null) {
+          if (currentModel != null && currentModel!.model.modelId != null) {
             context
                 .read<FreeCountBloc>()
-                .add(FreeCountReloadEvent(model: currentModel!.modelId));
+                .add(FreeCountReloadEvent(model: currentModel!.model.modelId!));
           }
 
           setState(() {});
@@ -189,7 +176,10 @@ class _HomePageState extends State<HomePage> {
     });
 
     setState(() {
-      currentModel = models[0];
+      currentModel = ModelIndicator(
+        model: models[0],
+        iconAndColor: iconAndColors[0],
+      );
     });
 
     if (widget.showInitialDialog) {
@@ -234,15 +224,19 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  Map<String, Widget> buildModelIndicators() {
-    Map<String, Widget> map = {};
-    for (var model in models) {
-      map[model.modelId] = ModelIndicator(
+  Map<String, ModelIndicator> buildModelIndicators() {
+    Map<String, ModelIndicator> map = {};
+
+    for (var i = 0; i < models.length; i++) {
+      var model = models[i];
+      map[model.id] = ModelIndicator(
         model: model,
-        selected: model.modelId == currentModel?.modelId,
-        showDescription: Ability().showHomeModelDescription,
+        selected: model.id == currentModel?.model.id,
+        iconAndColor: iconAndColors[i],
+        itemCount: models.length,
       );
     }
+
     return map;
   }
 
@@ -405,6 +399,7 @@ class _HomePageState extends State<HomePage> {
     BuildContext context,
     ChatChatRecentHistoriesLoaded state,
   ) {
+    final indicators = buildModelIndicators();
     return Container(
       color: customColors.backgroundContainerColor,
       child: Column(
@@ -426,7 +421,7 @@ class _HomePageState extends State<HomePage> {
               top: 10,
             ),
             child: CustomSlidingSegmentedControl<String>(
-              children: buildModelIndicators(),
+              children: indicators,
               padding: 0,
               isStretch: true,
               height: Ability().showHomeModelDescription ? 60 : 45,
@@ -436,19 +431,20 @@ class _HomePageState extends State<HomePage> {
                 borderRadius: BorderRadius.circular(8),
               ),
               thumbDecoration: BoxDecoration(
-                color: currentModel?.activeColor ?? customColors.linkColor,
+                color: currentModel?.iconAndColor.color,
                 borderRadius: BorderRadius.circular(6),
               ),
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInToLinear,
               onValueChanged: (value) {
-                currentModel =
-                    models.firstWhere((element) => element.modelId == value);
+                currentModel = indicators[value];
 
                 // 重新读取模型的免费使用次数
-                context
-                    .read<FreeCountBloc>()
-                    .add(FreeCountReloadEvent(model: value));
+                if (currentModel != null &&
+                    currentModel!.model.modelId != null) {
+                  context.read<FreeCountBloc>().add(FreeCountReloadEvent(
+                      model: currentModel!.model.modelId!));
+                }
 
                 setState(() {});
               },
@@ -484,7 +480,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                             child: Icon(
                               Icons.circle,
-                              color: currentModel!.activeColor,
+                              color: currentModel?.iconAndColor.color,
                               size: 10,
                             ),
                           ),
@@ -515,7 +511,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     if (selectedImageFiles.isNotEmpty &&
                         currentModel != null &&
-                        currentModel!.supportVision)
+                        currentModel!.model.supportVision)
                       SizedBox(
                         height: 110,
                         child: ListView(
@@ -807,7 +803,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(width: 10),
-            if (currentModel != null && currentModel!.supportVision)
+            if (currentModel != null && currentModel!.model.supportVision)
               InkWell(
                 onTap: () async {
                   // 上传图片
@@ -844,8 +840,8 @@ class _HomePageState extends State<HomePage> {
           buildWhen: (previous, current) => current is FreeCountLoadedState,
           builder: (context, state) {
             if (state is FreeCountLoadedState) {
-              if (currentModel != null) {
-                final matched = state.model(currentModel!.modelId);
+              if (currentModel != null && currentModel!.model.modelId != null) {
+                final matched = state.model(currentModel!.model.modelId!);
                 if (matched != null &&
                     matched.leftCount > 0 &&
                     matched.maxCount > 0) {
@@ -884,7 +880,7 @@ class _HomePageState extends State<HomePage> {
       return;
     }
 
-    if (currentModel != null && currentModel!.supportVision) {
+    if (currentModel != null && currentModel!.model.supportVision) {
       GlobalStore().uploadedFiles = selectedImageFiles;
     }
 
@@ -893,7 +889,7 @@ class _HomePageState extends State<HomePage> {
     context
         .push(Uri(path: '/chat-anywhere', queryParameters: {
       'init_message': text,
-      'model': currentModel?.modelId,
+      'model': 'v2@${currentModel?.model.uniqueKey}',
     }).toString())
         .whenComplete(() {
       _textController.clear();

@@ -1,7 +1,8 @@
 import 'package:askaide/helper/ability.dart';
-import 'package:askaide/helper/color.dart';
+import 'package:askaide/helper/constant.dart';
+import 'package:askaide/helper/helper.dart';
+import 'package:askaide/helper/image.dart';
 import 'package:askaide/lang/lang.dart';
-import 'package:askaide/page/chat/room_create.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
@@ -9,13 +10,16 @@ import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/message_box.dart';
 import 'package:askaide/page/component/model_indicator.dart';
 import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/repo/api/model.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:go_router/go_router.dart';
 
 class CustomHomeModelsPage extends StatefulWidget {
   final SettingRepository setting;
@@ -26,51 +30,56 @@ class CustomHomeModelsPage extends StatefulWidget {
 }
 
 class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
-  List<ModelIndicatorInfo> models = [
-    ModelIndicatorInfo(
-      modelId: "openai:gpt-3.5-turbo",
-      modelName: 'GPT-3.5',
-      description: '速度快，成本低',
-      icon: Icons.bolt,
-      activeColor: Colors.green,
+  List<HomeModelV2> models = [
+    HomeModelV2(
+      type: 'model',
+      id: 'openai:gpt-3.5-turbo',
+      supportVision: false,
+      name: 'GPT-3.5',
     ),
-    ModelIndicatorInfo(
-      modelId: "openai:gpt-4",
-      modelName: 'GPT-4',
-      description: '能力强，更精准',
-      icon: Icons.auto_awesome,
-      activeColor: const Color.fromARGB(255, 120, 73, 223),
+    HomeModelV2(
+      type: 'model',
+      id: 'openai:gpt-4',
+      supportVision: false,
+      name: 'GPT-4',
+    ),
+    HomeModelV2(
+      type: 'model',
+      id: '',
+      supportVision: false,
+      name: '未设置',
     ),
   ];
 
   @override
   void initState() {
     if (Ability().homeModels.isNotEmpty) {
-      models = Ability()
-          .homeModels
-          .map((e) => ModelIndicatorInfo(
-                modelId: e.modelId,
-                modelName: e.name,
-                description: e.desc,
-                icon: e.powerful ? Icons.auto_awesome : Icons.bolt,
-                activeColor: stringToColor(e.color),
-              ))
-          .toList();
+      models = Ability().homeModels;
+
+      if (models.length < 3) {
+        models.add(HomeModelV2(
+          type: 'model',
+          id: '',
+          supportVision: false,
+          name: '未设置',
+        ));
+      }
     }
 
     APIServer().capabilities(cache: false).then((cap) {
       Ability().updateCapabilities(cap);
 
       if (cap.homeModels.isNotEmpty) {
-        models = cap.homeModels
-            .map((e) => ModelIndicatorInfo(
-                  modelId: e.modelId,
-                  modelName: e.name,
-                  description: e.desc,
-                  icon: e.powerful ? Icons.auto_awesome : Icons.bolt,
-                  activeColor: stringToColor(e.color),
-                ))
-            .toList();
+        models = cap.homeModels;
+
+        if (models.length < 3) {
+          models.add(HomeModelV2(
+            type: 'model',
+            id: '',
+            supportVision: false,
+            name: '未设置',
+          ));
+        }
 
         if (mounted) {
           setState(() {});
@@ -84,7 +93,6 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
   @override
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
-    var reservedModels = models.map((e) => e.modelId).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -117,17 +125,34 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
                   for (var i = 0; i < models.length; i++)
                     GestureDetector(
                       onTap: () {
-                        openSelectModelDialog(
+                        openSelectCustomModelDialog(
                           context,
                           (selected) {
-                            models[i].modelId = selected.id;
-                            models[i].modelName =
-                                selected.shortName ?? selected.name;
-                            setState(() {});
+                            setState(() {
+                              models[i] = selected;
+                            });
                           },
-                          initValue: models[i].modelId,
-                          reservedModels: reservedModels,
+                          initValue: models[i].id,
                         );
+                      },
+                      onLongPress: () {
+                        if (models[i].id.isNotEmpty && i == models.length - 1) {
+                          openConfirmDialog(
+                            context,
+                            '确认重置该模型？',
+                            () {
+                              setState(() {
+                                models[i] = HomeModelV2(
+                                  type: 'model',
+                                  id: '',
+                                  supportVision: false,
+                                  name: '未设置',
+                                );
+                              });
+                            },
+                            confirmText: '重置',
+                          );
+                        }
                       },
                       child: Stack(
                         children: [
@@ -135,13 +160,13 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             width: double.infinity,
                             decoration: BoxDecoration(
-                              color: models[i].activeColor,
+                              color: iconAndColors[i].color,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: ModelIndicator(
                               model: models[i],
+                              iconAndColor: iconAndColors[i],
                               selected: true,
-                              showDescription: false,
                             ),
                           ),
                           Positioned(
@@ -181,10 +206,12 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
                   );
 
                   try {
-                    final selectedModels =
-                        models.map((e) => e.modelId).toList();
+                    final selectedModels = models
+                        .where((e) => e.id != '')
+                        .map((e) => e.uniqueKey)
+                        .toList();
                     await APIServer()
-                        .updateCustomHomeModels(models: selectedModels);
+                        .updateCustomHomeModelsV2(models: selectedModels);
 
                     APIServer()
                         .capabilities(cache: false)
@@ -205,6 +232,192 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+void openSelectCustomModelDialog(
+  BuildContext context,
+  Function(HomeModelV2 selected) onSelected, {
+  String? initValue,
+}) {
+  openModalBottomSheet(
+    context,
+    (context) {
+      return FutureBuilder(
+          future: APIServer().customHomeModelsV2(cache: false),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              showErrorMessage(resolveError(context, snapshot.error!));
+            }
+
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            return HomeModelItem(
+              models: snapshot.data!,
+              onSelected: (selected) {
+                onSelected(selected);
+                context.pop();
+              },
+              initValue: initValue,
+            );
+          });
+    },
+    heightFactor: 0.9,
+  );
+}
+
+class HomeModelItem extends StatelessWidget {
+  final List<HomeModelV2> models;
+  final Function(HomeModelV2 selected) onSelected;
+  final String? initValue;
+
+  const HomeModelItem({
+    super.key,
+    required this.models,
+    required this.onSelected,
+    this.initValue,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final customColors = Theme.of(context).extension<CustomColors>()!;
+
+    var modelsByType = <String, List<HomeModelV2>>{
+      'model': [],
+      'room_gallery': [],
+      'rooms': [],
+    };
+
+    for (var model in models) {
+      modelsByType[model.type]!.add(model);
+    }
+
+    return models.isNotEmpty
+        ? Padding(
+            padding: const EdgeInsets.only(top: 15),
+            child: DefaultTabController(
+              length: modelsByType.length,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TabBar(
+                    indicatorColor: customColors.linkColor,
+                    labelColor: customColors.linkColor,
+                    unselectedLabelColor: customColors.textfieldLabelColor,
+                    tabs: const [
+                      Tab(text: '模型'),
+                      Tab(text: '内置数字人'),
+                      Tab(text: '我的数字人'),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: TabBarView(
+                      children: [
+                        buildTabView(
+                          context,
+                          customColors,
+                          models.where((e) => e.type == 'model').toList(),
+                        ),
+                        buildTabView(
+                          context,
+                          customColors,
+                          models
+                              .where((e) => e.type == 'room_gallery')
+                              .toList(),
+                        ),
+                        buildTabView(
+                          context,
+                          customColors,
+                          models.where((e) => e.type == 'rooms').toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        : const Center(
+            child: Text(
+              '没有可用模型\n请先登录或者配置 OpenAI 的 Keys',
+              textAlign: TextAlign.center,
+            ),
+          );
+  }
+
+  Widget buildTabView(
+    BuildContext context,
+    CustomColors customColors,
+    List<HomeModelV2> models,
+  ) {
+    return ListView.separated(
+      shrinkWrap: true,
+      itemCount: models.length,
+      itemBuilder: (context, i) {
+        var item = models[i];
+        return ListTile(
+          title: Container(
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                buildAvatar(avatarUrl: item.avatarUrl, size: 40),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    child: Row(children: [
+                      Text(
+                        item.name,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ]),
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                  child: Icon(
+                    Icons.check,
+                    color: initValue == item.id
+                        ? customColors.linkColor
+                        : Colors.transparent,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          onTap: () {
+            onSelected(item);
+          },
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) {
+        return Divider(
+          height: 1,
+          color: customColors.columnBlockDividerColor,
+        );
+      },
+    );
+  }
+
+  Widget buildAvatar({String? avatarUrl, int? id, int size = 30}) {
+    if (avatarUrl != null && avatarUrl.startsWith('http')) {
+      return RemoteAvatar(
+        avatarUrl: imageURL(avatarUrl, qiniuImageTypeAvatar),
+        size: size,
+      );
+    }
+
+    return RandomAvatar(
+      id: id ?? 0,
+      size: size,
+      usage: Ability().isUserLogon() ? AvatarUsage.room : AvatarUsage.legacy,
     );
   }
 }
