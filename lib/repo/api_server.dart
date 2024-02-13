@@ -13,6 +13,7 @@ import 'package:askaide/repo/api/creative.dart';
 import 'package:askaide/repo/api/image_model.dart';
 import 'package:askaide/repo/api/info.dart';
 import 'package:askaide/repo/api/keys.dart';
+import 'package:askaide/repo/api/model.dart';
 import 'package:askaide/repo/api/notification.dart';
 import 'package:askaide/repo/api/page.dart';
 import 'package:askaide/repo/api/payment.dart';
@@ -48,6 +49,8 @@ class APIServer {
     language = setting.stringDefault(settingLanguage, 'zh');
     url = setting.stringDefault(settingServerURL, apiServerURL);
 
+    Logger.instance.d('API Server URL: $url');
+
     setting.listen((settings, key, value) {
       if (key == settingAPIServerToken) {
         apiToken = settings.getDefault(settingAPIServerToken, '');
@@ -59,6 +62,7 @@ class APIServer {
 
       if (key == settingServerURL) {
         url = settings.getDefault(settingServerURL, apiServerURL);
+        Logger.instance.d('API Server URL Changed: $url');
       }
     });
   }
@@ -378,6 +382,7 @@ class APIServer {
     required String verifyCodeId,
     required String verifyCode,
     String? inviteCode,
+    String? wechatBindToken,
   }) async {
     return sendPostRequest(
       '/v1/auth/2in1/sign-inup',
@@ -387,19 +392,24 @@ class APIServer {
         'verify_code_id': verifyCodeId,
         'verify_code': verifyCode,
         'invite_code': inviteCode,
+        'wechat_bind_token': wechatBindToken,
       }),
     );
   }
 
   /// 使用密码登录
   Future<SignInResp> signInWithPassword(
-      String username, String password) async {
+    String username,
+    String password, {
+    String? wechatBindToken,
+  }) async {
     return sendPostRequest(
       '/v1/auth/sign-in',
       (resp) => SignInResp.fromJson(resp.data),
       formData: Map<String, dynamic>.from({
         'username': username,
         'password': password,
+        'wechat_bind_token': wechatBindToken,
       }),
     );
   }
@@ -412,6 +422,7 @@ class APIServer {
     String? email,
     String? authorizationCode,
     String? identityToken,
+    String? wechatBindToken,
   }) async {
     return sendPostRequest(
       '/v1/auth/sign-in-apple/',
@@ -424,6 +435,44 @@ class APIServer {
         'authorization_code': authorizationCode,
         'identity_token': identityToken,
         'is_ios': PlatformTool.isIOS() || PlatformTool.isMacOS(),
+        'wechat_bind_token': wechatBindToken,
+      }),
+    );
+  }
+
+  /// 尝试使用 微信账号登录
+  Future<TrySignInResp> trySignInWithWechat({
+    required String code,
+  }) async {
+    return sendPostRequest(
+      '/v1/auth/sign-in-wechat/try',
+      (resp) => TrySignInResp.fromJson(resp.data),
+      formData: Map<String, dynamic>.from({
+        'code': code,
+      }),
+    );
+  }
+
+  /// 使用 微信账号登录
+  Future<SignInResp> signInWithWechat({
+    required String token,
+  }) async {
+    return sendPostRequest(
+      '/v1/auth/sign-in-wechat/',
+      (resp) => SignInResp.fromJson(resp.data),
+      formData: Map<String, dynamic>.from({
+        'token': token,
+      }),
+    );
+  }
+
+  /// 绑定微信账号
+  Future<void> bindWechat({required String code}) async {
+    return sendPostRequest(
+      '/v1/auth/bind-wechat/',
+      (resp) => {},
+      formData: Map<String, dynamic>.from({
+        'code': code,
       }),
     );
   }
@@ -590,7 +639,7 @@ class APIServer {
   /// 获取模型支持的提示语示例
   Future<List<ChatExample>> example(String model) async {
     return sendCachedGetRequest(
-      '/v1/examples/$model',
+      '/v1/examples/${Uri.encodeComponent(model)}',
       (resp) {
         var examples = <ChatExample>[];
         for (var example in resp.data) {
@@ -1646,7 +1695,7 @@ class APIServer {
   Future<FreeModelCount> userFreeStatisticsForModel(
       {required String model}) async {
     return sendGetRequest(
-      '/v1/users/stat/free-chat-counts/$model',
+      '/v1/users/stat/free-chat-counts/${Uri.encodeComponent(model)}',
       (resp) => FreeModelCount.fromJson(resp.data),
     );
   }
@@ -1680,6 +1729,48 @@ class APIServer {
   Future<void> updateCustomHomeModels({required List<String> models}) async {
     return sendPostRequest(
       '/v1/users/custom/home-models',
+      (value) => {},
+      formData: {
+        'models': models.join(','),
+      },
+    );
+  }
+
+  /// 自定义首页模型 v2
+  Future<List<HomeModelV2>> customHomeModelsV2({bool cache = true}) async {
+    return sendCachedGetRequest(
+      '/v2/models/home-models/all',
+      (value) {
+        var res = <HomeModelV2>[];
+        for (var item in value.data['data']) {
+          res.add(HomeModelV2.fromJson(item));
+        }
+
+        return res;
+      },
+      forceRefresh: !cache,
+    );
+  }
+
+  /// 自定义首页模型 v2 详情
+  Future<HomeModelV2> customHomeModelsItemV2({
+    bool cache = true,
+    required String uniqueKey,
+  }) async {
+    return sendCachedGetRequest(
+      '/v2/models/home-models/${Uri.decodeComponent(uniqueKey)}',
+      (value) {
+        return HomeModelV2.fromJson(value.data['data']);
+      },
+      forceRefresh: !cache,
+    );
+  }
+
+  /// 更新自定义模型 v2
+  /// 模型 ID 使用 type:id 形式
+  Future<void> updateCustomHomeModelsV2({required List<String> models}) async {
+    return sendPostRequest(
+      '/v2/users/custom/home-models',
       (value) => {},
       formData: {
         'models': models.join(','),

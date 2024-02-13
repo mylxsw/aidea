@@ -313,6 +313,28 @@ class VersionCheckResp {
   }
 }
 
+class TrySignInResp {
+  String token;
+  bool exist;
+
+  TrySignInResp({
+    required this.token,
+    required this.exist,
+  });
+
+  toJson() => {
+        'token': token,
+        'exist': exist,
+      };
+
+  static TrySignInResp fromJson(Map<String, dynamic> json) {
+    return TrySignInResp(
+      token: json['token'],
+      exist: json['exist'],
+    );
+  }
+}
+
 class SignInResp {
   int id;
   String name;

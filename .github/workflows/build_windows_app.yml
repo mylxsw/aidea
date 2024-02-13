@@ -18,13 +18,14 @@ jobs:
           flutter-version: "3.13.2"  # Set flutter version here
 
       - name: Build Windows app
-        run: flutter build windows --release
+        #run: flutter build windows --release
+        run: dart run msix:create --release -v --output-path build/windows/runner --output-name AIdea --install-certificate false
 
-      - name: Copy dependencies
-        run: copy .\windows\sqlite3.dll .\build\windows\runner\Release\
+      # - name: Copy dependencies
+      #   run: copy .\windows\sqlite3.dll .\build\windows\runner\Release\
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: aidea
-          path: build/windows/runner/Release
+          path: build/windows/runner/AIdea.msix

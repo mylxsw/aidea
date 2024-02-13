@@ -33,8 +33,11 @@ class FreeCountBloc extends Bloc<FreeCountEvent, FreeCountState> {
         return;
       }
 
-      final freeCount = await APIServer()
-          .userFreeStatisticsForModel(model: event.model.split(':').last);
+      final freeCount = await APIServer().userFreeStatisticsForModel(
+        model: event.model.startsWith('v2@')
+            ? event.model
+            : event.model.split(':').last,
+      );
       if (freeCount.maxCount > 0) {
         var matched = false;
         for (var i = 0; i < counts.length; i++) {

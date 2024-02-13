@@ -24,6 +24,7 @@ class SigninOrSignupScreen extends StatefulWidget {
   final String username;
   final String signInMethod;
   final bool isSignup;
+  final String? wechatBindToken;
 
   const SigninOrSignupScreen({
     super.key,
@@ -31,6 +32,7 @@ class SigninOrSignupScreen extends StatefulWidget {
     required this.username,
     required this.isSignup,
     required this.signInMethod,
+    this.wechatBindToken,
   });
 
   @override
@@ -159,7 +161,11 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
               }
 
               APIServer()
-                  .signInWithPassword(widget.username, password)
+                  .signInWithPassword(
+                widget.username,
+                password,
+                wechatBindToken: widget.wechatBindToken,
+              )
                   .then((value) async {
                 await widget.settings.set(settingAPIServerToken, value.token);
                 await widget.settings.set(settingUserInfo, jsonEncode(value));
@@ -387,6 +393,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
       inviteCode: inviteCode,
       verifyCodeId: verifyCodeId,
       verifyCode: verificationCode,
+      wechatBindToken: widget.wechatBindToken,
     )
         .then((value) async {
       await widget.settings.set(settingAPIServerToken, value.token);

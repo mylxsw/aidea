@@ -1,6 +1,7 @@
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/repo/api/info.dart';
+import 'package:askaide/repo/api/model.dart';
 import 'package:askaide/repo/settings_repo.dart';
 
 class Ability {
@@ -46,7 +47,7 @@ class Ability {
   }
 
   /// 首页支持的模型列表
-  List<HomeModel> get homeModels {
+  List<HomeModelV2> get homeModels {
     return capabilities.homeModels;
   }
 
@@ -94,6 +95,20 @@ class Ability {
   /// 是否支持 ApplePay
   bool get enableApplePay {
     return capabilities.applePayEnabled;
+  }
+
+  /// 是否显示 Apple 登录
+  bool get enableAppleSignin {
+    return enableApplePay &&
+        (PlatformTool.isIOS() ||
+            PlatformTool.isAndroid() ||
+            PlatformTool.isMacOS());
+  }
+
+  /// 是否支持微信登录
+  bool get enableWechatSignin {
+    return capabilities.wechatSigninEnabled &&
+        (PlatformTool.isIOS() || PlatformTool.isAndroid());
   }
 
   /// 是否支持支付功能

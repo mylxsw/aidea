@@ -38,11 +38,12 @@ class PathHelper {
   }
 
   String get getHomePath {
-    Map<String, String> envVars = Platform.environment;
     if (PlatformTool.isMacOS() || PlatformTool.isLinux()) {
-      return '${envVars['HOME'] ?? ''}/.aidea'.replaceAll('\\', '/');
+      return '${Platform.environment['HOME'] ?? ''}/.aidea'
+          .replaceAll('\\', '/');
     } else if (PlatformTool.isWindows()) {
-      return '${envVars['UserProfile'] ?? ''}/.aidea'.replaceAll('\\', '/');
+      return '${Platform.environment['UserProfile'] ?? ''}/.aidea'
+          .replaceAll('\\', '/');
     } else if (PlatformTool.isAndroid() || PlatformTool.isIOS()) {
       return '$documentsPath/.aidea'.replaceAll('\\', '/');
     }
