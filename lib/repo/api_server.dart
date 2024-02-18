@@ -1758,7 +1758,7 @@ class APIServer {
     required String uniqueKey,
   }) async {
     return sendCachedGetRequest(
-      '/v2/models/home-models/${Uri.decodeComponent(uniqueKey)}',
+      '/v2/models/home-models/${Uri.encodeComponent(uniqueKey)}',
       (value) {
         return HomeModelV2.fromJson(value.data['data']);
       },
