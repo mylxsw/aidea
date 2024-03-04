@@ -69,7 +69,7 @@ dependencies:
   file_saver:
     git:
       url: https://github.com/incrediblezayed/file_saver
-      ref: main
+      ref: f7259f1d97558251a5c3f81847904b63c08b482b
   image_gallery_saver: ^1.7.1
   tiktoken: ^1.0.3
   flutter_colorpicker: ^1.0.3
