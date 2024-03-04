@@ -1149,9 +1149,11 @@ class _MyAppState extends State<MyApp> {
 }
 
 ThemeData createLightThemeData() {
-  return ThemeData.light().copyWith(
-    extensions: [CustomColors.light],
+  return ThemeData(
+    brightness: Brightness.light,
+    extensions: const [CustomColors.light],
     useMaterial3: true,
+    fontFamily: 'AlibabaPuHuiTi',
     appBarTheme: const AppBarTheme(
       // backgroundColor: Color.fromARGB(255, 250, 250, 250),
       backgroundColor: Colors.transparent,
@@ -1182,9 +1184,11 @@ ThemeData createLightThemeData() {
 }
 
 ThemeData createDarkThemeData() {
-  return ThemeData.dark().copyWith(
-    extensions: [CustomColors.dark],
+  return ThemeData(
+    brightness: Brightness.dark,
+    extensions: const [CustomColors.dark],
     useMaterial3: true,
+    fontFamily: 'AlibabaPuHuiTi',
     appBarTheme: const AppBarTheme(
       // backgroundColor: Color.fromARGB(255, 48, 48, 48),
       backgroundColor: Colors.transparent,
