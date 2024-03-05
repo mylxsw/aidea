@@ -18,12 +18,16 @@ func main() {
 	mainDartJSPath := os.Args[1]
 
 	data := string(must.Must(os.ReadFile(mainDartJSPath)))
+	// 替换字体为本地 CDN
 	fontRegex := regexp.MustCompile(`https://fonts\.gstatic\.com/(.*?)\.(ttf|otf|woff|woff2)`)
 
 	for _, u := range fontRegex.FindAllString(data, -1) {
 		savePath := must.Must(download(u))
 		data = strings.ReplaceAll(data, u, "https://resources.aicode.cc/fonts/"+savePath)
 	}
+
+	// 替换字体为国内镜像
+	data = strings.ReplaceAll(data, "fonts.gstatic.com", "fonts-gstatic.lug.ustc.edu.cn")
 
 	must.NoError(os.WriteFile(mainDartJSPath, []byte(data), 0755))
 
