@@ -43,7 +43,8 @@ build-dmg: build-macos
 	open build/macos/Build/Products/Package/
 
 build-web:
-	flutter build web --web-renderer canvaskit --release --dart-define=FLUTTER_WEB_CANVASKIT_URL=https://resources.aicode.cc/canvaskit/
+	#flutter build web --web-renderer canvaskit --release --dart-define=FLUTTER_WEB_CANVASKIT_URL=https://resources.aicode.cc/canvaskit/
+	flutter build web --web-renderer canvaskit --release
 	cd scripts && go run main.go ../build/web/main.dart.js && cd ..
 
 build-web-samehost:
