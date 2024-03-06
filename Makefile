@@ -45,14 +45,10 @@ build-dmg: build-macos
 build-web:
 	flutter build web --web-renderer canvaskit --release --dart-define=FLUTTER_WEB_CANVASKIT_URL=https://resources.aicode.cc/canvaskit/
 	cd scripts && go run main.go ../build/web/main.dart.js && cd ..
-	rm -fr build/web/fonts/ && mkdir build/web/fonts
-	cp -r scripts/s build/web/fonts/s
 
 build-web-samehost:
 	flutter build web --web-renderer canvaskit --release --dart-define=API_SERVER_URL=/
 	cd scripts && go run main.go ../build/web/main.dart.js && cd ..
-	rm -fr build/web/fonts/ && mkdir build/web/fonts
-	cp -r scripts/s build/web/fonts/s
 
 deploy-web: build-web
 	cd build && tar -zcvf web.tar.gz web
