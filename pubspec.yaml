@@ -126,6 +126,7 @@ dependencies:
   media_kit_libs_video: ^1.0.4
   path: ^1.8.3
   autoscale_tabbarview: ^1.0.2
+  flutter_stripe: ^10.1.0
   
 dev_dependencies:
   flutter_test:

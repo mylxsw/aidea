@@ -21,6 +21,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:go_router/go_router.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:quickalert/models/quickalert_type.dart';
@@ -312,20 +313,45 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             return;
                           }
 
-                          if (PlatformTool.isIOS() ||
-                              PlatformTool.isAndroid() ||
+                          if (PlatformTool.isAndroid()) {
+                            openListSelectDialog(
+                              context,
+                              <SelectorItem>[
+                                if (Ability().enableOtherPay)
+                                  SelectorItem(const Text('支付宝'), 'alipay'),
+                                if (Ability().enableStripe)
+                                  SelectorItem(const Text('Stripe'), 'stripe'),
+                              ],
+                              (value) {
+                                _startPaymentLoading();
+
+                                if (value.value == 'alipay') {
+                                  createAppAlipay()
+                                      .onError((error, stackTrace) {
+                                    _closePaymentLoading();
+                                    showErrorMessageEnhanced(context, error!);
+                                  });
+                                } else {
+                                  createStripePayment();
+                                }
+
+                                return true;
+                              },
+                              title: '请选择支付方式',
+                              heightFactor: 0.3,
+                            );
+                          } else if (PlatformTool.isIOS() ||
                               PlatformTool.isMacOS()) {
                             _startPaymentLoading();
                             try {
-                              if (PlatformTool.isAndroid()) {
-                                await createAppAlipay();
-                              } else if (PlatformTool.isIOS()) {
+                              if (PlatformTool.isIOS()) {
                                 await createAppApplePay();
                               } else {
                                 await createWebOrWapAlipay(source: 'web');
                               }
                             } catch (e) {
                               _closePaymentLoading();
+                              // ignore: use_build_context_synchronously
                               showErrorMessage(resolveError(context, e));
                             }
                           } else {
@@ -461,6 +487,46 @@ class _PaymentScreenState extends State<PaymentScreen> {
         cancelText: '支付遇到问题，稍后继续',
       );
     });
+  }
+
+  /// 创建 Stripe 支付
+  Future<void> createStripePayment() async {
+    try {
+      final created = await APIServer().createStripePaymentSheet(
+        productId: selectedProduct!.id,
+      );
+      paymentId = created.paymentId;
+
+      Stripe.publishableKey = created.publishableKey;
+
+      // 调起 Stripe 支付
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: created.paymentIntent,
+          merchantDisplayName: 'AIdea',
+          customerId: created.customer,
+          customerEphemeralKeySecret: created.ephemeralKey,
+          returnURL: 'flutterstripe://redirect',
+          // ignore: use_build_context_synchronously
+          style: MediaQuery.platformBrightnessOf(context) == Brightness.dark
+              ? ThemeMode.dark
+              : ThemeMode.light,
+        ),
+      );
+
+      // 确认支付
+      await Stripe.instance.presentPaymentSheet();
+      showSuccessMessage('购买成功');
+    } on Exception catch (e) {
+      if (e is StripeException) {
+        showErrorMessage('支付失败：${e.error.localizedMessage}');
+      } else {
+        // ignore: use_build_context_synchronously
+        showErrorMessageEnhanced(context, e);
+      }
+    } finally {
+      _closePaymentLoading();
+    }
   }
 
   /// 创建其它付款（App）

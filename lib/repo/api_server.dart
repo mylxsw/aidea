@@ -1968,4 +1968,21 @@ class APIServer {
       forceRefresh: !cache,
     );
   }
+
+  /// 发起 Stripe 支付
+  Future<StripePaymentCreatedResponse> createStripePaymentSheet({
+    required String productId,
+    String? source,
+  }) async {
+    return sendPostRequest(
+      '/v1/payment/stripe/payment-sheet',
+      (resp) {
+        return StripePaymentCreatedResponse.fromJson(resp.data);
+      },
+      formData: {
+        'product_id': productId,
+        'source': source,
+      },
+    );
+  }
 }
