@@ -288,6 +288,15 @@ class _ChatPreviewState extends State<ChatPreview> {
                                 index,
                               );
                             },
+                            onSecondaryTapDown: (details) {
+                              _handleMessageTapControl(
+                                context,
+                                details.globalPosition,
+                                message,
+                                state,
+                                index,
+                              );
+                            },
                             child: Stack(
                               children: [
                                 Container(
