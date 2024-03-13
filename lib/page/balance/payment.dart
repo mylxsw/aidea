@@ -319,8 +319,30 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               <SelectorItem>[
                                 if (Ability().enableOtherPay)
                                   SelectorItem(const Text('支付宝'), 'alipay'),
-                                if (Ability().enableStripe)
-                                  SelectorItem(const Text('Stripe'), 'stripe'),
+                                if (Ability().enableStripe &&
+                                    state.localProducts
+                                        .firstWhere(
+                                            (e) => e.id == selectedProduct!.id)
+                                        .supportStripe)
+                                  SelectorItem(
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const Text('Stripe'),
+                                          const SizedBox(width: 5),
+                                          Text(
+                                            '(${state.localProducts.firstWhere((e) => e.id == selectedProduct!.id).retailPriceUSDText})',
+                                            style: TextStyle(
+                                              color: customColors
+                                                  .paymentItemTitleColor
+                                                  ?.withOpacity(0.5),
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      'stripe'),
                               ],
                               (value) {
                                 _startPaymentLoading();

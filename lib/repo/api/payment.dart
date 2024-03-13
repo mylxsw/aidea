@@ -30,6 +30,7 @@ class PaymentProduct {
   String expirePolicyText;
   bool recommend;
   String? description;
+  List<String> methods;
 
   PaymentProduct({
     required this.id,
@@ -41,12 +42,16 @@ class PaymentProduct {
     this.recommend = false,
     this.description,
     this.retailPriceUSD = 0,
+    this.methods = const [],
   });
 
   String get retailPriceText => '¥${(retailPrice / 100).toStringAsFixed(0)}';
 
   String get retailPriceUSDText =>
       '\$${(retailPriceUSD / 100).toStringAsFixed(2)}';
+
+  /// 是否支持 Stripe 支付
+  bool get supportStripe => methods.contains('stripe') || methods.isEmpty;
 
   toJson() => {
         'id': id,
@@ -58,6 +63,7 @@ class PaymentProduct {
         'expire_policy_text': expirePolicyText,
         'recommend': recommend,
         'description': description,
+        'methods': methods,
       };
 
   static PaymentProduct fromJson(Map<String, dynamic> json) {
@@ -71,6 +77,9 @@ class PaymentProduct {
       expirePolicyText: json['expire_policy_text'],
       recommend: json['recommend'] ?? false,
       description: json['description'],
+      methods: ((json['methods'] ?? []) as List<dynamic>)
+          .map((e) => e.toString())
+          .toList(),
     );
   }
 }
