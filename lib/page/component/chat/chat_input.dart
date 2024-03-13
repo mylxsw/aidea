@@ -29,6 +29,7 @@ class ChatInput extends StatefulWidget {
   final String hintText;
   final Function()? onVoiceRecordTappedEvent;
   final List<Widget> Function()? leftSideToolsBuilder;
+  final Function()? onStopGenerate;
 
   const ChatInput({
     super.key,
@@ -42,13 +43,14 @@ class ChatInput extends StatefulWidget {
     this.leftSideToolsBuilder,
     this.onImageSelected,
     this.selectedImageFiles,
+    this.onStopGenerate,
   });
 
   @override
   State<ChatInput> createState() => _ChatInputState();
 }
 
-class _ChatInputState extends State<ChatInput> {
+class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
   final TextEditingController _textController = TextEditingController();
 
   /// 用于监听键盘事件，实现回车发送消息，Shift+Enter换行
@@ -68,6 +70,10 @@ class _ChatInputState extends State<ChatInput> {
 
   final maxLength = 150000;
 
+  AnimationStatus status = AnimationStatus.forward;
+  late AnimationController animationController;
+  late Animation<double> anim;
+
   @override
   void initState() {
     super.initState();
@@ -84,11 +90,32 @@ class _ChatInputState extends State<ChatInput> {
         }
       });
     }
+
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
+    anim = Tween(begin: 0.75, end: 1.0).animate(animationController)
+      ..addListener(() {
+        if (animationController.status != AnimationStatus.dismissed &&
+            animationController.status != AnimationStatus.completed) {
+          status = animationController.status;
+        }
+        if (animationController.status == AnimationStatus.completed ||
+            animationController.status == AnimationStatus.dismissed) {
+          status == AnimationStatus.forward
+              ? animationController.reverse()
+              : animationController.forward();
+        }
+      });
+
+    animationController.forward();
   }
 
   @override
   void dispose() {
     _textController.dispose();
+    animationController.dispose();
     super.dispose();
   }
 
@@ -259,9 +286,31 @@ class _ChatInputState extends State<ChatInput> {
     CustomColors customColors,
   ) {
     if (!widget.enableNotifier.value) {
-      return LoadingAnimationWidget.beat(
-        color: customColors.linkColor!,
-        size: 20,
+      return InkWell(
+        onTap: () {
+          if (widget.onStopGenerate != null) {
+            openConfirmDialog(
+              context,
+              '确定要打断当前对话？',
+              () {
+                widget.onStopGenerate!();
+                HapticFeedbackHelper.heavyImpact();
+              },
+              danger: true,
+            );
+          }
+        },
+        child: AnimatedBuilder(
+            animation: anim,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: anim.value,
+                child: Icon(
+                  Icons.stop_circle_outlined,
+                  color: customColors.linkColor?.withOpacity(anim.value),
+                ),
+              );
+            }),
       );
     }
 

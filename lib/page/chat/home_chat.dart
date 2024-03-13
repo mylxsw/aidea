@@ -453,6 +453,11 @@ class _HomeChatPageState extends State<HomeChatPage> {
                         onVoiceRecordTappedEvent: () {
                           audioPlayerController.stop();
                         },
+                        onStopGenerate: () {
+                          context
+                              .read<ChatMessageBloc>()
+                              .add(ChatMessageStopEvent());
+                        },
                       );
                     },
                   ),

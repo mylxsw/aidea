@@ -207,6 +207,11 @@ class _RoomChatPageState extends State<RoomChatPage> {
                                 onVoiceRecordTappedEvent: () {
                                   _audioPlayerController.stop();
                                 },
+                                onStopGenerate: () {
+                                  context
+                                      .read<ChatMessageBloc>()
+                                      .add(ChatMessageStopEvent());
+                                },
                               ),
                       );
                     },

@@ -5,11 +5,13 @@ import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/env.dart';
 import 'package:askaide/helper/platform.dart';
+import 'package:askaide/helper/queue.dart';
 import 'package:askaide/repo/model/chat_message.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
 import 'package:dart_openai/openai.dart';
 import 'package:askaide/repo/data/settings_data.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/status.dart' as status;
 
 class OpenAIRepository {
   final SettingDataProvider settings;
@@ -296,6 +298,8 @@ class OpenAIRepository {
           },
         ));
 
+        await channel.ready;
+
         channel.stream.listen(
           (event) {
             final evt = jsonDecode(event);
@@ -312,10 +316,14 @@ class OpenAIRepository {
             final res = OpenAIStreamChatCompletionModel.fromMap(evt);
             for (var element in res.choices) {
               if (element.delta.content != null) {
-                onData(ChatStreamRespData(
-                  content: element.delta.content!,
-                  role: element.delta.role,
-                ));
+                try {
+                  onData(ChatStreamRespData(
+                    content: element.delta.content!,
+                    role: element.delta.role,
+                  ));
+                } on QueueFinishedException {
+                  channel.sink.close(status.goingAway);
+                }
               }
             }
           },

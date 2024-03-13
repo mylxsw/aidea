@@ -28,6 +28,8 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
   final int roomId;
   final int? chatHistoryId;
 
+  GracefulQueue<ChatStreamRespData>? currentQueue;
+
   ChatMessageBloc(
     this.roomId, {
     required this.chatMsgRepo,
@@ -39,6 +41,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     on<ChatMessageClearAllEvent>(_clearAllEventHandler);
     on<ChatMessageBreakContextEvent>(_breakContextEventHandler);
     on<ChatMessageDeleteEvent>(_deleteMessageEventHandler);
+    on<ChatMessageStopEvent>(_stopEventHandler);
   }
 
   Future<void> _deleteMessageEventHandler(event, emit) async {
@@ -174,6 +177,13 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       ),
       chatHistory: his,
     ));
+  }
+
+  /// 停止输出事件处理
+  Future<void> _stopEventHandler(event, emit) async {
+    if (currentQueue != null) {
+      currentQueue!.finish();
+    }
   }
 
   /// 消息发送事件处理
@@ -320,6 +330,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
     // 等待监听机器人应答消息
     final queue = GracefulQueue<ChatStreamRespData>();
+    currentQueue = queue;
     try {
       RequestFailedException? error;
       var listener = queue.listen(const Duration(milliseconds: 10), (items) {
@@ -479,6 +490,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       queue.finish();
     } finally {
       queue.dispose();
+      currentQueue = null;
     }
 
     emit(ChatMessageUpdated(waitMessage));
