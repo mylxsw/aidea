@@ -314,16 +314,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           }
 
                           if (PlatformTool.isAndroid()) {
+                            final enableStripe = Ability().enableStripe &&
+                                state.localProducts
+                                    .firstWhere(
+                                        (e) => e.id == selectedProduct!.id)
+                                    .supportStripe;
                             openListSelectDialog(
                               context,
                               <SelectorItem>[
                                 if (Ability().enableOtherPay)
                                   SelectorItem(const Text('支付宝'), 'alipay'),
-                                if (Ability().enableStripe &&
-                                    state.localProducts
-                                        .firstWhere(
-                                            (e) => e.id == selectedProduct!.id)
-                                        .supportStripe)
+                                if (enableStripe)
                                   SelectorItem(
                                       Row(
                                         mainAxisAlignment:
