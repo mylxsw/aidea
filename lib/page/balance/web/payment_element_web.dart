@@ -4,13 +4,13 @@ import 'package:flutter_stripe_web/flutter_stripe_web.dart';
 import 'dart:html' as html;
 import 'package:stripe_js/stripe_api.dart' as js;
 
-Future<PaymentIntent> pay(String paymentId) async {
+Future<PaymentIntent> pay(String paymentId, {String? action}) async {
   final currentUrl = Uri.parse(html.window.location.href);
   var href = Uri(
     scheme: currentUrl.scheme,
     host: currentUrl.host,
     port: currentUrl.port,
-    fragment: '/payment/result?payment_id=$paymentId',
+    fragment: '/payment/result?payment_id=$paymentId&action=$action',
   ).toString();
 
   return await WebStripe.instance.confirmPaymentElement(
@@ -20,6 +20,10 @@ Future<PaymentIntent> pay(String paymentId) async {
       ),
     ),
   );
+}
+
+void closeWindow() {
+  html.window.close();
 }
 
 class PlatformPaymentElement extends StatelessWidget {

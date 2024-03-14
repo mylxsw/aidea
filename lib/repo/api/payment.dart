@@ -133,6 +133,7 @@ class StripePaymentCreatedResponse {
   final String paymentIntent;
   final String ephemeralKey;
   final String publishableKey;
+  final String proxyUrl;
 
   StripePaymentCreatedResponse(
     this.paymentId,
@@ -140,6 +141,7 @@ class StripePaymentCreatedResponse {
     this.paymentIntent,
     this.ephemeralKey,
     this.publishableKey,
+    this.proxyUrl,
   );
 
   toJson() => {
@@ -148,6 +150,7 @@ class StripePaymentCreatedResponse {
         'payment_intent': paymentIntent,
         'ephemeral_key': ephemeralKey,
         'publishable_key': publishableKey,
+        'proxy_url': proxyUrl,
       };
 
   static StripePaymentCreatedResponse fromJson(Map<String, dynamic> json) {
@@ -157,6 +160,7 @@ class StripePaymentCreatedResponse {
       json['payment_intent'],
       json['ephemeral_key'],
       json['publishable_key'],
+      json['proxy_url'] ?? '',
     );
   }
 }

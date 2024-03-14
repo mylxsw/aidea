@@ -1,4 +1,5 @@
 import 'package:askaide/helper/path.dart';
+import 'package:askaide/page/balance/web_payment_proxy.dart';
 import 'package:askaide/page/balance/web_payment_result.dart';
 import 'package:askaide/page/creative_island/draw/artistic_wordart.dart';
 import 'package:path/path.dart';
@@ -1037,6 +1038,23 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) {
                 return transitionResolver(WebPaymentResult(
                   paymentId: state.queryParameters['payment_id']!,
+                  action: state.queryParameters['action'],
+                ));
+              },
+            ),
+            GoRoute(
+              name: 'web-payment-proxy',
+              path: '/payment/proxy',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(WebPaymentProxy(
+                  setting: settingRepo,
+                  paymentId: state.queryParameters['id']!,
+                  paymentIntent: state.queryParameters['intent']!,
+                  price: state.queryParameters['price']!,
+                  publishableKey: state.queryParameters['key']!,
+                  finishAction:
+                      state.queryParameters['finish_action'] ?? 'close',
                 ));
               },
             ),

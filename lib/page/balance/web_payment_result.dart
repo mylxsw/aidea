@@ -3,10 +3,17 @@ import 'package:askaide/repo/api/payment.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'web/payment_element.dart'
+    if (dart.library.js) 'web/payment_element_web.dart';
 
 class WebPaymentResult extends StatefulWidget {
   final String paymentId;
-  const WebPaymentResult({super.key, required this.paymentId});
+  final String? action;
+  const WebPaymentResult({
+    super.key,
+    required this.paymentId,
+    this.action,
+  });
 
   @override
   State<WebPaymentResult> createState() => _WebPaymentResultState();
@@ -62,10 +69,14 @@ class _WebPaymentResultState extends State<WebPaymentResult> {
             color: customColors.weakLinkColor,
           ),
           onPressed: () {
-            if (context.canPop()) {
-              context.pop();
+            if (widget.action != null && widget.action == 'close') {
+              closeWindow();
             } else {
-              context.go('/payment');
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/payment');
+              }
             }
           },
         ),
