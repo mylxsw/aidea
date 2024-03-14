@@ -53,7 +53,7 @@ class _WebPaymentProxyState extends State<WebPaymentProxy> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          'Stripe',
+          '',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
