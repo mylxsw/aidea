@@ -1,4 +1,5 @@
 import 'package:askaide/helper/path.dart';
+import 'package:askaide/page/balance/web_payment_result.dart';
 import 'package:askaide/page/creative_island/draw/artistic_wordart.dart';
 import 'package:path/path.dart';
 
@@ -1027,6 +1028,16 @@ class MyApp extends StatefulWidget {
                     id: int.tryParse(state.queryParameters['id'] ?? '') ?? 0,
                   ),
                 );
+              },
+            ),
+            GoRoute(
+              name: 'web-payment-result',
+              path: '/payment/result',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(WebPaymentResult(
+                  paymentId: state.queryParameters['payment_id']!,
+                ));
               },
             ),
           ],

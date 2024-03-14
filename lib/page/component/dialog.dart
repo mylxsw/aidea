@@ -246,7 +246,11 @@ Future openModalBottomSheet(
               if (title != null)
                 Text(
                   title,
-                  style: const TextStyle(fontSize: 16),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: customColors.weakTextColorPlus,
+                  ),
                 ),
               if (title != null) const SizedBox(height: 10),
               Expanded(

@@ -15,6 +15,7 @@ import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/repo/api/payment.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -27,6 +28,9 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:tobias/tobias.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+
+import 'web/payment_element.dart'
+    if (dart.library.js) 'web/payment_element_web.dart';
 
 class PaymentScreen extends StatefulWidget {
   final SettingRepository setting;
@@ -183,6 +187,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
             fontSize: CustomSize.appBarTitleSize,
           ),
         ),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: customColors.weakLinkColor,
+          ),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/setting');
+            }
+          },
+        ),
         actions: [
           if (Ability().isUserLogon())
             TextButton(
@@ -314,11 +331,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           }
 
                           if (PlatformTool.isAndroid()) {
+                            final localProduct = state.localProducts
+                                .firstWhere((e) => e.id == selectedProduct!.id);
                             final enableStripe = Ability().enableStripe &&
-                                state.localProducts
-                                    .firstWhere(
-                                        (e) => e.id == selectedProduct!.id)
-                                    .supportStripe;
+                                localProduct.supportStripe;
                             openListSelectDialog(
                               context,
                               <SelectorItem>[
@@ -333,7 +349,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                           const Text('Stripe'),
                                           const SizedBox(width: 5),
                                           Text(
-                                            '(${state.localProducts.firstWhere((e) => e.id == selectedProduct!.id).retailPriceUSDText})',
+                                            '(${localProduct.retailPriceUSDText})',
                                             style: TextStyle(
                                               color: customColors
                                                   .paymentItemTitleColor
@@ -355,7 +371,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                     showErrorMessageEnhanced(context, error!);
                                   });
                                 } else {
-                                  createStripePayment();
+                                  createStripePayment(localProduct);
                                 }
 
                                 return true;
@@ -388,25 +404,57 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             //     );
                             //   },
                             //   confirmText: '前往下载移动端 APP',
-                            // );
+                            // )
+
+                            final localProduct = state.localProducts
+                                .firstWhere((e) => e.id == selectedProduct!.id);
+
+                            final enableStripe = Ability().enableStripe &&
+                                localProduct.supportStripe;
+
                             openListSelectDialog(
                               context,
                               <SelectorItem>[
-                                SelectorItem(const Text('支付宝电脑端（扫码支付）'), 'web'),
-                                SelectorItem(const Text('支付宝手机端'), 'wap'),
+                                SelectorItem(const Text('支付宝扫码'), 'web'),
+                                SelectorItem(const Text('支付宝手机版'), 'wap'),
+                                if (enableStripe)
+                                  SelectorItem(
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const Text('Stripe'),
+                                        const SizedBox(width: 5),
+                                        Text(
+                                          '(${localProduct.retailPriceUSDText})',
+                                          style: TextStyle(
+                                            color: customColors
+                                                .paymentItemTitleColor
+                                                ?.withOpacity(0.5),
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    'stripe',
+                                  ),
                               ],
                               (value) {
                                 _startPaymentLoading();
-                                createWebOrWapAlipay(source: value.value)
-                                    .onError((error, stackTrace) {
-                                  _closePaymentLoading();
-                                  showErrorMessageEnhanced(context, error!);
-                                });
+                                if (value.value != 'stripe') {
+                                  createWebOrWapAlipay(source: value.value)
+                                      .onError((error, stackTrace) {
+                                    _closePaymentLoading();
+                                    showErrorMessageEnhanced(context, error!);
+                                  });
+                                } else {
+                                  createStripePayment(localProduct);
+                                }
 
                                 return true;
                               },
                               title: '请选择支付方式',
-                              heightFactor: 0.3,
+                              heightFactor: 0.4,
                             );
                           }
                         },
@@ -497,12 +545,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   _closePaymentLoading();
                 } catch (e) {
                   _closePaymentLoading();
+                  // ignore: use_build_context_synchronously
                   showErrorMessage(resolveError(context, e));
                 }
               });
             }
           } catch (e) {
             _closePaymentLoading();
+            // ignore: use_build_context_synchronously
             showErrorMessage(resolveError(context, e));
           }
         },
@@ -513,33 +563,98 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   /// 创建 Stripe 支付
-  Future<void> createStripePayment() async {
+  Future<void> createStripePayment(PaymentProduct product) async {
     try {
       final created = await APIServer().createStripePaymentSheet(
-        productId: selectedProduct!.id,
+        productId: product.id,
       );
       paymentId = created.paymentId;
 
       Stripe.publishableKey = created.publishableKey;
+      Stripe.urlScheme = 'flutterstripe';
 
-      // 调起 Stripe 支付
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          paymentIntentClientSecret: created.paymentIntent,
-          merchantDisplayName: 'AIdea',
-          customerId: created.customer,
-          customerEphemeralKeySecret: created.ephemeralKey,
-          returnURL: 'flutterstripe://redirect',
+      await Stripe.instance.applySettings();
+
+      if (PlatformTool.isWeb()) {
+        Navigator.push(
           // ignore: use_build_context_synchronously
-          style: MediaQuery.platformBrightnessOf(context) == Brightness.dark
-              ? ThemeMode.dark
-              : ThemeMode.light,
-        ),
-      );
+          context,
+          MaterialPageRoute(
+            fullscreenDialog: true,
+            builder: (context) {
+              return Scaffold(
+                appBar: AppBar(),
+                body: SafeArea(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(15),
+                          child: Builder(
+                            builder: (context) {
+                              return PlatformPaymentElement(
+                                created.paymentIntent,
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        child: EnhancedButton(
+                          title: '确定付款（${product.retailPriceUSDText}）',
+                          onPressed: () async {
+                            final cancel = BotToast.showCustomLoading(
+                              toastBuilder: (cancel) {
+                                return LoadingIndicator(
+                                  message: AppLocale.processingWait
+                                      .getString(context),
+                                );
+                              },
+                              allowClick: false,
+                              duration: const Duration(seconds: 120),
+                            );
 
-      // 确认支付
-      await Stripe.instance.presentPaymentSheet();
-      showSuccessMessage('购买成功');
+                            try {
+                              await pay(created.paymentId);
+                            } catch (e) {
+                              Logger.instance.e('支付失败：$e');
+                              // ignore: use_build_context_synchronously
+                              showErrorMessageEnhanced(context, '请填写完整的支付信息');
+                            } finally {
+                              cancel();
+                            }
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      } else {
+        // 调起 Stripe 支付
+        await Stripe.instance.initPaymentSheet(
+          paymentSheetParameters: SetupPaymentSheetParameters(
+            paymentIntentClientSecret: created.paymentIntent,
+            merchantDisplayName: 'AIdea',
+            customerId: created.customer,
+            customerEphemeralKeySecret: created.ephemeralKey,
+            returnURL: 'flutterstripe://redirect',
+            // ignore: use_build_context_synchronously
+            style: Ability().themeMode == 'dark'
+                ? ThemeMode.dark
+                : ThemeMode.light,
+          ),
+        );
+
+        // 确认支付
+        await Stripe.instance.presentPaymentSheet();
+
+        showSuccessMessage('购买成功');
+      }
     } on Exception catch (e) {
       if (e is StripeException) {
         showErrorMessage('支付失败：${e.error.localizedMessage}');

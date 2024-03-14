@@ -176,4 +176,9 @@ class Ability {
   bool supportQiniuUploader() {
     return setting.stringDefault(settingAPIServerToken, '') != '';
   }
+
+  /// 获取当前主题模式
+  String get themeMode {
+    return setting.stringDefault(settingThemeMode, 'system');
+  }
 }
