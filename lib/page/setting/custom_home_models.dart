@@ -113,7 +113,7 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
           child: Column(
             children: [
               const MessageBox(
-                message: '用于设置聊一聊中的常用模型。',
+                message: '用于设置聊一聊中的常用模型。模型 3 为可选项，长按可重置',
                 type: MessageBoxType.info,
               ),
               const SizedBox(height: 10),

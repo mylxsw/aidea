@@ -27,6 +27,7 @@ import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
@@ -324,6 +325,35 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                 // 社交媒体图标
                 _buildSocialIcons(context),
+                // 版权信息
+                CustomSettingsSection(
+                  child: Column(
+                    children: [
+                      Text(
+                        'Copyright © 2023-${DateTime.now().year}',
+                        style: TextStyle(
+                          color: customColors.weakTextColor,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          launchUrlString(
+                            'https://aidea.aicode.cc',
+                            mode: LaunchMode.externalApplication,
+                          );
+                        },
+                        child: Text(
+                          'Gulu Artificial Intelligence Technology Co., Ltd.',
+                          style: TextStyle(
+                            color: customColors.weakTextColor,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                    ],
+                  ),
+                ),
               ]);
             },
           ),
