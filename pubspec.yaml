@@ -194,6 +194,9 @@ flutter:
     - assets/xiaohongshu.png
     - assets/play.png
     - assets/text-to-video.gif
+    - assets/wechat-pay.png
+    - assets/zhifubao.png
+    - assets/stripe.png
 
   
   #   - images/a_dot_ham.jpeg

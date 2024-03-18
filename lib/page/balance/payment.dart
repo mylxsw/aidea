@@ -330,9 +330,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             return;
                           }
 
+                          // 根据当前平台不通，调用不同的支付方式
                           if (PlatformTool.isAndroid()) {
                             handlePaymentForAndroid(
-                                state, context, customColors);
+                              state,
+                              context,
+                              customColors,
+                            );
                           } else if (PlatformTool.isIOS()) {
                             _startPaymentLoading();
                             try {
@@ -410,23 +414,39 @@ class _PaymentScreenState extends State<PaymentScreen> {
     openListSelectDialog(
       context,
       <SelectorItem>[
-        SelectorItem(const Text('支付宝扫码'), 'web'),
-        SelectorItem(const Text('支付宝手机版'), 'wap'),
+        SelectorItem(
+          const PaymentMethodItem(
+            title: Text('支付宝扫码'),
+            image: 'assets/zhifubao.png',
+          ),
+          'web',
+        ),
+        SelectorItem(
+          const PaymentMethodItem(
+            title: Text('支付宝手机版'),
+            image: 'assets/zhifubao.png',
+          ),
+          'wap',
+        ),
         if (enableStripe)
           SelectorItem(
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('Stripe'),
-                const SizedBox(width: 5),
-                Text(
-                  '(${localProduct.retailPriceUSDText})',
-                  style: TextStyle(
-                    color: customColors.paymentItemTitleColor?.withOpacity(0.5),
-                    fontSize: 12,
+            PaymentMethodItem(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Stripe'),
+                  const SizedBox(width: 5),
+                  Text(
+                    '(${localProduct.retailPriceUSDText})',
+                    style: TextStyle(
+                      color:
+                          customColors.paymentItemTitleColor?.withOpacity(0.5),
+                      fontSize: 12,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
+              image: 'assets/stripe.png',
             ),
             'stripe',
           ),
@@ -450,6 +470,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
+  /// 处理 PC 端支付
   void handlePaymentForPC(
     PaymentAppleProductsLoaded state,
     BuildContext context,
@@ -461,10 +482,25 @@ class _PaymentScreenState extends State<PaymentScreen> {
     openListSelectDialog(
       context,
       <SelectorItem>[
-        if (Ability().enableOtherPay) SelectorItem(const Text('支付宝'), 'alipay'),
+        // SelectorItem(
+        //   const PaymentMethodItem(
+        //     title: Text('微信支付'),
+        //     image: 'assets/wechat-pay.png',
+        //   ),
+        //   'alipay',
+        // ),
+        if (Ability().enableOtherPay)
+          SelectorItem(
+            const PaymentMethodItem(
+              title: Text('支付宝'),
+              image: 'assets/zhifubao.png',
+            ),
+            'alipay',
+          ),
         if (enableStripe)
           SelectorItem(
-              Row(
+            PaymentMethodItem(
+              title: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text('Stripe'),
@@ -479,7 +515,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                 ],
               ),
-              'stripe'),
+              image: 'assets/stripe.png',
+            ),
+            'stripe',
+          ),
       ],
       (value) {
         _startPaymentLoading();
@@ -496,7 +535,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         return true;
       },
       title: '请选择支付方式',
-      heightFactor: 0.3,
+      heightFactor: 0.4,
     );
   }
 
@@ -511,10 +550,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
     openListSelectDialog(
       context,
       <SelectorItem>[
-        if (Ability().enableOtherPay) SelectorItem(const Text('支付宝'), 'alipay'),
+        if (Ability().enableOtherPay)
+          SelectorItem(
+            const PaymentMethodItem(
+              title: Text('支付宝'),
+              image: 'assets/zhifubao.png',
+            ),
+            'alipay',
+          ),
         if (enableStripe)
           SelectorItem(
-              Row(
+            PaymentMethodItem(
+              title: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text('Stripe'),
@@ -529,7 +576,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                 ],
               ),
-              'stripe'),
+              image: 'assets/stripe.png',
+            ),
+            'stripe',
+          ),
       ],
       (value) {
         _startPaymentLoading();
@@ -838,5 +888,34 @@ class _PaymentScreenState extends State<PaymentScreen> {
       }
     }
     print("-----------------");
+  }
+}
+
+/// 支付方式选择项
+class PaymentMethodItem extends StatelessWidget {
+  final Widget title;
+  final String? image;
+
+  const PaymentMethodItem({super.key, required this.title, this.image});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (image != null) ...[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Image.asset(
+              image!,
+              width: 20,
+              height: 20,
+            ),
+          ),
+          const SizedBox(width: 10),
+        ],
+        title,
+      ],
+    );
   }
 }
