@@ -8,6 +8,8 @@ import 'package:askaide/helper/http.dart';
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/page/component/global_alert.dart';
+import 'package:askaide/repo/api/admin/channels.dart';
+import 'package:askaide/repo/api/admin/models.dart';
 import 'package:askaide/repo/api/article.dart';
 import 'package:askaide/repo/api/creative.dart';
 import 'package:askaide/repo/api/image_model.dart';
@@ -1984,5 +1986,103 @@ class APIServer {
         'source': source,
       },
     );
+  }
+
+  /// 管理员接口：渠道类型
+  Future<List<AdminChannelType>> adminChannelTypes() async {
+    return sendGetRequest('/v1/admin/channel-types', (resp) {
+      var res = <AdminChannelType>[];
+      for (var item in resp.data['data']) {
+        res.add(AdminChannelType.fromJson(item));
+      }
+
+      return res;
+    });
+  }
+
+  /// 管理员接口：返回所有渠道
+  Future<List<AdminChannel>> adminChannels() async {
+    return sendGetRequest('/v1/admin/channels', (resp) {
+      var res = <AdminChannel>[];
+      for (var item in resp.data['data']) {
+        res.add(AdminChannel.fromJson(item));
+      }
+
+      return res;
+    });
+  }
+
+  /// 管理员接口：返回指定渠道
+  Future<AdminChannel> adminChannel({required int id}) async {
+    return sendGetRequest('/v1/admin/channels/$id', (resp) {
+      return AdminChannel.fromJson(resp.data['data']);
+    });
+  }
+
+  /// 管理员接口：创建渠道
+  Future<void> adminCreateChannel(AdminChannelAddReq req) async {
+    return sendPostJSONRequest(
+      '/v1/admin/channels',
+      (resp) {},
+      data: req.toJson(),
+    );
+  }
+
+  /// 管理员接口：更新渠道
+  Future<void> adminUpdateChannel(
+      {required int id, required AdminChannelUpdateReq req}) {
+    return sendPutJSONRequest(
+      '/v1/admin/channels/$id',
+      (resp) {},
+      data: req.toJson(),
+    );
+  }
+
+  /// 管理员接口：删除渠道
+  Future<void> adminDeleteChannel({required int id}) {
+    return sendDeleteRequest('/v1/admin/channels/$id', (resp) {});
+  }
+
+  /// 管理员接口：返回所有模型
+  Future<List<AdminModel>> adminModels() async {
+    return sendGetRequest('/v1/admin/models', (resp) {
+      var res = <AdminModel>[];
+      for (var item in resp.data['data']) {
+        res.add(AdminModel.fromJson(item));
+      }
+
+      return res;
+    });
+  }
+
+  /// 管理员接口：返回指定模型
+  Future<AdminModel> adminModel({required String modelId}) async {
+    return sendGetRequest('/v1/admin/models/$modelId', (resp) {
+      return AdminModel.fromJson(resp.data['data']);
+    });
+  }
+
+  /// 管理员接口：创建模型
+  Future<void> adminCreateModel(AdminModelAddReq req) async {
+    return sendPostJSONRequest(
+      '/v1/admin/models',
+      (resp) {},
+      data: req.toJson(),
+    );
+  }
+
+  /// 管理员接口：更新模型
+  Future<void> adminUpdateModel(
+      {required String modelId, required AdminModelUpdateReq req}) {
+    return sendPutJSONRequest(
+      '/v1/admin/models/$modelId',
+      (resp) {},
+      data: req.toJson(),
+    );
+  }
+
+  /// 管理员接口：删除模型
+  Future<void> adminDeleteModel({required String modelId}) {
+    return sendDeleteRequest('/v1/admin/models/$modelId', (resp) {});
   }
 }

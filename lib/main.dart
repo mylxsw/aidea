@@ -1,4 +1,8 @@
+import 'package:askaide/bloc/channel_bloc.dart';
 import 'package:askaide/helper/path.dart';
+import 'package:askaide/page/admin/channels.dart';
+import 'package:askaide/page/admin/channels_add.dart';
+import 'package:askaide/page/admin/channels_edit.dart';
 import 'package:askaide/page/balance/web_payment_proxy.dart';
 import 'package:askaide/page/balance/web_payment_result.dart';
 import 'package:askaide/page/creative_island/draw/artistic_wordart.dart';
@@ -1056,6 +1060,64 @@ class MyApp extends StatefulWidget {
                   finishAction:
                       state.queryParameters['finish_action'] ?? 'close',
                 ));
+              },
+            ),
+
+            /// 管理员接口
+            GoRoute(
+              name: 'admin-channels',
+              path: '/admin/channels',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => ChannelBloc(),
+                      ),
+                    ],
+                    child: ChannelsPage(setting: settingRepo),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'admin-channels-create',
+              path: '/admin/channels/create',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => ChannelBloc(),
+                      ),
+                    ],
+                    child: ChannelAddPage(setting: settingRepo),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'admin-channels-edit',
+              path: '/admin/channels/edit/:id',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                final channelId = int.parse(state.pathParameters['id']!);
+
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => ChannelBloc(),
+                      ),
+                    ],
+                    child: ChannelEditPage(
+                      setting: settingRepo,
+                      channelId: channelId,
+                    ),
+                  ),
+                );
               },
             ),
           ],

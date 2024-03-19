@@ -284,6 +284,18 @@ class _SettingScreenState extends State<SettingScreen> {
                     tiles: [
                       if (userHasLabPermission(state))
                         SettingsTile(
+                          title: const Text('渠道管理'),
+                          trailing: Icon(
+                            CupertinoIcons.chevron_forward,
+                            size: MediaQuery.of(context).textScaleFactor * 18,
+                            color: Colors.grey,
+                          ),
+                          onPressed: (context) {
+                            context.push('/admin/channels');
+                          },
+                        ),
+                      if (userHasLabPermission(state))
+                        SettingsTile(
                           title: const Text('模型 Gallery'),
                           trailing: Icon(
                             CupertinoIcons.chevron_forward,
