@@ -4,6 +4,7 @@ import 'package:askaide/bloc/bloc_manager.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/error.dart';
+import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/model_resolver.dart';
 import 'package:askaide/helper/queue.dart';
 import 'package:askaide/lang/lang.dart';
@@ -267,9 +268,16 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     }
 
     // 发送当前用户消息
-    message.model = room.model;
+    message.model ??= room.model;
     message.userId = APIServer().localUserID();
     message.status = 0;
+
+    // 模型切换
+    String? tempModel = event.tempModel;
+    String? originalModel = message.model;
+
+    Logger.instance
+        .d('发送消息, originalModel: $originalModel, tempModel: $tempModel');
 
     // 聊天历史记录中，所有发送状态为 pending 状态的消息，全部设置为失败
     await chatMsgRepo.fixMessageStatus(roomId);
@@ -289,7 +297,9 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
         ]);
       }
     } else {
+      message.model = tempModel ?? message.model;
       sentMessageId = await chatMsgRepo.sendMessage(roomId, message);
+      message.model = originalModel;
     }
 
     // 更新 Room 最后活跃时间
@@ -311,7 +321,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       '',
       ts: DateTime.now(),
       type: MessageType.text,
-      model: room.model,
+      model: tempModel ?? originalModel,
       roomId: roomId,
       userId: APIServer().localUserID(),
       refId: sentMessageId,
@@ -389,6 +399,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       await ModelResolver.instance
           .request(
             room: room,
+            tempModel: tempModel,
             contextMessages: messages.sublist(0, messages.length - 1),
             onMessage: queue.add,
             maxTokens: room.maxTokens,
@@ -470,6 +481,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
               roomId: roomId,
               userId: APIServer().localUserID(),
               chatHistoryId: localChatHistoryId,
+              model: tempModel ?? originalModel,
             ),
           );
         } else {

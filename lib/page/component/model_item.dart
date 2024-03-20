@@ -10,17 +10,34 @@ class ModelItem extends StatelessWidget {
   final List<Model> models;
   final Function(Model selected) onSelected;
   final String? initValue;
+  final bool enableClear;
 
   const ModelItem({
     super.key,
     required this.models,
     required this.onSelected,
     this.initValue,
+    this.enableClear = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
+
+    if (enableClear) {
+      models.insert(
+        0,
+        Model(
+          '',
+          '重置',
+          '',
+          avatarUrl: null,
+          tag: null,
+          category: '',
+        ),
+      );
+    }
+
     return models.isNotEmpty
         ? Padding(
             padding: const EdgeInsets.only(top: 15),
@@ -37,48 +54,58 @@ class ModelItem extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        _buildAvatar(avatarUrl: item.avatarUrl, size: 40),
-                        const SizedBox(width: 20),
+                        if (item.avatarUrl != null) ...[
+                          _buildAvatar(avatarUrl: item.avatarUrl, size: 40),
+                          const SizedBox(width: 20),
+                        ],
                         Expanded(
                           child: Container(
-                            alignment: Alignment.centerLeft,
-                            child: Row(children: [
-                              Text(
-                                item.name,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              if (item.tag != null && item.tag!.isNotEmpty)
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: customColors.tagsBackgroundHover,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  margin: const EdgeInsets.only(left: 5),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 5,
-                                    vertical: 2,
-                                  ),
-                                  child: Text(
-                                    item.tag!,
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: customColors.tagsText,
+                            alignment: item.avatarUrl != null
+                                ? Alignment.centerLeft
+                                : Alignment.center,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  item.name,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                if (item.tag != null &&
+                                    item.tag!.isNotEmpty &&
+                                    item.avatarUrl != null)
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: customColors.tagsBackgroundHover,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    margin: const EdgeInsets.only(left: 5),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                      vertical: 2,
+                                    ),
+                                    child: Text(
+                                      item.tag!,
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: customColors.tagsText,
+                                      ),
                                     ),
                                   ),
-                                ),
-                            ]),
+                              ],
+                            ),
                           ),
                         ),
-                        SizedBox(
-                          width: 10,
-                          child: Icon(
-                            Icons.check,
-                            color:
-                                initValue == item.uid() || initValue == item.id
-                                    ? customColors.linkColor
-                                    : Colors.transparent,
+                        if (item.avatarUrl != null)
+                          SizedBox(
+                            width: 10,
+                            child: Icon(
+                              Icons.check,
+                              color: initValue == item.uid() ||
+                                      initValue == item.id
+                                  ? customColors.linkColor
+                                  : Colors.transparent,
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),

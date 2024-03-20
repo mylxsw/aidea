@@ -6,6 +6,7 @@ import 'package:askaide/helper/image.dart';
 import 'package:askaide/helper/model.dart';
 import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/chat/component/model_switcher.dart';
 import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/chat/chat_share.dart';
@@ -67,6 +68,12 @@ class _RoomChatPageState extends State<RoomChatPage> {
 
   List<FileUpload> selectedImageFiles = [];
 
+  /// 当前选择的模型
+  mm.Model? tempModel;
+
+  // 全量模型列表
+  List<mm.Model> supportModels = [];
+
   @override
   void initState() {
     super.initState();
@@ -93,6 +100,13 @@ class _RoomChatPageState extends State<RoomChatPage> {
         audioLoadding = loading;
       });
     };
+
+    // 加载模型列表，用于查询模型名称
+    ModelAggregate.models().then((value) {
+      setState(() {
+        supportModels = value;
+      });
+    });
   }
 
   @override
@@ -194,8 +208,10 @@ class _RoomChatPageState extends State<RoomChatPage> {
                                   _handleSubmit(value);
                                   FocusManager.instance.primaryFocus?.unfocus();
                                 },
-                                enableImageUpload: roomModel != null &&
-                                    roomModel!.supportVision,
+                                enableImageUpload: tempModel == null
+                                    ? (roomModel != null &&
+                                        roomModel!.supportVision)
+                                    : (tempModel?.supportVision ?? false),
                                 onImageSelected: (files) {
                                   setState(() {
                                     selectedImageFiles = files;
@@ -211,6 +227,18 @@ class _RoomChatPageState extends State<RoomChatPage> {
                                   context
                                       .read<ChatMessageBloc>()
                                       .add(ChatMessageStopEvent());
+                                },
+                                leftSideToolsBuilder: () {
+                                  return [
+                                    ModelSwitcher(
+                                      onSelected: (selected) {
+                                        setState(() {
+                                          tempModel = selected;
+                                        });
+                                      },
+                                      value: tempModel,
+                                    ),
+                                  ];
                                 },
                               ),
                       );
@@ -298,8 +326,18 @@ class _RoomChatPageState extends State<RoomChatPage> {
           }
 
           final messages = loadedMessages.map((e) {
-            e.avatarUrl = room.room.avatarUrl;
-            e.senderName = room.room.name;
+            if (e.model != null && !e.model!.startsWith('v2@')) {
+              final mod =
+                  supportModels.where((m) => m.id == e.model).firstOrNull;
+              if (mod != null) {
+                e.senderName = mod.shortName;
+                e.avatarUrl = mod.avatarUrl;
+              }
+            }
+            if (e.avatarUrl == null || e.senderName == null) {
+              e.avatarUrl = room.room.avatarUrl;
+              e.senderName = room.room.name;
+            }
 
             return MessageWithState(
               e,
@@ -514,6 +552,7 @@ class _RoomChatPageState extends State<RoomChatPage> {
             ),
             index: index,
             isResent: isResent,
+            tempModel: tempModel?.id,
           ),
         );
 

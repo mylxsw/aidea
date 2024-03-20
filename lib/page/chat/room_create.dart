@@ -611,6 +611,7 @@ void openSelectModelDialog(
   Function(mm.Model selected) onSelected, {
   String? initValue,
   List<String>? reservedModels,
+  bool enableClear = false,
 }) {
   openModalBottomSheet(
     context,
@@ -637,6 +638,7 @@ void openSelectModelDialog(
                 context.pop();
               },
               initValue: initValue,
+              enableClear: enableClear,
             );
           });
     },

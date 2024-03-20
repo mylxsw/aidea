@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/env.dart';
+import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/helper/queue.dart';
 import 'package:askaide/repo/model/chat_message.dart';
@@ -254,6 +255,7 @@ class OpenAIRepository {
     String model = defaultChatModel,
     int? roomId,
     int? maxTokens,
+    String? tempModel,
   }) async {
     var completer = Completer<void>();
 
@@ -340,8 +342,9 @@ class OpenAIRepository {
           completer.completeError(e);
         });
 
-        channel.sink.add(jsonEncode({
+        final data = jsonEncode({
           'model': model,
+          'temp_model': tempModel,
           'messages': messages.map((e) => e.toMap()).toList(),
           'temperature': temperature,
           'user': user,
@@ -350,7 +353,11 @@ class OpenAIRepository {
                   (model.startsWith('openai:') || model.startsWith('gpt-'))
               ? null
               : roomId, // n 参数暂时用不到，复用作为 roomId
-        }));
+        });
+
+        Logger.instance.d('send chat request: $data');
+
+        channel.sink.add(data);
       } else {
         var chatStream = OpenAI.instance.chat.createStream(
           model: model,

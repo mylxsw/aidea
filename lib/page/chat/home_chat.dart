@@ -8,6 +8,7 @@ import 'package:askaide/helper/global_store.dart';
 import 'package:askaide/helper/model.dart';
 import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/chat/component/model_switcher.dart';
 import 'package:askaide/page/chat/room_chat.dart';
 import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/background_container.dart';
@@ -99,6 +100,9 @@ class _HomeChatPageState extends State<HomeChatPage> {
   List<HomeModelV2> supportModelsV2 = [];
   // 当前聊天所使用的模型（v2）
   HomeModelV2? currentModelV2;
+
+  /// 当前选择的模型
+  mm.Model? tempModel;
 
   @override
   void initState() {
@@ -441,7 +445,9 @@ class _HomeChatPageState extends State<HomeChatPage> {
                           handleSubmit(value);
                           FocusManager.instance.primaryFocus?.unfocus();
                         },
-                        enableImageUpload: enableImageUpload,
+                        enableImageUpload: tempModel == null
+                            ? enableImageUpload
+                            : (tempModel?.supportVision ?? false),
                         onImageSelected: (files) {
                           setState(() {
                             selectedImageFiles = files;
@@ -457,6 +463,18 @@ class _HomeChatPageState extends State<HomeChatPage> {
                           context
                               .read<ChatMessageBloc>()
                               .add(ChatMessageStopEvent());
+                        },
+                        leftSideToolsBuilder: () {
+                          return [
+                            ModelSwitcher(
+                              onSelected: (selected) {
+                                setState(() {
+                                  tempModel = selected;
+                                });
+                              },
+                              value: tempModel,
+                            ),
+                          ];
                         },
                       );
                     },
@@ -507,18 +525,28 @@ class _HomeChatPageState extends State<HomeChatPage> {
     }
 
     final messages = loadedMessages.map((e) {
-      if (loadedState.chatHistory != null &&
-          loadedState.chatHistory!.model != null) {
-        if (currentModelV2 != null) {
-          e.senderName = currentModelV2!.name;
-          e.avatarUrl = currentModelV2!.avatarUrl;
-        } else {
-          final mod = supportModels
-              .where((e) => e.id == loadedState.chatHistory!.model!)
-              .firstOrNull;
-          if (mod != null) {
-            e.senderName = mod.shortName;
-            e.avatarUrl = mod.avatarUrl;
+      if (e.model != null && !e.model!.startsWith('v2@')) {
+        final mod = supportModels.where((m) => m.id == e.model).firstOrNull;
+        if (mod != null) {
+          e.senderName = mod.shortName;
+          e.avatarUrl = mod.avatarUrl;
+        }
+      }
+
+      if (e.avatarUrl == null || e.senderName == null) {
+        if (loadedState.chatHistory != null &&
+            loadedState.chatHistory!.model != null) {
+          if (currentModelV2 != null) {
+            e.senderName = currentModelV2!.name;
+            e.avatarUrl = currentModelV2!.avatarUrl;
+          } else {
+            final mod = supportModels
+                .where((e) => e.id == loadedState.chatHistory!.model!)
+                .firstOrNull;
+            if (mod != null) {
+              e.senderName = mod.shortName;
+              e.avatarUrl = mod.avatarUrl;
+            }
           }
         }
       }
@@ -633,6 +661,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
             ),
             index: index,
             isResent: isResent,
+            tempModel: tempModel?.id,
           ),
         );
 

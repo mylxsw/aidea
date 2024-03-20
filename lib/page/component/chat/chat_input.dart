@@ -223,6 +223,8 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                     // 聊天功能按钮
                     Row(
                       children: [
+                        if (widget.leftSideToolsBuilder != null)
+                          ...widget.leftSideToolsBuilder!(),
                         if (widget.enableNotifier.value &&
                             widget.enableImageUpload &&
                             Ability().supportImageUploader &&
@@ -230,8 +232,6 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                             Ability().supportWebSocket)
                           _buildImageUploadButton(
                               context, setting, customColors),
-                        if (widget.leftSideToolsBuilder != null)
-                          ...widget.leftSideToolsBuilder!(),
                       ],
                     ),
                     // 聊天输入框
