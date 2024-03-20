@@ -3,12 +3,14 @@ import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/image.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/weak_text_button.dart';
 import 'package:askaide/repo/model/model.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ModelItem extends StatelessWidget {
   final List<Model> models;
-  final Function(Model selected) onSelected;
+  final Function(Model? selected) onSelected;
   final String? initValue;
   final bool enableClear;
 
@@ -24,18 +26,14 @@ class ModelItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    if (enableClear) {
-      models.insert(
-        0,
-        Model(
-          '',
-          '重置',
-          '',
-          avatarUrl: null,
-          tag: null,
-          category: '',
-        ),
-      );
+    if (enableClear && initValue != null) {
+      // 将当前选中的模型放在第一位
+      var index =
+          models.indexWhere((e) => e.uid() == initValue || e.id == initValue);
+      if (index != -1) {
+        var model = models.removeAt(index);
+        models.insert(0, model);
+      }
     }
 
     return models.isNotEmpty
@@ -66,9 +64,11 @@ class ModelItem extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  item.name,
-                                  overflow: TextOverflow.ellipsis,
+                                Expanded(
+                                  child: Text(
+                                    item.name,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                                 if (item.tag != null &&
                                     item.tag!.isNotEmpty &&
@@ -95,17 +95,33 @@ class ModelItem extends StatelessWidget {
                             ),
                           ),
                         ),
-                        if (item.avatarUrl != null)
-                          SizedBox(
-                            width: 10,
-                            child: Icon(
-                              Icons.check,
-                              color: initValue == item.uid() ||
+                        if (item.avatarUrl != null) ...[
+                          if (enableClear)
+                            SizedBox(
+                              width: 60,
+                              child: initValue == item.uid() ||
                                       initValue == item.id
-                                  ? customColors.linkColor
-                                  : Colors.transparent,
+                                  ? WeakTextButton(
+                                      title: '取消',
+                                      fontSize: 14,
+                                      onPressed: () {
+                                        onSelected(null);
+                                      },
+                                    )
+                                  : const SizedBox(),
+                            )
+                          else
+                            SizedBox(
+                              width: 10,
+                              child: Icon(
+                                Icons.check,
+                                color: initValue == item.uid() ||
+                                        initValue == item.id
+                                    ? customColors.linkColor
+                                    : Colors.transparent,
+                              ),
                             ),
-                          ),
+                        ],
                       ],
                     ),
                   ),

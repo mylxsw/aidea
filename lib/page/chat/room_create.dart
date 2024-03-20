@@ -608,10 +608,11 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
 
 void openSelectModelDialog(
   BuildContext context,
-  Function(mm.Model selected) onSelected, {
+  Function(mm.Model? selected) onSelected, {
   String? initValue,
   List<String>? reservedModels,
   bool enableClear = false,
+  String? title,
 }) {
   openModalBottomSheet(
     context,
@@ -643,6 +644,7 @@ void openSelectModelDialog(
           });
     },
     heightFactor: 0.7,
+    title: title,
   );
 }
 

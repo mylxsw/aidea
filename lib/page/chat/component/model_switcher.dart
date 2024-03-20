@@ -26,24 +26,26 @@ class ModelSwitcher extends StatelessWidget {
         openSelectModelDialog(
           context,
           (selected) {
-            onSelected(selected.id == '' ? null : selected);
+            onSelected(selected);
           },
           initValue: value?.uid(),
           enableClear: true,
+          title: '选择要切换的对话模型',
         );
       },
       icon: value == null
-          ? const Icon(Icons.alternate_email)
+          ? const Icon(Icons.smart_toy_outlined)
           : value!.avatarUrl == null
               ? Initicon(
                   text: value!.name.split('、').join(' '),
                   size: 25,
                   backgroundColor: Colors.grey.withAlpha(100),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(100),
                 )
               : RemoteAvatar(
                   avatarUrl: value!.avatarUrl!,
                   size: 25,
+                  radius: 100,
                 ),
       color: customColors.chatInputPanelText,
       splashRadius: 20,

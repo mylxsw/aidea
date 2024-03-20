@@ -5,11 +5,13 @@ class WeakTextButton extends StatelessWidget {
   final String title;
   final IconData? icon;
   final VoidCallback? onPressed;
+  final double? fontSize;
   const WeakTextButton({
     super.key,
     required this.title,
     this.icon,
     this.onPressed,
+    this.fontSize,
   });
 
   @override
@@ -29,7 +31,7 @@ class WeakTextButton extends StatelessWidget {
           title,
           style: TextStyle(
             color: customColors.weakLinkColor,
-            fontSize: 15,
+            fontSize: fontSize ?? 15.0,
           ),
         ),
       ],
