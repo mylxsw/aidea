@@ -27,7 +27,6 @@ import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
@@ -69,11 +68,28 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
           ),
           actions: [
+            BlocBuilder<AccountBloc, AccountState>(
+              buildWhen: (previous, current) => current is AccountLoaded,
+              builder: (context, state) {
+                if (state is AccountLoaded && state.user != null) {
+                  return IconButton(
+                    onPressed: () {
+                      context.push('/admin/dashboard');
+                    },
+                    icon: const Icon(Icons.developer_board_outlined),
+                    tooltip: '管理后台',
+                  );
+                }
+
+                return const SizedBox();
+              },
+            ),
             IconButton(
               onPressed: () {
                 context.push('/notifications');
               },
               icon: const Icon(Icons.notifications_outlined),
+              tooltip: '消息通知',
             ),
           ],
           child: BlocBuilder<AccountBloc, AccountState>(
@@ -284,34 +300,10 @@ class _SettingScreenState extends State<SettingScreen> {
                     tiles: [
                       if (userHasLabPermission(state))
                         SettingsTile(
-                          title: const Text('渠道管理'),
-                          trailing: Icon(
-                            CupertinoIcons.chevron_forward,
-                            size: MediaQuery.of(context).textScaleFactor * 18,
-                            color: Colors.grey,
-                          ),
-                          onPressed: (context) {
-                            context.push('/admin/channels');
-                          },
-                        ),
-                      if (userHasLabPermission(state))
-                        SettingsTile(
-                          title: const Text('模型 Gallery'),
-                          trailing: Icon(
-                            CupertinoIcons.chevron_forward,
-                            size: MediaQuery.of(context).textScaleFactor * 18,
-                            color: Colors.grey,
-                          ),
-                          onPressed: (context) {
-                            context.push('/creative-island/models');
-                          },
-                        ),
-                      if (userHasLabPermission(state))
-                        SettingsTile(
                           title: const Text('画板'),
-                          trailing: Icon(
+                          trailing: const Icon(
                             CupertinoIcons.chevron_forward,
-                            size: MediaQuery.of(context).textScaleFactor * 18,
+                            size: 18,
                             color: Colors.grey,
                           ),
                           onPressed: (context) {
@@ -324,9 +316,9 @@ class _SettingScreenState extends State<SettingScreen> {
                       // 诊断
                       SettingsTile(
                         title: Text(AppLocale.diagnostic.getString(context)),
-                        trailing: Icon(
+                        trailing: const Icon(
                           CupertinoIcons.chevron_forward,
-                          size: MediaQuery.of(context).textScaleFactor * 18,
+                          size: 18,
                           color: Colors.grey,
                         ),
                         onPressed: (context) {

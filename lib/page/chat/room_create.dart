@@ -347,7 +347,6 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                             context.pop();
                           },
                           usage: AvatarUsage.room,
-                          randomSeed: randomSeed,
                           defaultAvatarId: _avatarId,
                           defaultAvatarUrl: _avatarUrl,
                           externalAvatarUrls: [

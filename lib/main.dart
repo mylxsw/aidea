@@ -1,8 +1,13 @@
 import 'package:askaide/bloc/channel_bloc.dart';
+import 'package:askaide/bloc/model_bloc.dart';
 import 'package:askaide/helper/path.dart';
 import 'package:askaide/page/admin/channels.dart';
 import 'package:askaide/page/admin/channels_add.dart';
 import 'package:askaide/page/admin/channels_edit.dart';
+import 'package:askaide/page/admin/dashboard.dart';
+import 'package:askaide/page/admin/models.dart';
+import 'package:askaide/page/admin/models_add.dart';
+import 'package:askaide/page/admin/models_edit.dart';
 import 'package:askaide/page/balance/web_payment_proxy.dart';
 import 'package:askaide/page/balance/web_payment_result.dart';
 import 'package:askaide/page/creative_island/draw/artistic_wordart.dart';
@@ -1064,6 +1069,70 @@ class MyApp extends StatefulWidget {
             ),
 
             /// 管理员接口
+            GoRoute(
+              name: 'admin-dashboard',
+              path: '/admin/dashboard',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  AdminDashboardPage(setting: settingRepo),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'admin-models',
+              path: '/admin/models',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => ModelBloc(),
+                      ),
+                    ],
+                    child: AdminModelsPage(setting: settingRepo),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'admin-models-create',
+              path: '/admin/models/create',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => ModelBloc(),
+                      ),
+                    ],
+                    child: AdminModelCreatePage(setting: settingRepo),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'admin-models-edit',
+              path: '/admin/models/edit/:id',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => ModelBloc(),
+                      ),
+                    ],
+                    child: AdminModelEditPage(
+                      setting: settingRepo,
+                      modelId: state.pathParameters['id']!,
+                    ),
+                  ),
+                );
+              },
+            ),
             GoRoute(
               name: 'admin-channels',
               path: '/admin/channels',

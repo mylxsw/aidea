@@ -21,11 +21,11 @@ class AdminModel {
 
   factory AdminModel.fromJson(Map<String, dynamic> json) {
     return AdminModel(
-      modelId: json['modelId'],
+      modelId: json['model_id'],
       name: json['name'],
-      shortName: json['shortName'],
+      shortName: json['short_name'],
       description: json['description'],
-      avatarUrl: json['avatarUrl'],
+      avatarUrl: json['avatar_url'],
       status: json['status'],
       meta: json['meta'] != null ? AdminModelMeta.fromJson(json['meta']) : null,
       providers: ((json['providers'] ?? []) as List)
@@ -36,11 +36,11 @@ class AdminModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'modelId': modelId,
+      'model_id': modelId,
       'name': name,
-      'shortName': shortName,
+      'short_name': shortName,
       'description': description,
-      'avatarUrl': avatarUrl,
+      'avatar_url': avatarUrl,
       'status': status,
       'meta': meta?.toJson(),
       'providers': providers.map((e) => e.toJson()).toList(),
@@ -54,6 +54,7 @@ class AdminModelMeta {
   int? maxContext;
   int? inputPrice;
   int? outputPrice;
+  String? prompt;
 
   AdminModelMeta({
     this.vision,
@@ -61,15 +62,17 @@ class AdminModelMeta {
     this.maxContext,
     this.inputPrice,
     this.outputPrice,
+    this.prompt,
   });
 
   factory AdminModelMeta.fromJson(Map<String, dynamic> json) {
     return AdminModelMeta(
       vision: json['vision'],
       restricted: json['restricted'],
-      maxContext: json['maxContext'],
-      inputPrice: json['inputPrice'],
-      outputPrice: json['outputPrice'],
+      maxContext: json['max_context'],
+      inputPrice: json['input_price'],
+      outputPrice: json['output_price'],
+      prompt: json['prompt'],
     );
   }
 
@@ -77,9 +80,10 @@ class AdminModelMeta {
     return {
       'vision': vision,
       'restricted': restricted,
-      'maxContext': maxContext,
-      'inputPrice': inputPrice,
-      'outputPrice': outputPrice,
+      'max_context': maxContext,
+      'input_price': inputPrice,
+      'output_price': outputPrice,
+      'prompt': prompt,
     };
   }
 }
@@ -88,21 +92,18 @@ class AdminModelProvider {
   int? id;
   String? name;
   String? modelRewrite;
-  String? prompt;
 
   AdminModelProvider({
     this.id,
     this.name,
     this.modelRewrite,
-    this.prompt,
   });
 
   factory AdminModelProvider.fromJson(Map<String, dynamic> json) {
     return AdminModelProvider(
       id: json['id'],
       name: json['name'],
-      modelRewrite: json['modelRewrite'],
-      prompt: json['prompt'],
+      modelRewrite: json['model_rewrite'],
     );
   }
 
@@ -110,8 +111,7 @@ class AdminModelProvider {
     return {
       'id': id,
       'name': name,
-      'modelRewrite': modelRewrite,
-      'prompt': prompt,
+      'model_rewrite': modelRewrite,
     };
   }
 }
@@ -139,11 +139,11 @@ class AdminModelAddReq {
 
   Map<String, dynamic> toJson() {
     return {
-      'modelId': modelId,
+      'model_id': modelId,
       'name': name,
-      'shortName': shortName,
+      'short_name': shortName,
       'description': description,
-      'avatarUrl': avatarUrl,
+      'avatar_url': avatarUrl,
       'status': status,
       'meta': meta?.toJson(),
       'providers': providers?.map((e) => e.toJson()).toList(),
@@ -173,9 +173,9 @@ class AdminModelUpdateReq {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'shortName': shortName,
+      'short_name': shortName,
       'description': description,
-      'avatarUrl': avatarUrl,
+      'avatar_url': avatarUrl,
       'status': status,
       'meta': meta?.toJson(),
       'providers': providers?.map((e) => e.toJson()).toList(),

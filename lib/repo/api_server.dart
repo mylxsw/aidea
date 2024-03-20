@@ -1990,7 +1990,7 @@ class APIServer {
 
   /// 管理员接口：渠道类型
   Future<List<AdminChannelType>> adminChannelTypes() async {
-    return sendGetRequest('/v1/admin/channel-types', (resp) {
+    return sendCachedGetRequest('/v1/admin/channel-types', (resp) {
       var res = <AdminChannelType>[];
       for (var item in resp.data['data']) {
         res.add(AdminChannelType.fromJson(item));
@@ -1998,6 +1998,24 @@ class APIServer {
 
       return res;
     });
+  }
+
+  /// 管理员接口：返回聚合后的渠道列表
+  Future<List<AdminChannel>> adminChannelsAgg() async {
+    final channels = await sendGetRequest('/v1/admin/channels', (resp) {
+      var res = <AdminChannel>[];
+      for (var item in resp.data['data']) {
+        res.add(AdminChannel.fromJson(item));
+      }
+
+      return res;
+    });
+
+    final channelTypes = await adminChannelTypes();
+    channels.addAll(
+        channelTypes.map((e) => AdminChannel(name: e.text, type: e.name)));
+
+    return channels;
   }
 
   /// 管理员接口：返回所有渠道
@@ -2045,19 +2063,26 @@ class APIServer {
 
   /// 管理员接口：返回所有模型
   Future<List<AdminModel>> adminModels() async {
-    return sendGetRequest('/v1/admin/models', (resp) {
-      var res = <AdminModel>[];
-      for (var item in resp.data['data']) {
-        res.add(AdminModel.fromJson(item));
-      }
+    return sendGetRequest(
+      '/v1/admin/models',
+      (resp) {
+        var res = <AdminModel>[];
+        for (var item in resp.data['data']) {
+          res.add(AdminModel.fromJson(item));
+        }
 
-      return res;
-    });
+        return res;
+      },
+      queryParameters: {
+        'sort': 'id:desc',
+      },
+    );
   }
 
   /// 管理员接口：返回指定模型
   Future<AdminModel> adminModel({required String modelId}) async {
-    return sendGetRequest('/v1/admin/models/$modelId', (resp) {
+    return sendGetRequest('/v1/admin/models/${Uri.encodeComponent(modelId)}',
+        (resp) {
       return AdminModel.fromJson(resp.data['data']);
     });
   }
@@ -2075,7 +2100,7 @@ class APIServer {
   Future<void> adminUpdateModel(
       {required String modelId, required AdminModelUpdateReq req}) {
     return sendPutJSONRequest(
-      '/v1/admin/models/$modelId',
+      '/v1/admin/models/${Uri.encodeComponent(modelId)}',
       (resp) {},
       data: req.toJson(),
     );
@@ -2083,6 +2108,7 @@ class APIServer {
 
   /// 管理员接口：删除模型
   Future<void> adminDeleteModel({required String modelId}) {
-    return sendDeleteRequest('/v1/admin/models/$modelId', (resp) {});
+    return sendDeleteRequest(
+        '/v1/admin/models/${Uri.encodeComponent(modelId)}', (resp) {});
   }
 }

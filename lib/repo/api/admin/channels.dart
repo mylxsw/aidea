@@ -7,6 +7,10 @@ class AdminChannel {
 
   AdminChannelMeta? meta;
 
+  String get display {
+    return name;
+  }
+
   AdminChannel({
     this.id,
     required this.name,

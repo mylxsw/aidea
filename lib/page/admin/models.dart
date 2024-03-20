@@ -1,12 +1,16 @@
-import 'package:askaide/bloc/channel_bloc.dart';
+import 'package:askaide/bloc/model_bloc.dart';
+import 'package:askaide/helper/constant.dart';
+import 'package:askaide/helper/image.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/admin/channels.dart';
+import 'package:askaide/repo/api/admin/models.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_initicon/flutter_initicon.dart';
@@ -14,31 +18,52 @@ import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 
-class ChannelsPage extends StatefulWidget {
+class AdminModelsPage extends StatefulWidget {
   final SettingRepository setting;
-  const ChannelsPage({
+  const AdminModelsPage({
     super.key,
     required this.setting,
   });
 
   @override
-  State<ChannelsPage> createState() => _ChannelsPageState();
+  State<AdminModelsPage> createState() => _AdminModelsPageState();
 }
 
-class _ChannelsPageState extends State<ChannelsPage> {
-  // 渠道类型
-  List<AdminChannelType> channelTypes = [];
+class _AdminModelsPageState extends State<AdminModelsPage> {
+  // 渠道
+  List<AdminChannel> channels = [];
+
+  /// 查找渠道
+  AdminChannel searchChannel(AdminModelProvider provider) {
+    return channels.firstWhere(
+      (e) {
+        if (e.id == null && (provider.id == null || provider.id == 0)) {
+          return provider.name == e.type;
+        }
+
+        return provider.id == e.id;
+      },
+      orElse: () {
+        return AdminChannel(
+          id: provider.id,
+          name: '未知',
+          type: 'unknown',
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
-    context.read<ChannelBloc>().add(ChannelsLoadEvent());
-
-    // 加载渠道类型
-    APIServer().adminChannelTypes().then((value) {
+    // 加载渠道
+    APIServer().adminChannelsAgg().then((value) {
       if (context.mounted) {
         setState(() {
-          channelTypes = value;
+          channels = value;
         });
+
+        // 加载模型列表
+        context.read<ModelBloc>().add(ModelsLoadEvent());
       }
     });
 
@@ -53,7 +78,7 @@ class _ChannelsPageState extends State<ChannelsPage> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          '渠道管理',
+          '大语言模型管理',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
@@ -61,8 +86,8 @@ class _ChannelsPageState extends State<ChannelsPage> {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              context.push('/admin/channels/create').then((value) {
-                context.read<ChannelBloc>().add(ChannelsLoadEvent());
+              context.push('/admin/models/create').then((value) {
+                context.read<ModelBloc>().add(ModelsLoadEvent());
               });
             },
           ),
@@ -75,34 +100,33 @@ class _ChannelsPageState extends State<ChannelsPage> {
         child: RefreshIndicator(
           color: customColors.linkColor,
           onRefresh: () async {
-            context.read<ChannelBloc>().add(ChannelsLoadEvent());
+            context.read<ModelBloc>().add(ModelsLoadEvent());
           },
           displacement: 20,
-          child: BlocConsumer<ChannelBloc, ChannelState>(
-            listenWhen: (previous, current) =>
-                current is ChannelOperationResult,
+          child: BlocConsumer<ModelBloc, ModelState>(
+            listenWhen: (previous, current) => current is ModelOperationResult,
             listener: (context, state) {
-              if (state is ChannelOperationResult) {
+              if (state is ModelOperationResult) {
                 if (state.success) {
                   showSuccessMessage(state.message);
-                  context.read<ChannelBloc>().add(ChannelsLoadEvent());
+                  context.read<ModelBloc>().add(ModelsLoadEvent());
                 } else {
                   showErrorMessage(state.message);
                 }
               }
             },
-            buildWhen: (previous, current) => current is ChannelsLoaded,
+            buildWhen: (previous, current) => current is ModelsLoaded,
             builder: (context, state) {
-              if (state is ChannelsLoaded) {
+              if (state is ModelsLoaded) {
                 return SafeArea(
                   top: false,
                   child: ListView.builder(
                     padding: const EdgeInsets.all(5),
-                    itemCount: state.channels.length,
+                    itemCount: state.models.length,
                     itemBuilder: (context, index) {
-                      final channel = state.channels[index];
+                      final mod = state.models[index];
 
-                      return buildChannelItem(context, customColors, channel);
+                      return buildModelItem(context, customColors, mod);
                     },
                   ),
                 );
@@ -118,10 +142,10 @@ class _ChannelsPageState extends State<ChannelsPage> {
     );
   }
 
-  Widget buildChannelItem(
+  Widget buildModelItem(
     BuildContext context,
     CustomColors customColors,
-    AdminChannel channel,
+    AdminModel mod,
   ) {
     return Container(
       margin: const EdgeInsets.symmetric(
@@ -151,8 +175,8 @@ class _ChannelsPageState extends State<ChannelsPage> {
                   context,
                   AppLocale.confirmToDeleteRoom.getString(context),
                   () => context
-                      .read<ChannelBloc>()
-                      .add(ChannelDeleteEvent(channel.id!)),
+                      .read<ModelBloc>()
+                      .add(ModelDeleteEvent(mod.modelId)),
                   danger: true,
                 );
               },
@@ -167,8 +191,11 @@ class _ChannelsPageState extends State<ChannelsPage> {
             borderRadius: BorderRadius.all(
                 Radius.circular(customColors.borderRadius ?? 8)),
             onTap: () {
-              context.push('/admin/channels/edit/${channel.id}').then((value) {
-                context.read<ChannelBloc>().add(ChannelsLoadEvent());
+              context
+                  .push(
+                      '/admin/models/edit/${Uri.encodeComponent(mod.modelId)}')
+                  .then((value) {
+                context.read<ModelBloc>().add(ModelsLoadEvent());
               });
             },
             child: Stack(
@@ -176,27 +203,27 @@ class _ChannelsPageState extends State<ChannelsPage> {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // 渠道头像
-                    Initicon(
-                      text: channel.name.split('、').join(' '),
-                      size: 50,
-                      backgroundColor: Colors.grey.withAlpha(100),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(8),
-                        bottomLeft: Radius.circular(8),
-                      ),
-                    ),
-                    // 渠道名称
+                    // 头像
+                    buildAvatar(mod),
+                    // 名称
                     Expanded(
                       child: Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(15),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              channel.name,
+                              mod.name,
                               style: const TextStyle(
                                 overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Text(
+                              mod.description ?? '',
+                              style: TextStyle(
+                                fontSize: 10,
+                                overflow: TextOverflow.ellipsis,
+                                color: customColors.weakTextColor,
                               ),
                             ),
                           ],
@@ -210,13 +237,15 @@ class _ChannelsPageState extends State<ChannelsPage> {
                   top: 0,
                   child: Container(
                     padding: const EdgeInsets.all(10),
+                    width: MediaQuery.of(context).size.width / 2.0,
+                    alignment: Alignment.centerRight,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          channelTypes
-                              .firstWhere((e) => e.name == channel.type)
-                              .text,
+                          mod.providers
+                              .map((e) => searchChannel(e).display)
+                              .join('|'),
                           style: TextStyle(
                             fontSize: 10,
                             overflow: TextOverflow.ellipsis,
@@ -231,6 +260,35 @@ class _ChannelsPageState extends State<ChannelsPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget buildAvatar(AdminModel mod) {
+    if (mod.avatarUrl != null && mod.avatarUrl!.startsWith('http')) {
+      return SizedBox(
+        width: 70,
+        height: 70,
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(8),
+            bottomLeft: Radius.circular(8),
+          ),
+          child: CachedNetworkImage(
+            imageUrl: imageURL(mod.avatarUrl!, qiniuImageTypeAvatar),
+            fit: BoxFit.fill,
+          ),
+        ),
+      );
+    }
+
+    return Initicon(
+      text: mod.name.split('、').join(' '),
+      size: 70,
+      backgroundColor: Colors.grey.withAlpha(100),
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(8),
+        bottomLeft: Radius.circular(8),
       ),
     );
   }

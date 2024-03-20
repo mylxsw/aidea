@@ -186,13 +186,24 @@ class _EnhancedTextFieldState extends State<EnhancedTextField> {
             width: widget.labelWidth ?? 80,
             child: widget.labelWidget != null
                 ? widget.labelWidget!
-                : Text(
-                    widget.labelText!,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: widget.labelFontSize ?? 16,
-                      color: widget.customColors.textfieldLabelColor,
-                    ),
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          widget.labelText!,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: widget.labelFontSize ?? 16,
+                            color: widget.customColors.textfieldLabelColor,
+                          ),
+                        ),
+                      ),
+                      if (widget.labelHelpWidget != null) ...[
+                        const SizedBox(width: 5),
+                        widget.labelHelpWidget!,
+                      ]
+                    ],
                   ),
           ),
           const SizedBox(width: 10),

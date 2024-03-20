@@ -238,7 +238,6 @@ class _GroupEditPageState extends State<GroupEditPage> {
                                     context.pop();
                                   },
                                   usage: AvatarUsage.room,
-                                  randomSeed: randomSeed,
                                   defaultAvatarUrl: _avatarUrl,
                                   externalAvatarUrls: [
                                     ...avatarPresets,
