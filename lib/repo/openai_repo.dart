@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/env.dart';
-import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/helper/queue.dart';
 import 'package:askaide/repo/model/chat_message.dart';
@@ -355,7 +354,7 @@ class OpenAIRepository {
               : roomId, // n 参数暂时用不到，复用作为 roomId
         });
 
-        Logger.instance.d('send chat request: $data');
+        // Logger.instance.d('send chat request: $data');
 
         channel.sink.add(data);
       } else {

@@ -1,6 +1,5 @@
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
-import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,7 @@ class AdminDashboardPage extends StatefulWidget {
 class _AdminDashboardPageState extends State<AdminDashboardPage> {
   @override
   Widget build(BuildContext context) {
-    final customColors = Theme.of(context).extension<CustomColors>()!;
+    // final customColors = Theme.of(context).extension<CustomColors>()!;
 
     return BackgroundContainer(
       setting: widget.setting,

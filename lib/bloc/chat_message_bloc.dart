@@ -4,7 +4,6 @@ import 'package:askaide/bloc/bloc_manager.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/error.dart';
-import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/model_resolver.dart';
 import 'package:askaide/helper/queue.dart';
 import 'package:askaide/lang/lang.dart';
@@ -276,8 +275,8 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     String? tempModel = event.tempModel;
     String? originalModel = message.model;
 
-    Logger.instance
-        .d('发送消息, originalModel: $originalModel, tempModel: $tempModel');
+    // Logger.instance
+    //     .d('发送消息, originalModel: $originalModel, tempModel: $tempModel');
 
     // 聊天历史记录中，所有发送状态为 pending 状态的消息，全部设置为失败
     await chatMsgRepo.fixMessageStatus(roomId);

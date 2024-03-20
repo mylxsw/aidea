@@ -139,9 +139,11 @@ class _RoomChatPageState extends State<RoomChatPage> {
       listener: (context, state) {
         if (state is RoomLoaded && state.cascading) {
           // 加载免费使用次数
-          context
-              .read<FreeCountBloc>()
-              .add(FreeCountReloadEvent(model: state.room.model));
+          if (tempModel == null) {
+            context
+                .read<FreeCountBloc>()
+                .add(FreeCountReloadEvent(model: state.room.model));
+          }
         }
 
         if (state is RoomLoaded) {
@@ -186,7 +188,8 @@ class _RoomChatPageState extends State<RoomChatPage> {
                   child: BlocBuilder<FreeCountBloc, FreeCountState>(
                     builder: (context, freeState) {
                       var hintText = '有问题尽管问我';
-                      if (freeState is FreeCountLoadedState) {
+                      if (freeState is FreeCountLoadedState &&
+                          tempModel == null) {
                         final matched = freeState.model(room.room.model);
                         if (matched != null &&
                             matched.leftCount > 0 &&
@@ -287,9 +290,11 @@ class _RoomChatPageState extends State<RoomChatPage> {
             });
           } else if (!state.processing && !_inputEnabled.value) {
             // 更新免费使用次数
-            context
-                .read<FreeCountBloc>()
-                .add(FreeCountReloadEvent(model: room.room.model));
+            if (tempModel == null) {
+              context
+                  .read<FreeCountBloc>()
+                  .add(FreeCountReloadEvent(model: room.room.model));
+            }
 
             // 聊天回复完成时，取消输入框的禁止编辑状态
             setState(() {

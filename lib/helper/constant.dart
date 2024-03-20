@@ -92,3 +92,7 @@ const universalLink = 'https://ai.aicode.cc/wechat-login/';
 const qiniuImageTypeAvatar = 'avatar';
 const qiniuImageTypeThumb = 'thumb';
 const qiniuImageTypeThumbMedium = 'thumb_500';
+
+// 缓存相关的 Keys
+// 最后一次使用的模型
+const cacheKeyLastModel = 'last-model';

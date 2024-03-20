@@ -204,17 +204,21 @@ class _HomeChatPageState extends State<HomeChatPage> {
               if (state.room.model.startsWith('v2@')) {
                 if (currentModelV2 != null && currentModelV2!.modelId != null) {
                   // 加载免费使用次数
-                  // ignore: use_build_context_synchronously
-                  context.read<FreeCountBloc>().add(FreeCountReloadEvent(
-                        model: currentModelV2!.modelId!,
-                      ));
+                  if (tempModel == null) {
+                    // ignore: use_build_context_synchronously
+                    context.read<FreeCountBloc>().add(FreeCountReloadEvent(
+                          model: currentModelV2!.modelId!,
+                        ));
+                  }
                 }
               } else {
                 // 加载免费使用次数
-                // ignore: use_build_context_synchronously
-                context.read<FreeCountBloc>().add(FreeCountReloadEvent(
-                      model: widget.model ?? state.room.model,
-                    ));
+                if (tempModel == null) {
+                  // ignore: use_build_context_synchronously
+                  context.read<FreeCountBloc>().add(FreeCountReloadEvent(
+                        model: widget.model ?? state.room.model,
+                      ));
+                }
               }
             }
           },
@@ -369,9 +373,11 @@ class _HomeChatPageState extends State<HomeChatPage> {
                     enableInput.value = false;
                   });
                 } else if (!state.processing && !enableInput.value) {
-                  // 更新免费使用次数
-                  context.read<FreeCountBloc>().add(FreeCountReloadEvent(
-                      model: widget.model ?? room.room.model));
+                  if (tempModel == null) {
+                    // 更新免费使用次数
+                    context.read<FreeCountBloc>().add(FreeCountReloadEvent(
+                        model: widget.model ?? room.room.model));
+                  }
 
                   // 聊天回复完成时，取消输入框的禁止编辑状态
                   setState(() {
@@ -409,7 +415,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
             child: BlocBuilder<FreeCountBloc, FreeCountState>(
               builder: (context, freeState) {
                 var hintText = '有问题尽管问我';
-                if (freeState is FreeCountLoadedState) {
+                if (freeState is FreeCountLoadedState && tempModel == null) {
                   final matched =
                       freeState.model(widget.model ?? room.room.model);
                   if (matched != null &&
