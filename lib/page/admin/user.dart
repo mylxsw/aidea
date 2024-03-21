@@ -5,7 +5,6 @@ import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/coin.dart';
 import 'package:askaide/page/component/column_block.dart';
 import 'package:askaide/page/component/dialog.dart';
-import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
