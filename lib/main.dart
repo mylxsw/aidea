@@ -1,5 +1,6 @@
 import 'package:askaide/bloc/channel_bloc.dart';
 import 'package:askaide/bloc/model_bloc.dart';
+import 'package:askaide/bloc/user_bloc.dart';
 import 'package:askaide/helper/path.dart';
 import 'package:askaide/page/admin/channels.dart';
 import 'package:askaide/page/admin/channels_add.dart';
@@ -8,6 +9,8 @@ import 'package:askaide/page/admin/dashboard.dart';
 import 'package:askaide/page/admin/models.dart';
 import 'package:askaide/page/admin/models_add.dart';
 import 'package:askaide/page/admin/models_edit.dart';
+import 'package:askaide/page/admin/user.dart';
+import 'package:askaide/page/admin/users.dart';
 import 'package:askaide/page/balance/web_payment_proxy.dart';
 import 'package:askaide/page/balance/web_payment_result.dart';
 import 'package:askaide/page/creative_island/draw/artistic_wordart.dart';
@@ -1185,6 +1188,42 @@ class MyApp extends StatefulWidget {
                       setting: settingRepo,
                       channelId: channelId,
                     ),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'admin-users',
+              path: '/admin/users',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => UserBloc(),
+                      ),
+                    ],
+                    child: AdminUsersPage(setting: settingRepo),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'admin-users-detail',
+              path: '/admin/users/:id',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                final userId = int.parse(state.pathParameters['id']!);
+
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => UserBloc(),
+                      ),
+                    ],
+                    child: AdminUserPage(setting: settingRepo, userId: userId),
                   ),
                 );
               },

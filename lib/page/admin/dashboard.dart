@@ -63,6 +63,22 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     ],
                   ),
                   SettingsSection(
+                    title: const Text('用户管理'),
+                    tiles: [
+                      SettingsTile(
+                        title: const Text('用户列表'),
+                        trailing: const Icon(
+                          CupertinoIcons.chevron_forward,
+                          size: 18,
+                          color: Colors.grey,
+                        ),
+                        onPressed: (context) {
+                          context.push('/admin/users');
+                        },
+                      ),
+                    ],
+                  ),
+                  SettingsSection(
                     title: const Text('系统设置'),
                     tiles: [
                       SettingsTile(

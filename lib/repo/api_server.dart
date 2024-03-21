@@ -10,6 +10,7 @@ import 'package:askaide/helper/platform.dart';
 import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/repo/api/admin/channels.dart';
 import 'package:askaide/repo/api/admin/models.dart';
+import 'package:askaide/repo/api/admin/users.dart';
 import 'package:askaide/repo/api/article.dart';
 import 'package:askaide/repo/api/creative.dart';
 import 'package:askaide/repo/api/image_model.dart';
@@ -2110,5 +2111,68 @@ class APIServer {
   Future<void> adminDeleteModel({required String modelId}) {
     return sendDeleteRequest(
         '/v1/admin/models/${Uri.encodeComponent(modelId)}', (resp) {});
+  }
+
+  /// 管理员接口：查询用户列表
+  Future<PagedData<AdminUser>> adminUsers({
+    int page = 1,
+    int perPage = 20,
+    String? keyword,
+  }) async {
+    return sendGetRequest(
+      '/v1/admin/users',
+      (resp) {
+        var res = <AdminUser>[];
+        for (var item in resp.data['data']) {
+          res.add(AdminUser.fromJson(item));
+        }
+
+        return PagedData(
+          data: res,
+          page: resp.data['page'] ?? 1,
+          perPage: resp.data['per_page'] ?? 20,
+          total: resp.data['total'],
+          lastPage: resp.data['last_page'],
+        );
+      },
+      queryParameters: {
+        'page': page,
+        'per_page': perPage,
+        'keyword': keyword,
+      },
+    );
+  }
+
+  /// 管理员接口：查询用户详情
+  Future<AdminUser> adminUser({required int id}) async {
+    return sendGetRequest('/v1/admin/users/$id', (resp) {
+      return AdminUser.fromJson(resp.data['data']);
+    });
+  }
+
+  /// 管理员接口：为用户分配智慧果
+  Future<void> adminUserQuotaAssign({
+    required int userId,
+    required int quota,
+    int? validPeriod,
+    String? note,
+  }) {
+    return sendPostJSONRequest(
+      '/v1/admin/quotas/assign',
+      (resp) {},
+      data: {
+        'user_id': userId,
+        'quota': quota,
+        'valid_period': validPeriod,
+        'note': note,
+      },
+    );
+  }
+
+  /// 管理员接口：查询用户当前额度
+  Future<QuotaResp> adminUserQuota({required int userId}) async {
+    return sendGetRequest('/v1/admin/quotas/users/$userId', (resp) {
+      return QuotaResp.fromJson(resp.data);
+    });
   }
 }
