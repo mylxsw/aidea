@@ -71,7 +71,7 @@ class _SettingScreenState extends State<SettingScreen> {
             BlocBuilder<AccountBloc, AccountState>(
               buildWhen: (previous, current) => current is AccountLoaded,
               builder: (context, state) {
-                if (state is AccountLoaded && state.user != null) {
+                if (userHasLabPermission(state)) {
                   return IconButton(
                     onPressed: () {
                       context.push('/admin/dashboard');
