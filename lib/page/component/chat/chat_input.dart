@@ -16,6 +16,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ChatInput extends StatefulWidget {
   final Function(String value) onSubmit;
@@ -54,9 +55,10 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
 
   /// 用于监听键盘事件，实现回车发送消息，Shift+Enter换行
   late final FocusNode _focusNode = FocusNode(
-    onKey: (node, event) {
-      if (!event.isShiftPressed && event.logicalKey.keyLabel == 'Enter') {
-        if (event is RawKeyDownEvent && widget.enableNotifier.value) {
+    onKeyEvent: (node, event) {
+      if (!HardwareKeyboard.instance.isShiftPressed &&
+          event.logicalKey.keyLabel == 'Enter') {
+        if (event is KeyDownEvent && widget.enableNotifier.value) {
           _handleSubmited(_textController.text.trim());
         }
 
@@ -68,10 +70,6 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
   );
 
   final maxLength = 150000;
-
-  AnimationStatus status = AnimationStatus.forward;
-  late AnimationController animationController;
-  late Animation<double> anim;
 
   @override
   void initState() {
@@ -89,32 +87,11 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
         }
       });
     }
-
-    animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    );
-    anim = Tween(begin: 0.75, end: 1.0).animate(animationController)
-      ..addListener(() {
-        if (animationController.status != AnimationStatus.dismissed &&
-            animationController.status != AnimationStatus.completed) {
-          status = animationController.status;
-        }
-        if (animationController.status == AnimationStatus.completed ||
-            animationController.status == AnimationStatus.dismissed) {
-          status == AnimationStatus.forward
-              ? animationController.reverse()
-              : animationController.forward();
-        }
-      });
-
-    animationController.forward();
   }
 
   @override
   void dispose() {
     _textController.dispose();
-    animationController.dispose();
     super.dispose();
   }
 
@@ -128,152 +105,156 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
       ),
       child: Builder(builder: (context) {
         final setting = context.read<SettingRepository>();
-        return Column(
-          children: [
-            if (widget.selectedImageFiles != null &&
-                widget.selectedImageFiles!.isNotEmpty)
-              SizedBox(
-                height: 110,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: widget.selectedImageFiles!
-                      .map(
-                        (e) => Container(
-                          margin: const EdgeInsets.only(right: 8),
-                          padding: const EdgeInsets.all(5),
-                          child: Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(5),
-                                child: e.file.bytes != null
-                                    ? Image.memory(
-                                        e.file.bytes!,
-                                        fit: BoxFit.cover,
-                                        width: 100,
-                                        height: 100,
-                                      )
-                                    : Image.file(
-                                        File(e.file.path!),
-                                        fit: BoxFit.cover,
-                                        width: 100,
-                                        height: 100,
-                                      ),
-                              ),
-                              if (widget.enableNotifier.value)
-                                Positioned(
-                                  right: 5,
-                                  top: 5,
-                                  child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        widget.selectedImageFiles!.remove(e);
-                                        widget.onImageSelected
-                                            ?.call(widget.selectedImageFiles!);
-                                      });
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.all(3),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: customColors.chatRoomBackground,
-                                      ),
-                                      child: Icon(
-                                        Icons.close,
-                                        size: 10,
-                                        color: customColors.weakTextColor,
+        return SafeArea(
+          child: Column(
+            children: [
+              if (widget.selectedImageFiles != null &&
+                  widget.selectedImageFiles!.isNotEmpty)
+                SizedBox(
+                  height: 110,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: widget.selectedImageFiles!
+                        .map(
+                          (e) => Container(
+                            margin: const EdgeInsets.only(right: 8),
+                            padding: const EdgeInsets.all(5),
+                            child: Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(5),
+                                  child: e.file.bytes != null
+                                      ? Image.memory(
+                                          e.file.bytes!,
+                                          fit: BoxFit.cover,
+                                          width: 100,
+                                          height: 100,
+                                        )
+                                      : Image.file(
+                                          File(e.file.path!),
+                                          fit: BoxFit.cover,
+                                          width: 100,
+                                          height: 100,
+                                        ),
+                                ),
+                                if (widget.enableNotifier.value)
+                                  Positioned(
+                                    right: 5,
+                                    top: 5,
+                                    child: InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          widget.selectedImageFiles!.remove(e);
+                                          widget.onImageSelected?.call(
+                                              widget.selectedImageFiles!);
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(3),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color:
+                                              customColors.chatRoomBackground,
+                                        ),
+                                        child: Icon(
+                                          Icons.close,
+                                          size: 10,
+                                          color: customColors.weakTextColor,
+                                        ),
                                       ),
                                     ),
                                   ),
+                              ],
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+              // 工具栏
+              if (widget.toolbar != null) widget.toolbar!,
+              // if (widget.toolbar != null)
+              const SizedBox(height: 8),
+              // 聊天内容输入栏
+              SingleChildScrollView(
+                child: Slidable(
+                  startActionPane: widget.onNewChat != null
+                      ? ActionPane(
+                          extentRatio: 0.3,
+                          motion: const ScrollMotion(),
+                          children: [
+                            SlidableAction(
+                              autoClose: true,
+                              label: AppLocale.newChat.getString(context),
+                              backgroundColor: Colors.blue,
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(20)),
+                              onPressed: (_) {
+                                widget.onNewChat!();
+                              },
+                            ),
+                            const SizedBox(width: 10),
+                          ],
+                        )
+                      : null,
+                  child: Row(
+                    children: [
+                      // 聊天功能按钮
+                      Row(
+                        children: [
+                          if (widget.leftSideToolsBuilder != null)
+                            ...widget.leftSideToolsBuilder!(),
+                          if (widget.enableNotifier.value &&
+                              widget.enableImageUpload &&
+                              Ability().supportImageUploader &&
+                              widget.onImageSelected != null &&
+                              Ability().supportWebSocket)
+                            _buildImageUploadButton(
+                                context, setting, customColors),
+                        ],
+                      ),
+                      // 聊天输入框
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: customColors.chatInputAreaBackground,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: TextFormField(
+                                  keyboardType: TextInputType.multiline,
+                                  textInputAction: TextInputAction.newline,
+                                  maxLines: 5,
+                                  minLines: 1,
+                                  maxLength: maxLength,
+                                  focusNode: _focusNode,
+                                  controller: _textController,
+                                  decoration: InputDecoration(
+                                    hintText: widget.hintText,
+                                    hintStyle: const TextStyle(
+                                      fontSize: CustomSize.defaultHintTextSize,
+                                    ),
+                                    border: InputBorder.none,
+                                    counterText: '',
+                                  ),
                                 ),
+                              ),
+                              // 聊天发送按钮
+                              _buildSendOrVoiceButton(context, customColors),
                             ],
                           ),
                         ),
-                      )
-                      .toList(),
-                ),
-              ),
-            // 工具栏
-            if (widget.toolbar != null) widget.toolbar!,
-            // if (widget.toolbar != null)
-            const SizedBox(height: 8),
-            // 聊天内容输入栏
-            SingleChildScrollView(
-              child: Slidable(
-                startActionPane: widget.onNewChat != null
-                    ? ActionPane(
-                        extentRatio: 0.3,
-                        motion: const ScrollMotion(),
-                        children: [
-                          SlidableAction(
-                            autoClose: true,
-                            label: AppLocale.newChat.getString(context),
-                            backgroundColor: Colors.blue,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(20)),
-                            onPressed: (_) {
-                              widget.onNewChat!();
-                            },
-                          ),
-                          const SizedBox(width: 10),
-                        ],
-                      )
-                    : null,
-                child: Row(
-                  children: [
-                    // 聊天功能按钮
-                    Row(
-                      children: [
-                        if (widget.leftSideToolsBuilder != null)
-                          ...widget.leftSideToolsBuilder!(),
-                        if (widget.enableNotifier.value &&
-                            widget.enableImageUpload &&
-                            Ability().supportImageUploader &&
-                            widget.onImageSelected != null &&
-                            Ability().supportWebSocket)
-                          _buildImageUploadButton(
-                              context, setting, customColors),
-                      ],
-                    ),
-                    // 聊天输入框
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: customColors.chatInputAreaBackground,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextFormField(
-                                keyboardType: TextInputType.multiline,
-                                textInputAction: TextInputAction.newline,
-                                maxLines: 5,
-                                minLines: 1,
-                                maxLength: maxLength,
-                                focusNode: _focusNode,
-                                controller: _textController,
-                                decoration: InputDecoration(
-                                  hintText: widget.hintText,
-                                  hintStyle: const TextStyle(
-                                    fontSize: CustomSize.defaultHintTextSize,
-                                  ),
-                                  border: InputBorder.none,
-                                  counterText: '',
-                                ),
-                              ),
-                            ),
-                            // 聊天发送按钮
-                            _buildSendOrVoiceButton(context, customColors),
-                          ],
-                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       }),
     );
@@ -290,7 +271,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
           if (widget.onStopGenerate != null) {
             openConfirmDialog(
               context,
-              '确定要打断当前对话？',
+              '确定要停止当前输出？',
               () {
                 widget.onStopGenerate!();
                 HapticFeedbackHelper.heavyImpact();
@@ -299,17 +280,10 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
             );
           }
         },
-        child: AnimatedBuilder(
-            animation: anim,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: anim.value,
-                child: Icon(
-                  Icons.stop_circle_outlined,
-                  color: customColors.linkColor?.withOpacity(anim.value),
-                ),
-              );
-            }),
+        child: LoadingAnimationWidget.beat(
+          color: customColors.linkColor!,
+          size: 20,
+        ),
       );
     }
 

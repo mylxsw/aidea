@@ -25,6 +25,7 @@ class WeakTextButton extends StatelessWidget {
           Icon(
             icon,
             color: customColors.weakLinkColor,
+            size: (fontSize ?? 15.0) + 1,
           ),
         if (icon != null) const SizedBox(width: 5),
         Text(

@@ -75,7 +75,7 @@ class _BackgroundContainerState extends State<BackgroundContainer> {
         FocusScope.of(context).requestFocus(FocusNode());
       },
       onHorizontalDragUpdate: (details) {
-        int sensitivity = 10;
+        int sensitivity = 15;
         if (details.delta.dx > sensitivity) {
           if (Navigator.of(context).canPop()) {
             Navigator.of(context).pop();
