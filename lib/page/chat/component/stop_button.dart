@@ -12,7 +12,7 @@ class StopButton extends StatelessWidget {
 
     return TextButton.icon(
       style: ButtonStyle(
-        minimumSize: MaterialStateProperty.all(const Size(0, 0)),
+        // minimumSize: MaterialStateProperty.all(const Size(0, 0)),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         iconColor: const MaterialStatePropertyAll(Colors.red),
         backgroundColor:

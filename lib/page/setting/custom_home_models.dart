@@ -359,6 +359,10 @@ class HomeModelItem extends StatelessWidget {
       itemCount: models.length,
       itemBuilder: (context, i) {
         var item = models[i];
+        if (item.avatarUrl == null) {
+          // TODO: remove this debug print
+          print(item.toJson());
+        }
         return ListTile(
           title: Container(
             alignment: Alignment.center,

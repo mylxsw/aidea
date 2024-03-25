@@ -12,6 +12,7 @@ import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_initicon/flutter_initicon.dart';
 import 'package:flutter_localization/flutter_localization.dart';
@@ -32,6 +33,9 @@ class AdminModelsPage extends StatefulWidget {
 class _AdminModelsPageState extends State<AdminModelsPage> {
   // 渠道
   List<AdminChannel> channels = [];
+
+  // 搜索关键字
+  String keyword = '';
 
   /// 查找渠道
   AdminChannel searchChannel(AdminModelProvider provider) {
@@ -97,46 +101,86 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
-        child: RefreshIndicator(
-          color: customColors.linkColor,
-          onRefresh: () async {
-            context.read<ModelBloc>().add(ModelsLoadEvent());
-          },
-          displacement: 20,
-          child: BlocConsumer<ModelBloc, ModelState>(
-            listenWhen: (previous, current) => current is ModelOperationResult,
-            listener: (context, state) {
-              if (state is ModelOperationResult) {
-                if (state.success) {
-                  showSuccessMessage(state.message);
-                  context.read<ModelBloc>().add(ModelsLoadEvent());
-                } else {
-                  showErrorMessage(state.message);
-                }
-              }
-            },
-            buildWhen: (previous, current) => current is ModelsLoaded,
-            builder: (context, state) {
-              if (state is ModelsLoaded) {
-                return SafeArea(
-                  top: false,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(5),
-                    itemCount: state.models.length,
-                    itemBuilder: (context, index) {
-                      final mod = state.models[index];
-
-                      return buildModelItem(context, customColors, mod);
-                    },
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.only(left: 10, right: 10, bottom: 5),
+              child: TextField(
+                textAlignVertical: TextAlignVertical.center,
+                style: TextStyle(color: customColors.dialogDefaultTextColor),
+                decoration: InputDecoration(
+                  hintText: AppLocale.search.getString(context),
+                  hintStyle: TextStyle(
+                    color: customColors.dialogDefaultTextColor,
                   ),
-                );
-              }
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: customColors.dialogDefaultTextColor,
+                  ),
+                  isDense: true,
+                  border: InputBorder.none,
+                ),
+                onChanged: (value) => setState(() => keyword = value),
+              ),
+            ),
+            Expanded(
+              child: RefreshIndicator(
+                color: customColors.linkColor,
+                onRefresh: () async {
+                  context.read<ModelBloc>().add(ModelsLoadEvent());
+                },
+                displacement: 20,
+                child: BlocConsumer<ModelBloc, ModelState>(
+                  listenWhen: (previous, current) =>
+                      current is ModelOperationResult,
+                  listener: (context, state) {
+                    if (state is ModelOperationResult) {
+                      if (state.success) {
+                        showSuccessMessage(state.message);
+                        context.read<ModelBloc>().add(ModelsLoadEvent());
+                      } else {
+                        showErrorMessage(state.message);
+                      }
+                    }
+                  },
+                  buildWhen: (previous, current) => current is ModelsLoaded,
+                  builder: (context, state) {
+                    if (state is ModelsLoaded) {
+                      final models = state.models
+                          .where((e) =>
+                              keyword == '' ||
+                              e.name
+                                  .toLowerCase()
+                                  .contains(keyword.toLowerCase()) ||
+                              e.modelId
+                                  .toLowerCase()
+                                  .contains(keyword.toLowerCase()) ||
+                              (e.description ?? '')
+                                  .toLowerCase()
+                                  .contains(keyword.toLowerCase()))
+                          .toList();
+                      return SafeArea(
+                        top: false,
+                        child: ListView.builder(
+                          padding: const EdgeInsets.all(5),
+                          itemCount: models.length,
+                          itemBuilder: (context, index) {
+                            final mod = models[index];
 
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            },
-          ),
+                            return buildModelItem(context, customColors, mod);
+                          },
+                        ),
+                      );
+                    }
+
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -204,7 +248,44 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // 头像
-                    buildAvatar(mod),
+                    Stack(
+                      children: [
+                        buildAvatar(mod),
+                        if (mod.isVision)
+                          Positioned(
+                            left: 0,
+                            bottom: 0,
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                bottomLeft: Radius.circular(8),
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.all(3),
+                                width: 80,
+                                color: Colors.black.withAlpha(30),
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.remove_red_eye_outlined,
+                                      color: Colors.white,
+                                      size: 12,
+                                    ),
+                                    SizedBox(width: 3),
+                                    Text(
+                                      '视觉',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                      ],
+                    ),
                     // 名称
                     Expanded(
                       child: Container(
@@ -219,12 +300,13 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
                               ),
                             ),
                             Text(
-                              mod.description ?? '',
+                              buildModelDescription(mod),
                               style: TextStyle(
                                 fontSize: 10,
                                 overflow: TextOverflow.ellipsis,
                                 color: customColors.weakTextColor,
                               ),
+                              maxLines: 2,
                             ),
                           ],
                         ),
@@ -267,8 +349,8 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
   Widget buildAvatar(AdminModel mod) {
     if (mod.avatarUrl != null && mod.avatarUrl!.startsWith('http')) {
       return SizedBox(
-        width: 70,
-        height: 70,
+        width: 80,
+        height: 80,
         child: ClipRRect(
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(8),
@@ -284,12 +366,38 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
 
     return Initicon(
       text: mod.name.split('、').join(' '),
-      size: 70,
+      size: 80,
       backgroundColor: Colors.grey.withAlpha(100),
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(8),
         bottomLeft: Radius.circular(8),
       ),
     );
+  }
+
+  String buildModelDescription(AdminModel mod) {
+    String desc = '';
+    if (mod.inputPrice > 0 || mod.outputPrice > 0) {
+      desc += '💰 ';
+      if (mod.inputPrice == mod.outputPrice) {
+        desc += '${mod.inputPrice} 智慧果/1K Token';
+      } else {
+        desc += '${mod.inputPrice} / ${mod.outputPrice} 智慧果/1K Token';
+      }
+    }
+
+    if (mod.maxContext > 0) {
+      if (desc.isNotEmpty) {
+        desc += '，';
+      }
+
+      desc += '🎞️ ${mod.maxContext} Tokens';
+    }
+
+    if (desc != '') {
+      desc += '\n';
+    }
+
+    return desc + (mod.description ?? '');
   }
 }

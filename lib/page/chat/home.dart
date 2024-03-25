@@ -77,20 +77,20 @@ class _HomePageState extends State<HomePage> {
   List<HomeModelV2> models = [
     HomeModelV2(
       modelId: "openai:gpt-3.5-turbo",
-      modelName: 'GPT-3.5',
+      modelName: 'Chat-3.5',
       type: 'model',
       id: 'openai:gpt-3.5-turbo',
       supportVision: false,
-      name: 'GPT-3.5',
+      name: 'Chat-3.5',
       avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt35.png',
     ),
     HomeModelV2(
       modelId: "openai:gpt-4",
-      modelName: 'GPT-4',
+      modelName: 'Chat-4',
       type: 'model',
       id: 'openai:gpt-4',
       supportVision: false,
-      name: 'GPT-4',
+      name: 'Chat-4',
       avatarUrl:
           'https://ssl.aicode.cc/ai-server/assets/avatar/gpt4-preview.png',
     ),
@@ -106,9 +106,10 @@ class _HomePageState extends State<HomePage> {
 
   /// 用于监听键盘事件，实现回车发送消息，Shift+Enter换行
   late final FocusNode _focusNode = FocusNode(
-    onKey: (node, event) {
-      if (!event.isShiftPressed && event.logicalKey.keyLabel == 'Enter') {
-        if (event is RawKeyDownEvent) {
+    onKeyEvent: (node, event) {
+      if (!HardwareKeyboard.instance.isShiftPressed &&
+          event.logicalKey.keyLabel == 'Enter') {
+        if (event is KeyDownEvent) {
           onSubmit(context, _textController.text.trim());
         }
 

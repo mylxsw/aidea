@@ -64,8 +64,9 @@ class ModelAggregate {
 
   /// 根据模型唯一id查找模型
   static Future<mm.Model> model(String uid) async {
-    final supportModels = await models();
+    uid = uid.split(':').last;
 
+    final supportModels = await models();
     return supportModels.firstWhere(
       (element) => element.uid() == uid || element.id == uid,
       orElse: () => mm.Model(defaultChatModel, defaultChatModel, 'openai',

@@ -8,6 +8,11 @@ class AdminModel {
   AdminModelMeta? meta;
   List<AdminModelProvider> providers;
 
+  bool get isVision => meta?.vision ?? false;
+  int get inputPrice => meta?.inputPrice ?? 0;
+  int get outputPrice => meta?.outputPrice ?? 0;
+  int get maxContext => meta?.maxContext ?? 0;
+
   AdminModel({
     required this.modelId,
     required this.name,
