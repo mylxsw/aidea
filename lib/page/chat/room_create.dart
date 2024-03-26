@@ -660,7 +660,7 @@ void openSelectModelDialog(
             );
           });
     },
-    heightFactor: 0.7,
+    heightFactor: 0.85,
     title: title,
   );
 }
