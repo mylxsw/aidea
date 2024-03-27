@@ -847,7 +847,7 @@ class _HomePageState extends State<HomePage> {
                     matched.leftCount > 0 &&
                     matched.maxCount > 0) {
                   return Text(
-                    '今日还可免费畅享 ${matched.leftCount} 次',
+                    '今日还可免费${matched.leftCount}次',
                     style: TextStyle(
                       color: customColors.weakTextColor?.withAlpha(120),
                       fontSize: 11,

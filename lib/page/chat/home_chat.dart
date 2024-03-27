@@ -444,7 +444,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
                   if (matched != null &&
                       matched.leftCount > 0 &&
                       matched.maxCount > 0) {
-                    hintText += '（今日还可免费畅享${matched.leftCount}次）';
+                    hintText += '（今日还可免费${matched.leftCount}次）';
                   }
                 }
 
