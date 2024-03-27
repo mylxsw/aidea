@@ -1,5 +1,7 @@
 import 'package:askaide/page/component/background_container.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
+import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +52,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     title: const Text('创作岛'),
                     tiles: [
                       SettingsTile(
-                        title: const Text('Gallery'),
+                        title: const Text('创作历史'),
                         trailing: const Icon(
                           CupertinoIcons.chevron_forward,
                           size: 18,
@@ -63,10 +65,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     ],
                   ),
                   SettingsSection(
-                    title: const Text('用户管理'),
+                    title: const Text('用户 & 收入'),
                     tiles: [
                       SettingsTile(
-                        title: const Text('用户列表'),
+                        title: const Text('用户管理'),
                         trailing: const Icon(
                           CupertinoIcons.chevron_forward,
                           size: 18,
@@ -76,13 +78,24 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           context.push('/admin/users');
                         },
                       ),
+                      SettingsTile(
+                        title: const Text('支付订单历史'),
+                        trailing: const Icon(
+                          CupertinoIcons.chevron_forward,
+                          size: 18,
+                          color: Colors.grey,
+                        ),
+                        onPressed: (context) {
+                          context.push('/admin/payment/histories');
+                        },
+                      ),
                     ],
                   ),
                   SettingsSection(
-                    title: const Text('系统设置'),
+                    title: const Text('模型管理'),
                     tiles: [
                       SettingsTile(
-                        title: const Text('渠道管理'),
+                        title: const Text('渠道'),
                         trailing: const Icon(
                           CupertinoIcons.chevron_forward,
                           size: 18,
@@ -93,7 +106,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         },
                       ),
                       SettingsTile(
-                        title: const Text('大语言模型管理'),
+                        title: const Text('大语言模型'),
                         trailing: const Icon(
                           CupertinoIcons.chevron_forward,
                           size: 18,
@@ -101,6 +114,32 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         ),
                         onPressed: (context) {
                           context.push('/admin/models');
+                        },
+                      ),
+                    ],
+                  ),
+                  SettingsSection(
+                    title: const Text('系统设置'),
+                    tiles: [
+                      SettingsTile(
+                        title: const Text('更新配置缓存'),
+                        trailing: const Icon(
+                          CupertinoIcons.chevron_forward,
+                          size: 18,
+                          color: Colors.grey,
+                        ),
+                        onPressed: (context) {
+                          openConfirmDialog(
+                            context,
+                            '该操作将重新加载全部系统配置，确定继续？',
+                            () {
+                              APIServer().adminSettingsReload().then((value) {
+                                showSuccessMessage('更新成功');
+                              }).onError((error, stackTrace) {
+                                showErrorMessageEnhanced(context, error!);
+                              });
+                            },
+                          );
                         },
                       ),
                     ],

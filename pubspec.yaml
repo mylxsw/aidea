@@ -197,6 +197,7 @@ flutter:
     - assets/wechat-pay.png
     - assets/zhifubao.png
     - assets/stripe.png
+    - assets/apple.webp
 
   
   #   - images/a_dot_ham.jpeg

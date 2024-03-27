@@ -1,35 +1,33 @@
+import 'package:askaide/bloc/admin_payment_bloc.dart';
 import 'package:askaide/bloc/user_bloc.dart';
-import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/helper.dart';
-import 'package:askaide/helper/image.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/pagination.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
-import 'package:askaide/repo/api/admin/users.dart';
+import 'package:askaide/repo/api/admin/payment.dart';
 import 'package:askaide/repo/settings_repo.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_initicon/flutter_initicon.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
-class AdminUsersPage extends StatefulWidget {
+class PaymentHistoriesPage extends StatefulWidget {
   final SettingRepository setting;
-  const AdminUsersPage({
+  const PaymentHistoriesPage({
     super.key,
     required this.setting,
   });
 
   @override
-  State<AdminUsersPage> createState() => _AdminUsersPageState();
+  State<PaymentHistoriesPage> createState() => _PaymentHistoriesPageState();
 }
 
-class _AdminUsersPageState extends State<AdminUsersPage> {
+class _PaymentHistoriesPageState extends State<PaymentHistoriesPage> {
   /// 当前页码
   int page = 1;
 
@@ -41,7 +39,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
 
   @override
   void initState() {
-    context.read<UserBloc>().add(UserListLoadEvent(
+    context.read<AdminPaymentBloc>().add(AdminPaymentHistoriesLoadEvent(
           perPage: perPage,
           page: page,
           keyword: keywordController.text,
@@ -63,7 +61,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          '用户管理',
+          '支付订单历史',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
@@ -93,7 +91,9 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                   border: InputBorder.none,
                 ),
                 onEditingComplete: () {
-                  context.read<UserBloc>().add(UserListLoadEvent(
+                  context
+                      .read<AdminPaymentBloc>()
+                      .add(AdminPaymentHistoriesLoadEvent(
                         perPage: perPage,
                         page: page,
                         keyword: keywordController.text,
@@ -105,36 +105,37 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
               child: RefreshIndicator(
                 color: customColors.linkColor,
                 onRefresh: () async {
-                  context.read<UserBloc>().add(UserListLoadEvent(
+                  context
+                      .read<AdminPaymentBloc>()
+                      .add(AdminPaymentHistoriesLoadEvent(
                         perPage: perPage,
                         page: page,
                         keyword: keywordController.text,
                       ));
                 },
                 displacement: 20,
-                child: BlocConsumer<UserBloc, UserState>(
+                child: BlocConsumer<AdminPaymentBloc, AdminPaymentState>(
                   listener: (context, state) {
-                    if (state is UserOperationResult) {
+                    if (state is AdminPaymentOperationResult) {
                       if (state.success) {
-                        showSuccessMessage(state.message ??
-                            AppLocale.operateSuccess.getString(context));
+                        showSuccessMessage(state.message);
                         context.read<UserBloc>().add(UserListLoadEvent());
                       } else {
-                        showErrorMessage(state.message ??
-                            AppLocale.operateFailed.getString(context));
+                        showErrorMessage(state.message);
                       }
                     }
 
-                    if (state is UsersLoaded) {
+                    if (state is AdminPaymentHistoriesLoaded) {
                       setState(() {
-                        page = state.users.page;
-                        perPage = state.users.perPage;
+                        page = state.histories.page;
+                        perPage = state.histories.perPage;
                       });
                     }
                   },
-                  buildWhen: (previous, current) => current is UsersLoaded,
+                  buildWhen: (previous, current) =>
+                      current is AdminPaymentHistoriesLoaded,
                   builder: (context, state) {
-                    if (state is UsersLoaded) {
+                    if (state is AdminPaymentHistoriesLoaded) {
                       return SafeArea(
                         top: false,
                         child: Column(
@@ -142,28 +143,28 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                             Expanded(
                               child: ListView.builder(
                                 padding: const EdgeInsets.all(5),
-                                itemCount: state.users.data.length,
+                                itemCount: state.histories.data.length,
                                 itemBuilder: (context, index) {
-                                  return buildUserInfo(
+                                  return buildHistoryInfo(
                                     context,
                                     customColors,
-                                    state.users.data[index],
+                                    state.histories.data[index],
                                   );
                                 },
                               ),
                             ),
-                            if (state.users.lastPage != null &&
-                                state.users.lastPage! > 1)
+                            if (state.histories.lastPage != null &&
+                                state.histories.lastPage! > 1)
                               Container(
                                 padding: const EdgeInsets.all(10),
                                 child: Pagination(
-                                  numOfPages: state.users.lastPage ?? 1,
+                                  numOfPages: state.histories.lastPage ?? 1,
                                   selectedPage: page,
                                   pagesVisible: 5,
                                   onPageChanged: (selected) {
                                     context
-                                        .read<UserBloc>()
-                                        .add(UserListLoadEvent(
+                                        .read<AdminPaymentBloc>()
+                                        .add(AdminPaymentHistoriesLoadEvent(
                                           perPage: perPage,
                                           page: selected,
                                           keyword: keywordController.text,
@@ -189,10 +190,10 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
     );
   }
 
-  Widget buildUserInfo(
+  Widget buildHistoryInfo(
     BuildContext context,
     CustomColors customColors,
-    AdminUser user,
+    AdminPaymentHistory his,
   ) {
     return Container(
       margin: const EdgeInsets.symmetric(
@@ -211,7 +212,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
             borderRadius: BorderRadius.all(
                 Radius.circular(customColors.borderRadius ?? 8)),
             onTap: () {
-              context.push('/admin/users/${user.id}');
+              context.push('/admin/users/${his.userId}');
             },
             child: Stack(
               children: [
@@ -219,34 +220,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // 头像
-                    Stack(
-                      children: [
-                        buildUserAvatar(user),
-                        Positioned(
-                          bottom: 0,
-                          width: 70,
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.only(
-                              bottomLeft: Radius.circular(8),
-                            ),
-                            child: Container(
-                              color: Colors.black.withAlpha(100),
-                              padding: const EdgeInsets.symmetric(vertical: 2),
-                              child: Center(
-                                child: Text(
-                                  '#${user.id}',
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    overflow: TextOverflow.ellipsis,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    buildAvatar(his, radius: BorderRadius.circular(15)),
                     // 名称
                     Expanded(
                       child: Container(
@@ -254,14 +228,26 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              user.displayName,
-                              style: const TextStyle(
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                            Row(
+                              children: [
+                                Text(
+                                  '用户 ${his.userId} 充值 ${(his.retailPrice / 100).ceil()} 元',
+                                  style: const TextStyle(
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  '#${his.id}',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: customColors.weakTextColor,
+                                  ),
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 5),
-                            buildTags(context, customColors, user),
+                            buildTags(context, customColors, his),
                           ],
                         ),
                       ),
@@ -279,11 +265,14 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${user.userType}',
+                          his.environment,
                           style: TextStyle(
                             fontSize: 10,
                             overflow: TextOverflow.ellipsis,
-                            color: customColors.weakTextColor,
+                            fontWeight: FontWeight.bold,
+                            color: his.environment.toLowerCase() == 'production'
+                                ? customColors.linkColor
+                                : Colors.amber,
                           ),
                         ),
                       ],
@@ -301,9 +290,8 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          user.createdAt != null
-                              ? humanTime(user.createdAt)
-                              : '',
+                          DateFormat('y-MM-dd HH:mm')
+                              .format(his.purchaseAt.toLocal()),
                           style: TextStyle(
                             fontSize: 10,
                             overflow: TextOverflow.ellipsis,
@@ -323,53 +311,44 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
   }
 }
 
-Widget buildUserAvatar(
-  AdminUser user, {
+Widget buildAvatar(
+  AdminPaymentHistory his, {
   BorderRadius radius = const BorderRadius.only(
     topLeft: Radius.circular(8),
     bottomLeft: Radius.circular(8),
   ),
 }) {
-  if (user.avatar != null && user.avatar!.startsWith('http')) {
-    return SizedBox(
-      width: 70,
-      height: 70,
-      child: ClipRRect(
-        borderRadius: radius,
-        child: CachedNetworkImage(
-          imageUrl: imageURL(user.avatar!, qiniuImageTypeAvatar),
-          fit: BoxFit.fill,
-        ),
-      ),
-    );
+  final source = (his.source ?? '').toLowerCase();
+
+  var image = '';
+  if (source.contains('支付宝') || source.contains('alipay')) {
+    image = 'assets/zhifubao.png';
+  } else if (source.contains('微信') || source.contains('wechat')) {
+    image = 'assets/wechat-pay.png';
+  } else if (source.contains('stripe')) {
+    image = 'assets/stripe.png';
+  } else if (source.contains('apple')) {
+    image = 'assets/apple.webp';
+  } else {
+    image = 'assets/app.png';
   }
 
-  return Initicon(
-    text: user.displayName.split('、').join(' '),
-    size: 70,
-    backgroundColor: Colors.grey.withAlpha(100),
-    borderRadius: radius,
+  return SizedBox(
+    width: 70,
+    height: 70,
+    child: ClipRRect(
+      borderRadius: radius,
+      child: Image.asset(image),
+    ),
   );
 }
 
 Widget buildTags(
-    BuildContext context, CustomColors customColors, AdminUser user) {
+    BuildContext context, CustomColors customColors, AdminPaymentHistory his) {
   final tags = <Widget>[];
 
-  if (user.email != null && user.email!.isNotEmpty) {
-    tags.add(buildTag(context, customColors, '邮箱'));
-  }
-
-  if (user.phone != null && user.phone!.isNotEmpty) {
-    tags.add(buildTag(context, customColors, '手机'));
-  }
-
-  if (user.unionId != null && user.unionId!.isNotEmpty) {
-    tags.add(buildTag(context, customColors, '微信'));
-  }
-
-  if (user.appleUid != null && user.appleUid!.isNotEmpty) {
-    tags.add(buildTag(context, customColors, 'Apple'));
+  if (his.source != null) {
+    tags.add(buildTag(context, customColors, his.source!));
   }
 
   return Wrap(

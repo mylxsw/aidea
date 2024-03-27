@@ -1,3 +1,4 @@
+import 'package:askaide/bloc/admin_payment_bloc.dart';
 import 'package:askaide/bloc/channel_bloc.dart';
 import 'package:askaide/bloc/model_bloc.dart';
 import 'package:askaide/bloc/user_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:askaide/page/admin/dashboard.dart';
 import 'package:askaide/page/admin/models.dart';
 import 'package:askaide/page/admin/models_add.dart';
 import 'package:askaide/page/admin/models_edit.dart';
+import 'package:askaide/page/admin/payments.dart';
 import 'package:askaide/page/admin/user.dart';
 import 'package:askaide/page/admin/users.dart';
 import 'package:askaide/page/balance/web_payment_proxy.dart';
@@ -1224,6 +1226,24 @@ class MyApp extends StatefulWidget {
                       ),
                     ],
                     child: AdminUserPage(setting: settingRepo, userId: userId),
+                  ),
+                );
+              },
+            ),
+
+            GoRoute(
+              name: 'admin-payment-histories',
+              path: '/admin/payment/histories',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => AdminPaymentBloc(),
+                      ),
+                    ],
+                    child: PaymentHistoriesPage(setting: settingRepo),
                   ),
                 );
               },

@@ -10,6 +10,7 @@ import 'package:askaide/helper/platform.dart';
 import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/repo/api/admin/channels.dart';
 import 'package:askaide/repo/api/admin/models.dart';
+import 'package:askaide/repo/api/admin/payment.dart';
 import 'package:askaide/repo/api/admin/users.dart';
 import 'package:askaide/repo/api/article.dart';
 import 'package:askaide/repo/api/creative.dart';
@@ -2174,5 +2175,45 @@ class APIServer {
     return sendGetRequest('/v1/admin/quotas/users/$userId', (resp) {
       return QuotaResp.fromJson(resp.data);
     });
+  }
+
+  /// 管理员接口：重新加载配置缓存
+  Future<void> adminSettingsReload() async {
+    return sendPostRequest('/v1/admin/settings/reload', (resp) {});
+  }
+
+  /// 管理员接口：重新加载配置缓存
+  Future<void> adminSettingReload(String key) async {
+    return sendPostRequest('/v1/admin/settings/key/$key/reload', (resp) {});
+  }
+
+  /// 管理员接口：查询所有支付订单
+  Future<PagedData<AdminPaymentHistory>> adminPaymentHistories({
+    int page = 1,
+    int perPage = 20,
+    String? keyword,
+  }) async {
+    return sendGetRequest(
+      '/v1/admin/payments/histories',
+      (resp) {
+        var res = <AdminPaymentHistory>[];
+        for (var item in resp.data['data']) {
+          res.add(AdminPaymentHistory.fromJson(item));
+        }
+
+        return PagedData(
+          data: res,
+          page: resp.data['page'] ?? 1,
+          perPage: resp.data['per_page'] ?? 20,
+          total: resp.data['total'],
+          lastPage: resp.data['last_page'],
+        );
+      },
+      queryParameters: {
+        'page': page,
+        'per_page': perPage,
+        'keyword': keyword,
+      },
+    );
   }
 }
