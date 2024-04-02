@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:askaide/helper/constant.dart';
+import 'package:askaide/helper/platform.dart';
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
@@ -75,10 +76,13 @@ class _BackgroundContainerState extends State<BackgroundContainer> {
         FocusScope.of(context).requestFocus(FocusNode());
       },
       onHorizontalDragUpdate: (details) {
-        int sensitivity = 15;
-        if (details.delta.dx > sensitivity) {
-          if (Navigator.of(context).canPop()) {
-            Navigator.of(context).pop();
+        // Only the mobile app supports horizontal swiping to go back to the previous page.
+        if (PlatformTool.isAndroid() || PlatformTool.isIOS()) {
+          int sensitivity = 15;
+          if (details.delta.dx > sensitivity) {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            }
           }
         }
       },

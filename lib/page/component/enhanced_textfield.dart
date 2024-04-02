@@ -66,6 +66,8 @@ class EnhancedTextField extends StatefulWidget {
 
   final Widget? middleWidget;
 
+  final Function(bool hasFocus)? onFocusChange;
+
   const EnhancedTextField({
     super.key,
     required this.customColors,
@@ -103,6 +105,7 @@ class EnhancedTextField extends StatefulWidget {
     this.hintTextSize,
     this.labelHelpWidget,
     this.middleWidget,
+    this.onFocusChange,
   });
 
   @override
@@ -232,73 +235,76 @@ class _EnhancedTextFieldState extends State<EnhancedTextField> {
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TextFormField(
-                  initialValue: widget.initValue,
-                  readOnly: widget.readOnly ?? false,
-                  focusNode: widget.focusNode,
-                  controller: widget.controller,
-                  inputFormatters: widget.inputFormatters,
-                  textDirection: widget.textDirection,
-                  obscureText: widget.obscureText ?? false,
-                  enabled: widget.enabled ?? true,
-                  style: TextStyle(
-                    color: widget.customColors.textfieldValueColor,
-                    fontSize: widget.fontSize ?? 15,
-                  ),
-                  decoration: InputDecoration(
-                    filled: widget.enableBackground,
-                    fillColor: widget.customColors.textfieldBackgroundColor,
-                    hintText: widget.hintText,
-                    hintStyle: TextStyle(
-                      fontSize:
-                          widget.hintTextSize ?? CustomSize.defaultHintTextSize,
-                      color: widget.hintColor ??
-                          widget.customColors.textfieldHintColor,
+                Focus(
+                  onFocusChange: widget.onFocusChange,
+                  child: TextFormField(
+                    initialValue: widget.initValue,
+                    readOnly: widget.readOnly ?? false,
+                    focusNode: widget.focusNode,
+                    controller: widget.controller,
+                    inputFormatters: widget.inputFormatters,
+                    textDirection: widget.textDirection,
+                    obscureText: widget.obscureText ?? false,
+                    enabled: widget.enabled ?? true,
+                    style: TextStyle(
+                      color: widget.customColors.textfieldValueColor,
+                      fontSize: widget.fontSize ?? 15,
                     ),
-                    hintTextDirection: widget.textDirection,
-                    counterText: "",
-                    border: resolveInputBorder(),
-                    enabledBorder: resolveInputBorder(),
-                    focusedBorder: resolveInputBorder(),
-                    // isDense: true,
-                    contentPadding: EdgeInsets.only(
-                      top: widget.labelPosition == LabelPosition.top ? 0 : 10,
-                      left: widget.enableBackground ? 15 : 0,
-                      right: widget.enableBackground ? 15 : 0,
-                      bottom:
-                          (widget.showCounter || widget.bottomButton != null) &&
-                                  widget.middleWidget == null
-                              ? 30
-                              : 10,
+                    decoration: InputDecoration(
+                      filled: widget.enableBackground,
+                      fillColor: widget.customColors.textfieldBackgroundColor,
+                      hintText: widget.hintText,
+                      hintStyle: TextStyle(
+                        fontSize: widget.hintTextSize ??
+                            CustomSize.defaultHintTextSize,
+                        color: widget.hintColor ??
+                            widget.customColors.textfieldHintColor,
+                      ),
+                      hintTextDirection: widget.textDirection,
+                      counterText: "",
+                      border: resolveInputBorder(),
+                      enabledBorder: resolveInputBorder(),
+                      focusedBorder: resolveInputBorder(),
+                      // isDense: true,
+                      contentPadding: EdgeInsets.only(
+                        top: widget.labelPosition == LabelPosition.top ? 0 : 10,
+                        left: widget.enableBackground ? 15 : 0,
+                        right: widget.enableBackground ? 15 : 0,
+                        bottom: (widget.showCounter ||
+                                    widget.bottomButton != null) &&
+                                widget.middleWidget == null
+                            ? 30
+                            : 10,
+                      ),
+                      labelText: widget.labelPosition == LabelPosition.inner
+                          ? widget.labelText
+                          : null,
+                      labelStyle: TextStyle(
+                        color: widget.customColors.textfieldLabelColor,
+                      ),
+                      suffixIcon: widget.suffixIcon ??
+                          (widget.labelPosition == LabelPosition.left
+                              ? widget.inputSelector
+                              : null),
                     ),
-                    labelText: widget.labelPosition == LabelPosition.inner
-                        ? widget.labelText
-                        : null,
-                    labelStyle: TextStyle(
-                      color: widget.customColors.textfieldLabelColor,
-                    ),
-                    suffixIcon: widget.suffixIcon ??
-                        (widget.labelPosition == LabelPosition.left
-                            ? widget.inputSelector
-                            : null),
-                  ),
-                  cursorRadius: const Radius.circular(10),
-                  keyboardType: widget.keyboardType,
-                  autofocus: widget.autofocus ?? false,
-                  maxLength: widget.maxLength,
-                  minLines: widget.minLines,
-                  maxLines: widget.maxLines,
-                  onChanged: widget.controller == null
-                      ? (value) {
-                          setState(() {
-                            textLength = value.length;
-                          });
+                    cursorRadius: const Radius.circular(10),
+                    keyboardType: widget.keyboardType,
+                    autofocus: widget.autofocus ?? false,
+                    maxLength: widget.maxLength,
+                    minLines: widget.minLines,
+                    maxLines: widget.maxLines,
+                    onChanged: widget.controller == null
+                        ? (value) {
+                            setState(() {
+                              textLength = value.length;
+                            });
 
-                          if (widget.onChanged != null) {
-                            widget.onChanged!(value);
+                            if (widget.onChanged != null) {
+                              widget.onChanged!(value);
+                            }
                           }
-                        }
-                      : null,
+                        : null,
+                  ),
                 ),
                 widget.middleWidget ?? const SizedBox(),
               ],

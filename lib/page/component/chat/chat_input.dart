@@ -30,6 +30,7 @@ class ChatInput extends StatefulWidget {
   final Function()? onVoiceRecordTappedEvent;
   final List<Widget> Function()? leftSideToolsBuilder;
   final Function()? onStopGenerate;
+  final Function(bool hasFocus)? onFocusChange;
 
   const ChatInput({
     super.key,
@@ -44,6 +45,7 @@ class ChatInput extends StatefulWidget {
     this.onImageSelected,
     this.selectedImageFiles,
     this.onStopGenerate,
+    this.onFocusChange,
   });
 
   @override
@@ -70,6 +72,9 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
   );
 
   final maxLength = 150000;
+
+  /// Maximum height of the chat input box
+  var maxLines = 5;
 
   @override
   void initState() {
@@ -225,21 +230,35 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                           child: Row(
                             children: [
                               Expanded(
-                                child: TextFormField(
-                                  keyboardType: TextInputType.multiline,
-                                  textInputAction: TextInputAction.newline,
-                                  maxLines: 5,
-                                  minLines: 1,
-                                  maxLength: maxLength,
-                                  focusNode: _focusNode,
-                                  controller: _textController,
-                                  decoration: InputDecoration(
-                                    hintText: widget.hintText,
-                                    hintStyle: const TextStyle(
-                                      fontSize: CustomSize.defaultHintTextSize,
+                                child: Focus(
+                                  onFocusChange: (hasFocus) {
+                                    setState(() {
+                                      if (hasFocus) {
+                                        maxLines = 10;
+                                      } else {
+                                        maxLines = 5;
+                                      }
+                                    });
+
+                                    widget.onFocusChange?.call(hasFocus);
+                                  },
+                                  child: TextFormField(
+                                    keyboardType: TextInputType.multiline,
+                                    textInputAction: TextInputAction.newline,
+                                    maxLines: maxLines,
+                                    minLines: 1,
+                                    maxLength: maxLength,
+                                    focusNode: _focusNode,
+                                    controller: _textController,
+                                    decoration: InputDecoration(
+                                      hintText: widget.hintText,
+                                      hintStyle: const TextStyle(
+                                        fontSize:
+                                            CustomSize.defaultHintTextSize,
+                                      ),
+                                      border: InputBorder.none,
+                                      counterText: '',
                                     ),
-                                    border: InputBorder.none,
-                                    counterText: '',
                                   ),
                                 ),
                               ),

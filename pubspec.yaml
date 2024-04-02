@@ -179,14 +179,14 @@ flutter:
     - assets/app-256-transparent.png
     - assets/light-dark-auto.png
     - assets/openai.png
-    - assets/background.png
-    - assets/background-dark.png
-    - assets/background-team.png
-    - assets/background-team-dark.png
-    - assets/background-creative-island.webp
-    - assets/background-creative-island-dark.webp
-    - assets/background-discovery.png
-    - assets/background-discovery-dark.webp
+    - assets/background.jpg
+    - assets/background-dark.jpg
+    - assets/background-team.jpg
+    - assets/background-creative-island.jpg
+    - assets/background-discovery-dark.jpg
+    - assets/background-dark-s1.jpg
+    - assets/background-dark-s3.jpg
+    - assets/background-light-s1.jpg
     - assets/transport.png
     - assets/weibo.png
     - assets/github.png

@@ -104,6 +104,9 @@ class _HomePageState extends State<HomePage> {
   /// 促销事件
   PromotionEvent? promotionEvent;
 
+  /// Maximum height of the chat input box
+  int inputMaxLines = 6;
+
   /// 用于监听键盘事件，实现回车发送消息，Shift+Enter换行
   late final FocusNode _focusNode = FocusNode(
     onKeyEvent: (node, event) {
@@ -487,10 +490,21 @@ class _HomePageState extends State<HomePage> {
                           ),
                         Expanded(
                           child: EnhancedTextField(
+                            onFocusChange: (hasFocus) {
+                              if (hasFocus) {
+                                setState(() {
+                                  inputMaxLines = 15;
+                                });
+                              } else {
+                                setState(() {
+                                  inputMaxLines = 6;
+                                });
+                              }
+                            },
                             focusNode: _focusNode,
                             controller: _textController,
                             customColors: customColors,
-                            maxLines: 10,
+                            maxLines: inputMaxLines,
                             minLines: 6,
                             hintText:
                                 AppLocale.askMeAnyQuestion.getString(context),
