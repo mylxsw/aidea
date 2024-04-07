@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
 # 应用正式发布时，需要同步修改 lib/helper/constant.dart 中的 VERSION 值
-version: 1.0.13+1
+version: 1.0.14+1
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -49,7 +49,7 @@ dependencies:
   bot_toast: ^4.0.3
   loading_animation_widget: ^1.2.0+4
   flip_card: ^0.7.0
-  flutter_slidable: ^2.0.0
+  flutter_slidable: ^3.0.1
   provider: ^6.0.5
   flutter_iconpicker: 
     git:
@@ -69,7 +69,7 @@ dependencies:
   file_saver:
     git:
       url: https://github.com/incrediblezayed/file_saver
-      ref: main
+      ref: f7259f1d97558251a5c3f81847904b63c08b482b
   image_gallery_saver: ^1.7.1
   tiktoken: ^1.0.3
   flutter_colorpicker: ^1.0.3
@@ -125,6 +125,9 @@ dependencies:
   media_kit_libs_video: ^1.0.4
   path: ^1.8.3
   autoscale_tabbarview: ^1.0.2
+  flutter_stripe: ^10.1.1
+  flutter_stripe_web: ^5.1.0
+  stripe_js: ^3.4.0
   
 dev_dependencies:
   flutter_test:
@@ -175,14 +178,14 @@ flutter:
     - assets/app-256-transparent.png
     - assets/light-dark-auto.png
     - assets/openai.png
-    - assets/background.png
-    - assets/background-dark.png
-    - assets/background-team.png
-    - assets/background-team-dark.png
-    - assets/background-creative-island.webp
-    - assets/background-creative-island-dark.webp
-    - assets/background-discovery.png
-    - assets/background-discovery-dark.webp
+    - assets/background.jpg
+    - assets/background-dark.jpg
+    - assets/background-team.jpg
+    - assets/background-creative-island.jpg
+    - assets/background-discovery-dark.jpg
+    - assets/background-dark-s1.jpg
+    - assets/background-dark-s3.jpg
+    - assets/background-light-s1.jpg
     - assets/transport.png
     - assets/weibo.png
     - assets/github.png
@@ -190,6 +193,10 @@ flutter:
     - assets/xiaohongshu.png
     - assets/play.png
     - assets/text-to-video.gif
+    - assets/wechat-pay.png
+    - assets/zhifubao.png
+    - assets/stripe.png
+    - assets/apple.webp
 
   
   #   - images/a_dot_ham.jpeg

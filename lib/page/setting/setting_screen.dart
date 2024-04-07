@@ -68,11 +68,28 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
           ),
           actions: [
+            BlocBuilder<AccountBloc, AccountState>(
+              buildWhen: (previous, current) => current is AccountLoaded,
+              builder: (context, state) {
+                if (userHasLabPermission(state)) {
+                  return IconButton(
+                    onPressed: () {
+                      context.push('/admin/dashboard');
+                    },
+                    icon: const Icon(Icons.developer_board_outlined),
+                    tooltip: '管理后台',
+                  );
+                }
+
+                return const SizedBox();
+              },
+            ),
             IconButton(
               onPressed: () {
                 context.push('/notifications');
               },
               icon: const Icon(Icons.notifications_outlined),
+              tooltip: '消息通知',
             ),
           ],
           child: BlocBuilder<AccountBloc, AccountState>(
@@ -283,22 +300,10 @@ class _SettingScreenState extends State<SettingScreen> {
                     tiles: [
                       if (userHasLabPermission(state))
                         SettingsTile(
-                          title: const Text('模型 Gallery'),
-                          trailing: Icon(
-                            CupertinoIcons.chevron_forward,
-                            size: MediaQuery.of(context).textScaleFactor * 18,
-                            color: Colors.grey,
-                          ),
-                          onPressed: (context) {
-                            context.push('/creative-island/models');
-                          },
-                        ),
-                      if (userHasLabPermission(state))
-                        SettingsTile(
                           title: const Text('画板'),
-                          trailing: Icon(
+                          trailing: const Icon(
                             CupertinoIcons.chevron_forward,
-                            size: MediaQuery.of(context).textScaleFactor * 18,
+                            size: 18,
                             color: Colors.grey,
                           ),
                           onPressed: (context) {
@@ -311,9 +316,9 @@ class _SettingScreenState extends State<SettingScreen> {
                       // 诊断
                       SettingsTile(
                         title: Text(AppLocale.diagnostic.getString(context)),
-                        trailing: Icon(
+                        trailing: const Icon(
                           CupertinoIcons.chevron_forward,
-                          size: MediaQuery.of(context).textScaleFactor * 18,
+                          size: 18,
                           color: Colors.grey,
                         ),
                         onPressed: (context) {
@@ -324,6 +329,35 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                 // 社交媒体图标
                 _buildSocialIcons(context),
+                // 版权信息
+                CustomSettingsSection(
+                  child: Column(
+                    children: [
+                      Text(
+                        'Copyright © 2023-${DateTime.now().year}',
+                        style: TextStyle(
+                          color: customColors.weakTextColor,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          launchUrlString(
+                            'https://aidea.aicode.cc',
+                            mode: LaunchMode.externalApplication,
+                          );
+                        },
+                        child: Text(
+                          'Gulu Artificial Intelligence Technology Co., Ltd.',
+                          style: TextStyle(
+                            color: customColors.weakTextColor,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                    ],
+                  ),
+                ),
               ]);
             },
           ),
@@ -462,7 +496,9 @@ class _SettingScreenState extends State<SettingScreen> {
   Future<List<SelectorItem<String>>> _defaultServerList() async {
     return [
       SelectorItem(const Text('官方正式服务器'), apiServerURL),
-      SelectorItem(const Text('本地开发机'), 'http://localhost:8080'),
+      SelectorItem(const Text('官方预发布服务器'), 'https://uat.aicode.cc'),
+      SelectorItem(const Text('官方测试服务器'), 'https://test.chatllm.app'),
+      SelectorItem(const Text('本地开发环境'), 'http://localhost:8080'),
     ];
   }
 

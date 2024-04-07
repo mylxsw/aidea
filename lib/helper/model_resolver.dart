@@ -47,6 +47,7 @@ class ModelResolver {
     required List<Message> contextMessages,
     required Function(ChatStreamRespData value) onMessage,
     int? maxTokens,
+    String? tempModel,
   }) async {
     if (room.modelCategory() == modelTypeDeepAI) {
       return await _deepAIModel(
@@ -72,6 +73,7 @@ class ModelResolver {
         contextMessages: contextMessages,
         onMessage: onMessage,
         maxTokens: maxTokens,
+        tempModel: tempModel,
       );
     }
   }
@@ -151,6 +153,7 @@ class ModelResolver {
     required List<Message> contextMessages,
     required Function(ChatStreamRespData value) onMessage,
     int? maxTokens,
+    String? tempModel,
   }) async {
     // 图像模式
     if (OpenAIRepository.isImageModel(room.modelName())) {
@@ -167,6 +170,7 @@ class ModelResolver {
       _buildRequestContext(room, contextMessages),
       onMessage,
       model: room.modelName(),
+      tempModel: tempModel,
       maxTokens: maxTokens,
       roomId: room.isLocalRoom ? null : room.id,
     );

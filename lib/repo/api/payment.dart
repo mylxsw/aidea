@@ -25,10 +25,12 @@ class PaymentProduct {
   String name;
   int quota;
   int retailPrice;
+  int retailPriceUSD;
   String expirePolicy;
   String expirePolicyText;
   bool recommend;
   String? description;
+  List<String> methods;
 
   PaymentProduct({
     required this.id,
@@ -39,19 +41,29 @@ class PaymentProduct {
     required this.expirePolicyText,
     this.recommend = false,
     this.description,
+    this.retailPriceUSD = 0,
+    this.methods = const [],
   });
 
   String get retailPriceText => '¥${(retailPrice / 100).toStringAsFixed(0)}';
+
+  String get retailPriceUSDText =>
+      '\$${(retailPriceUSD / 100).toStringAsFixed(2)}';
+
+  /// 是否支持 Stripe 支付
+  bool get supportStripe => methods.contains('stripe') || methods.isEmpty;
 
   toJson() => {
         'id': id,
         'name': name,
         'quota': quota,
         'retail_price': retailPrice,
+        'retail_price_usd': retailPriceUSD,
         'expire_policy': expirePolicy,
         'expire_policy_text': expirePolicyText,
         'recommend': recommend,
         'description': description,
+        'methods': methods,
       };
 
   static PaymentProduct fromJson(Map<String, dynamic> json) {
@@ -60,10 +72,14 @@ class PaymentProduct {
       name: json['name'],
       quota: json['quota'],
       retailPrice: json['retail_price'],
+      retailPriceUSD: json['retail_price_usd'] ?? 0,
       expirePolicy: json['expire_policy'],
       expirePolicyText: json['expire_policy_text'],
       recommend: json['recommend'] ?? false,
       description: json['description'],
+      methods: ((json['methods'] ?? []) as List<dynamic>)
+          .map((e) => e.toString())
+          .toList(),
     );
   }
 }
@@ -71,12 +87,14 @@ class PaymentProduct {
 class PaymentProducts {
   final List<PaymentProduct> consume;
   final String? note;
+  final bool preferUSD;
 
-  PaymentProducts(this.consume, {this.note});
+  PaymentProducts(this.consume, {this.note, this.preferUSD = false});
 
   toJson() => {
         'consume': consume,
         'note': note,
+        'prefer_usd': preferUSD,
       };
 
   static PaymentProducts fromJson(Map<String, dynamic> json) {
@@ -85,6 +103,7 @@ class PaymentProducts {
           .map((e) => PaymentProduct.fromJson(e))
           .toList(),
       note: json['note'],
+      preferUSD: json['prefer_usd'] ?? false,
     );
   }
 }
@@ -104,6 +123,44 @@ class PaymentStatus {
     return PaymentStatus(
       json['success'],
       note: json['note'],
+    );
+  }
+}
+
+class StripePaymentCreatedResponse {
+  final String paymentId;
+  final String customer;
+  final String paymentIntent;
+  final String ephemeralKey;
+  final String publishableKey;
+  final String proxyUrl;
+
+  StripePaymentCreatedResponse(
+    this.paymentId,
+    this.customer,
+    this.paymentIntent,
+    this.ephemeralKey,
+    this.publishableKey,
+    this.proxyUrl,
+  );
+
+  toJson() => {
+        'payment_id': paymentId,
+        'customer': customer,
+        'payment_intent': paymentIntent,
+        'ephemeral_key': ephemeralKey,
+        'publishable_key': publishableKey,
+        'proxy_url': proxyUrl,
+      };
+
+  static StripePaymentCreatedResponse fromJson(Map<String, dynamic> json) {
+    return StripePaymentCreatedResponse(
+      json['payment_id'],
+      json['customer'],
+      json['payment_intent'],
+      json['ephemeral_key'],
+      json['publishable_key'],
+      json['proxy_url'] ?? '',
     );
   }
 }

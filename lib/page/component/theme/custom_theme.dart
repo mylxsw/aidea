@@ -243,11 +243,11 @@ class CustomColors extends ThemeExtension<CustomColors> {
 
   static const light = CustomColors(
     borderRadius: 8,
-    appBarBackgroundImage: 'assets/background.png',
-    appBarBackgroundImageForRoom: 'assets/background-team.png',
+    appBarBackgroundImage: 'assets/background.jpg',
+    appBarBackgroundImageForRoom: 'assets/background-team.jpg',
     appBarBackgroundImageForCreativeIsland:
-        'assets/background-creative-island.webp',
-    appBarBackgroundImageDiscovery: 'assets/background-discovery.png',
+        'assets/background-creative-island.jpg',
+    appBarBackgroundImageDiscovery: 'assets/background-light-s1.jpg',
     chatRoomBackground: Color.fromARGB(255, 239, 239, 239),
     chatRoomReplyBackground: Colors.white,
     chatRoomReplyBackgroundSecondary: Color.fromARGB(200, 255, 255, 255),
@@ -301,11 +301,10 @@ class CustomColors extends ThemeExtension<CustomColors> {
 
   static const dark = CustomColors(
     borderRadius: 8,
-    appBarBackgroundImage: 'assets/background-dark.png',
-    appBarBackgroundImageForRoom: 'assets/background-team-dark.png',
-    appBarBackgroundImageForCreativeIsland:
-        'assets/background-creative-island-dark.webp',
-    appBarBackgroundImageDiscovery: 'assets/background-discovery-dark.webp',
+    appBarBackgroundImage: 'assets/background-dark.jpg',
+    appBarBackgroundImageForRoom: 'assets/background-discovery-dark.jpg',
+    appBarBackgroundImageForCreativeIsland: 'assets/background-dark-s3.jpg',
+    appBarBackgroundImageDiscovery: 'assets/background-dark-s1.jpg',
     chatRoomBackground: Color.fromARGB(255, 53, 53, 53),
     chatRoomReplyBackground: Color.fromARGB(255, 22, 22, 22),
     chatRoomReplyBackgroundSecondary: Color.fromARGB(200, 39, 39, 39),

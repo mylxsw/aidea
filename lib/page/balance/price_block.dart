@@ -72,31 +72,13 @@ class PriceBlock extends StatelessWidget {
               const SizedBox(height: 10),
               loading
                   ? const Text('加载中...')
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        if (detail.price != product.retailPriceText)
-                          Text(
-                            product.retailPriceText,
-                            style: TextStyle(
-                              fontSize: 13,
-                              decoration: TextDecoration.lineThrough,
-                              color: customColors.paymentItemDescriptionColor
-                                  ?.withAlpha(200),
-                            ),
-                          ),
-                        if (detail.price != product.retailPriceText)
-                          const SizedBox(width: 10),
-                        Text(
-                          detail.price,
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: customColors.linkColor,
-                          ),
-                        ),
-                      ],
+                  : Text(
+                      detail.price,
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: customColors.linkColor,
+                      ),
                     ),
             ],
           ),

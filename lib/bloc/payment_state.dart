@@ -11,6 +11,7 @@ class PaymentAppleProductsLoaded extends PaymentState {
   final Object? error;
   final bool loading;
   final String? note;
+  final bool preferUSD;
 
   PaymentAppleProductsLoaded(
     this.products, {
@@ -18,5 +19,6 @@ class PaymentAppleProductsLoaded extends PaymentState {
     required this.localProducts,
     this.error,
     required this.loading,
+    this.preferUSD = false,
   });
 }

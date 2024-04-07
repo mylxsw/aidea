@@ -347,7 +347,6 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                             context.pop();
                           },
                           usage: AvatarUsage.room,
-                          randomSeed: randomSeed,
                           defaultAvatarId: _avatarId,
                           defaultAvatarUrl: _avatarUrl,
                           externalAvatarUrls: [
@@ -609,15 +608,34 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
 
 void openSelectModelDialog(
   BuildContext context,
-  Function(mm.Model selected) onSelected, {
+  Function(mm.Model? selected) onSelected, {
   String? initValue,
   List<String>? reservedModels,
+  bool enableClear = false,
+  String? title,
+  String? priorityModelId,
 }) {
+  future() async {
+    final models = await ModelAggregate.models();
+
+    if (priorityModelId != null) {
+      // 将 models 中，id 与 priorityModelId 相同的元素排序到最前面
+      final index = models.indexWhere(
+          (e) => e.id == priorityModelId || e.uid() == priorityModelId);
+      if (index != -1) {
+        final model = models.removeAt(index);
+        models.insert(0, model);
+      }
+    }
+
+    return models;
+  }
+
   openModalBottomSheet(
     context,
     (context) {
       return FutureBuilder(
-          future: ModelAggregate.models(),
+          future: future(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               showErrorMessage(resolveError(context, snapshot.error!));
@@ -638,10 +656,12 @@ void openSelectModelDialog(
                 context.pop();
               },
               initValue: initValue,
+              enableClear: enableClear,
             );
           });
     },
-    heightFactor: 0.7,
+    heightFactor: 0.85,
+    title: title,
   );
 }
 

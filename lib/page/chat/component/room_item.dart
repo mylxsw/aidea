@@ -238,6 +238,7 @@ class RoomItem extends StatelessWidget {
     if (room.avatarUrl != null && room.avatarUrl!.startsWith('http')) {
       return SizedBox(
         width: 70,
+        height: 70,
         child: ClipRRect(
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(8),
