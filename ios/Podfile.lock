@@ -103,6 +103,42 @@ PODS:
   - sqflite (0.0.3):
     - Flutter
     - FlutterMacOS
+  - Stripe (23.22.1):
+    - StripeApplePay (= 23.22.1)
+    - StripeCore (= 23.22.1)
+    - StripePayments (= 23.22.1)
+    - StripePaymentsUI (= 23.22.1)
+    - StripeUICore (= 23.22.1)
+  - stripe_ios (0.0.1):
+    - Flutter
+    - Stripe (~> 23.22.0)
+    - StripeApplePay (~> 23.22.0)
+    - StripeFinancialConnections (~> 23.22.0)
+    - StripePayments (~> 23.22.0)
+    - StripePaymentSheet (~> 23.22.0)
+    - StripePaymentsUI (~> 23.22.0)
+  - StripeApplePay (23.22.1):
+    - StripeCore (= 23.22.1)
+  - StripeCore (23.22.1)
+  - StripeFinancialConnections (23.22.1):
+    - StripeCore (= 23.22.1)
+    - StripeUICore (= 23.22.1)
+  - StripePayments (23.22.1):
+    - StripeCore (= 23.22.1)
+    - StripePayments/Stripe3DS2 (= 23.22.1)
+  - StripePayments/Stripe3DS2 (23.22.1):
+    - StripeCore (= 23.22.1)
+  - StripePaymentSheet (23.22.1):
+    - StripeApplePay (= 23.22.1)
+    - StripeCore (= 23.22.1)
+    - StripePayments (= 23.22.1)
+    - StripePaymentsUI (= 23.22.1)
+  - StripePaymentsUI (23.22.1):
+    - StripeCore (= 23.22.1)
+    - StripePayments (= 23.22.1)
+    - StripeUICore (= 23.22.1)
+  - StripeUICore (23.22.1):
+    - StripeCore (= 23.22.1)
   - SwiftyGif (5.4.4)
   - tobias (0.0.1):
     - Flutter
@@ -138,6 +174,7 @@ DEPENDENCIES:
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/darwin`)
+  - stripe_ios (from `.symlinks/plugins/stripe_ios/ios`)
   - tobias (from `.symlinks/plugins/tobias/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - volume_controller (from `.symlinks/plugins/volume_controller/ios`)
@@ -151,6 +188,14 @@ SPEC REPOS:
     - Mantle
     - SDWebImage
     - SDWebImageWebPCoder
+    - Stripe
+    - StripeApplePay
+    - StripeCore
+    - StripeFinancialConnections
+    - StripePayments
+    - StripePaymentSheet
+    - StripePaymentsUI
+    - StripeUICore
     - SwiftyGif
     - WechatOpenSDK-XCFramework
 
@@ -201,6 +246,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sign_in_with_apple/ios"
   sqflite:
     :path: ".symlinks/plugins/sqflite/darwin"
+  stripe_ios:
+    :path: ".symlinks/plugins/stripe_ios/ios"
   tobias:
     :path: ".symlinks/plugins/tobias/ios"
   url_launcher_ios:
@@ -240,6 +287,15 @@ SPEC CHECKSUMS:
   shared_preferences_foundation: b4c3b4cddf1c21f02770737f147a3f5da9d39695
   sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
   sqflite: 673a0e54cc04b7d6dba8d24fb8095b31c3a99eec
+  Stripe: b65e9f748f8f51b51e015b0d72f5474dc0708788
+  stripe_ios: 433385aa051f8965915d495744946ee5a5d657db
+  StripeApplePay: 4a2fef6cd4e1e9b2c0849919fc7b3a9c5c3684b1
+  StripeCore: e1f6cd91d1487c0f6b5db81b42aec860420f75c9
+  StripeFinancialConnections: d223a44613e6982cedd552c5950edc9b4901c90a
+  StripePayments: 76144e9e6b5fee859954238a175f859043562659
+  StripePaymentSheet: a25d920bb3bb5e2580696476482dc7df9cb5e4e2
+  StripePaymentsUI: 66088abec88754bbdd522ef227dfdbb2265a653e
+  StripeUICore: b193c7d35e9cd1b04bc9ed4a6fb8c548fcee83fa
   SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
   tobias: 2aded9b83e3663b907360a800d8e3c13284f25c5
   url_launcher_ios: 6116280ddcfe98ab8820085d8d76ae7449447586
@@ -247,6 +303,6 @@ SPEC CHECKSUMS:
   wakelock_plus: 8b09852c8876491e4b6d179e17dfe2a0b5f60d47
   WechatOpenSDK-XCFramework: acdeeda129efbef9532bca8a10c24e1b4b8c7d69
 
-PODFILE CHECKSUM: 4e8f8b2be68aeea4c0d5beb6ff1e79fface1d048
+PODFILE CHECKSUM: cc1f88378b4bfcf93a6ce00d2c587857c6008d3b
 
 COCOAPODS: 1.14.3

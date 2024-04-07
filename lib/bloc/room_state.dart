@@ -51,3 +51,11 @@ class GroupRoomUpdateResultState extends RoomState {
 
   GroupRoomUpdateResultState(this.success, {this.error});
 }
+
+class RoomOperationResult extends RoomState {
+  final bool success;
+  final Object? error;
+  final String? redirect;
+
+  RoomOperationResult(this.success, {this.error, this.redirect});
+}

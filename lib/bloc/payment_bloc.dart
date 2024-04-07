@@ -89,7 +89,9 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
                     id: e.id,
                     title: e.name,
                     description: '',
-                    price: e.retailPriceText,
+                    price: products.preferUSD
+                        ? e.retailPriceUSDText
+                        : e.retailPriceText,
                     rawPrice: e.retailPrice.toDouble(),
                     currencyCode: '',
                   ),
@@ -98,6 +100,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
             note: products.note,
             localProducts: products.consume,
             loading: false,
+            preferUSD: products.preferUSD,
           ),
         );
       }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // 客户端应用版本号
-const clientVersion = '1.0.13';
+const clientVersion = '1.0.14';
 // 本地数据库版本号
 const databaseVersion = 26;
 
@@ -92,3 +92,7 @@ const universalLink = 'https://ai.aicode.cc/wechat-login/';
 const qiniuImageTypeAvatar = 'avatar';
 const qiniuImageTypeThumb = 'thumb';
 const qiniuImageTypeThumbMedium = 'thumb_500';
+
+// 缓存相关的 Keys
+// 最后一次使用的模型
+const cacheKeyLastModel = 'last-model';

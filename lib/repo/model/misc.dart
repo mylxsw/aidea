@@ -343,6 +343,7 @@ class SignInResp {
   String token;
   bool isNewUser;
   int reward;
+  bool needBindPhone;
 
   SignInResp({
     required this.id,
@@ -352,6 +353,7 @@ class SignInResp {
     this.phone,
     this.isNewUser = false,
     this.reward = 0,
+    this.needBindPhone = false,
   });
 
   toJson() => {
@@ -362,9 +364,8 @@ class SignInResp {
         'token': token,
         'is_new_user': isNewUser,
         'reward': reward,
+        'need_bind_phone': needBindPhone,
       };
-
-  bool get needBindPhone => phone == null || phone!.isEmpty;
 
   static SignInResp fromJson(Map<String, dynamic> json) {
     return SignInResp(
@@ -375,6 +376,7 @@ class SignInResp {
       token: json['token'],
       isNewUser: json['is_new_user'] ?? false,
       reward: json['reward'] ?? 0,
+      needBindPhone: json['need_bind_phone'] ?? false,
     );
   }
 }

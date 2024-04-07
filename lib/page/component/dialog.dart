@@ -8,6 +8,7 @@ import 'package:askaide/page/component/bottom_sheet_box.dart';
 import 'package:askaide/page/component/button.dart';
 import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/item_selector_search.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
@@ -246,7 +247,11 @@ Future openModalBottomSheet(
               if (title != null)
                 Text(
                   title,
-                  style: const TextStyle(fontSize: 16),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: customColors.weakTextColorPlus,
+                  ),
                 ),
               if (title != null) const SizedBox(height: 10),
               Expanded(
@@ -694,9 +699,16 @@ class _FullScreenDialog extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
+        toolbarHeight: CustomSize.toolbarHeight,
         actions: actions,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
-      body: child,
+      body: SafeArea(
+        child: child,
+      ),
     );
   }
 }

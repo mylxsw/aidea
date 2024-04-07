@@ -1,4 +1,20 @@
+import 'package:askaide/bloc/admin_payment_bloc.dart';
+import 'package:askaide/bloc/channel_bloc.dart';
+import 'package:askaide/bloc/model_bloc.dart';
+import 'package:askaide/bloc/user_bloc.dart';
 import 'package:askaide/helper/path.dart';
+import 'package:askaide/page/admin/channels.dart';
+import 'package:askaide/page/admin/channels_add.dart';
+import 'package:askaide/page/admin/channels_edit.dart';
+import 'package:askaide/page/admin/dashboard.dart';
+import 'package:askaide/page/admin/models.dart';
+import 'package:askaide/page/admin/models_add.dart';
+import 'package:askaide/page/admin/models_edit.dart';
+import 'package:askaide/page/admin/payments.dart';
+import 'package:askaide/page/admin/user.dart';
+import 'package:askaide/page/admin/users.dart';
+import 'package:askaide/page/balance/web_payment_proxy.dart';
+import 'package:askaide/page/balance/web_payment_result.dart';
 import 'package:askaide/page/creative_island/draw/artistic_wordart.dart';
 import 'package:path/path.dart';
 
@@ -1025,6 +1041,209 @@ class MyApp extends StatefulWidget {
                   ArticleScreen(
                     settings: settingRepo,
                     id: int.tryParse(state.queryParameters['id'] ?? '') ?? 0,
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'web-payment-result',
+              path: '/payment/result',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(WebPaymentResult(
+                  paymentId: state.queryParameters['payment_id']!,
+                  action: state.queryParameters['action'],
+                ));
+              },
+            ),
+            GoRoute(
+              name: 'web-payment-proxy',
+              path: '/payment/proxy',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(WebPaymentProxy(
+                  setting: settingRepo,
+                  paymentId: state.queryParameters['id']!,
+                  paymentIntent: state.queryParameters['intent']!,
+                  price: state.queryParameters['price']!,
+                  publishableKey: state.queryParameters['key']!,
+                  finishAction:
+                      state.queryParameters['finish_action'] ?? 'close',
+                ));
+              },
+            ),
+
+            /// 管理员接口
+            GoRoute(
+              name: 'admin-dashboard',
+              path: '/admin/dashboard',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  AdminDashboardPage(setting: settingRepo),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'admin-models',
+              path: '/admin/models',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => ModelBloc(),
+                      ),
+                    ],
+                    child: AdminModelsPage(setting: settingRepo),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'admin-models-create',
+              path: '/admin/models/create',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => ModelBloc(),
+                      ),
+                    ],
+                    child: AdminModelCreatePage(setting: settingRepo),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'admin-models-edit',
+              path: '/admin/models/edit/:id',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => ModelBloc(),
+                      ),
+                    ],
+                    child: AdminModelEditPage(
+                      setting: settingRepo,
+                      modelId: state.pathParameters['id']!,
+                    ),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'admin-channels',
+              path: '/admin/channels',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => ChannelBloc(),
+                      ),
+                    ],
+                    child: ChannelsPage(setting: settingRepo),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'admin-channels-create',
+              path: '/admin/channels/create',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => ChannelBloc(),
+                      ),
+                    ],
+                    child: ChannelAddPage(setting: settingRepo),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'admin-channels-edit',
+              path: '/admin/channels/edit/:id',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                final channelId = int.parse(state.pathParameters['id']!);
+
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => ChannelBloc(),
+                      ),
+                    ],
+                    child: ChannelEditPage(
+                      setting: settingRepo,
+                      channelId: channelId,
+                    ),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'admin-users',
+              path: '/admin/users',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => UserBloc(),
+                      ),
+                    ],
+                    child: AdminUsersPage(setting: settingRepo),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'admin-users-detail',
+              path: '/admin/users/:id',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                final userId = int.parse(state.pathParameters['id']!);
+
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => UserBloc(),
+                      ),
+                    ],
+                    child: AdminUserPage(setting: settingRepo, userId: userId),
+                  ),
+                );
+              },
+            ),
+
+            GoRoute(
+              name: 'admin-payment-histories',
+              path: '/admin/payment/histories',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => AdminPaymentBloc(),
+                      ),
+                    ],
+                    child: PaymentHistoriesPage(setting: settingRepo),
                   ),
                 );
               },
