@@ -31,7 +31,7 @@ build-dmg: build-macos
 	mkdir -p build/macos/Build/Products/Package && cp -r build/macos/Build/Products/Release/AIdea.app build/macos/Build/Products/Package
 	create-dmg --volname "AIdea Installer" \
 		--volicon "install.icns" \
-		--background "assets/background-discovery.png" \
+		--background "assets/background-dark-s1.jpg" \
 		--window-pos 200 120 \
 		--window-size 600 320 \
 		--icon-size 100 \
