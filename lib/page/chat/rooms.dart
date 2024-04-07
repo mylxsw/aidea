@@ -1,7 +1,10 @@
 import 'package:askaide/helper/ability.dart';
+import 'package:askaide/helper/cache.dart';
+import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/event.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/bloc/room_bloc.dart';
+import 'package:askaide/page/chat/room_create.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/enhanced_error.dart';
@@ -60,6 +63,18 @@ class _RoomsPageState extends State<RoomsPage> {
             if (state is RoomCreateError) {
               showErrorMessageEnhanced(context, state.error);
             }
+
+            if (state is RoomOperationResult) {
+              if (state.success) {
+                if (state.redirect != null) {
+                  context.push(state.redirect!).then((value) {
+                    context.read<RoomBloc>().add(RoomsLoadEvent());
+                  });
+                }
+              } else {
+                showErrorMessageEnhanced(context, state.error ?? '操作失败');
+              }
+            }
           },
           buildWhen: (previous, current) =>
               current is RoomsLoading || current is RoomsLoaded,
@@ -75,6 +90,40 @@ class _RoomsPageState extends State<RoomsPage> {
                   if (selectedSuggestions.isEmpty)
                     EnhancedPopupMenu(
                       items: [
+                        if (Ability().isUserLogon() &&
+                            !Ability().enableLocalOpenAI)
+                          EnhancedPopupMenuItem(
+                            title: '快速开始',
+                            icon: Icons.quickreply_outlined,
+                            onTap: (p0) async {
+                              final lastModel = await Cache()
+                                  .stringGet(key: cacheKeyLastModel);
+                              openSelectModelDialog(
+                                // ignore: use_build_context_synchronously
+                                context,
+                                (selected) {
+                                  if (selected == null) {
+                                    return;
+                                  }
+                                  // 缓存最后一次使用的模型 ID，下次创建时自动排在最前面
+                                  Cache().setString(
+                                    key: cacheKeyLastModel,
+                                    value: selected.id,
+                                  );
+
+                                  context.read<RoomBloc>().add(
+                                        RoomCreateEvent(
+                                          selected.name,
+                                          selected.id,
+                                          null,
+                                        ),
+                                      );
+                                },
+                                title: '选择要对话的模型',
+                                priorityModelId: lastModel,
+                              );
+                            },
+                          ),
                         EnhancedPopupMenuItem(
                           title: '创建数字人',
                           icon: Icons.person_add_alt_outlined,
@@ -88,7 +137,7 @@ class _RoomsPageState extends State<RoomsPage> {
                             !Ability().enableLocalOpenAI)
                           EnhancedPopupMenuItem(
                             title: '发起群聊',
-                            icon: Icons.chat_bubble_outline,
+                            icon: Icons.forum_outlined,
                             onTap: (p0) {
                               context
                                   .push('/group-chat-create')

@@ -9,9 +9,11 @@ import 'package:askaide/helper/helper.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/attached_button_panel.dart';
 import 'package:askaide/page/component/chat/chat_share.dart';
+import 'package:askaide/page/component/chat/enhanced_selectable_text.dart';
 import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -41,6 +43,7 @@ class ChatPreview extends StatefulWidget {
   final bool supportBloc;
   final void Function(Message message)? onSpeakEvent;
   final void Function(Message message, int index)? onResentEvent;
+  final EdgeInsetsGeometry? padding;
 
   const ChatPreview({
     super.key,
@@ -57,6 +60,7 @@ class ChatPreview extends StatefulWidget {
     this.onSpeakEvent,
     this.onResentEvent,
     this.supportBloc = true,
+    this.padding,
   });
 
   @override
@@ -85,6 +89,7 @@ class _ChatPreviewState extends State<ChatPreview> {
       shrinkWrap: true,
       reverse: true,
       physics: const AlwaysScrollableScrollPhysics(),
+      padding: widget.padding,
       cacheExtent: MediaQuery.of(context).size.height * 10,
       itemBuilder: (context, index) {
         final message = messages[index];
@@ -280,6 +285,15 @@ class _ChatPreviewState extends State<ChatPreview> {
                               );
                             },
                             onDoubleTapDown: (details) {
+                              _handleMessageTapControl(
+                                context,
+                                details.globalPosition,
+                                message,
+                                state,
+                                index,
+                              );
+                            },
+                            onSecondaryTapDown: (details) {
                               _handleMessageTapControl(
                                 context,
                                 details.globalPosition,
@@ -538,8 +552,17 @@ class _ChatPreviewState extends State<ChatPreview> {
       }
     }
 
-    if (widget.robotAvatar != null && message.role == Role.receiver) {
-      return widget.robotAvatar!;
+    if (widget.robotAvatar != null) {
+      if (message.role == Role.receiver && message.avatarUrl != null) {
+        return RemoteAvatar(
+          avatarUrl: message.avatarUrl!,
+          size: 30,
+        );
+      }
+
+      if (message.role == Role.receiver) {
+        return widget.robotAvatar!;
+      }
     }
 
     return const SizedBox();
@@ -577,20 +600,16 @@ class _ChatPreviewState extends State<ChatPreview> {
         buttons: [
           TextButton.icon(
             onPressed: () {
-              if (!state.showMarkdown) {
-                state.showMarkdown = true;
-              } else {
-                state.showMarkdown = false;
-              }
-
-              widget.stateManager
-                  .setState(message.roomId!, message.id!, state)
-                  .then((value) {
-                setState(() {});
-                context
-                    .read<RoomBloc>()
-                    .add(RoomLoadEvent(message.roomId!, cascading: false));
-              });
+              openFullscreenDialog(
+                context,
+                child: Container(
+                  margin: const EdgeInsets.only(top: 15, bottom: 30),
+                  child: EnhancedSelectableText(
+                    text: message.text,
+                  ),
+                ),
+                title: '选择文本',
+              );
 
               cancel();
             },
@@ -603,9 +622,9 @@ class _ChatPreviewState extends State<ChatPreview> {
                   color: const Color.fromARGB(255, 255, 255, 255),
                   size: 14,
                 ),
-                Text(
-                  state.showMarkdown ? "文本" : "预览",
-                  style: const TextStyle(fontSize: 12, color: Colors.white),
+                const Text(
+                  "文本",
+                  style: TextStyle(fontSize: 12, color: Colors.white),
                 ),
               ],
             ),

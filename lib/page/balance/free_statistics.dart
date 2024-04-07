@@ -55,139 +55,143 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
           onRefresh: () async {
             context.read<FreeCountBloc>().add(FreeCountReloadAllEvent());
           },
-          child: SizedBox(
-            height: double.infinity,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: BlocConsumer<FreeCountBloc, FreeCountState>(
-                listenWhen: (previous, current) =>
-                    current is FreeCountLoadedState,
-                listener: (BuildContext context, FreeCountState state) {
-                  if (state is FreeCountLoadedState) {
-                    if (state.needSignin) {
-                      showBeautyDialog(
-                        context,
-                        type: QuickAlertType.warning,
-                        text: '免费模型需登录账号后使用',
-                        confirmBtnText: '去登录',
-                        onConfirmBtnTap: () {
-                          context.pop();
-                          context.go('/login');
-                        },
-                        showCancelBtn: true,
-                      );
+          child: SafeArea(
+            child: SizedBox(
+              height: double.infinity,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: BlocConsumer<FreeCountBloc, FreeCountState>(
+                  listenWhen: (previous, current) =>
+                      current is FreeCountLoadedState,
+                  listener: (BuildContext context, FreeCountState state) {
+                    if (state is FreeCountLoadedState) {
+                      if (state.needSignin) {
+                        showBeautyDialog(
+                          context,
+                          type: QuickAlertType.warning,
+                          text: '免费模型需登录账号后使用',
+                          confirmBtnText: '去登录',
+                          onConfirmBtnTap: () {
+                            context.pop();
+                            context.go('/login');
+                          },
+                          showCancelBtn: true,
+                        );
+                      }
                     }
-                  }
-                },
-                builder: (context, state) {
-                  if (state is FreeCountLoadedState) {
-                    if (state.counts.isEmpty) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Center(
-                          child: MessageBox(
-                            message: '当前无可用的免费模型。',
-                            type: MessageBoxType.warning,
+                  },
+                  builder: (context, state) {
+                    if (state is FreeCountLoadedState) {
+                      if (state.counts.isEmpty) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Center(
+                            child: MessageBox(
+                              message: '当前无可用的免费模型。',
+                              type: MessageBoxType.warning,
+                            ),
                           ),
-                        ),
-                      );
-                    }
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Column(
-                        children: [
-                          const MessageBox(
-                            message: '以下模型享有每日免费额度。',
-                            type: MessageBoxType.info,
-                          ),
-                          const SizedBox(height: 10),
-                          ColumnBlock(
-                            innerPanding: 5,
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 5),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                        child: Text(
-                                      '模型',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    )),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          '今日可用',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              ...state.counts.map((e) {
-                                return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 5),
+                        );
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Column(
+                          children: [
+                            const MessageBox(
+                              message: '以下模型享有每日免费额度。',
+                              type: MessageBoxType.info,
+                            ),
+                            const SizedBox(height: 10),
+                            ColumnBlock(
+                              innerPanding: 5,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 5),
                                   child: Row(
                                     children: [
                                       Expanded(
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              e.name,
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                            if (e.info != null && e.info != '')
-                                              const SizedBox(width: 5),
-                                            if (e.info != null && e.info != '')
-                                              InkWell(
-                                                onTap: () {
-                                                  showBeautyDialog(
-                                                    context,
-                                                    type: QuickAlertType.info,
-                                                    text: e.info ?? '',
-                                                    confirmBtnText: AppLocale
-                                                        .gotIt
-                                                        .getString(context),
-                                                    showCancelBtn: false,
-                                                  );
-                                                },
-                                                child: Icon(
-                                                  Icons.help_outline,
-                                                  size: 16,
-                                                  color: customColors
-                                                      .weakLinkColor
-                                                      ?.withAlpha(150),
-                                                ),
-                                              ),
-                                          ],
+                                          child: Text(
+                                        '模型',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
                                         ),
-                                      ),
-                                      buildLeftCountWidget(
-                                        leftCount: e.leftCount,
-                                        maxCount: e.maxCount,
+                                      )),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            '今日可用',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                );
-                              }),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  }
+                                ),
+                                ...state.counts.map((e) {
+                                  return Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 5),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                e.name,
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                              if (e.info != null &&
+                                                  e.info != '')
+                                                const SizedBox(width: 5),
+                                              if (e.info != null &&
+                                                  e.info != '')
+                                                InkWell(
+                                                  onTap: () {
+                                                    showBeautyDialog(
+                                                      context,
+                                                      type: QuickAlertType.info,
+                                                      text: e.info ?? '',
+                                                      confirmBtnText: AppLocale
+                                                          .gotIt
+                                                          .getString(context),
+                                                      showCancelBtn: false,
+                                                    );
+                                                  },
+                                                  child: Icon(
+                                                    Icons.help_outline,
+                                                    size: 16,
+                                                    color: customColors
+                                                        .weakLinkColor
+                                                        ?.withAlpha(150),
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                        buildLeftCountWidget(
+                                          leftCount: e.leftCount,
+                                          maxCount: e.maxCount,
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    }
 
-                  return const Center(child: LoadingIndicator());
-                },
+                    return const Center(child: LoadingIndicator());
+                  },
+                ),
               ),
             ),
           ),

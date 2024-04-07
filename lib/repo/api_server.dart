@@ -8,6 +8,10 @@ import 'package:askaide/helper/http.dart';
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/page/component/global_alert.dart';
+import 'package:askaide/repo/api/admin/channels.dart';
+import 'package:askaide/repo/api/admin/models.dart';
+import 'package:askaide/repo/api/admin/payment.dart';
+import 'package:askaide/repo/api/admin/users.dart';
 import 'package:askaide/repo/api/article.dart';
 import 'package:askaide/repo/api/creative.dart';
 import 'package:askaide/repo/api/image_model.dart';
@@ -1966,6 +1970,250 @@ class APIServer {
         return Article.fromJson(resp.data['data']);
       },
       forceRefresh: !cache,
+    );
+  }
+
+  /// 发起 Stripe 支付
+  Future<StripePaymentCreatedResponse> createStripePaymentSheet({
+    required String productId,
+    String? source,
+  }) async {
+    return sendPostRequest(
+      '/v1/payment/stripe/payment-sheet',
+      (resp) {
+        return StripePaymentCreatedResponse.fromJson(resp.data);
+      },
+      formData: {
+        'product_id': productId,
+        'source': source,
+      },
+    );
+  }
+
+  /// 管理员接口：渠道类型
+  Future<List<AdminChannelType>> adminChannelTypes() async {
+    return sendCachedGetRequest('/v1/admin/channel-types', (resp) {
+      var res = <AdminChannelType>[];
+      for (var item in resp.data['data']) {
+        res.add(AdminChannelType.fromJson(item));
+      }
+
+      return res;
+    });
+  }
+
+  /// 管理员接口：返回聚合后的渠道列表
+  Future<List<AdminChannel>> adminChannelsAgg() async {
+    final channels = await sendGetRequest('/v1/admin/channels', (resp) {
+      var res = <AdminChannel>[];
+      for (var item in resp.data['data']) {
+        res.add(AdminChannel.fromJson(item));
+      }
+
+      return res;
+    });
+
+    final channelTypes = await adminChannelTypes();
+    channels.addAll(
+        channelTypes.map((e) => AdminChannel(name: e.text, type: e.name)));
+
+    return channels;
+  }
+
+  /// 管理员接口：返回所有渠道
+  Future<List<AdminChannel>> adminChannels() async {
+    return sendGetRequest('/v1/admin/channels', (resp) {
+      var res = <AdminChannel>[];
+      for (var item in resp.data['data']) {
+        res.add(AdminChannel.fromJson(item));
+      }
+
+      return res;
+    });
+  }
+
+  /// 管理员接口：返回指定渠道
+  Future<AdminChannel> adminChannel({required int id}) async {
+    return sendGetRequest('/v1/admin/channels/$id', (resp) {
+      return AdminChannel.fromJson(resp.data['data']);
+    });
+  }
+
+  /// 管理员接口：创建渠道
+  Future<void> adminCreateChannel(AdminChannelAddReq req) async {
+    return sendPostJSONRequest(
+      '/v1/admin/channels',
+      (resp) {},
+      data: req.toJson(),
+    );
+  }
+
+  /// 管理员接口：更新渠道
+  Future<void> adminUpdateChannel(
+      {required int id, required AdminChannelUpdateReq req}) {
+    return sendPutJSONRequest(
+      '/v1/admin/channels/$id',
+      (resp) {},
+      data: req.toJson(),
+    );
+  }
+
+  /// 管理员接口：删除渠道
+  Future<void> adminDeleteChannel({required int id}) {
+    return sendDeleteRequest('/v1/admin/channels/$id', (resp) {});
+  }
+
+  /// 管理员接口：返回所有模型
+  Future<List<AdminModel>> adminModels() async {
+    return sendGetRequest(
+      '/v1/admin/models',
+      (resp) {
+        var res = <AdminModel>[];
+        for (var item in resp.data['data']) {
+          res.add(AdminModel.fromJson(item));
+        }
+
+        return res;
+      },
+      queryParameters: {
+        'sort': 'id:desc',
+      },
+    );
+  }
+
+  /// 管理员接口：返回指定模型
+  Future<AdminModel> adminModel({required String modelId}) async {
+    return sendGetRequest('/v1/admin/models/${Uri.encodeComponent(modelId)}',
+        (resp) {
+      return AdminModel.fromJson(resp.data['data']);
+    });
+  }
+
+  /// 管理员接口：创建模型
+  Future<void> adminCreateModel(AdminModelAddReq req) async {
+    return sendPostJSONRequest(
+      '/v1/admin/models',
+      (resp) {},
+      data: req.toJson(),
+    );
+  }
+
+  /// 管理员接口：更新模型
+  Future<void> adminUpdateModel(
+      {required String modelId, required AdminModelUpdateReq req}) {
+    return sendPutJSONRequest(
+      '/v1/admin/models/${Uri.encodeComponent(modelId)}',
+      (resp) {},
+      data: req.toJson(),
+    );
+  }
+
+  /// 管理员接口：删除模型
+  Future<void> adminDeleteModel({required String modelId}) {
+    return sendDeleteRequest(
+        '/v1/admin/models/${Uri.encodeComponent(modelId)}', (resp) {});
+  }
+
+  /// 管理员接口：查询用户列表
+  Future<PagedData<AdminUser>> adminUsers({
+    int page = 1,
+    int perPage = 20,
+    String? keyword,
+  }) async {
+    return sendGetRequest(
+      '/v1/admin/users',
+      (resp) {
+        var res = <AdminUser>[];
+        for (var item in resp.data['data']) {
+          res.add(AdminUser.fromJson(item));
+        }
+
+        return PagedData(
+          data: res,
+          page: resp.data['page'] ?? 1,
+          perPage: resp.data['per_page'] ?? 20,
+          total: resp.data['total'],
+          lastPage: resp.data['last_page'],
+        );
+      },
+      queryParameters: {
+        'page': page,
+        'per_page': perPage,
+        'keyword': keyword,
+      },
+    );
+  }
+
+  /// 管理员接口：查询用户详情
+  Future<AdminUser> adminUser({required int id}) async {
+    return sendGetRequest('/v1/admin/users/$id', (resp) {
+      return AdminUser.fromJson(resp.data['data']);
+    });
+  }
+
+  /// 管理员接口：为用户分配智慧果
+  Future<void> adminUserQuotaAssign({
+    required int userId,
+    required int quota,
+    int? validPeriod,
+    String? note,
+  }) {
+    return sendPostJSONRequest(
+      '/v1/admin/quotas/assign',
+      (resp) {},
+      data: {
+        'user_id': userId,
+        'quota': quota,
+        'valid_period': validPeriod,
+        'note': note,
+      },
+    );
+  }
+
+  /// 管理员接口：查询用户当前额度
+  Future<QuotaResp> adminUserQuota({required int userId}) async {
+    return sendGetRequest('/v1/admin/quotas/users/$userId', (resp) {
+      return QuotaResp.fromJson(resp.data);
+    });
+  }
+
+  /// 管理员接口：重新加载配置缓存
+  Future<void> adminSettingsReload() async {
+    return sendPostRequest('/v1/admin/settings/reload', (resp) {});
+  }
+
+  /// 管理员接口：重新加载配置缓存
+  Future<void> adminSettingReload(String key) async {
+    return sendPostRequest('/v1/admin/settings/key/$key/reload', (resp) {});
+  }
+
+  /// 管理员接口：查询所有支付订单
+  Future<PagedData<AdminPaymentHistory>> adminPaymentHistories({
+    int page = 1,
+    int perPage = 20,
+    String? keyword,
+  }) async {
+    return sendGetRequest(
+      '/v1/admin/payments/histories',
+      (resp) {
+        var res = <AdminPaymentHistory>[];
+        for (var item in resp.data['data']) {
+          res.add(AdminPaymentHistory.fromJson(item));
+        }
+
+        return PagedData(
+          data: res,
+          page: resp.data['page'] ?? 1,
+          perPage: resp.data['per_page'] ?? 20,
+          total: resp.data['total'],
+          lastPage: resp.data['last_page'],
+        );
+      },
+      queryParameters: {
+        'page': page,
+        'per_page': perPage,
+        'keyword': keyword,
+      },
     );
   }
 }

@@ -703,6 +703,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.5"
+  flutter_stripe:
+    dependency: "direct main"
+    description:
+      name: flutter_stripe
+      sha256: bee4046750d813dc77ef1cdc954c8a0d70a21a7e089b86edf3929aebe33921fe
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.1.1"
+  flutter_stripe_web:
+    dependency: "direct main"
+    description:
+      name: flutter_stripe_web
+      sha256: bcadbce717cacae1c9ade225394c08a15eda682b3579e50adab7f04fcd16d837
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.1.0"
   flutter_svg:
     dependency: transitive
     description:
@@ -745,6 +761,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "10.7.0"
+  freezed_annotation:
+    dependency: transitive
+    description:
+      name: freezed_annotation
+      sha256: c3fd9336eb55a38cc1bbd79ab17573113a8deccd0ecbbf926cca3c62803b5c2d
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.1"
   frontend_server_client:
     dependency: transitive
     description:
@@ -1728,6 +1752,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  stripe_android:
+    dependency: transitive
+    description:
+      name: stripe_android
+      sha256: "717a541c025f8a8adbb2cbd8e136b424b4910c4812cc08f5c273bef9ca1ee538"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.1.1"
+  stripe_ios:
+    dependency: transitive
+    description:
+      name: stripe_ios
+      sha256: "67994171a29301d12d6a557177d02b12f0d400edd3041ecbdad5fd5c25b43569"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.1.0"
+  stripe_js:
+    dependency: "direct main"
+    description:
+      name: stripe_js
+      sha256: d203b48167a9a533bbf72049b40c8227bf0557d79e28a7f016e77dddcac8b19b
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.0"
+  stripe_platform_interface:
+    dependency: transitive
+    description:
+      name: stripe_platform_interface
+      sha256: "2f01a6d974ab734ba3824c6f7a2fd01fe7b1f899e7bbace26cb1f66a48bee776"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.1.1"
   synchronized:
     dependency: transitive
     description:

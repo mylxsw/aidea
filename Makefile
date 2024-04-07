@@ -31,7 +31,7 @@ build-dmg: build-macos
 	mkdir -p build/macos/Build/Products/Package && cp -r build/macos/Build/Products/Release/AIdea.app build/macos/Build/Products/Package
 	create-dmg --volname "AIdea Installer" \
 		--volicon "install.icns" \
-		--background "assets/background-discovery.png" \
+		--background "assets/background-dark-s1.jpg" \
 		--window-pos 200 120 \
 		--window-size 600 320 \
 		--icon-size 100 \
@@ -43,16 +43,13 @@ build-dmg: build-macos
 	open build/macos/Build/Products/Package/
 
 build-web:
-	flutter build web --web-renderer canvaskit --release --dart-define=FLUTTER_WEB_CANVASKIT_URL=https://resources.aicode.cc/canvaskit/
+	#flutter build web --web-renderer canvaskit --release --dart-define=FLUTTER_WEB_CANVASKIT_URL=https://resources.aicode.cc/canvaskit/
+	flutter build web --web-renderer canvaskit --release
 	cd scripts && go run main.go ../build/web/main.dart.js && cd ..
-	rm -fr build/web/fonts/ && mkdir build/web/fonts
-	cp -r scripts/s build/web/fonts/s
 
 build-web-samehost:
 	flutter build web --web-renderer canvaskit --release --dart-define=API_SERVER_URL=/
 	cd scripts && go run main.go ../build/web/main.dart.js && cd ..
-	rm -fr build/web/fonts/ && mkdir build/web/fonts
-	cp -r scripts/s build/web/fonts/s
 
 deploy-web: build-web
 	cd build && tar -zcvf web.tar.gz web

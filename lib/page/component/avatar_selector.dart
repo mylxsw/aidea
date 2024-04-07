@@ -27,7 +27,6 @@ class Avatar {
 
 class AvatarSelector extends StatefulWidget {
   final Function(Avatar selected) onSelected;
-  final int randomSeed;
 
   final int? defaultAvatarId;
   final String? defaultAvatarUrl;
@@ -40,7 +39,6 @@ class AvatarSelector extends StatefulWidget {
   const AvatarSelector({
     super.key,
     required this.onSelected,
-    required this.randomSeed,
     this.defaultAvatarId,
     this.defaultAvatarUrl,
     required this.usage,

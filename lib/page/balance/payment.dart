@@ -15,17 +15,22 @@ import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/repo/api/payment.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:go_router/go_router.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:tobias/tobias.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+
+import 'web/payment_element.dart'
+    if (dart.library.js) 'web/payment_element_web.dart';
 
 class PaymentScreen extends StatefulWidget {
   final SettingRepository setting;
@@ -182,6 +187,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
             fontSize: CustomSize.appBarTitleSize,
           ),
         ),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: customColors.weakLinkColor,
+          ),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/setting');
+            }
+          },
+        ),
         actions: [
           if (Ability().isUserLogon())
             TextButton(
@@ -312,53 +330,26 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             return;
                           }
 
-                          if (PlatformTool.isIOS() ||
-                              PlatformTool.isAndroid() ||
-                              PlatformTool.isMacOS()) {
+                          // 根据当前平台不通，调用不同的支付方式
+                          if (PlatformTool.isAndroid()) {
+                            handlePaymentForAndroid(
+                              state,
+                              context,
+                              customColors,
+                            );
+                          } else if (PlatformTool.isIOS()) {
                             _startPaymentLoading();
                             try {
-                              if (PlatformTool.isAndroid()) {
-                                await createAppAlipay();
-                              } else if (PlatformTool.isIOS()) {
-                                await createAppApplePay();
-                              } else {
-                                await createWebOrWapAlipay(source: 'web');
-                              }
+                              await createAppApplePay();
                             } catch (e) {
                               _closePaymentLoading();
+                              // ignore: use_build_context_synchronously
                               showErrorMessage(resolveError(context, e));
                             }
+                          } else if (PlatformTool.isWeb()) {
+                            handlePaymentForWeb(state, context, customColors);
                           } else {
-                            // openConfirmDialog(
-                            //   context,
-                            //   '当前终端在线支付暂不可用，预计最晚 2023 年 10 月 15 日恢复，如需充值，请使用移动端 APP（支持 Android 手机、Apple 手机）。',
-                            //   () {
-                            //     launchUrlString(
-                            //       'https://aidea.aicode.cc',
-                            //       mode: LaunchMode.externalApplication,
-                            //     );
-                            //   },
-                            //   confirmText: '前往下载移动端 APP',
-                            // );
-                            openListSelectDialog(
-                              context,
-                              <SelectorItem>[
-                                SelectorItem(const Text('支付宝电脑端（扫码支付）'), 'web'),
-                                SelectorItem(const Text('支付宝手机端'), 'wap'),
-                              ],
-                              (value) {
-                                _startPaymentLoading();
-                                createWebOrWapAlipay(source: value.value)
-                                    .onError((error, stackTrace) {
-                                  _closePaymentLoading();
-                                  showErrorMessageEnhanced(context, error!);
-                                });
-
-                                return true;
-                              },
-                              title: '请选择支付方式',
-                              heightFactor: 0.3,
-                            );
+                            handlePaymentForPC(state, context, customColors);
                           }
                         },
                       ),
@@ -398,6 +389,214 @@ class _PaymentScreenState extends State<PaymentScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  void handlePaymentForWeb(PaymentAppleProductsLoaded state,
+      BuildContext context, CustomColors customColors) {
+    // openConfirmDialog(
+    //   context,
+    //   '当前终端在线支付暂不可用，预计最晚 2023 年 10 月 15 日恢复，如需充值，请使用移动端 APP（支持 Android 手机、Apple 手机）。',
+    //   () {
+    //     launchUrlString(
+    //       'https://aidea.aicode.cc',
+    //       mode: LaunchMode.externalApplication,
+    //     );
+    //   },
+    //   confirmText: '前往下载移动端 APP',
+    // )
+
+    final localProduct =
+        state.localProducts.firstWhere((e) => e.id == selectedProduct!.id);
+
+    final enableStripe = Ability().enableStripe && localProduct.supportStripe;
+
+    openListSelectDialog(
+      context,
+      <SelectorItem>[
+        SelectorItem(
+          const PaymentMethodItem(
+            title: Text('支付宝扫码'),
+            image: 'assets/zhifubao.png',
+          ),
+          'web',
+        ),
+        SelectorItem(
+          const PaymentMethodItem(
+            title: Text('支付宝手机版'),
+            image: 'assets/zhifubao.png',
+          ),
+          'wap',
+        ),
+        if (enableStripe)
+          SelectorItem(
+            PaymentMethodItem(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Stripe'),
+                  const SizedBox(width: 5),
+                  Text(
+                    '(${localProduct.retailPriceUSDText})',
+                    style: TextStyle(
+                      color:
+                          customColors.paymentItemTitleColor?.withOpacity(0.5),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+              image: 'assets/stripe.png',
+            ),
+            'stripe',
+          ),
+      ],
+      (value) {
+        _startPaymentLoading();
+        if (value.value != 'stripe') {
+          createWebOrWapAlipay(source: value.value)
+              .onError((error, stackTrace) {
+            _closePaymentLoading();
+            showErrorMessageEnhanced(context, error!);
+          });
+        } else {
+          createStripePayment(localProduct);
+        }
+
+        return true;
+      },
+      title: '请选择支付方式',
+      heightFactor: 0.4,
+    );
+  }
+
+  /// 处理 PC 端支付
+  void handlePaymentForPC(
+    PaymentAppleProductsLoaded state,
+    BuildContext context,
+    CustomColors customColors,
+  ) async {
+    final localProduct =
+        state.localProducts.firstWhere((e) => e.id == selectedProduct!.id);
+    final enableStripe = Ability().enableStripe && localProduct.supportStripe;
+    openListSelectDialog(
+      context,
+      <SelectorItem>[
+        // SelectorItem(
+        //   const PaymentMethodItem(
+        //     title: Text('微信支付'),
+        //     image: 'assets/wechat-pay.png',
+        //   ),
+        //   'alipay',
+        // ),
+        if (Ability().enableOtherPay)
+          SelectorItem(
+            const PaymentMethodItem(
+              title: Text('支付宝'),
+              image: 'assets/zhifubao.png',
+            ),
+            'alipay',
+          ),
+        if (enableStripe)
+          SelectorItem(
+            PaymentMethodItem(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Stripe'),
+                  const SizedBox(width: 5),
+                  Text(
+                    '(${localProduct.retailPriceUSDText})',
+                    style: TextStyle(
+                      color:
+                          customColors.paymentItemTitleColor?.withOpacity(0.5),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+              image: 'assets/stripe.png',
+            ),
+            'stripe',
+          ),
+      ],
+      (value) {
+        _startPaymentLoading();
+
+        if (value.value == 'alipay') {
+          createWebOrWapAlipay(source: 'web').onError((error, stackTrace) {
+            _closePaymentLoading();
+            showErrorMessageEnhanced(context, error!);
+          });
+        } else {
+          createStripePayment(localProduct);
+        }
+
+        return true;
+      },
+      title: '请选择支付方式',
+      heightFactor: 0.4,
+    );
+  }
+
+  void handlePaymentForAndroid(
+    PaymentAppleProductsLoaded state,
+    BuildContext context,
+    CustomColors customColors,
+  ) {
+    final localProduct =
+        state.localProducts.firstWhere((e) => e.id == selectedProduct!.id);
+    final enableStripe = Ability().enableStripe && localProduct.supportStripe;
+    openListSelectDialog(
+      context,
+      <SelectorItem>[
+        if (Ability().enableOtherPay)
+          SelectorItem(
+            const PaymentMethodItem(
+              title: Text('支付宝'),
+              image: 'assets/zhifubao.png',
+            ),
+            'alipay',
+          ),
+        if (enableStripe)
+          SelectorItem(
+            PaymentMethodItem(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Stripe'),
+                  const SizedBox(width: 5),
+                  Text(
+                    '(${localProduct.retailPriceUSDText})',
+                    style: TextStyle(
+                      color:
+                          customColors.paymentItemTitleColor?.withOpacity(0.5),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+              image: 'assets/stripe.png',
+            ),
+            'stripe',
+          ),
+      ],
+      (value) {
+        _startPaymentLoading();
+
+        if (value.value == 'alipay') {
+          createAppAlipay().onError((error, stackTrace) {
+            _closePaymentLoading();
+            showErrorMessageEnhanced(context, error!);
+          });
+        } else {
+          createStripePayment(localProduct);
+        }
+
+        return true;
+      },
+      title: '请选择支付方式',
+      heightFactor: 0.3,
     );
   }
 
@@ -448,12 +647,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   _closePaymentLoading();
                 } catch (e) {
                   _closePaymentLoading();
+                  // ignore: use_build_context_synchronously
                   showErrorMessage(resolveError(context, e));
                 }
               });
             }
           } catch (e) {
             _closePaymentLoading();
+            // ignore: use_build_context_synchronously
             showErrorMessage(resolveError(context, e));
           }
         },
@@ -461,6 +662,181 @@ class _PaymentScreenState extends State<PaymentScreen> {
         cancelText: '支付遇到问题，稍后继续',
       );
     });
+  }
+
+  /// 获取当前支付来源参数
+  String paymentSource() {
+    if (PlatformTool.isWeb()) {
+      return 'web';
+    } else if (PlatformTool.isIOS() || PlatformTool.isAndroid()) {
+      return 'app';
+    }
+    return 'pc';
+  }
+
+  /// 创建 Stripe 支付
+  Future<void> createStripePayment(PaymentProduct product) async {
+    try {
+      final created = await APIServer().createStripePaymentSheet(
+        productId: product.id,
+        source: paymentSource(),
+      );
+      paymentId = created.paymentId;
+
+      if (PlatformTool.isWeb() ||
+          PlatformTool.isAndroid() ||
+          PlatformTool.isIOS()) {
+        Stripe.publishableKey = created.publishableKey;
+        Stripe.urlScheme = 'flutterstripe';
+
+        await Stripe.instance.applySettings();
+      }
+
+      if (PlatformTool.isWeb()) {
+        Navigator.push(
+          // ignore: use_build_context_synchronously
+          context,
+          MaterialPageRoute(
+            fullscreenDialog: true,
+            builder: (context) {
+              return Scaffold(
+                appBar: AppBar(),
+                body: SafeArea(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(15),
+                          child: Builder(
+                            builder: (context) {
+                              return PlatformPaymentElement(
+                                created.paymentIntent,
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        child: EnhancedButton(
+                          title: '确定付款（${product.retailPriceUSDText}）',
+                          onPressed: () async {
+                            final cancel = BotToast.showCustomLoading(
+                              toastBuilder: (cancel) {
+                                return LoadingIndicator(
+                                  message: AppLocale.processingWait
+                                      .getString(context),
+                                );
+                              },
+                              allowClick: false,
+                              duration: const Duration(seconds: 120),
+                            );
+
+                            try {
+                              await pay(created.paymentId);
+                            } catch (e) {
+                              Logger.instance.e('支付失败：$e');
+                              // ignore: use_build_context_synchronously
+                              showErrorMessageEnhanced(context, '请填写完整的支付信息');
+                            } finally {
+                              cancel();
+                            }
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      } else if (PlatformTool.isAndroid() || PlatformTool.isIOS()) {
+        // 调起 Stripe 支付
+        await Stripe.instance.initPaymentSheet(
+          paymentSheetParameters: SetupPaymentSheetParameters(
+            paymentIntentClientSecret: created.paymentIntent,
+            merchantDisplayName: 'AIdea',
+            customerId: created.customer,
+            customerEphemeralKeySecret: created.ephemeralKey,
+            returnURL: 'flutterstripe://redirect',
+            // ignore: use_build_context_synchronously
+            style: Ability().themeMode == 'dark'
+                ? ThemeMode.dark
+                : ThemeMode.light,
+          ),
+        );
+
+        // 确认支付
+        await Stripe.instance.presentPaymentSheet();
+
+        showSuccessMessage('购买成功');
+      } else {
+        // PC 端支付，发起 Web 页面
+        if (created.proxyUrl == '') {
+          showErrorMessage('支付失败：未能获取支付链接');
+          return;
+        }
+
+        Logger.instance.d(created.proxyUrl);
+
+        launchUrlString(
+          created.proxyUrl,
+          mode: LaunchMode.externalApplication,
+        ).then((value) {
+          _closePaymentLoading();
+          openConfirmDialog(
+            context,
+            '请确认支付是否已完成',
+            () async {
+              _startPaymentLoading();
+              try {
+                final resp =
+                    await APIServer().queryPaymentStatus(created.paymentId);
+                if (resp.success) {
+                  showSuccessMessage(resp.note ?? '支付成功');
+                  _closePaymentLoading();
+                } else {
+                  // 支付失败，延迟 5s 再次查询支付状态
+                  await Future.delayed(const Duration(seconds: 5), () async {
+                    try {
+                      final value = await APIServer()
+                          .queryPaymentStatus(created.paymentId);
+
+                      if (value.success) {
+                        showSuccessMessage(value.note ?? '支付成功');
+                      } else {
+                        showErrorMessage('支付未完成，我们接收到的状态为：${value.note}');
+                      }
+                      _closePaymentLoading();
+                    } catch (e) {
+                      _closePaymentLoading();
+                      // ignore: use_build_context_synchronously
+                      showErrorMessage(resolveError(context, e));
+                    }
+                  });
+                }
+              } catch (e) {
+                _closePaymentLoading();
+                // ignore: use_build_context_synchronously
+                showErrorMessage(resolveError(context, e));
+              }
+            },
+            confirmText: '已完成支付',
+            cancelText: '支付遇到问题，稍后继续',
+          );
+        });
+      }
+    } on Exception catch (e) {
+      if (e is StripeException) {
+        showErrorMessage('支付失败：${e.error.localizedMessage}');
+      } else {
+        // ignore: use_build_context_synchronously
+        showErrorMessageEnhanced(context, e);
+      }
+    } finally {
+      _closePaymentLoading();
+    }
   }
 
   /// 创建其它付款（App）
@@ -512,5 +888,34 @@ class _PaymentScreenState extends State<PaymentScreen> {
       }
     }
     print("-----------------");
+  }
+}
+
+/// 支付方式选择项
+class PaymentMethodItem extends StatelessWidget {
+  final Widget title;
+  final String? image;
+
+  const PaymentMethodItem({super.key, required this.title, this.image});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (image != null) ...[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Image.asset(
+              image!,
+              width: 20,
+              height: 20,
+            ),
+          ),
+          const SizedBox(width: 10),
+        ],
+        title,
+      ],
+    );
   }
 }

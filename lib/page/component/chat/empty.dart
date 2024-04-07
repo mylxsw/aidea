@@ -130,7 +130,7 @@ class _EmptyPreviewState extends State<EmptyPreview> {
       return screenWidth / 1.15;
     }
 
-    return 400;
+    return 348;
   }
 
   double _resolveTipHeight(BuildContext context) {

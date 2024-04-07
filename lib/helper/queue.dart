@@ -1,6 +1,11 @@
 import 'dart:async';
 import 'dart:collection';
 
+class QueueFinishedException implements Exception {
+  final String message;
+  QueueFinishedException(this.message);
+}
+
 /// 该队列以一定的时间间隔将队列中的元素传递给回调函数，实现平滑的队列处理
 class GracefulQueue<T> {
   final Queue<T> _queue = Queue<T>();
@@ -8,6 +13,10 @@ class GracefulQueue<T> {
   Timer? _timer;
 
   void add(T item) {
+    if (finished) {
+      throw QueueFinishedException('Queue is finished');
+    }
+
     _queue.add(item);
   }
 

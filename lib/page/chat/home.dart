@@ -77,20 +77,20 @@ class _HomePageState extends State<HomePage> {
   List<HomeModelV2> models = [
     HomeModelV2(
       modelId: "openai:gpt-3.5-turbo",
-      modelName: 'GPT-3.5',
+      modelName: 'Chat-3.5',
       type: 'model',
       id: 'openai:gpt-3.5-turbo',
       supportVision: false,
-      name: 'GPT-3.5',
+      name: 'Chat-3.5',
       avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt35.png',
     ),
     HomeModelV2(
       modelId: "openai:gpt-4",
-      modelName: 'GPT-4',
+      modelName: 'Chat-4',
       type: 'model',
       id: 'openai:gpt-4',
       supportVision: false,
-      name: 'GPT-4',
+      name: 'Chat-4',
       avatarUrl:
           'https://ssl.aicode.cc/ai-server/assets/avatar/gpt4-preview.png',
     ),
@@ -104,11 +104,15 @@ class _HomePageState extends State<HomePage> {
   /// 促销事件
   PromotionEvent? promotionEvent;
 
+  /// Maximum height of the chat input box
+  int inputMaxLines = 6;
+
   /// 用于监听键盘事件，实现回车发送消息，Shift+Enter换行
   late final FocusNode _focusNode = FocusNode(
-    onKey: (node, event) {
-      if (!event.isShiftPressed && event.logicalKey.keyLabel == 'Enter') {
-        if (event is RawKeyDownEvent) {
+    onKeyEvent: (node, event) {
+      if (!HardwareKeyboard.instance.isShiftPressed &&
+          event.logicalKey.keyLabel == 'Enter') {
+        if (event is KeyDownEvent) {
           onSubmit(context, _textController.text.trim());
         }
 
@@ -486,10 +490,21 @@ class _HomePageState extends State<HomePage> {
                           ),
                         Expanded(
                           child: EnhancedTextField(
+                            onFocusChange: (hasFocus) {
+                              if (hasFocus) {
+                                setState(() {
+                                  inputMaxLines = 15;
+                                });
+                              } else {
+                                setState(() {
+                                  inputMaxLines = 6;
+                                });
+                              }
+                            },
                             focusNode: _focusNode,
                             controller: _textController,
                             customColors: customColors,
-                            maxLines: 10,
+                            maxLines: inputMaxLines,
                             minLines: 6,
                             hintText:
                                 AppLocale.askMeAnyQuestion.getString(context),
@@ -846,7 +861,7 @@ class _HomePageState extends State<HomePage> {
                     matched.leftCount > 0 &&
                     matched.maxCount > 0) {
                   return Text(
-                    '今日还可免费畅享 ${matched.leftCount} 次',
+                    '今日还可免费${matched.leftCount}次',
                     style: TextStyle(
                       color: customColors.weakTextColor?.withAlpha(120),
                       fontSize: 11,
