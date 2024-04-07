@@ -236,7 +236,6 @@ class _RoomEditPageState extends State<RoomEditPage> {
                                           context.pop();
                                         },
                                         usage: AvatarUsage.room,
-                                        randomSeed: randomSeed,
                                         defaultAvatarId: _avatarId,
                                         defaultAvatarUrl: _avatarUrl,
                                         externalAvatarIds:

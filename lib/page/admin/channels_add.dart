@@ -1,0 +1,321 @@
+import 'package:askaide/bloc/channel_bloc.dart';
+import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/component/background_container.dart';
+import 'package:askaide/page/component/column_block.dart';
+import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/page/component/enhanced_button.dart';
+import 'package:askaide/page/component/enhanced_input.dart';
+import 'package:askaide/page/component/enhanced_textfield.dart';
+import 'package:askaide/page/component/item_selector_search.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/repo/api/admin/channels.dart';
+import 'package:askaide/repo/api_server.dart';
+import 'package:askaide/repo/settings_repo.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localization/flutter_localization.dart';
+import 'package:go_router/go_router.dart';
+
+class ChannelAddPage extends StatefulWidget {
+  final SettingRepository setting;
+  const ChannelAddPage({
+    super.key,
+    required this.setting,
+  });
+
+  @override
+  State<ChannelAddPage> createState() => _ChannelAddPageState();
+}
+
+class _ChannelAddPageState extends State<ChannelAddPage> {
+  // 渠道类型
+  List<AdminChannelType> channelTypes = [];
+
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController typeController = TextEditingController();
+  final TextEditingController serverController = TextEditingController();
+  final TextEditingController secretController = TextEditingController();
+
+  /// 当前选中的渠道类型
+  String? selectedChannelType;
+
+  /// 用于控制是否显示高级选项
+  bool showAdvancedOptions = false;
+
+  /// 是否使用代理
+  bool usingProxy = false;
+
+  /// 是否是 Azure API
+  bool openaiAzure = false;
+
+  /// OpenAI Azure API 版本
+  final TextEditingController azureAPIVersionController =
+      TextEditingController();
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    typeController.dispose();
+    serverController.dispose();
+    secretController.dispose();
+    azureAPIVersionController.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    // 加载渠道类型
+    APIServer().adminChannelTypes().then((value) {
+      if (context.mounted) {
+        setState(() {
+          channelTypes = value.where((e) => e.dynamicType).toList();
+        });
+      }
+    });
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final customColors = Theme.of(context).extension<CustomColors>()!;
+
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: CustomSize.toolbarHeight,
+        title: const Text(
+          '新增渠道',
+          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+        ),
+        centerTitle: true,
+      ),
+      backgroundColor: customColors.chatInputPanelBackground,
+      body: BackgroundContainer(
+        setting: widget.setting,
+        enabled: false,
+        child: BlocListener<ChannelBloc, ChannelState>(
+          listenWhen: (previous, current) => current is ChannelOperationResult,
+          listener: (context, state) {
+            if (state is ChannelOperationResult) {
+              if (state.success) {
+                showSuccessMessage(state.message);
+                context.pop();
+              } else {
+                showErrorMessage(state.message);
+              }
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: [
+                ColumnBlock(
+                  children: [
+                    EnhancedTextField(
+                      labelText: '渠道名称',
+                      customColors: customColors,
+                      controller: nameController,
+                      textAlignVertical: TextAlignVertical.top,
+                      hintText: '请输入渠道名称',
+                      maxLength: 100,
+                      showCounter: false,
+                    ),
+                    EnhancedInput(
+                      title: Text(
+                        '类型',
+                        style: TextStyle(
+                          color: customColors.textfieldLabelColor,
+                          fontSize: 16,
+                        ),
+                      ),
+                      value: Text(
+                        buildSelectedChannelTypeText(),
+                        style: TextStyle(
+                          color: customColors.textfieldValueColor,
+                          fontSize: 16,
+                        ),
+                      ),
+                      onPressed: () {
+                        openListSelectDialog(
+                          context,
+                          channelTypes
+                              .map((e) => SelectorItem(Text(e.text), e.name))
+                              .toList(),
+                          (value) {
+                            setState(() {
+                              selectedChannelType = value.value;
+                            });
+                            return true;
+                          },
+                          heightFactor: 0.5,
+                          value: selectedChannelType,
+                        );
+                      },
+                    ),
+                    EnhancedTextField(
+                      labelText: '服务器',
+                      customColors: customColors,
+                      controller: serverController,
+                      textAlignVertical: TextAlignVertical.top,
+                      hintText: 'https://api.openai.com/v1',
+                      maxLength: 255,
+                      showCounter: false,
+                    ),
+                    EnhancedTextField(
+                      labelText: '鉴权密钥',
+                      customColors: customColors,
+                      controller: secretController,
+                      textAlignVertical: TextAlignVertical.top,
+                      hintText: '请输入鉴权密钥',
+                      maxLength: 255,
+                      obscureText: true,
+                      showCounter: false,
+                    ),
+                  ],
+                ),
+                // 高级选项
+                if (showAdvancedOptions)
+                  ColumnBlock(
+                    innerPanding: 5,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            '使用代理',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          CupertinoSwitch(
+                            activeColor: customColors.linkColor,
+                            value: usingProxy,
+                            onChanged: (value) {
+                              setState(() {
+                                usingProxy = value;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Azure 模式',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          CupertinoSwitch(
+                            activeColor: customColors.linkColor,
+                            value: openaiAzure,
+                            onChanged: (value) {
+                              setState(() {
+                                openaiAzure = value;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                      EnhancedTextField(
+                        labelText: 'API 版本',
+                        customColors: customColors,
+                        controller: azureAPIVersionController,
+                        textAlignVertical: TextAlignVertical.top,
+                        hintText: '2023-05-15',
+                        maxLength: 30,
+                        showCounter: false,
+                      ),
+                    ],
+                  ),
+                const SizedBox(height: 15),
+                Row(
+                  children: [
+                    EnhancedButton(
+                      title: showAdvancedOptions
+                          ? AppLocale.simpleMode.getString(context)
+                          : AppLocale.professionalMode.getString(context),
+                      width: 120,
+                      backgroundColor: Colors.transparent,
+                      color: customColors.weakLinkColor,
+                      fontSize: 15,
+                      icon: Icon(
+                        showAdvancedOptions
+                            ? Icons.unfold_less
+                            : Icons.unfold_more,
+                        color: customColors.weakLinkColor,
+                        size: 15,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          showAdvancedOptions = !showAdvancedOptions;
+                        });
+                      },
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 1,
+                      child: EnhancedButton(
+                        title: AppLocale.save.getString(context),
+                        onPressed: onSubmit,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// 提交
+  void onSubmit() {
+    if (nameController.text.isEmpty) {
+      showErrorMessage('请输入渠道名称');
+      return;
+    }
+
+    if (selectedChannelType == null) {
+      showErrorMessage('请选择渠道类型');
+      return;
+    }
+
+    if (serverController.text.isEmpty) {
+      showErrorMessage('请输入服务器地址');
+      return;
+    }
+
+    if (!serverController.text.startsWith('http://') &&
+        !serverController.text.startsWith('https://')) {
+      showErrorMessage('服务器地址格式不正确');
+      return;
+    }
+
+    final req = AdminChannelAddReq(
+      name: nameController.text,
+      type: selectedChannelType!,
+      server: serverController.text,
+      secret: secretController.text,
+      meta: AdminChannelMeta(
+        usingProxy: usingProxy,
+        openaiAzure: openaiAzure,
+        openaiAzureAPIVersion: azureAPIVersionController.text,
+      ),
+    );
+
+    context.read<ChannelBloc>().add(ChannelCreateEvent(req));
+  }
+
+  /// 生成选中的渠道类型文本
+  String buildSelectedChannelTypeText() {
+    if (selectedChannelType == null) {
+      return '请选择';
+    }
+
+    return channelTypes
+        .firstWhere((element) => element.name == selectedChannelType)
+        .text;
+  }
+}

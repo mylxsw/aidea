@@ -136,15 +136,18 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
       emit(RoomsLoading());
 
       try {
+        int id = 0;
         if (Ability().isUserLogon()) {
-          await APIServer().createRoom(
+          final segs = event.model.split(':');
+
+          id = await APIServer().createRoom(
             name: event.name,
             vendor: event.model.startsWith('v2@')
                 ? ''
-                : event.model.split(':').first,
+                : (segs.length > 1 ? segs.first : ''),
             model: event.model.startsWith('v2@')
                 ? event.model
-                : event.model.split(':').last,
+                : (segs.length > 1 ? segs.last : event.model),
             systemPrompt: event.prompt,
             avatarId: event.avatarId,
             avatarUrl: event.avatarUrl,
@@ -152,7 +155,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
             initMessage: event.initMessage,
           );
         } else {
-          await chatMsgRepo.createRoom(
+          final room = await chatMsgRepo.createRoom(
             name: event.name,
             category: 'chat',
             model: event.model,
@@ -160,8 +163,11 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
             userId: APIServer().localUserID(),
             maxContext: event.maxContext,
           );
+
+          id = room.id!;
         }
 
+        emit(RoomOperationResult(true, redirect: '/room/$id/chat'));
         emit(await createRoomsLoadedState(cache: false));
       } catch (e) {
         emit(RoomsLoaded(const [], error: e.toString()));

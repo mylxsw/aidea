@@ -51,7 +51,9 @@ class RandomAvatar extends StatelessWidget {
 class RemoteAvatar extends StatelessWidget {
   final String avatarUrl;
   final int? size;
-  const RemoteAvatar({super.key, required this.avatarUrl, this.size});
+  final double? radius;
+  const RemoteAvatar(
+      {super.key, required this.avatarUrl, this.size, this.radius});
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +61,7 @@ class RemoteAvatar extends StatelessWidget {
       width: size?.toDouble() ?? 60,
       height: size?.toDouble() ?? 60,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(radius ?? 8),
         child: CachedNetworkImage(
           imageUrl: avatarUrl,
           fit: BoxFit.fill,

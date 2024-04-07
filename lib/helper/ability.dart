@@ -92,6 +92,11 @@ class Ability {
     return capabilities.otherPayEnabled;
   }
 
+  /// 是否支持 Stripe 支付
+  bool get enableStripe {
+    return capabilities.stripeEnabled;
+  }
+
   /// 是否支持 ApplePay
   bool get enableApplePay {
     return capabilities.applePayEnabled;
@@ -113,7 +118,7 @@ class Ability {
 
   /// 是否支持支付功能
   bool get enablePayment {
-    if (!enableApplePay && !enableOtherPay) {
+    if (!enableApplePay && !enableOtherPay && !enableStripe) {
       return false;
     }
 
@@ -121,7 +126,7 @@ class Ability {
       return true;
     }
 
-    return enableOtherPay;
+    return true;
   }
 
   /// 是否用户已经登陆
@@ -170,5 +175,10 @@ class Ability {
   /// 是否支持七牛云图片上传功能
   bool supportQiniuUploader() {
     return setting.stringDefault(settingAPIServerToken, '') != '';
+  }
+
+  /// 获取当前主题模式
+  String get themeMode {
+    return setting.stringDefault(settingThemeMode, 'system');
   }
 }

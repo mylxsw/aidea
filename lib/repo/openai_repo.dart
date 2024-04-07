@@ -5,11 +5,13 @@ import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/env.dart';
 import 'package:askaide/helper/platform.dart';
+import 'package:askaide/helper/queue.dart';
 import 'package:askaide/repo/model/chat_message.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
 import 'package:dart_openai/openai.dart';
 import 'package:askaide/repo/data/settings_data.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/status.dart' as status;
 
 class OpenAIRepository {
   final SettingDataProvider settings;
@@ -252,6 +254,7 @@ class OpenAIRepository {
     String model = defaultChatModel,
     int? roomId,
     int? maxTokens,
+    String? tempModel,
   }) async {
     var completer = Completer<void>();
 
@@ -296,6 +299,8 @@ class OpenAIRepository {
           },
         ));
 
+        await channel.ready;
+
         channel.stream.listen(
           (event) {
             final evt = jsonDecode(event);
@@ -312,10 +317,14 @@ class OpenAIRepository {
             final res = OpenAIStreamChatCompletionModel.fromMap(evt);
             for (var element in res.choices) {
               if (element.delta.content != null) {
-                onData(ChatStreamRespData(
-                  content: element.delta.content!,
-                  role: element.delta.role,
-                ));
+                try {
+                  onData(ChatStreamRespData(
+                    content: element.delta.content!,
+                    role: element.delta.role,
+                  ));
+                } on QueueFinishedException {
+                  channel.sink.close(status.goingAway);
+                }
               }
             }
           },
@@ -332,8 +341,9 @@ class OpenAIRepository {
           completer.completeError(e);
         });
 
-        channel.sink.add(jsonEncode({
+        final data = jsonEncode({
           'model': model,
+          'temp_model': tempModel,
           'messages': messages.map((e) => e.toMap()).toList(),
           'temperature': temperature,
           'user': user,
@@ -342,7 +352,11 @@ class OpenAIRepository {
                   (model.startsWith('openai:') || model.startsWith('gpt-'))
               ? null
               : roomId, // n 参数暂时用不到，复用作为 roomId
-        }));
+        });
+
+        // Logger.instance.d('send chat request: $data');
+
+        channel.sink.add(data);
       } else {
         var chatStream = OpenAI.instance.chat.createStream(
           model: model,
