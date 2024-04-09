@@ -49,10 +49,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 ),
                 sections: [
                   SettingsSection(
-                    title: const Text('创作岛'),
+                    title: const Text('使用记录'),
                     tiles: [
                       SettingsTile(
-                        title: const Text('创作历史'),
+                        title: const Text('创作岛历史记录'),
                         trailing: const Icon(
                           CupertinoIcons.chevron_forward,
                           size: 18,
@@ -60,6 +60,17 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         ),
                         onPressed: (context) {
                           context.push('/creative-island/models');
+                        },
+                      ),
+                      SettingsTile(
+                        title: const Text('普通聊天历史记录'),
+                        trailing: const Icon(
+                          CupertinoIcons.chevron_forward,
+                          size: 18,
+                          color: Colors.grey,
+                        ),
+                        onPressed: (context) {
+                          context.push('/admin/recently-messages');
                         },
                       ),
                     ],
