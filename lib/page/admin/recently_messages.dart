@@ -7,12 +7,10 @@ import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 class AdminRecentlyMessagesPage extends StatefulWidget {
   final SettingRepository setting;
@@ -121,6 +119,13 @@ class _AdminRecentlyMessagesPageState extends State<AdminRecentlyMessagesPage> {
                         showErrorMessage(
                             AppLocale.operateFailed.getString(context));
                       }
+                    }
+
+                    if (state is AdminRecentlyMessagesLoaded) {
+                      setState(() {
+                        page = state.messages.page;
+                        perPage = state.messages.perPage;
+                      });
                     }
                   },
                   buildWhen: (previous, current) =>

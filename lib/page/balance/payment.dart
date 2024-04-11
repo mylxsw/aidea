@@ -25,6 +25,7 @@ import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:go_router/go_router.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:tobias/tobias.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -414,6 +415,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
     openListSelectDialog(
       context,
       <SelectorItem>[
+        if (Ability().enableWechatPay)
+          SelectorItem(
+            const PaymentMethodItem(
+              title: Text('微信支付'),
+              image: 'assets/wechat-pay.png',
+            ),
+            'wechat-pay',
+          ),
         SelectorItem(
           const PaymentMethodItem(
             title: Text('支付宝扫码'),
@@ -459,6 +468,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
             _closePaymentLoading();
             showErrorMessageEnhanced(context, error!);
           });
+        } else if (value.value == 'wechat-pay') {
+          createWechatPayment(localProduct);
         } else {
           createStripePayment(localProduct);
         }
@@ -482,13 +493,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
     openListSelectDialog(
       context,
       <SelectorItem>[
-        // SelectorItem(
-        //   const PaymentMethodItem(
-        //     title: Text('微信支付'),
-        //     image: 'assets/wechat-pay.png',
-        //   ),
-        //   'alipay',
-        // ),
+        if (Ability().enableWechatPay)
+          SelectorItem(
+            const PaymentMethodItem(
+              title: Text('微信支付'),
+              image: 'assets/wechat-pay.png',
+            ),
+            'wechat-pay',
+          ),
         if (Ability().enableOtherPay)
           SelectorItem(
             const PaymentMethodItem(
@@ -528,6 +540,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
             _closePaymentLoading();
             showErrorMessageEnhanced(context, error!);
           });
+        } else if (value.value == 'wechat-pay') {
+          createWechatPayment(localProduct);
         } else {
           createStripePayment(localProduct);
         }
@@ -672,6 +686,83 @@ class _PaymentScreenState extends State<PaymentScreen> {
       return 'app';
     }
     return 'pc';
+  }
+
+  /// 创建微信支付
+  Future<void> createWechatPayment(PaymentProduct product) async {
+    try {
+      final created = await APIServer().createWechatPayment(
+        productId: product.id,
+        source: paymentSource(),
+      );
+      paymentId = created.paymentId;
+
+      openDialog(
+        // ignore: use_build_context_synchronously
+        context,
+        builder: Builder(builder: (context) {
+          return Container(
+            alignment: Alignment.center,
+            height: 250,
+            width: 220,
+            margin: const EdgeInsets.only(top: 20),
+            child: Column(
+              children: [
+                QrImageView(
+                  data: created.codeUrl!,
+                  version: QrVersions.auto,
+                  size: 200,
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  '请使用微信扫码支付',
+                  style: TextStyle(
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+        onSubmit: () {
+          _startPaymentLoading();
+          APIServer().queryPaymentStatus(created.paymentId).then((resp) {
+            if (resp.success) {
+              showSuccessMessage(resp.note ?? '支付成功');
+              _closePaymentLoading();
+            } else {
+              // 支付失败，延迟 5s 再次查询支付状态
+              Future.delayed(const Duration(seconds: 5), () async {
+                try {
+                  final value =
+                      await APIServer().queryPaymentStatus(created.paymentId);
+
+                  if (value.success) {
+                    showSuccessMessage(value.note ?? '支付成功');
+                  } else {
+                    showErrorMessage('支付未完成，我们接收到的状态为：${value.note}');
+                  }
+                } catch (e) {
+                  // ignore: use_build_context_synchronously
+                  showErrorMessage(resolveError(context, e));
+                } finally {
+                  _closePaymentLoading();
+                }
+              });
+            }
+          });
+
+          return true;
+        },
+        confirmText: '已完成支付',
+        barrierDismissible: false,
+      );
+    } on Exception catch (e) {
+      // ignore: use_build_context_synchronously
+      showErrorMessageEnhanced(context, e);
+    } finally {
+      _closePaymentLoading();
+    }
   }
 
   /// 创建 Stripe 支付

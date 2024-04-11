@@ -1990,6 +1990,23 @@ class APIServer {
     );
   }
 
+  /// 发起微信支付
+  Future<WechatPaymentCreatedResponse> createWechatPayment({
+    required String productId,
+    String? source,
+  }) async {
+    return sendPostRequest(
+      '/v1/payment/wechatpay/',
+      (resp) {
+        return WechatPaymentCreatedResponse.fromJson(resp.data);
+      },
+      formData: {
+        'product_id': productId,
+        'source': source,
+      },
+    );
+  }
+
   /// 管理员接口：渠道类型
   Future<List<AdminChannelType>> adminChannelTypes() async {
     return sendCachedGetRequest('/v1/admin/channel-types', (resp) {

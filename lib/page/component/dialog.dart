@@ -402,16 +402,19 @@ Center buildBottomSheetTopBar(CustomColors customColors) {
   );
 }
 
-openDialog(
+Future<T?> openDialog<T>(
   BuildContext context, {
   Widget? title,
   required Builder builder,
   required bool Function() onSubmit,
   Function()? afterSubmit,
+  bool showCancel = true,
+  String? confirmText,
+  bool barrierDismissible = true,
 }) {
   final customColors = Theme.of(context).extension<CustomColors>()!;
 
-  showDialog(
+  return showDialog(
     context: context,
     builder: (context) => CustomDialog(
       title: title,
@@ -421,15 +424,16 @@ openDialog(
         child: builder.build(context),
       ),
       actions: [
-        TextButton(
-          onPressed: () {
-            context.pop();
-          },
-          child: Text(
-            AppLocale.cancel.getString(context),
-            style: TextStyle(color: customColors.dialogDefaultTextColor),
+        if (showCancel)
+          TextButton(
+            onPressed: () {
+              context.pop();
+            },
+            child: Text(
+              AppLocale.cancel.getString(context),
+              style: TextStyle(color: customColors.dialogDefaultTextColor),
+            ),
           ),
-        ),
         Button(
           onPressed: () {
             if (onSubmit()) {
@@ -440,12 +444,13 @@ openDialog(
               afterSubmit();
             }
           },
-          title: AppLocale.ok.getString(context),
+          title: confirmText ?? AppLocale.ok.getString(context),
           backgroundColor: const Color.fromARGB(36, 222, 222, 222),
           color: customColors.linkColor,
         )
       ],
     ),
+    barrierDismissible: barrierDismissible,
   );
 }
 
