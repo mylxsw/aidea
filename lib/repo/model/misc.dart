@@ -279,6 +279,72 @@ class RoomInServer {
   }
 }
 
+class MessageInServer {
+  final int id;
+  final int userId;
+  final int roomId;
+  final String message;
+  final int role;
+  final int tokenConsumed;
+  final int quotaConsumed;
+  final int pid;
+  final String model;
+  final int status;
+  final String error;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  MessageInServer({
+    required this.id,
+    required this.userId,
+    required this.roomId,
+    required this.message,
+    required this.role,
+    required this.tokenConsumed,
+    required this.quotaConsumed,
+    required this.pid,
+    required this.model,
+    required this.status,
+    required this.error,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  toJson() => {
+        'id': id,
+        'user_id': userId,
+        'room_id': roomId,
+        'message': message,
+        'role': role,
+        'token_consumed': tokenConsumed,
+        'quota_consumed': quotaConsumed,
+        'pid': pid,
+        'model': model,
+        'status': status,
+        'error': error,
+        'created_at': createdAt.toIso8601String(),
+        'updated_at': updatedAt.toIso8601String(),
+      };
+
+  static MessageInServer fromJson(Map<String, dynamic> json) {
+    return MessageInServer(
+      id: json['id'] ?? 0,
+      userId: json['user_id'] ?? 0,
+      roomId: json['room_id'] ?? 0,
+      message: json['message'] ?? '',
+      role: json['role'] ?? 1,
+      tokenConsumed: json['token_consumed'] ?? 0,
+      quotaConsumed: json['quota_consumed'] ?? 0,
+      pid: json['pid'] ?? 0,
+      model: json['model'] ?? '',
+      status: json['status'] ?? 1,
+      error: json['error'] ?? '',
+      createdAt: DateTime.parse(json['CreatedAt']),
+      updatedAt: DateTime.parse(json['CreatedAt']),
+    );
+  }
+}
+
 class VersionCheckResp {
   bool hasUpdate;
   String serverVersion;

@@ -1990,6 +1990,23 @@ class APIServer {
     );
   }
 
+  /// 发起微信支付
+  Future<WechatPaymentCreatedResponse> createWechatPayment({
+    required String productId,
+    String? source,
+  }) async {
+    return sendPostRequest(
+      '/v1/payment/wechatpay/',
+      (resp) {
+        return WechatPaymentCreatedResponse.fromJson(resp.data);
+      },
+      formData: {
+        'product_id': productId,
+        'source': source,
+      },
+    );
+  }
+
   /// 管理员接口：渠道类型
   Future<List<AdminChannelType>> adminChannelTypes() async {
     return sendCachedGetRequest('/v1/admin/channel-types', (resp) {
@@ -2199,6 +2216,88 @@ class APIServer {
         var res = <AdminPaymentHistory>[];
         for (var item in resp.data['data']) {
           res.add(AdminPaymentHistory.fromJson(item));
+        }
+
+        return PagedData(
+          data: res,
+          page: resp.data['page'] ?? 1,
+          perPage: resp.data['per_page'] ?? 20,
+          total: resp.data['total'],
+          lastPage: resp.data['last_page'],
+        );
+      },
+      queryParameters: {
+        'page': page,
+        'per_page': perPage,
+        'keyword': keyword,
+      },
+    );
+  }
+
+  /// 管理员接口：查询用户所有的数字人列表
+  Future<List<RoomInServer>> adminUserRooms({required int userId}) async {
+    return sendGetRequest('/v1/admin/messages/$userId/rooms', (resp) {
+      var res = <RoomInServer>[];
+      for (var item in resp.data['data']) {
+        res.add(RoomInServer.fromJson(item));
+      }
+
+      return res;
+    });
+  }
+
+  /// 管理员接口：查询用户指定的数字人
+  Future<RoomInServer> adminUserRoom(
+      {required int userId, required int roomId}) async {
+    return sendGetRequest('/v1/admin/messages/$userId/rooms/$roomId', (resp) {
+      return RoomInServer.fromJson(resp.data['data']);
+    });
+  }
+
+  /// 管理员接口：查询用户指定数字人最近聊天历史记录
+  Future<List<MessageInServer>> adminUserRoomMessages(
+      {required int userId, required int roomId}) async {
+    return sendGetRequest('/v1/admin/messages/$userId/rooms/$roomId/messages',
+        (resp) {
+      var res = <MessageInServer>[];
+      for (var item in resp.data['data']) {
+        res.add(MessageInServer.fromJson(item));
+      }
+
+      return res;
+    });
+  }
+
+  /// 管理员接口：查询用户指定群聊最近聊天历史记录
+  Future<List<GroupMessage>> adminUserRoomGroupMessages({
+    required int userId,
+    required int roomId,
+  }) async {
+    return sendGetRequest(
+      '/v1/admin/messages/$userId/rooms/$roomId/group-messages',
+      (resp) {
+        var res = <GroupMessage>[];
+        for (var item in resp.data['data']) {
+          res.add(GroupMessage.fromJson(item));
+        }
+
+        return res;
+      },
+    );
+  }
+
+  /// 管理员接口：查询全局最近聊天历史记录
+  Future<PagedData<MessageInServer>> adminRecentlyMessages({
+    int page = 1,
+    int perPage = 20,
+    String? keyword,
+  }) async {
+    return sendGetRequest(
+      '/v1/admin/recent-messages',
+      (resp) {
+        var res = <MessageInServer>[];
+        for (var item in resp.data['data']) {
+          res.add(MessageInServer.fromJson(item));
         }
 
         return PagedData(

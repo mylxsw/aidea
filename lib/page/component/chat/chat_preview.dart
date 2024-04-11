@@ -35,7 +35,7 @@ class ChatPreview extends StatefulWidget {
   final void Function(int id)? onDeleteMessage;
   final void Function()? onResetContext;
   final ChatPreviewController controller;
-  final MessageStateManager stateManager;
+  final MessageStateManager? stateManager;
   final List<Widget>? helpWidgets;
   final Widget? robotAvatar;
   final Widget? Function(Message message)? avatarBuilder;
@@ -44,6 +44,7 @@ class ChatPreview extends StatefulWidget {
   final void Function(Message message)? onSpeakEvent;
   final void Function(Message message, int index)? onResentEvent;
   final EdgeInsetsGeometry? padding;
+  final Widget Function(Message message)? messageFooterBuilder;
 
   const ChatPreview({
     super.key,
@@ -52,7 +53,7 @@ class ChatPreview extends StatefulWidget {
     this.onDeleteMessage,
     this.onResetContext,
     required this.controller,
-    required this.stateManager,
+    this.stateManager,
     this.robotAvatar,
     this.avatarBuilder,
     this.senderNameBuilder,
@@ -61,6 +62,7 @@ class ChatPreview extends StatefulWidget {
     this.onResentEvent,
     this.supportBloc = true,
     this.padding,
+    this.messageFooterBuilder,
   });
 
   @override
@@ -467,7 +469,9 @@ class _ChatPreviewState extends State<ChatPreview> {
                               );
                             },
                           ),
-                        )
+                        ),
+                      if (widget.messageFooterBuilder != null)
+                        widget.messageFooterBuilder!(message),
                     ],
                   ),
                 ),
@@ -652,13 +656,13 @@ class _ChatPreviewState extends State<ChatPreview> {
               ],
             ),
           ),
-          if (Ability().supportTranslate)
+          if (Ability().supportTranslate && widget.stateManager != null)
             TextButton.icon(
                 onPressed: () {
                   cancel();
 
                   if (showTranslate) {
-                    widget.stateManager
+                    widget.stateManager!
                         .setState(message.roomId!, message.id!,
                             state..showTranslate = false)
                         .then((value) {
@@ -669,7 +673,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                   } else {
                     if (state.translateText != null &&
                         state.translateText != '') {
-                      widget.stateManager
+                      widget.stateManager!
                           .setState(message.roomId!, message.id!,
                               state..showTranslate = true)
                           .then((value) {
@@ -681,7 +685,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                     }
 
                     APIServer().translate(message.text).then((value) {
-                      widget.stateManager
+                      widget.stateManager!
                           .setState(
                         message.roomId!,
                         message.id!,

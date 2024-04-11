@@ -1,4 +1,5 @@
 import 'package:askaide/bloc/admin_payment_bloc.dart';
+import 'package:askaide/bloc/admin_room_bloc.dart';
 import 'package:askaide/bloc/channel_bloc.dart';
 import 'package:askaide/bloc/model_bloc.dart';
 import 'package:askaide/bloc/user_bloc.dart';
@@ -7,10 +8,13 @@ import 'package:askaide/page/admin/channels.dart';
 import 'package:askaide/page/admin/channels_add.dart';
 import 'package:askaide/page/admin/channels_edit.dart';
 import 'package:askaide/page/admin/dashboard.dart';
+import 'package:askaide/page/admin/messages.dart';
 import 'package:askaide/page/admin/models.dart';
 import 'package:askaide/page/admin/models_add.dart';
 import 'package:askaide/page/admin/models_edit.dart';
 import 'package:askaide/page/admin/payments.dart';
+import 'package:askaide/page/admin/recently_messages.dart';
+import 'package:askaide/page/admin/rooms.dart';
 import 'package:askaide/page/admin/user.dart';
 import 'package:askaide/page/admin/users.dart';
 import 'package:askaide/page/balance/web_payment_proxy.dart';
@@ -1244,6 +1248,70 @@ class MyApp extends StatefulWidget {
                       ),
                     ],
                     child: PaymentHistoriesPage(setting: settingRepo),
+                  ),
+                );
+              },
+            ),
+
+            GoRoute(
+              name: 'admin-user-rooms',
+              path: '/admin/users/:id/rooms',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                final userId = int.parse(state.pathParameters['id']!);
+
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => AdminRoomBloc(),
+                      ),
+                    ],
+                    child: AdminRoomsPage(setting: settingRepo, userId: userId),
+                  ),
+                );
+              },
+            ),
+
+            GoRoute(
+              name: 'admin-user-rooms-messages',
+              path: '/admin/users/:id/rooms/:room_id/messages',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                final userId = int.parse(state.pathParameters['id']!);
+                final roomId = int.parse(state.pathParameters['room_id']!);
+
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => AdminRoomBloc(),
+                      ),
+                    ],
+                    child: AdminRoomMessagesPage(
+                      setting: settingRepo,
+                      userId: userId,
+                      roomId: roomId,
+                      roomType: int.parse(state.queryParameters['room_type']!),
+                    ),
+                  ),
+                );
+              },
+            ),
+
+            GoRoute(
+              name: 'admin-recently-messages',
+              path: '/admin/recently-messages',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (context) => AdminRoomBloc(),
+                      ),
+                    ],
+                    child: AdminRecentlyMessagesPage(setting: settingRepo),
                   ),
                 );
               },

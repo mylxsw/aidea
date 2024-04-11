@@ -97,6 +97,11 @@ class Ability {
     return capabilities.stripeEnabled;
   }
 
+  /// 是否支持微信支付
+  bool get enableWechatPay {
+    return capabilities.wechatPayEnabled;
+  }
+
   /// 是否支持 ApplePay
   bool get enableApplePay {
     return capabilities.applePayEnabled;
