@@ -20,6 +20,7 @@ import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -739,10 +740,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
               margin: const EdgeInsets.only(top: 20),
               child: Column(
                 children: [
-                  QrImageView(
-                    data: created.codeUrl!,
-                    version: QrVersions.auto,
-                    size: 200,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: QrImageView(
+                      data: created.codeUrl!,
+                      version: QrVersions.auto,
+                      size: 200,
+                      backgroundColor: Colors.white,
+                    ),
                   ),
                   const SizedBox(height: 10),
                   const Text(
