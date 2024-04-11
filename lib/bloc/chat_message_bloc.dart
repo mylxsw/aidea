@@ -4,6 +4,7 @@ import 'package:askaide/bloc/bloc_manager.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/error.dart';
+import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/model_resolver.dart';
 import 'package:askaide/helper/queue.dart';
 import 'package:askaide/lang/lang.dart';
@@ -342,78 +343,85 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     currentQueue = queue;
     try {
       RequestFailedException? error;
-      var listener = queue.listen(const Duration(milliseconds: 10), (items) {
-        final systemCmds = items.where((e) => e.role == 'system').toList();
-        if (systemCmds.isNotEmpty) {
-          for (var element in systemCmds) {
-            try {
-              // SYSTEM 命令
-              // - type: 命令类型
-              //
-              // type=summary （默认值）
-              //     - question_id: 问题 ID
-              //     - answer_id: 答案 ID
-              //     - quota_consumed: 消耗的配额
-              //     - token: 消耗的 token
-              //     - info: 提示信息
-              final cmd = jsonDecode(element.content);
+      try {
+        var listener = queue.listen(const Duration(milliseconds: 10), (items) {
+          final systemCmds = items.where((e) => e.role == 'system').toList();
+          if (systemCmds.isNotEmpty) {
+            for (var element in systemCmds) {
+              try {
+                // SYSTEM 命令
+                // - type: 命令类型
+                //
+                // type=summary （默认值）
+                //     - question_id: 问题 ID
+                //     - answer_id: 答案 ID
+                //     - quota_consumed: 消耗的配额
+                //     - token: 消耗的 token
+                //     - info: 提示信息
+                final cmd = jsonDecode(element.content);
 
-              message.serverId = cmd['question_id'];
-              waitMessage.serverId = cmd['answer_id'];
+                message.serverId = cmd['question_id'];
+                waitMessage.serverId = cmd['answer_id'];
 
-              final quotaConsumed = cmd['quota_consumed'] ?? 0;
-              final tokenConsumed = cmd['token'] ?? 0;
+                final quotaConsumed = cmd['quota_consumed'] ?? 0;
+                final tokenConsumed = cmd['token'] ?? 0;
 
-              final info = cmd['info'] ?? '';
-              if (info != '') {
-                waitMessage.setExtra({'info': info});
+                final info = cmd['info'] ?? '';
+                if (info != '') {
+                  waitMessage.setExtra({'info': info});
+                }
+
+                if (quotaConsumed == 0 && tokenConsumed == 0) {
+                  continue;
+                }
+
+                waitMessage.quotaConsumed = quotaConsumed;
+                waitMessage.tokenConsumed = tokenConsumed;
+              } catch (e) {
+                // ignore: avoid_print
               }
-
-              if (quotaConsumed == 0 && tokenConsumed == 0) {
-                continue;
-              }
-
-              waitMessage.quotaConsumed = quotaConsumed;
-              waitMessage.tokenConsumed = tokenConsumed;
-            } catch (e) {
-              // ignore: avoid_print
             }
           }
-        }
 
-        waitMessage.text += items
-            .where((e) => e.role != 'system')
-            .map((e) => e.content)
-            .join('');
-        emit(ChatMessageUpdated(waitMessage, processing: true));
+          waitMessage.text += items
+              .where((e) => e.role != 'system')
+              .map((e) => e.content)
+              .join('');
+          emit(ChatMessageUpdated(waitMessage, processing: true));
 
-        // 失败处理
-        for (var e in items) {
-          if (e.code != null && e.code! > 0) {
-            error = RequestFailedException(e.error ?? '请求处理失败', e.code!);
+          // 失败处理
+          for (var e in items) {
+            if (e.code != null && e.code! > 0) {
+              error = RequestFailedException(e.error ?? '请求处理失败', e.code!);
+            }
           }
+        });
+
+        await ModelResolver.instance
+            .request(
+              room: room,
+              tempModel: tempModel,
+              contextMessages: messages.sublist(0, messages.length - 1),
+              onMessage: queue.add,
+              maxTokens: room.maxTokens,
+            )
+            .whenComplete(queue.finish);
+
+        await listener;
+
+        waitMessage.text = waitMessage.text.trim();
+        if (waitMessage.text.isEmpty) {
+          error = RequestFailedException('机器人没有回答任何内容', 500);
         }
-      });
 
-      await ModelResolver.instance
-          .request(
-            room: room,
-            tempModel: tempModel,
-            contextMessages: messages.sublist(0, messages.length - 1),
-            onMessage: queue.add,
-            maxTokens: room.maxTokens,
-          )
-          .whenComplete(queue.finish);
-
-      await listener;
-
-      waitMessage.text = waitMessage.text.trim();
-      if (waitMessage.text.isEmpty) {
-        error = RequestFailedException('机器人没有回答任何内容', 500);
-      }
-
-      if (error != null) {
-        throw error!;
+        if (error != null) {
+          throw error!;
+        }
+      } catch (e) {
+        if (waitMessage.text.isEmpty) {
+          Logger.instance.e('响应过程中出错了: $e');
+          rethrow;
+        }
       }
 
       // 机器人应答完成，将最后一条机器人应答消息更新到数据库，替换掉思考中消息

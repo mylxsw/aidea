@@ -203,6 +203,27 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
         borderRadius: BorderRadius.circular(customColors.borderRadius ?? 8),
       ),
       child: Slidable(
+        endActionPane: ActionPane(
+          motion: const ScrollMotion(),
+          children: [
+            const SizedBox(width: 10),
+            SlidableAction(
+              label: '数字人列表',
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(customColors.borderRadius ?? 8),
+                bottomLeft: Radius.circular(customColors.borderRadius ?? 8),
+                topRight: Radius.circular(customColors.borderRadius ?? 8),
+                bottomRight: Radius.circular(customColors.borderRadius ?? 8),
+              ),
+              backgroundColor: customColors.linkColor ?? Colors.green,
+              icon: Icons.people,
+              foregroundColor: Colors.white,
+              onPressed: (_) {
+                context.push('/admin/users/${user.id}/rooms');
+              },
+            ),
+          ],
+        ),
         child: Material(
           borderRadius:
               BorderRadius.all(Radius.circular(customColors.borderRadius ?? 8)),

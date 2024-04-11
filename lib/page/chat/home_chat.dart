@@ -586,7 +586,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
     chatPreviewController.setAllMessageIds(messages);
 
     return ChatPreview(
-      padding: enableInput.value ? null : const EdgeInsets.only(bottom: 30),
+      padding: enableInput.value ? null : const EdgeInsets.only(bottom: 35),
       messages: messages,
       scrollController: scrollController,
       controller: chatPreviewController,

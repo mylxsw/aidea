@@ -379,7 +379,7 @@ class _RoomChatPageState extends State<RoomChatPage> {
 
           return ChatPreview(
             padding:
-                _inputEnabled.value ? null : const EdgeInsets.only(bottom: 30),
+                _inputEnabled.value ? null : const EdgeInsets.only(bottom: 35),
             messages: messages,
             scrollController: _scrollController,
             controller: _chatPreviewController,

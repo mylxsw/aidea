@@ -300,7 +300,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
           }
         },
         child: LoadingAnimationWidget.beat(
-          color: customColors.linkColor!,
+          color: customColors.linkColor ?? Colors.green,
           size: 20,
         ),
       );
