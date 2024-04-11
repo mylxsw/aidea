@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
 # 应用正式发布时，需要同步修改 lib/helper/constant.dart 中的 VERSION 值
-version: 1.0.14+1
+version: 1.0.14+2
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -129,6 +129,7 @@ dependencies:
   flutter_stripe: ^10.1.1
   flutter_stripe_web: ^5.1.0
   stripe_js: ^3.4.0
+  qr_flutter: ^4.1.0
   
 dev_dependencies:
   flutter_test:

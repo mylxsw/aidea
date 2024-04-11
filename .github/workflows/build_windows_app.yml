@@ -17,7 +17,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2.10.0
         with:
-          flutter-version: "3.13.2"  # Set flutter version here
+          flutter-version: "3.19.2"  # Set flutter version here
 
       - name: Build Windows app
         #run: flutter build windows --release

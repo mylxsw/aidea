@@ -84,6 +84,9 @@ class GroupMessage {
   DateTime? createdAt;
   DateTime? updatedAt;
 
+  /// 管理接口专用
+  final String? model;
+
   GroupMessage({
     required this.id,
     required this.message,
@@ -97,6 +100,7 @@ class GroupMessage {
     this.memberId,
     this.createdAt,
     this.updatedAt,
+    this.model,
   });
 
   factory GroupMessage.fromJson(Map<String, dynamic> json) {
@@ -113,6 +117,7 @@ class GroupMessage {
       status: json['status'] ?? 0,
       createdAt: DateTime.tryParse(json['CreatedAt']),
       updatedAt: DateTime.tryParse(json['UpdatedAt']),
+      model: json['model'],
     );
   }
 
@@ -130,6 +135,7 @@ class GroupMessage {
       'status': status,
       'CreatedAt': createdAt?.toIso8601String(),
       'UpdatedAt': updatedAt?.toIso8601String(),
+      'model': model,
     };
   }
 }

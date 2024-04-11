@@ -11,6 +11,9 @@ class Capabilities {
   /// 是否支持微信登录
   final bool wechatSigninEnabled;
 
+  /// 是否支持微信支付
+  final bool wechatPayEnabled;
+
   /// 是否支持其它
   final bool otherPayEnabled;
 
@@ -71,6 +74,7 @@ class Capabilities {
     this.serviceStatusPage = '',
     this.wechatSigninEnabled = false,
     this.stripeEnabled = false,
+    this.wechatPayEnabled = false,
   });
 
   factory Capabilities.fromJson(Map<String, dynamic> json) {
@@ -94,6 +98,7 @@ class Capabilities {
       disableDigitalHuman: json['disable_digital_human'] ?? false,
       disableChat: json['disable_chat'] ?? false,
       serviceStatusPage: json['service_status_page'] ?? '',
+      wechatPayEnabled: json['wechat_pay_enabled'] ?? false,
     );
   }
 
@@ -102,6 +107,7 @@ class Capabilities {
       'wechat_signin_enabled': wechatSigninEnabled,
       'apple_pay_enabled': applePayEnabled,
       'stripe_enabled': stripeEnabled,
+      'wechat_pay_enabled': wechatPayEnabled,
       'other_pay_enabled': otherPayEnabled,
       'translate_enabled': translateEnabled,
       'mail_enabled': mailEnabled,

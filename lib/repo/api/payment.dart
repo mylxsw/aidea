@@ -127,6 +127,60 @@ class PaymentStatus {
   }
 }
 
+class WechatPaymentCreatedResponse {
+  final String paymentId;
+  final bool sandbox;
+  final String? codeUrl;
+  final String? prepayId;
+  final String? package;
+  final String? partnerId;
+  final String? appId;
+  final String? noncestr;
+  final String? timestamp;
+  final String? sign;
+
+  WechatPaymentCreatedResponse(
+    this.paymentId,
+    this.sandbox, {
+    this.codeUrl,
+    this.prepayId,
+    this.package,
+    this.partnerId,
+    this.appId,
+    this.noncestr,
+    this.timestamp,
+    this.sign,
+  });
+
+  toJson() => {
+        'payment_id': paymentId,
+        'sandbox': sandbox,
+        'code_url': codeUrl,
+        'prepay_id': prepayId,
+        'package': package,
+        'partner_id': partnerId,
+        'app_id': appId,
+        'noncestr': noncestr,
+        'timestamp': timestamp,
+        'sign': sign,
+      };
+
+  static WechatPaymentCreatedResponse fromJson(Map<String, dynamic> json) {
+    return WechatPaymentCreatedResponse(
+      json['payment_id'],
+      json['sandbox'] ?? false,
+      codeUrl: json['code_url'],
+      prepayId: json['prepay_id'],
+      package: json['package'],
+      partnerId: json['partner_id'],
+      appId: json['app_id'],
+      noncestr: json['noncestr'],
+      timestamp: json['timestamp'],
+      sign: json['sign'],
+    );
+  }
+}
+
 class StripePaymentCreatedResponse {
   final String paymentId;
   final String customer;
