@@ -131,6 +131,7 @@ dependencies:
   stripe_js: ^3.4.0
   qr_flutter: ^4.1.0
   flutter_displaymode: ^0.6.0
+  image_cropper: ^5.0.1
   
 dev_dependencies:
   flutter_test:

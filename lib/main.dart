@@ -19,6 +19,7 @@ import 'package:askaide/page/admin/user.dart';
 import 'package:askaide/page/admin/users.dart';
 import 'package:askaide/page/balance/web_payment_proxy.dart';
 import 'package:askaide/page/balance/web_payment_result.dart';
+import 'package:askaide/page/change_outfits/change_outfits.dart';
 import 'package:askaide/page/creative_island/draw/artistic_wordart.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
@@ -907,6 +908,19 @@ class MyApp extends StatefulWidget {
                   ),
                 );
               },
+            ),
+            GoRoute(
+              name: 'change-outfits',
+              path: '/change-outfits',
+              parentNavigatorKey: _shellNavigatorKey,
+              pageBuilder: (context, state) => transitionResolver(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider.value(value: galleryBloc),
+                  ],
+                  child: ChangeOutfits(setting: settingRepo),
+                ),
+              ),
             ),
             GoRoute(
               name: 'creative-gallery',

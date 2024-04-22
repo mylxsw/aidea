@@ -61,6 +61,17 @@ class _AppScaffoldState extends State<AppScaffold> {
   List<BottomNavigationBarConfig> _bottomNavigationBarList(
       {int? currentIndex}) {
     return [
+
+      BottomNavigationBarConfig(
+        builder: (index, customColors) => createAnimatedNavBarItem(
+          icon: Icons.auto_awesome_outlined,
+          activatedIcon: Icons.auto_awesome,
+          activatedColor: customColors.linkColor,
+          label: "AI换装",
+          activated: currentIndex == index,
+        ),
+        route: '/change-outfits',
+      ),
       if (Ability().enableChat)
         BottomNavigationBarConfig(
           builder: (index, customColors) => createAnimatedNavBarItem(
@@ -83,6 +94,8 @@ class _AppScaffoldState extends State<AppScaffold> {
           ),
           route: '/',
         ),
+
+
       if (Ability().enableGallery)
         BottomNavigationBarConfig(
           builder: (index, customColors) => createAnimatedNavBarItem(
