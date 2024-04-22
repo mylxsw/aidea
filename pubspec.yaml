@@ -130,6 +130,7 @@ dependencies:
   flutter_stripe_web: ^5.1.0
   stripe_js: ^3.4.0
   qr_flutter: ^4.1.0
+  flutter_displaymode: ^0.6.0
   
 dev_dependencies:
   flutter_test:

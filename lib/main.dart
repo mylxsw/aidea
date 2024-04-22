@@ -20,6 +20,8 @@ import 'package:askaide/page/admin/users.dart';
 import 'package:askaide/page/balance/web_payment_proxy.dart';
 import 'package:askaide/page/balance/web_payment_result.dart';
 import 'package:askaide/page/creative_island/draw/artistic_wordart.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:path/path.dart';
 
 import 'package:askaide/bloc/account_bloc.dart';
@@ -126,7 +128,10 @@ import 'package:askaide/helper/http.dart' as httpx;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:media_kit/media_kit.dart';
 
+
+
 void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
   httpx.HttpClient.init();
@@ -1331,10 +1336,24 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 }
+List<DisplayMode> modes = <DisplayMode>[];
 
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
+    print("9999");
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      print("888");
+      modes = await FlutterDisplayMode.supported;
+      modes.forEach(print);
+      await FlutterDisplayMode.preferred;
+      await FlutterDisplayMode.active;
+      await FlutterDisplayMode.setHighRefreshRate();
+      setState(() {
+
+      });
+    });
+
     // 初始化多语言
     // final defaultLanguage = resolveSystemLanguage(PlatformTool.localeName());
     // var initLanguage =
