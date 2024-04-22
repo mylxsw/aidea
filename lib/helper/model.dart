@@ -34,6 +34,9 @@ class ModelAggregate {
               tag: e.tag,
               avatarUrl: e.avatarUrl,
               supportVision: e.supportVision,
+              tagTextColor: e.tagTextColor,
+              tagBgColor: e.tagBgColor,
+              isNew: e.isNew,
             ),
           )
           .toList());

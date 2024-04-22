@@ -51,6 +51,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
   final TextEditingController inputPriceController = TextEditingController();
   final TextEditingController outputPriceController = TextEditingController();
   final TextEditingController promptController = TextEditingController();
+  final TextEditingController categoryController = TextEditingController();
 
   /// 用于控制是否显示高级选项
   bool showAdvancedOptions = false;
@@ -68,6 +69,14 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
   String? avatarUrl;
   List<String> avatarPresets = [];
 
+  /// 是否是上新
+  bool isNew = false;
+
+  /// Tag
+  final TextEditingController tagController = TextEditingController();
+  String? tagTextColor;
+  String? tagBgColor;
+
   // 模型渠道
   List<AdminChannel> modelChannels = [];
   // 选择的渠道
@@ -83,6 +92,8 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
     inputPriceController.dispose();
     outputPriceController.dispose();
     promptController.dispose();
+    categoryController.dispose();
+    tagController.dispose();
 
     super.dispose();
   }
@@ -150,6 +161,15 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         controller: modelIdController,
                         textAlignVertical: TextAlignVertical.top,
                         hintText: '请输入模型唯一标识',
+                        maxLength: 100,
+                        showCounter: false,
+                      ),
+                      EnhancedTextField(
+                        labelText: '厂商',
+                        customColors: customColors,
+                        controller: categoryController,
+                        textAlignVertical: TextAlignVertical.top,
+                        hintText: '请输入厂商名称（可选）',
                         maxLength: 100,
                         showCounter: false,
                       ),
@@ -433,19 +453,51 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                           maxLength: 100,
                           showCounter: false,
                         ),
+                        EnhancedTextField(
+                          labelText: '标签',
+                          customColors: customColors,
+                          controller: tagController,
+                          textAlignVertical: TextAlignVertical.top,
+                          hintText: '请输入标签',
+                          maxLength: 100,
+                          showCounter: false,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              '启用',
-                              style: TextStyle(fontSize: 16),
+                            Row(
+                              children: [
+                                const Text(
+                                  '视觉',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 5),
+                                InkWell(
+                                  onTap: () {
+                                    showBeautyDialog(
+                                      context,
+                                      type: QuickAlertType.info,
+                                      text: '当前模型是否支持视觉能力。',
+                                      confirmBtnText:
+                                          AppLocale.gotIt.getString(context),
+                                      showCancelBtn: false,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.help_outline,
+                                    size: 16,
+                                    color: customColors.weakLinkColor
+                                        ?.withAlpha(150),
+                                  ),
+                                ),
+                              ],
                             ),
                             CupertinoSwitch(
                               activeColor: customColors.linkColor,
-                              value: modelEnabled,
+                              value: supportVision,
                               onChanged: (value) {
                                 setState(() {
-                                  modelEnabled = value;
+                                  supportVision = value;
                                 });
                               },
                             ),
@@ -454,16 +506,39 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              '视觉能力',
-                              style: TextStyle(fontSize: 16),
+                            Row(
+                              children: [
+                                const Text(
+                                  '上新',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 5),
+                                InkWell(
+                                  onTap: () {
+                                    showBeautyDialog(
+                                      context,
+                                      type: QuickAlertType.info,
+                                      text: '是否在模型旁边展示“新”标识，告知用户这是一个新模型。',
+                                      confirmBtnText:
+                                          AppLocale.gotIt.getString(context),
+                                      showCancelBtn: false,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.help_outline,
+                                    size: 16,
+                                    color: customColors.weakLinkColor
+                                        ?.withAlpha(150),
+                                  ),
+                                ),
+                              ],
                             ),
                             CupertinoSwitch(
                               activeColor: customColors.linkColor,
-                              value: supportVision,
+                              value: isNew,
                               onChanged: (value) {
                                 setState(() {
-                                  supportVision = value;
+                                  isNew = value;
                                 });
                               },
                             ),
@@ -505,6 +580,24 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                               onChanged: (value) {
                                 setState(() {
                                   restricted = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              '启用',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            CupertinoSwitch(
+                              activeColor: customColors.linkColor,
+                              value: modelEnabled,
+                              onChanged: (value) {
+                                setState(() {
+                                  modelEnabled = value;
                                 });
                               },
                             ),
@@ -620,6 +713,11 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
         prompt: promptController.text,
         vision: supportVision,
         restricted: restricted,
+        tag: tagController.text,
+        tagTextColor: tagTextColor,
+        tagBgColor: tagBgColor,
+        category: categoryController.text,
+        isNew: isNew,
       ),
       status: modelEnabled ? 1 : 2,
       providers: ps,

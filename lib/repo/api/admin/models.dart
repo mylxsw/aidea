@@ -61,6 +61,13 @@ class AdminModelMeta {
   int? outputPrice;
   String? prompt;
 
+  String? tag;
+  String? tagTextColor;
+  String? tagBgColor;
+
+  bool? isNew;
+  String? category;
+
   AdminModelMeta({
     this.vision,
     this.restricted,
@@ -68,6 +75,11 @@ class AdminModelMeta {
     this.inputPrice,
     this.outputPrice,
     this.prompt,
+    this.tag,
+    this.tagTextColor,
+    this.tagBgColor,
+    this.isNew,
+    this.category,
   });
 
   factory AdminModelMeta.fromJson(Map<String, dynamic> json) {
@@ -78,6 +90,11 @@ class AdminModelMeta {
       inputPrice: json['input_price'],
       outputPrice: json['output_price'],
       prompt: json['prompt'],
+      tag: json['tag'],
+      tagTextColor: json['tag_text_color'],
+      tagBgColor: json['tag_bg_color'],
+      isNew: json['is_new'],
+      category: json['category'],
     );
   }
 
@@ -89,6 +106,11 @@ class AdminModelMeta {
       'input_price': inputPrice,
       'output_price': outputPrice,
       'prompt': prompt,
+      'tag': tag,
+      'tag_text_color': tagTextColor,
+      'tag_bg_color': tagBgColor,
+      'is_new': isNew,
+      'category': category,
     };
   }
 }

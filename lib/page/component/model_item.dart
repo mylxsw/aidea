@@ -1,4 +1,5 @@
 import 'package:askaide/helper/ability.dart';
+import 'package:askaide/helper/color.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/image.dart';
 import 'package:askaide/lang/lang.dart';
@@ -39,8 +40,8 @@ class _ModelItemState extends State<ModelItem> {
       var index = widget.models.indexWhere(
           (e) => e.uid() == widget.initValue || e.id == widget.initValue);
       if (index != -1) {
-        var model = widget.models.removeAt(index);
-        widget.models.insert(0, model);
+        widget.models
+            .insert(0, widget.models[index].copyWith(category: '正在使用'));
       }
     }
 
@@ -48,7 +49,7 @@ class _ModelItemState extends State<ModelItem> {
         ? Column(
             children: [
               Container(
-                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                padding: const EdgeInsets.only(left: 5, right: 5, bottom: 5),
                 child: TextField(
                   textAlignVertical: TextAlignVertical.center,
                   style: TextStyle(color: customColors.dialogDefaultTextColor),
@@ -88,103 +89,155 @@ class _ModelItemState extends State<ModelItem> {
                     itemCount: models.length,
                     itemBuilder: (context, i) {
                       var item = models[i];
-                      return ListTile(
-                        title: Container(
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (item.avatarUrl != null) ...[
-                                _buildAvatar(
-                                    avatarUrl: item.avatarUrl, size: 40),
-                                const SizedBox(width: 20),
-                              ],
-                              Expanded(
-                                child: Container(
-                                  alignment: item.avatarUrl != null
-                                      ? Alignment.centerLeft
-                                      : Alignment.center,
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          item.name,
-                                          overflow: TextOverflow.ellipsis,
+
+                      var tags = <Widget>[];
+                      if (item.tag != null) {
+                        tags.add(buildTag(
+                          customColors,
+                          item.tag!,
+                          tagTextColor: item.tagTextColor,
+                          tagBgColor: item.tagBgColor,
+                        ));
+                      }
+
+                      if (item.supportVision) {
+                        tags.add(buildTag(
+                          customColors,
+                          AppLocale.visionTag.getString(context),
+                          tagTextColor: colorToString(Colors.white),
+                          tagBgColor: colorToString(
+                            customColors.linkColor ?? Colors.green,
+                          ),
+                        ));
+                      }
+
+                      if (item.isNew && widget.initValue != item.uid()) {
+                        tags.add(buildTag(
+                          customColors,
+                          AppLocale.newTag.getString(context),
+                          tagTextColor: colorToString(Colors.white),
+                          tagBgColor: colorToString(Colors.red),
+                        ));
+                      }
+
+                      List<Widget> separators = [];
+                      if (i == 0 && models[i].category != '') {
+                        separators
+                            .add(buildCategory(customColors, item.category));
+                      } else if (i > 0 &&
+                          models[i].category != models[i - 1].category) {
+                        separators.add(buildCategory(
+                          customColors,
+                          item.category == ''
+                              ? AppLocale.others.getString(context)
+                              : item.category,
+                        ));
+                      }
+
+                      return Column(
+                        children: [
+                          if (separators.isNotEmpty) const SizedBox(height: 10),
+                          ...separators,
+                          ListTile(
+                            title: Container(
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (item.avatarUrl != null) ...[
+                                    _buildAvatar(
+                                        avatarUrl: item.avatarUrl, size: 45),
+                                    const SizedBox(width: 10),
+                                  ],
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Container(
+                                                alignment:
+                                                    item.avatarUrl != null
+                                                        ? Alignment.centerLeft
+                                                        : Alignment.center,
+                                                child: Text(
+                                                  item.name,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                      fontSize: 14),
+                                                ),
+                                              ),
+                                            ),
+                                            ...tags,
+                                            if (item.avatarUrl != null) ...[
+                                              if (widget.enableClear && i == 0)
+                                                SizedBox(
+                                                  width: 50,
+                                                  child: widget.initValue ==
+                                                          item.uid()
+                                                      ? WeakTextButton(
+                                                          title: '取消',
+                                                          fontSize: 10,
+                                                          onPressed: () {
+                                                            widget.onSelected(
+                                                                null);
+                                                          },
+                                                        )
+                                                      : const SizedBox(),
+                                                )
+                                              else if (widget.initValue ==
+                                                  item.uid())
+                                                SizedBox(
+                                                  width: 20,
+                                                  child: Icon(
+                                                    Icons.check,
+                                                    color:
+                                                        customColors.linkColor,
+                                                  ),
+                                                ),
+                                            ],
+                                          ],
                                         ),
-                                      ),
-                                      if (item.tag != null &&
-                                          item.tag!.isNotEmpty &&
-                                          item.avatarUrl != null)
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: customColors
-                                                .tagsBackgroundHover,
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          margin:
-                                              const EdgeInsets.only(left: 5),
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 5,
-                                            vertical: 2,
-                                          ),
-                                          child: Text(
-                                            item.tag!,
+                                        if (item.description != null &&
+                                            item.description != '')
+                                          Text(
+                                            item.description!,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                               fontSize: 10,
-                                              color: customColors.tagsText,
+                                              color: customColors.weakTextColor,
                                             ),
                                           ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              if (item.avatarUrl != null) ...[
-                                if (widget.enableClear)
-                                  SizedBox(
-                                    width: 60,
-                                    child: widget.initValue == item.uid() ||
-                                            widget.initValue == item.id
-                                        ? WeakTextButton(
-                                            title: '取消',
-                                            fontSize: 14,
-                                            onPressed: () {
-                                              widget.onSelected(null);
-                                            },
-                                          )
-                                        : const SizedBox(),
-                                  )
-                                else
-                                  SizedBox(
-                                    width: 10,
-                                    child: Icon(
-                                      Icons.check,
-                                      color: widget.initValue == item.uid() ||
-                                              widget.initValue == item.id
-                                          ? customColors.linkColor
-                                          : Colors.transparent,
+                                      ],
                                     ),
                                   ),
-                              ],
-                            ],
+                                ],
+                              ),
+                            ),
+                            onTap: () {
+                              widget.onSelected(item);
+                            },
                           ),
-                        ),
-                        onTap: () {
-                          widget.onSelected(item);
-                        },
+                        ],
                       );
                     },
                     separatorBuilder: (BuildContext context, int index) {
-                      return Divider(
-                        height: 1,
-                        color: customColors.columnBlockDividerColor,
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: Divider(
+                          height: 1,
+                          color: customColors.columnBlockDividerColor,
+                        ),
                       );
                     },
+                    padding: const EdgeInsets.only(bottom: 15),
                   );
                 }),
               ),
@@ -196,6 +249,20 @@ class _ModelItemState extends State<ModelItem> {
               textAlign: TextAlign.center,
             ),
           );
+  }
+
+  Widget buildCategory(CustomColors customColors, String category) {
+    return Container(
+      padding: const EdgeInsets.only(left: 10, right: 10),
+      width: double.infinity,
+      child: Text(
+        category,
+        style: TextStyle(
+          color: customColors.dialogDefaultTextColor,
+          fontSize: 12,
+        ),
+      ),
+    );
   }
 
   Widget _buildAvatar({String? avatarUrl, int? id, int size = 30}) {
@@ -210,6 +277,36 @@ class _ModelItemState extends State<ModelItem> {
       id: id ?? 0,
       size: size,
       usage: Ability().isUserLogon() ? AvatarUsage.room : AvatarUsage.legacy,
+    );
+  }
+
+  Widget buildTag(
+    CustomColors customColors,
+    String tag, {
+    String? tagTextColor,
+    String? tagBgColor,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: tagBgColor != null
+            ? stringToColor(tagBgColor)
+            : customColors.tagsBackgroundHover,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      margin: const EdgeInsets.only(left: 5),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 5,
+        vertical: 2,
+      ),
+      child: Text(
+        tag,
+        style: TextStyle(
+          fontSize: 8,
+          color: tagTextColor != null
+              ? stringToColor(tagTextColor)
+              : customColors.tagsText,
+        ),
+      ),
     );
   }
 }

@@ -53,6 +53,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
   final TextEditingController inputPriceController = TextEditingController();
   final TextEditingController outputPriceController = TextEditingController();
   final TextEditingController promptController = TextEditingController();
+  final TextEditingController categoryController = TextEditingController();
 
   /// 用于控制是否显示高级选项
   bool showAdvancedOptions = false;
@@ -65,6 +66,14 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
 
   /// 模型状态
   bool modelEnabled = true;
+
+  /// 是否是上新
+  bool isNew = false;
+
+  /// Tag
+  final TextEditingController tagController = TextEditingController();
+  String? tagTextColor;
+  String? tagBgColor;
 
   /// 模型头像
   String? avatarUrl;
@@ -88,6 +97,8 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
     inputPriceController.dispose();
     outputPriceController.dispose();
     promptController.dispose();
+    categoryController.dispose();
+    tagController.dispose();
 
     super.dispose();
   }
@@ -186,6 +197,13 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                       TextEditingValue(text: state.model.meta!.prompt ?? '');
                   supportVision = state.model.meta!.vision ?? false;
                   restricted = state.model.meta!.restricted ?? false;
+                  tagController.value =
+                      TextEditingValue(text: state.model.meta!.tag ?? '');
+                  tagTextColor = state.model.meta!.tagTextColor;
+                  tagBgColor = state.model.meta!.tagBgColor;
+                  isNew = state.model.meta!.isNew ?? false;
+                  categoryController.value =
+                      TextEditingValue(text: state.model.meta!.category ?? '');
                 }
               }
 
@@ -209,6 +227,15 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                         maxLength: 100,
                         showCounter: false,
                         readOnly: true,
+                      ),
+                      EnhancedTextField(
+                        labelText: '厂商',
+                        customColors: customColors,
+                        controller: categoryController,
+                        textAlignVertical: TextAlignVertical.top,
+                        hintText: '请输入厂商名称（可选）',
+                        maxLength: 100,
+                        showCounter: false,
                       ),
                       EnhancedTextField(
                         labelText: '名称',
@@ -510,19 +537,51 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                           maxLength: 100,
                           showCounter: false,
                         ),
+                        EnhancedTextField(
+                          labelText: '标签',
+                          customColors: customColors,
+                          controller: tagController,
+                          textAlignVertical: TextAlignVertical.top,
+                          hintText: '请输入标签',
+                          maxLength: 100,
+                          showCounter: false,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              '启用',
-                              style: TextStyle(fontSize: 16),
+                            Row(
+                              children: [
+                                const Text(
+                                  '视觉',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 5),
+                                InkWell(
+                                  onTap: () {
+                                    showBeautyDialog(
+                                      context,
+                                      type: QuickAlertType.info,
+                                      text: '当前模型是否支持视觉能力。',
+                                      confirmBtnText:
+                                          AppLocale.gotIt.getString(context),
+                                      showCancelBtn: false,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.help_outline,
+                                    size: 16,
+                                    color: customColors.weakLinkColor
+                                        ?.withAlpha(150),
+                                  ),
+                                ),
+                              ],
                             ),
                             CupertinoSwitch(
                               activeColor: customColors.linkColor,
-                              value: modelEnabled,
+                              value: supportVision,
                               onChanged: (value) {
                                 setState(() {
-                                  modelEnabled = value;
+                                  supportVision = value;
                                 });
                               },
                             ),
@@ -531,16 +590,39 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              '视觉能力',
-                              style: TextStyle(fontSize: 16),
+                            Row(
+                              children: [
+                                const Text(
+                                  '上新',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 5),
+                                InkWell(
+                                  onTap: () {
+                                    showBeautyDialog(
+                                      context,
+                                      type: QuickAlertType.info,
+                                      text: '是否在模型旁边展示“新”标识，告知用户这是一个新模型。',
+                                      confirmBtnText:
+                                          AppLocale.gotIt.getString(context),
+                                      showCancelBtn: false,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.help_outline,
+                                    size: 16,
+                                    color: customColors.weakLinkColor
+                                        ?.withAlpha(150),
+                                  ),
+                                ),
+                              ],
                             ),
                             CupertinoSwitch(
                               activeColor: customColors.linkColor,
-                              value: supportVision,
+                              value: isNew,
                               onChanged: (value) {
                                 setState(() {
-                                  supportVision = value;
+                                  isNew = value;
                                 });
                               },
                             ),
@@ -582,6 +664,24 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                               onChanged: (value) {
                                 setState(() {
                                   restricted = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              '启用',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            CupertinoSwitch(
+                              activeColor: customColors.linkColor,
+                              value: modelEnabled,
+                              onChanged: (value) {
+                                setState(() {
+                                  modelEnabled = value;
                                 });
                               },
                             ),
@@ -700,6 +800,11 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
         prompt: promptController.text,
         vision: supportVision,
         restricted: restricted,
+        category: categoryController.text,
+        tag: tagController.text,
+        tagTextColor: tagTextColor,
+        tagBgColor: tagBgColor,
+        isNew: isNew,
       ),
       status: modelEnabled ? 1 : 2,
       providers: ps,
