@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_windows
   file_saver
+  file_selector_windows
   flutter_localization
   flutter_tts
   media_kit_libs_windows_video

@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_linux
   file_saver
+  file_selector_linux
   flutter_localization
   media_kit_libs_linux
   media_kit_video

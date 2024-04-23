@@ -11,17 +11,19 @@ import 'package:go_router/go_router.dart';
 
 class AppScaffold extends StatefulWidget {
   final SettingRepository settingRepo;
+
   const AppScaffold({
     Key? key,
     required this.child,
     required this.settingRepo,
   }) : super(key: key);
   final Widget child;
+
   @override
   State<AppScaffold> createState() => _AppScaffoldState();
 }
 
-class _AppScaffoldState extends State<AppScaffold> {
+class _AppScaffoldState extends State<AppScaffold>{
   var _showBottomNavigatorBar = true;
 
   Function? cancelHideBottomNavigatorBarEventListener;
@@ -61,7 +63,6 @@ class _AppScaffoldState extends State<AppScaffold> {
   List<BottomNavigationBarConfig> _bottomNavigationBarList(
       {int? currentIndex}) {
     return [
-
       BottomNavigationBarConfig(
         builder: (index, customColors) => createAnimatedNavBarItem(
           icon: Icons.auto_awesome_outlined,
@@ -94,8 +95,6 @@ class _AppScaffoldState extends State<AppScaffold> {
           ),
           route: '/',
         ),
-
-
       if (Ability().enableGallery)
         BottomNavigationBarConfig(
           builder: (index, customColors) => createAnimatedNavBarItem(
@@ -192,6 +191,10 @@ class _AppScaffoldState extends State<AppScaffold> {
 
     return context.go(barItems[value].route);
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }
 
 BottomNavigationBarItem createAnimatedNavBarItem({

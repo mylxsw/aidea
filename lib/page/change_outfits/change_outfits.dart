@@ -19,6 +19,7 @@ import 'package:quickalert/models/quickalert_type.dart';
 import '../component/column_block.dart';
 import '../component/dialog.dart';
 import '../creative_island/draw/components/image_selector.dart';
+import '../creative_island/draw/components/image_selector_crop.dart';
 
 class ChangeOutfits extends StatefulWidget {
   final SettingRepository setting;
@@ -31,6 +32,7 @@ class ChangeOutfits extends StatefulWidget {
 class _ChangeOutfitsState extends State<ChangeOutfits> {
 
   String? selectedImagePath;
+  String? selectedImagePathCloths;
   Uint8List? selectedImageData;
 
   // final GalleryDatasource datasource = GalleryDatasource();
@@ -83,7 +85,7 @@ class _ChangeOutfitsState extends State<ChangeOutfits> {
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
             children: [
               // 上传图片
-              ImageSelector(
+              ImageSelectorCrop(
                 onImageSelected: ({path, data}) {
                   if (path != null) {
                     setState(() {
@@ -101,14 +103,14 @@ class _ChangeOutfitsState extends State<ChangeOutfits> {
                 },
                 selectedImagePath: selectedImagePath,
                 selectedImageData: selectedImageData,
-                title: AppLocale.referenceImage.getString(context),
-                height: _calImageSelectorHeight(context),
+                title: "上传参考图",
+                height: 170,
                 titleHelper: InkWell(
                   onTap: () {
                     showBeautyDialog(
                       context,
                       type: QuickAlertType.info,
-                      text: AppLocale.referenceImageNote.getString(context),
+                      text: "上传照片",
                       confirmBtnText: AppLocale.gotIt.getString(context),
                       showCancelBtn: false,
                     );
@@ -125,7 +127,53 @@ class _ChangeOutfitsState extends State<ChangeOutfits> {
 
             ],
           ),
+          ColumnBlock(
+            innerPanding: 10,
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            children: [
+              // 上传图片
+              ImageSelectorCrop(
+                onImageSelected: ({path, data}) {
+                  if (path != null) {
+                    setState(() {
+                      selectedImagePathCloths = path;
+                      selectedImageData = null;
+                    });
+                  }
 
+                  if (data != null) {
+                    setState(() {
+                      selectedImageData = data;
+                      selectedImagePath = null;
+                    });
+                  }
+                },
+                selectedImagePath: selectedImagePathCloths,
+                selectedImageData: selectedImageData,
+                title: "上传上衣",
+                height: 170,
+                titleHelper: InkWell(
+                  onTap: () {
+                    showBeautyDialog(
+                      context,
+                      type: QuickAlertType.info,
+                      text: "上传照片",
+                      confirmBtnText: AppLocale.gotIt.getString(context),
+                      showCancelBtn: false,
+                    );
+                  },
+                  child: Icon(
+                    Icons.help_outline,
+                    size: 16,
+                    color: customColors.weakLinkColor?.withAlpha(150),
+                  ),
+                ),
+              )
+
+
+
+            ],
+          ),
           // Container(
           //   padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           //   child: Text('热门作品'),
