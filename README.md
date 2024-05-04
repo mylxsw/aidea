@@ -4,6 +4,7 @@
 ![GitHub release (by tag)](https://img.shields.io/github/downloads/mylxsw/aidea/1.0.4/total)
 ![GitHub](https://img.shields.io/github/license/mylxsw/aidea)
 
+<a href="https://trendshift.io/repositories/1013" target="_blank"><img src="https://trendshift.io/api/badge/repositories/1013" alt="mylxsw%2Faidea | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
 一款集成了主流大语言模型以及绘图模型的 APP， 采用 Flutter 开发，代码完全开源，支持以下功能：
 
