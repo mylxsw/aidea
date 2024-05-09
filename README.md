@@ -42,9 +42,11 @@ https://aidea.aicode.cc
 
 ## 技术交流
 
-- 微信技术交流群：3 个群都已满员，添加微信号 `x-prometheus` 为好友，拉你进群
+- 微信技术交流群：
 
-    <img src="https://github.com/mylxsw/aidea/assets/2330911/655601c1-9371-4460-9657-c58521260336" width="200"/>
+    <img src="https://github.com/mylxsw/aidea/assets/2330911/50e400ec-3e8d-4e39-a08b-874a2c527b6d" width="400"/>
+
+    如果无法加入，请添加微信号 `x-prometheus` 为好友，拉你进群。
 
 - 微信公众号
 
