@@ -133,6 +133,8 @@ dependencies:
   flutter_displaymode: ^0.6.0
   image_cropper: ^5.0.1
   image_picker: ^1.0.1
+  pocketbase: ^0.18.1
+  get: ^4.6.6
   
 dev_dependencies:
   flutter_test:

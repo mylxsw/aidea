@@ -21,6 +21,7 @@ import 'package:askaide/page/balance/web_payment_proxy.dart';
 import 'package:askaide/page/balance/web_payment_result.dart';
 import 'package:askaide/page/change_outfits/change_outfits.dart';
 import 'package:askaide/page/creative_island/draw/artistic_wordart.dart';
+import 'package:askaide/page/creative_island/draw/components/change_outfits/provider.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:path/path.dart';
@@ -128,11 +129,9 @@ import 'package:sizer/sizer.dart';
 import 'package:askaide/helper/http.dart' as httpx;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:media_kit/media_kit.dart';
-
-
+import 'package:get/get.dart';
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
   httpx.HttpClient.init();
@@ -253,13 +252,15 @@ void main() async {
     );
   });
 
-  runApp(MyApp(
-    settingRepo: settingRepo,
-    chatMsgRepo: chatMsgRepo,
-    openAIRepo: openAIRepo,
-    cacheRepo: cacheRepo,
-    creativeIslandRepo: creativeIslandRepo,
-    messageStateManager: stateManager,
+  runApp(GetMaterialApp(
+    home: MyApp(
+      settingRepo: settingRepo,
+      chatMsgRepo: chatMsgRepo,
+      openAIRepo: openAIRepo,
+      cacheRepo: cacheRepo,
+      creativeIslandRepo: creativeIslandRepo,
+      messageStateManager: stateManager,
+    ),
   ));
 }
 
@@ -1350,22 +1351,19 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 }
+
 List<DisplayMode> modes = <DisplayMode>[];
 
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    print("9999");
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      print("888");
       modes = await FlutterDisplayMode.supported;
       modes.forEach(print);
       await FlutterDisplayMode.preferred;
       await FlutterDisplayMode.active;
       await FlutterDisplayMode.setHighRefreshRate();
-      setState(() {
-
-      });
+      setState(() {});
     });
 
     // 初始化多语言
