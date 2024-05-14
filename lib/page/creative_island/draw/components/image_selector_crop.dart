@@ -3,22 +3,20 @@ import 'dart:typed_data';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
-import 'package:askaide/page/creative_island/draw/components/selector_crop/provider.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:pocketbase/pocketbase.dart';
-import 'package:provider/provider.dart';
+
 import '../../../../helper/image_picker_helper.dart';
 import '../../../change_outfits/cloth.dart';
-import 'change_outfits/provider.dart';
 
 class ImageSelectorCrop extends StatelessWidget {
   final String? title;
   final Widget? titleHelper;
   final Function({String? path, Uint8List? data}) onImageSelected;
+  final Function({int? index}) selectedIndex;
   final String? selectedImagePath;
   final Uint8List? selectedImageData;
   final double? height;
@@ -32,7 +30,7 @@ class ImageSelectorCrop extends StatelessWidget {
     this.selectedImagePath,
     this.selectedImageData,
     this.height,
-    this.titleHelper, required this.clothList,
+    this.titleHelper, required this.clothList, required this.selectedIndex,
   });
 
   @override
@@ -73,7 +71,7 @@ class ImageSelectorCrop extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           color: customColors.backgroundColor,
           child: SizedBox(
-            height: 160,
+            height: 130,
             child: Row(
               children: [
                 InkWell(
@@ -121,14 +119,14 @@ class ImageSelectorCrop extends StatelessWidget {
                                   )
                                       : null,
                                   child: SizedBox(
-                                    width: 160,
+                                    width: 120,
                                     height: height ?? 200,
                                   ),
                                 ),
                                 selectedImagePath == null ||
                                     selectedImagePath!.isEmpty
                                     ? SizedBox(
-                                  width: 160,
+                                  width: 140,
                                   height: height ?? 200,
                                   child: Row(
                                     mainAxisAlignment:
@@ -201,23 +199,22 @@ class ImageSelectorCrop extends StatelessWidget {
                     itemCount: clothList.length,
                     itemBuilder: (context, index) {
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8), // 图片之间的间距
+                        padding: const EdgeInsets.symmetric(horizontal: 4), // 图片之间的间距
                         child: GestureDetector(
                           onTap: (){
-                            setState(() {
-                              // 点击后切换到绿色边框，再次点击则恢复透明
-                              borderColor = borderColor == Colors.green ? Colors.transparent : Colors.green;
-                            });
-                            BotToast.showText(text: clothList[index].url);
+                            selectedIndex(index: index);
+                            // borderColor = borderColor == Colors.green ? Colors.transparent : Colors.green;
+                            //
+                            // BotToast.showText(text: clothList[index].url);
                           },
                           child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: borderColor, width: 3), // 使用borderColor作为边框颜色
+                            decoration:BoxDecoration(
+                              border: Border.all(color: clothList[index].selected? Colors.green:Colors.transparent, width: 3), // 使用borderColor作为边框颜色
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: CachedNetworkImage(
-                                width: 150,
+                                width: 120,
                                 // 设置图片宽度
                                 height: 100,
                                 // 设置图片高度

@@ -99,6 +99,9 @@ class _ChangeOutfitsState extends State<ChangeOutfits> {
             children: [
               // 上传图片
               ImageSelectorCrop(
+                selectedIndex: ({index}) {
+                  logic.selectCloth(index!);
+                },
                 onImageSelected: ({path, data}) {
                   if (path != null) {
                     setState(() {
@@ -146,7 +149,7 @@ class _ChangeOutfitsState extends State<ChangeOutfits> {
             children: [
               // 上传图片
               ImageSelectorCrop(
-                clothList: logic.clothList,
+                clothList: logic.modelsList,
                 onImageSelected: ({path, data}) {
                   if (path != null) {
                     setState(() {
@@ -182,6 +185,9 @@ class _ChangeOutfitsState extends State<ChangeOutfits> {
                     color: customColors.weakLinkColor?.withAlpha(150),
                   ),
                 ),
+                selectedIndex: ({index}) {
+                  logic.selectCloth(index!);
+                },
               )
             ],
           ),

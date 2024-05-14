@@ -17,7 +17,8 @@ class Cloth {
   Expand expand;
   String name;
   String url;
-  // int selectIndex;
+  bool selected=false;
+  // int selectIndex=-1;
 
   Cloth({
     required this.id,
