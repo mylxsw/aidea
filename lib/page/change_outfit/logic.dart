@@ -7,7 +7,15 @@ import '../change_outfits/cloth.dart';
 
 class Change_outfitLogic extends GetxController {
   late List<Cloth> clothList=[];
-  late List<Cloth> modelsList=[];
+  late List<Cloth> modelList=[];
+
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    super.onInit();
+    getData();
+
+  }
   Future getData() async {
     // Cloth cloth=Cloth(id: "id", collectionId: "collectionId", collectionName: "collectionName", expand: Expand(), name: "name", url: "https://gfs17.gomein.net.cn/T1f.KWBTW_1RCvBVdK_800_pc.jpg");
     // clothList.add(cloth);
@@ -19,7 +27,7 @@ class Change_outfitLogic extends GetxController {
     List<Cloth> clothsList = jsonList.map((json) => Cloth.fromJson(json)).toList();
     List<Cloth> modelsList = modelsJsonList.map((json) => Cloth.fromJson(json)).toList();
     clothList=clothsList;
-    modelsList=modelsList;
+    modelList=modelsList;
     update();
     // String clothToJson(List<Cloth> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
@@ -35,6 +43,25 @@ class Change_outfitLogic extends GetxController {
     });
     clothList[clothIndex].selected=true;
     update();
-    print(clothList[clothIndex].selected);
+  }
+
+  void clearClothSelect(){
+    clothList.forEach((element) {
+      element.selected=false;
+    });
+    update();
+  }
+  void clearModelSelect(){
+    modelList.forEach((element) {
+      element.selected=false;
+    });
+    update();
+  }
+  void selectModels(int index){
+    for (var element in modelList) {
+      element.selected=false;
+    }
+    modelList[index].selected=true;
+    update();
   }
 }

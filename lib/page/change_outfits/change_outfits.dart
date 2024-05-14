@@ -23,6 +23,7 @@ import 'package:quickalert/models/quickalert_type.dart';
 import '../change_outfit/logic.dart';
 import '../component/column_block.dart';
 import '../component/dialog.dart';
+import '../component/enhanced_button.dart';
 import '../creative_island/draw/components/change_outfits/provider.dart';
 import '../creative_island/draw/components/image_selector.dart';
 import '../creative_island/draw/components/image_selector_crop.dart';
@@ -93,6 +94,55 @@ class _ChangeOutfitsState extends State<ChangeOutfits> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+
+        ColumnBlock(
+        innerPanding: 10,
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+        children: [
+          // 上传图片
+          ImageSelectorCrop(
+            clothList: logic.modelList,
+            onImageSelected: ({path, data}) {
+              if (path != null) {
+                setState(() {
+                  selectedImagePathCloths = path;
+                  selectedImageData = null;
+                });
+              }
+
+              if (data != null) {
+                setState(() {
+                  selectedImageData = data;
+                  selectedImagePath = null;
+                });
+              }
+            },
+            selectedImagePath: selectedImagePathCloths,
+            selectedImageData: selectedImageData,
+            title: "上传参考图",
+            height: 170,
+            titleHelper: InkWell(
+              onTap: () {
+                showBeautyDialog(
+                  context,
+                  type: QuickAlertType.info,
+                  text: "上传照片",
+                  confirmBtnText: AppLocale.gotIt.getString(context),
+                  showCancelBtn: false,
+                );
+              },
+              child: Icon(
+                Icons.help_outline,
+                size: 16,
+                color: customColors.weakLinkColor?.withAlpha(150),
+              ),
+            ),
+            selectedIndex: ({index}) {
+              logic.selectModels(index!);
+            },
+          )
+        ],
+      ),
           ColumnBlock(
             innerPanding: 10,
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -120,7 +170,7 @@ class _ChangeOutfitsState extends State<ChangeOutfits> {
                 clothList: logic.clothList,
                 selectedImagePath: selectedImagePath,
                 selectedImageData: selectedImageData,
-                title: "上传参考图",
+                title: "上传上衣",
                 height: 170,
                 titleHelper: InkWell(
                   onTap: () {
@@ -143,54 +193,12 @@ class _ChangeOutfitsState extends State<ChangeOutfits> {
               )
             ],
           ),
-          ColumnBlock(
-            innerPanding: 10,
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-            children: [
-              // 上传图片
-              ImageSelectorCrop(
-                clothList: logic.modelsList,
-                onImageSelected: ({path, data}) {
-                  if (path != null) {
-                    setState(() {
-                      selectedImagePathCloths = path;
-                      selectedImageData = null;
-                    });
-                  }
 
-                  if (data != null) {
-                    setState(() {
-                      selectedImageData = data;
-                      selectedImagePath = null;
-                    });
-                  }
-                },
-                selectedImagePath: selectedImagePathCloths,
-                selectedImageData: selectedImageData,
-                title: "上传上衣",
-                height: 170,
-                titleHelper: InkWell(
-                  onTap: () {
-                    showBeautyDialog(
-                      context,
-                      type: QuickAlertType.info,
-                      text: "上传照片",
-                      confirmBtnText: AppLocale.gotIt.getString(context),
-                      showCancelBtn: false,
-                    );
-                  },
-                  child: Icon(
-                    Icons.help_outline,
-                    size: 16,
-                    color: customColors.weakLinkColor?.withAlpha(150),
-                  ),
-                ),
-                selectedIndex: ({index}) {
-                  logic.selectCloth(index!);
-                },
-              )
-            ],
-          ),
+
+          Padding(padding: const EdgeInsets.all(5),child: EnhancedButton(
+            title: AppLocale.generate.getString(context),
+            onPressed: (){},
+          ),)
           // Container(
           //   padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           //   child: Text('热门作品'),

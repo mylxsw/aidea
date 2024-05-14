@@ -57,6 +57,7 @@ class ImageSelector extends StatelessWidget {
           color: customColors.backgroundColor,
           child: InkWell(
             borderRadius: BorderRadius.circular(8),
+
             onTap: () async {
               HapticFeedbackHelper.mediumImpact();
               FilePickerResult? result =
@@ -142,9 +143,9 @@ class ImageSelector extends StatelessWidget {
                                     ),
                                     SizedBox(width: 10),
                                     Text(
-                                      '点击此处更换图片',
+                                      '更换图片',
                                       style: TextStyle(
-                                        fontSize: 14,
+                                        fontSize: 9,
                                         fontWeight: FontWeight.w500,
                                         color:
                                             Color.fromARGB(147, 255, 255, 255),

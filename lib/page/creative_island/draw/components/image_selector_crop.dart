@@ -86,7 +86,9 @@ class ImageSelectorCrop extends StatelessWidget {
                     });
                   },
                   child: Container(
+
                       decoration: BoxDecoration(
+                        border: Border.all(color: Colors.green, width: 3), // 使用borderColor作为边框颜色
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: ClipRRect(
@@ -119,14 +121,14 @@ class ImageSelectorCrop extends StatelessWidget {
                                   )
                                       : null,
                                   child: SizedBox(
-                                    width: 120,
+                                    width: 110,
                                     height: height ?? 200,
                                   ),
                                 ),
                                 selectedImagePath == null ||
                                     selectedImagePath!.isEmpty
                                     ? SizedBox(
-                                  width: 140,
+                                  width: 110,
                                   height: height ?? 200,
                                   child: Row(
                                     mainAxisAlignment:
@@ -173,9 +175,9 @@ class ImageSelectorCrop extends StatelessWidget {
                                         ),
                                         SizedBox(width: 10),
                                         Text(
-                                          '点击此处更换图片',
+                                          '更换图片',
                                           style: TextStyle(
-                                            fontSize: 14,
+                                            fontSize: 12,
                                             fontWeight: FontWeight.w500,
                                             color: Color.fromARGB(
                                                 147, 255, 255, 255),
@@ -199,7 +201,7 @@ class ImageSelectorCrop extends StatelessWidget {
                     itemCount: clothList.length,
                     itemBuilder: (context, index) {
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4), // 图片之间的间距
+                        padding: const EdgeInsets.symmetric(horizontal: 1), // 图片之间的间距
                         child: GestureDetector(
                           onTap: (){
                             selectedIndex(index: index);
@@ -210,11 +212,12 @@ class ImageSelectorCrop extends StatelessWidget {
                           child: Container(
                             decoration:BoxDecoration(
                               border: Border.all(color: clothList[index].selected? Colors.green:Colors.transparent, width: 3), // 使用borderColor作为边框颜色
+                              borderRadius: BorderRadius.circular(8)
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: CachedNetworkImage(
-                                width: 120,
+                                width: 110,
                                 // 设置图片宽度
                                 height: 100,
                                 // 设置图片高度

@@ -234,7 +234,7 @@ void main() async {
         mailEnabled: true,
         openaiEnabled: true,
         homeModels: [],
-        homeRoute: '/chat-chat',
+        homeRoute: '/change-outfits',
         showHomeModelDescription: true,
         supportWebsocket: false,
       ),
