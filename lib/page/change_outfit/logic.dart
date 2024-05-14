@@ -17,8 +17,6 @@ class Change_outfitLogic extends GetxController {
 
   }
   Future getData() async {
-    // Cloth cloth=Cloth(id: "id", collectionId: "collectionId", collectionName: "collectionName", expand: Expand(), name: "name", url: "https://gfs17.gomein.net.cn/T1f.KWBTW_1RCvBVdK_800_pc.jpg");
-    // clothList.add(cloth);
     var records = await PB.instance.collection('clothes').getFullList();
     var models_records = await PB.instance.collection('models').getFullList();
     // 反序列化

@@ -41,6 +41,7 @@ class _ChangeOutfitsState extends State<ChangeOutfits> {
   String? selectedImagePath;
   String? selectedImagePathCloths;
   Uint8List? selectedImageData;
+  Uint8List? selectedImageDataCloths;
   final logic = Get.put(Change_outfitLogic());
 
   // final GalleryDatasource datasource = GalleryDatasource();
@@ -80,7 +81,7 @@ class _ChangeOutfitsState extends State<ChangeOutfits> {
   Widget _buildIslandItems(CustomColors customColors) {
     return SliverComponent(
       title: Text(
-        "AI换装" + logic.clothList.length.toString(),
+        "AI换装",
         style: TextStyle(
           fontSize: CustomSize.appBarTitleSize,
           color: customColors.backgroundInvertedColor,
@@ -103,9 +104,10 @@ class _ChangeOutfitsState extends State<ChangeOutfits> {
           ImageSelectorCrop(
             clothList: logic.modelList,
             onImageSelected: ({path, data}) {
+              logic.clearModelSelect();
               if (path != null) {
                 setState(() {
-                  selectedImagePathCloths = path;
+                  selectedImagePath = path;
                   selectedImageData = null;
                 });
               }
@@ -117,7 +119,7 @@ class _ChangeOutfitsState extends State<ChangeOutfits> {
                 });
               }
             },
-            selectedImagePath: selectedImagePathCloths,
+            selectedImagePath: selectedImagePath,
             selectedImageData: selectedImageData,
             title: "上传参考图",
             height: 170,
@@ -138,6 +140,10 @@ class _ChangeOutfitsState extends State<ChangeOutfits> {
               ),
             ),
             selectedIndex: ({index}) {
+              setState(() {
+                selectedImagePath = null;
+                selectedImageData = null;
+              });
               logic.selectModels(index!);
             },
           )
@@ -150,31 +156,34 @@ class _ChangeOutfitsState extends State<ChangeOutfits> {
               // 上传图片
               ImageSelectorCrop(
                 selectedIndex: ({index}) {
+                  setState(() {
+                    selectedImagePathCloths = null;
+                    selectedImageDataCloths = null;
+                  });
                   logic.selectCloth(index!);
                 },
                 onImageSelected: ({path, data}) {
+                  logic.clearClothSelect();
                   if (path != null) {
                     setState(() {
-                      selectedImagePath = path;
-                      selectedImageData = null;
+                      selectedImagePathCloths = path;
+                      selectedImageDataCloths = null;
                     });
                   }
-
                   if (data != null) {
                     setState(() {
-                      selectedImageData = data;
-                      selectedImagePath = null;
+                      selectedImageDataCloths = data;
+                      selectedImagePathCloths = null;
                     });
                   }
                 },
                 clothList: logic.clothList,
-                selectedImagePath: selectedImagePath,
-                selectedImageData: selectedImageData,
+                selectedImagePath: selectedImagePathCloths,
+                selectedImageData: selectedImageDataCloths,
                 title: "上传上衣",
                 height: 170,
                 titleHelper: InkWell(
                   onTap: () {
-                    Logger.instance.d("message");
                     logic.getData();
                     showBeautyDialog(
                       context,

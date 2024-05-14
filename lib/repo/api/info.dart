@@ -63,7 +63,7 @@ class Capabilities {
     required this.mailEnabled,
     required this.openaiEnabled,
     required this.homeModels,
-    this.homeRoute = '/change-outfits',
+    this.homeRoute = '/chat-chat',
     this.showHomeModelDescription = true,
     this.supportWebsocket = false,
     this.supportAPIKeys = false,
