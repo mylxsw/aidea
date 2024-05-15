@@ -11,12 +11,11 @@ import 'package:go_router/go_router.dart';
 
 class AppScaffold extends StatefulWidget {
   final SettingRepository settingRepo;
+  final StatefulNavigationShell navigationShell;
   const AppScaffold({
     Key? key,
-    required this.child,
-    required this.settingRepo,
+    required this.settingRepo, required this.navigationShell,
   }) : super(key: key);
-  final Widget child;
   @override
   State<AppScaffold> createState() => _AppScaffoldState();
 }
@@ -39,21 +38,21 @@ class _AppScaffoldState extends State<AppScaffold> {
   void initState() {
     cancelHideBottomNavigatorBarEventListener =
         GlobalEvent().on("hideBottomNavigatorBar", (data) {
-      if (mounted) {
-        setState(() {
-          _showBottomNavigatorBar = false;
+          if (mounted) {
+            setState(() {
+              _showBottomNavigatorBar = false;
+            });
+          }
         });
-      }
-    });
 
     cancelShowBottomNavigatorBarEventListener =
         GlobalEvent().on("showBottomNavigatorBar", (data) {
-      if (mounted) {
-        setState(() {
-          _showBottomNavigatorBar = true;
+          if (mounted) {
+            setState(() {
+              _showBottomNavigatorBar = true;
+            });
+          }
         });
-      }
-    });
 
     super.initState();
   }
@@ -128,29 +127,29 @@ class _AppScaffoldState extends State<AppScaffold> {
       body: BackgroundContainer(
         setting: widget.settingRepo,
         enabled: true,
-        child: widget.child,
+        child: widget.navigationShell,
       ),
       extendBody: false,
       bottomNavigationBar: currentIndex > -1 && _showBottomNavigatorBar
           ? BottomNavigationBar(
-              landscapeLayout: BottomNavigationBarLandscapeLayout.centered,
-              showSelectedLabels: true,
-              showUnselectedLabels: true,
-              currentIndex: _calculateSelectedIndex(context),
-              onTap: onTap,
-              selectedItemColor: customColors.linkColor,
-              unselectedItemColor: Colors.grey,
-              selectedFontSize: 10,
-              unselectedFontSize: 10,
-              type: BottomNavigationBarType.fixed,
-              enableFeedback: true,
-              backgroundColor: customColors.backgroundColor,
-              elevation: 0,
-              items: [
-                for (var i = 0; i < barItems.length; i++)
-                  barItems[i].builder(i, customColors),
-              ],
-            )
+        landscapeLayout: BottomNavigationBarLandscapeLayout.centered,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        currentIndex: _calculateSelectedIndex(context),
+        onTap: (int index) => _onTap(context, index),
+        selectedItemColor: customColors.linkColor,
+        unselectedItemColor: Colors.grey,
+        selectedFontSize: 10,
+        unselectedFontSize: 10,
+        type: BottomNavigationBarType.fixed,
+        enableFeedback: true,
+        backgroundColor: customColors.backgroundColor,
+        elevation: 0,
+        items: [
+          for (var i = 0; i < barItems.length; i++)
+            barItems[i].builder(i, customColors),
+        ],
+      )
           : null,
     );
   }
@@ -179,6 +178,12 @@ class _AppScaffoldState extends State<AppScaffold> {
 
     return context.go(barItems[value].route);
   }
+  void _onTap(BuildContext context, int index) {
+    widget.navigationShell.goBranch(
+      index,
+      initialLocation: index == widget.navigationShell.currentIndex,
+    );
+  }
 }
 
 BottomNavigationBarItem createAnimatedNavBarItem({
@@ -194,7 +199,7 @@ BottomNavigationBarItem createAnimatedNavBarItem({
       firstChild: Icon(icon),
       secondChild: Icon(activatedIcon, color: activatedColor ?? Colors.green),
       crossFadeState:
-          activated ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+      activated ? CrossFadeState.showSecond : CrossFadeState.showFirst,
       duration: const Duration(milliseconds: 300),
     ),
   );
@@ -202,7 +207,7 @@ BottomNavigationBarItem createAnimatedNavBarItem({
 
 class BottomNavigationBarConfig {
   final BottomNavigationBarItem Function(int index, CustomColors customColors)
-      builder;
+  builder;
   final String route;
 
   BottomNavigationBarConfig({

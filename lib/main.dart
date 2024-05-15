@@ -198,7 +198,7 @@ void main() async {
   );
 
   final creativeIslandRepo =
-      CreativeIslandRepository(CreativeIslandDataProvider(db));
+  CreativeIslandRepository(CreativeIslandDataProvider(db));
 
   // 聊天状态加载器
   final stateManager = MessageStateManager(cacheRepo);
@@ -293,11 +293,11 @@ class MyApp extends StatefulWidget {
     var usingGuestMode = settingRepo.boolDefault(settingUsingGuestMode, false);
 
     final openAISelfHosted =
-        settingRepo.boolDefault(settingOpenAISelfHosted, false);
+    settingRepo.boolDefault(settingOpenAISelfHosted, false);
     final deepAISelfHosted =
-        settingRepo.boolDefault(settingDeepAISelfHosted, false);
+    settingRepo.boolDefault(settingDeepAISelfHosted, false);
     final stabilityAISelfHosted =
-        settingRepo.boolDefault(settingStabilityAISelfHosted, false);
+    settingRepo.boolDefault(settingStabilityAISelfHosted, false);
 
     final shouldLogin = (apiServerToken == null || apiServerToken == '') &&
         !usingGuestMode &&
@@ -312,1012 +312,967 @@ class MyApp extends StatefulWidget {
       ],
       navigatorKey: _rootNavigatorKey,
       routes: [
-        ShellRoute(
-          navigatorKey: _shellNavigatorKey,
-          builder: (context, state, child) {
+        StatefulShellRoute.indexedStack(
+          // navigatorKey: _shellNavigatorKey,
+          //parentNavigatorKey: _rootNavigatorKey,
+          builder: (
+              BuildContext context,
+              GoRouterState state,
+              StatefulNavigationShell navigationShell,
+              ) {
             return AppScaffold(
               settingRepo: settingRepo,
-              child: child,
+              navigationShell: navigationShell,
             );
           },
-          routes: [
-            GoRoute(
-              path: '/login',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: versionBloc),
-                  ],
-                  child: SignInScreen(
-                    settings: settingRepo,
-                    username: state.queryParameters['username'],
-                  ),
-                ),
-              ),
-            ),
-            GoRoute(
-              path: '/signin-or-signup',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: versionBloc),
-                  ],
-                  child: SigninOrSignupScreen(
-                    settings: settingRepo,
-                    username: state.queryParameters['username']!,
-                    isSignup: state.queryParameters['is_signup'] == 'true',
-                    signInMethod: state.queryParameters['sign_in_method']!,
-                    wechatBindToken: state.queryParameters['wechat_bind_token'],
-                  ),
-                ),
-              ),
-            ),
-            GoRoute(
-              path: '/user/change-password',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                ChangePasswordScreen(setting: settingRepo),
-              ),
-            ),
-            GoRoute(
-              path: '/user/destroy',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                DestroyAccountScreen(setting: settingRepo),
-              ),
-            ),
-            GoRoute(
-              path: '/signup',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                SignupScreen(
-                  settings: settingRepo,
-                  username: state.queryParameters['username'],
-                ),
-              ),
-            ),
-            GoRoute(
-              path: '/retrieve-password',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                RetrievePasswordScreen(
-                  username: state.queryParameters['username'],
-                  setting: settingRepo,
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'chat_anywhere',
-              path: '/chat-anywhere',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(
-                      value: ChatBlocManager().getBloc(
-                        chatAnywhereRoomId,
-                        chatHistoryId: int.tryParse(
-                            state.queryParameters['chat_id'] ?? ''),
-                      ),
-                    ),
-                    BlocProvider.value(value: chatRoomBloc),
-                    BlocProvider(create: (context) => NotifyBloc()),
-                    BlocProvider.value(value: freeCountBloc),
-                  ],
-                  child: HomeChatPage(
-                    stateManager: messageStateManager,
-                    setting: settingRepo,
-                    chatId:
-                        int.tryParse(state.queryParameters['chat_id'] ?? '0'),
-                    initialMessage: state.queryParameters['init_message'],
-                    model: state.queryParameters['model'] == ''
-                        ? null
-                        : state.queryParameters['model'],
-                    title: state.queryParameters['title'] == ''
-                        ? null
-                        : state.queryParameters['title'],
-                  ),
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'chat_chat',
-              path: '/chat-chat',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider(
-                        create: (context) => ChatChatBloc(chatMsgRepo)),
-                    BlocProvider.value(value: freeCountBloc),
-                  ],
-                  child: HomePage(
-                    setting: settingRepo,
-                    showInitialDialog:
-                        state.queryParameters['show_initial_dialog'] == 'true',
-                    reward:
-                        int.tryParse(state.queryParameters['reward'] ?? '0'),
-                  ),
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'chat_chat_history',
-              path: '/chat-chat/history',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider(
-                        create: (context) => ChatChatBloc(chatMsgRepo)),
-                  ],
-                  child: HomeChatHistoryPage(
-                    setting: settingRepo,
-                    chatMessageRepo: chatMsgRepo,
-                  ),
-                ),
-              ),
-            ),
-            GoRoute(
-              path: '/lab/avatar-selector',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                const AvatarSelectorScreen(usage: AvatarUsage.room),
-              ),
-            ),
-            GoRoute(
-              path: '/lab/draw-board',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                const DrawboardScreen(),
-              ),
-            ),
-            GoRoute(
-              name: 'characters',
-              path: '/',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [BlocProvider.value(value: chatRoomBloc)],
-                  child: RoomsPage(setting: settingRepo),
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'create-room',
-              path: '/create-room',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [BlocProvider.value(value: chatRoomBloc)],
-                  child: RoomCreatePage(setting: settingRepo),
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'chat',
-              path: '/room/:room_id/chat',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                final roomId = int.parse(state.pathParameters['room_id']!);
-                return transitionResolver(
+          branches: [
+            StatefulShellBranch(navigatorKey: _shellNavigatorKey, routes: [
+              GoRoute(
+                name: 'chat_chat',
+                path: '/chat-chat',
+                pageBuilder: (context, state) => transitionResolver(
                   MultiBlocProvider(
                     providers: [
-                      BlocProvider.value(
-                        value: ChatBlocManager().getBloc(roomId),
-                      ),
-                      BlocProvider.value(value: chatRoomBloc),
-                      BlocProvider(create: (context) => NotifyBloc()),
+                      BlocProvider(
+                          create: (context) => ChatChatBloc(chatMsgRepo)),
                       BlocProvider.value(value: freeCountBloc),
                     ],
-                    child: RoomChatPage(
-                      roomId: roomId,
-                      stateManager: messageStateManager,
+                    child: HomePage(
                       setting: settingRepo,
+                      showInitialDialog:
+                      state.queryParameters['show_initial_dialog'] ==
+                          'true',
+                      reward:
+                      int.tryParse(state.queryParameters['reward'] ?? '0'),
                     ),
                   ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'room_setting',
-              path: '/room/:room_id/setting',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                final roomId = int.parse(state.pathParameters['room_id']!);
-                return transitionResolver(
+                ),
+              ),
+            ]),
+            StatefulShellBranch(routes: [
+              GoRoute(
+                name: 'characters',
+                path: '/',
+                pageBuilder: (context, state) => transitionResolver(
+                  MultiBlocProvider(
+                    providers: [BlocProvider.value(value: chatRoomBloc)],
+                    child: RoomsPage(setting: settingRepo),
+                  ),
+                ),
+              ),
+            ]),
+            StatefulShellBranch(routes: [
+              GoRoute(
+                name: 'creative-gallery',
+                path: '/creative-gallery',
+                pageBuilder: (context, state) => transitionResolver(
                   MultiBlocProvider(
                     providers: [
-                      BlocProvider.value(value: chatRoomBloc),
-                      BlocProvider.value(
-                        value: ChatBlocManager().getBloc(roomId),
-                      ),
+                      BlocProvider.value(value: galleryBloc),
                     ],
-                    child: RoomEditPage(roomId: roomId, setting: settingRepo),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'account-security-setting',
-              path: '/setting/account-security',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: accountBloc),
-                  ],
-                  child: AccountSecurityScreen(
-                    settings: context.read<SettingRepository>(),
+                    child: GalleryScreen(setting: settingRepo),
                   ),
                 ),
               ),
-            ),
-            GoRoute(
-              name: 'lab-user-center',
-              path: '/lab/user-center',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: accountBloc),
-                    BlocProvider(
-                        create: (context) =>
-                            CreativeIslandBloc(creativeIslandRepo)),
-                  ],
-                  child: UserCenterScreen(
-                      settings: context.read<SettingRepository>()),
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'setting',
-              path: '/setting',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: accountBloc),
-                  ],
-                  child: SettingScreen(
-                      settings: context.read<SettingRepository>()),
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'setting-background-selector',
-              path: '/setting/background-selector',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                BlocProvider(
-                  create: (context) => BackgroundImageBloc(),
-                  child: BackgroundSelectorScreen(setting: settingRepo),
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'setting-openai-custom',
-              path: '/setting/openai-custom',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                OpenAISettingScreen(
-                  settings: settingRepo,
-                  source: state.queryParameters['source'],
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'creative-draw',
-              path: '/creative-draw',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider(
-                        create: (context) =>
-                            CreativeIslandBloc(creativeIslandRepo)),
-                  ],
-                  child: DrawListScreen(
-                    setting: settingRepo,
-                  ),
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'creative-upscale',
-              path: '/creative-draw/create-upscale',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider(
-                        create: (context) =>
-                            CreativeIslandBloc(creativeIslandRepo)),
-                  ],
-                  child: ImageEditDirectScreen(
-                    setting: settingRepo,
-                    title: AppLocale.superResolution.getString(context),
-                    apiEndpoint: 'upscale',
-                    note: state.queryParameters['note'],
-                    initWaitDuration: 15,
-                    initImage: state.queryParameters['init_image'],
-                  ),
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'creative-colorize',
-              path: '/creative-draw/create-colorize',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider(
-                        create: (context) =>
-                            CreativeIslandBloc(creativeIslandRepo)),
-                  ],
-                  child: ImageEditDirectScreen(
-                    setting: settingRepo,
-                    title: AppLocale.colorizeImage.getString(context),
-                    apiEndpoint: 'colorize',
-                    note: state.queryParameters['note'],
-                    initWaitDuration: 15,
-                    initImage: state.queryParameters['init_image'],
-                  ),
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'creative-video',
-              path: '/creative-draw/create-video',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider(
-                        create: (context) =>
-                            CreativeIslandBloc(creativeIslandRepo)),
-                  ],
-                  child: ImageEditDirectScreen(
-                    setting: settingRepo,
-                    title: '图生视频',
-                    apiEndpoint: 'image-to-video',
-                    note: state.queryParameters['note'],
-                    initWaitDuration: 60,
-                    initImage: state.queryParameters['init_image'],
-                  ),
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'creative-draw-gallery-preview',
-              path: '/creative-draw/gallery/:id',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: galleryBloc),
-                  ],
-                  child: GalleryItemScreen(
-                    setting: settingRepo,
-                    galleryId: int.parse(state.pathParameters['id']!),
-                  ),
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'creative-draw-create',
-              path: '/creative-draw/create',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: galleryBloc),
-                  ],
-                  child: DrawCreateScreen(
-                    setting: settingRepo,
-                    galleryCopyId: int.tryParse(
-                      state.queryParameters['gallery_copy_id'] ?? '',
-                    ),
-                    mode: state.queryParameters['mode']!,
-                    id: state.queryParameters['id']!,
-                    note: state.queryParameters['note'],
-                    initImage: state.queryParameters['init_image'],
-                  ),
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'creative-artistic-text',
-              path: '/creative-draw/artistic-text',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: galleryBloc),
-                  ],
-                  child: ArtisticQRScreen(
-                    setting: settingRepo,
-                    galleryCopyId: int.tryParse(
-                      state.queryParameters['gallery_copy_id'] ?? '',
-                    ),
-                    type: state.queryParameters['type']!,
-                    id: state.queryParameters['id']!,
-                    note: state.queryParameters['note'],
-                  ),
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'creative-artistic-wordart',
-              path: '/creative-draw/artistic-wordart',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: galleryBloc),
-                  ],
-                  child: ArtisticWordArtScreen(
-                    setting: settingRepo,
-                    galleryCopyId: int.tryParse(
-                      state.queryParameters['gallery_copy_id'] ?? '',
-                    ),
-                    id: state.queryParameters['id']!,
-                    note: state.queryParameters['note'],
-                  ),
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'creative-island-history-all',
-              path: '/creative-island/history',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
+            ]),
+            StatefulShellBranch(routes: [
+              GoRoute(
+                name: 'creative-draw',
+                path: '/creative-draw',
+                pageBuilder: (context, state) => transitionResolver(
                   MultiBlocProvider(
                     providers: [
                       BlocProvider(
                           create: (context) =>
                               CreativeIslandBloc(creativeIslandRepo)),
                     ],
-                    child: MyCreationScreen(
+                    child: DrawListScreen(
                       setting: settingRepo,
-                      mode: state.queryParameters['mode'] ?? '',
                     ),
                   ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'creative-island-models',
-              path: '/creative-island/models',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                          create: (context) =>
-                              CreativeIslandBloc(creativeIslandRepo)),
-                    ],
-                    child: CreativeModelScreen(setting: settingRepo),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'creative-island-history-item',
-              path: '/creative-island/:id/history/:item_id',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                final id = state.pathParameters['id']!;
-                final itemId = int.tryParse(state.pathParameters['item_id']!);
-                final showErrorMessage =
-                    state.queryParameters['show_error'] == 'true';
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                          create: (context) =>
-                              CreativeIslandBloc(creativeIslandRepo)),
-                    ],
-                    child: MyCreationItemPage(
-                      setting: settingRepo,
-                      islandId: id,
-                      itemId: itemId!,
-                      showErrorMessage: showErrorMessage,
-                    ),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'quota-details',
-              path: '/quota-details',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                PaymentHistoryScreen(setting: settingRepo),
-              ),
-            ),
-            GoRoute(
-              name: 'quota-usage-statistics',
-              path: '/quota-usage-statistics',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                QuotaUsageStatisticsScreen(setting: settingRepo),
-              ),
-            ),
-            GoRoute(
-              name: 'quota-usage-daily-details',
-              path: '/quota-usage-daily-details',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                QuotaUsageDetailScreen(
-                  setting: settingRepo,
-                  date: state.queryParameters['date'] ??
-                      DateFormat('yyyy-MM-dd').format(DateTime.now()),
                 ),
               ),
-            ),
-            GoRoute(
-              name: 'prompt-editor',
-              path: '/prompt-editor',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                var prompt = state.queryParameters['prompt'] ?? '';
-                return transitionResolver(PromptScreen(prompt: prompt));
-              },
-            ),
-            GoRoute(
-              name: 'payment',
-              path: '/payment',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(create: ((context) => PaymentBloc())),
-                    ],
-                    child: PaymentScreen(setting: settingRepo),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'bind-phone',
-              path: '/bind-phone',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
+            ]),
+            StatefulShellBranch(routes: [
+              GoRoute(
+                name: 'setting',
+                path: '/setting',
+                pageBuilder: (context, state) => transitionResolver(
                   MultiBlocProvider(
                     providers: [
                       BlocProvider.value(value: accountBloc),
                     ],
-                    child: BindPhoneScreen(
-                      setting: settingRepo,
-                      isSignIn: state.queryParameters['is_signin'] != 'false',
-                    ),
+                    child: SettingScreen(
+                        settings: context.read<SettingRepository>()),
                   ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'creative-gallery',
-              path: '/creative-gallery',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: galleryBloc),
-                  ],
-                  child: GalleryScreen(setting: settingRepo),
                 ),
               ),
-            ),
-            GoRoute(
-              name: 'diagnosis',
-              path: '/diagnosis',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                DiagnosisScreen(setting: settingRepo),
-              ),
-            ),
-            GoRoute(
-              name: 'free-statistics',
-              path: '/free-statistics',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [BlocProvider.value(value: freeCountBloc)],
-                  child: FreeStatisticsPage(setting: settingRepo),
-                ),
-              ),
-            ),
-            GoRoute(
-              name: 'custom-home-models',
-              path: '/setting/custom-home-models',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                CustomHomeModelsPage(setting: settingRepo),
-              ),
-            ),
-            GoRoute(
-              name: 'group-chat-chat',
-              path: '/group-chat/:group_id/chat',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                final groupId = int.tryParse(state.pathParameters['group_id']!);
-
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: ((context) =>
-                            GroupChatBloc(stateManager: messageStateManager)),
-                      ),
-                      BlocProvider.value(value: chatRoomBloc),
-                    ],
-                    child: GroupChatPage(
-                      setting: settingRepo,
-                      stateManager: messageStateManager,
-                      groupId: groupId!,
-                    ),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'group-chat-create',
-              path: '/group-chat-create',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: ((context) =>
-                            GroupChatBloc(stateManager: messageStateManager)),
-                      ),
-                      BlocProvider.value(value: chatRoomBloc),
-                    ],
-                    child: GroupCreatePage(setting: settingRepo),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'group-chat-edit',
-              path: '/group-chat/:group_id/edit',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: ((context) =>
-                            GroupChatBloc(stateManager: messageStateManager)),
-                      ),
-                      BlocProvider.value(value: chatRoomBloc),
-                    ],
-                    child: GroupEditPage(
-                      setting: settingRepo,
-                      groupId: int.tryParse(state.pathParameters['group_id']!)!,
-                    ),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'user-api-keys',
-              path: '/setting/user-api-keys',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: ((context) => UserApiKeysBloc()),
-                      ),
-                    ],
-                    child: UserAPIKeysScreen(setting: settingRepo),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'notifications',
-              path: '/notifications',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  NotificationScreen(setting: settingRepo),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'articles',
-              path: '/article',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  ArticleScreen(
-                    settings: settingRepo,
-                    id: int.tryParse(state.queryParameters['id'] ?? '') ?? 0,
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'web-payment-result',
-              path: '/payment/result',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(WebPaymentResult(
-                  paymentId: state.queryParameters['payment_id']!,
-                  action: state.queryParameters['action'],
-                ));
-              },
-            ),
-            GoRoute(
-              name: 'web-payment-proxy',
-              path: '/payment/proxy',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(WebPaymentProxy(
-                  setting: settingRepo,
-                  paymentId: state.queryParameters['id']!,
-                  paymentIntent: state.queryParameters['intent']!,
-                  price: state.queryParameters['price']!,
-                  publishableKey: state.queryParameters['key']!,
-                  finishAction:
-                      state.queryParameters['finish_action'] ?? 'close',
-                ));
-              },
-            ),
-
-            /// 管理员接口
-            GoRoute(
-              name: 'admin-dashboard',
-              path: '/admin/dashboard',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  AdminDashboardPage(setting: settingRepo),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'admin-models',
-              path: '/admin/models',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (context) => ModelBloc(),
-                      ),
-                    ],
-                    child: AdminModelsPage(setting: settingRepo),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'admin-models-create',
-              path: '/admin/models/create',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (context) => ModelBloc(),
-                      ),
-                    ],
-                    child: AdminModelCreatePage(setting: settingRepo),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'admin-models-edit',
-              path: '/admin/models/edit/:id',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (context) => ModelBloc(),
-                      ),
-                    ],
-                    child: AdminModelEditPage(
-                      setting: settingRepo,
-                      modelId: state.pathParameters['id']!,
-                    ),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'admin-channels',
-              path: '/admin/channels',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (context) => ChannelBloc(),
-                      ),
-                    ],
-                    child: ChannelsPage(setting: settingRepo),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'admin-channels-create',
-              path: '/admin/channels/create',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (context) => ChannelBloc(),
-                      ),
-                    ],
-                    child: ChannelAddPage(setting: settingRepo),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'admin-channels-edit',
-              path: '/admin/channels/edit/:id',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                final channelId = int.parse(state.pathParameters['id']!);
-
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (context) => ChannelBloc(),
-                      ),
-                    ],
-                    child: ChannelEditPage(
-                      setting: settingRepo,
-                      channelId: channelId,
-                    ),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'admin-users',
-              path: '/admin/users',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (context) => UserBloc(),
-                      ),
-                    ],
-                    child: AdminUsersPage(setting: settingRepo),
-                  ),
-                );
-              },
-            ),
-            GoRoute(
-              name: 'admin-users-detail',
-              path: '/admin/users/:id',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                final userId = int.parse(state.pathParameters['id']!);
-
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (context) => UserBloc(),
-                      ),
-                    ],
-                    child: AdminUserPage(setting: settingRepo, userId: userId),
-                  ),
-                );
-              },
-            ),
-
-            GoRoute(
-              name: 'admin-payment-histories',
-              path: '/admin/payment/histories',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (context) => AdminPaymentBloc(),
-                      ),
-                    ],
-                    child: PaymentHistoriesPage(setting: settingRepo),
-                  ),
-                );
-              },
-            ),
-
-            GoRoute(
-              name: 'admin-user-rooms',
-              path: '/admin/users/:id/rooms',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                final userId = int.parse(state.pathParameters['id']!);
-
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (context) => AdminRoomBloc(),
-                      ),
-                    ],
-                    child: AdminRoomsPage(setting: settingRepo, userId: userId),
-                  ),
-                );
-              },
-            ),
-
-            GoRoute(
-              name: 'admin-user-rooms-messages',
-              path: '/admin/users/:id/rooms/:room_id/messages',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                final userId = int.parse(state.pathParameters['id']!);
-                final roomId = int.parse(state.pathParameters['room_id']!);
-
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (context) => AdminRoomBloc(),
-                      ),
-                    ],
-                    child: AdminRoomMessagesPage(
-                      setting: settingRepo,
-                      userId: userId,
-                      roomId: roomId,
-                      roomType: int.parse(state.queryParameters['room_type']!),
-                    ),
-                  ),
-                );
-              },
-            ),
-
-            GoRoute(
-              name: 'admin-recently-messages',
-              path: '/admin/recently-messages',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) {
-                return transitionResolver(
-                  MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (context) => AdminRoomBloc(),
-                      ),
-                    ],
-                    child: AdminRecentlyMessagesPage(setting: settingRepo),
-                  ),
-                );
-              },
-            ),
+            ]),
           ],
-        )
+        ),
+        GoRoute(
+          path: '/login',
+          pageBuilder: (context, state) => transitionResolver(
+            MultiBlocProvider(
+              providers: [
+                BlocProvider.value(value: versionBloc),
+              ],
+              child: SignInScreen(
+                settings: settingRepo,
+                username: state.queryParameters['username'],
+              ),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/signin-or-signup',
+          pageBuilder: (context, state) => transitionResolver(
+            MultiBlocProvider(
+              providers: [
+                BlocProvider.value(value: versionBloc),
+              ],
+              child: SigninOrSignupScreen(
+                settings: settingRepo,
+                username: state.queryParameters['username']!,
+                isSignup: state.queryParameters['is_signup'] == 'true',
+                signInMethod: state.queryParameters['sign_in_method']!,
+                wechatBindToken: state.queryParameters['wechat_bind_token'],
+              ),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/user/change-password',
+          pageBuilder: (context, state) => transitionResolver(
+            ChangePasswordScreen(setting: settingRepo),
+          ),
+        ),
+        GoRoute(
+          path: '/user/destroy',
+          pageBuilder: (context, state) => transitionResolver(
+            DestroyAccountScreen(setting: settingRepo),
+          ),
+        ),
+        GoRoute(
+          path: '/signup',
+          pageBuilder: (context, state) => transitionResolver(
+            SignupScreen(
+              settings: settingRepo,
+              username: state.queryParameters['username'],
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/retrieve-password',
+          pageBuilder: (context, state) => transitionResolver(
+            RetrievePasswordScreen(
+              username: state.queryParameters['username'],
+              setting: settingRepo,
+            ),
+          ),
+        ),
+        GoRoute(
+          name: 'chat_anywhere',
+          path: '/chat-anywhere',
+          pageBuilder: (context, state) => transitionResolver(
+            MultiBlocProvider(
+              providers: [
+                BlocProvider.value(
+                  value: ChatBlocManager().getBloc(
+                    chatAnywhereRoomId,
+                    chatHistoryId:
+                    int.tryParse(state.queryParameters['chat_id'] ?? ''),
+                  ),
+                ),
+                BlocProvider.value(value: chatRoomBloc),
+                BlocProvider(create: (context) => NotifyBloc()),
+                BlocProvider.value(value: freeCountBloc),
+              ],
+              child: HomeChatPage(
+                stateManager: messageStateManager,
+                setting: settingRepo,
+                chatId: int.tryParse(state.queryParameters['chat_id'] ?? '0'),
+                initialMessage: state.queryParameters['init_message'],
+                model: state.queryParameters['model'] == ''
+                    ? null
+                    : state.queryParameters['model'],
+                title: state.queryParameters['title'] == ''
+                    ? null
+                    : state.queryParameters['title'],
+              ),
+            ),
+          ),
+        ),
+
+        GoRoute(
+          name: 'chat_chat_history',
+          path: '/chat-chat/history',
+          pageBuilder: (context, state) => transitionResolver(
+            MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (context) => ChatChatBloc(chatMsgRepo)),
+              ],
+              child: HomeChatHistoryPage(
+                setting: settingRepo,
+                chatMessageRepo: chatMsgRepo,
+              ),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/lab/avatar-selector',
+          pageBuilder: (context, state) => transitionResolver(
+            const AvatarSelectorScreen(usage: AvatarUsage.room),
+          ),
+        ),
+        GoRoute(
+          path: '/lab/draw-board',
+          pageBuilder: (context, state) => transitionResolver(
+            const DrawboardScreen(),
+          ),
+        ),
+
+        GoRoute(
+          name: 'create-room',
+          path: '/create-room',
+          pageBuilder: (context, state) => transitionResolver(
+            MultiBlocProvider(
+              providers: [BlocProvider.value(value: chatRoomBloc)],
+              child: RoomCreatePage(setting: settingRepo),
+            ),
+          ),
+        ),
+        GoRoute(
+          name: 'chat',
+          path: '/room/:room_id/chat',
+          pageBuilder: (context, state) {
+            final roomId = int.parse(state.pathParameters['room_id']!);
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider.value(
+                    value: ChatBlocManager().getBloc(roomId),
+                  ),
+                  BlocProvider.value(value: chatRoomBloc),
+                  BlocProvider(create: (context) => NotifyBloc()),
+                  BlocProvider.value(value: freeCountBloc),
+                ],
+                child: RoomChatPage(
+                  roomId: roomId,
+                  stateManager: messageStateManager,
+                  setting: settingRepo,
+                ),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'room_setting',
+          path: '/room/:room_id/setting',
+          pageBuilder: (context, state) {
+            final roomId = int.parse(state.pathParameters['room_id']!);
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider.value(value: chatRoomBloc),
+                  BlocProvider.value(
+                    value: ChatBlocManager().getBloc(roomId),
+                  ),
+                ],
+                child: RoomEditPage(roomId: roomId, setting: settingRepo),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'account-security-setting',
+          path: '/setting/account-security',
+          pageBuilder: (context, state) => transitionResolver(
+            MultiBlocProvider(
+              providers: [
+                BlocProvider.value(value: accountBloc),
+              ],
+              child: AccountSecurityScreen(
+                settings: context.read<SettingRepository>(),
+              ),
+            ),
+          ),
+        ),
+        GoRoute(
+          name: 'lab-user-center',
+          path: '/lab/user-center',
+          pageBuilder: (context, state) => transitionResolver(
+            MultiBlocProvider(
+              providers: [
+                BlocProvider.value(value: accountBloc),
+                BlocProvider(
+                    create: (context) =>
+                        CreativeIslandBloc(creativeIslandRepo)),
+              ],
+              child:
+              UserCenterScreen(settings: context.read<SettingRepository>()),
+            ),
+          ),
+        ),
+
+        GoRoute(
+          name: 'setting-background-selector',
+          path: '/setting/background-selector',
+          pageBuilder: (context, state) => transitionResolver(
+            BlocProvider(
+              create: (context) => BackgroundImageBloc(),
+              child: BackgroundSelectorScreen(setting: settingRepo),
+            ),
+          ),
+        ),
+        GoRoute(
+          name: 'setting-openai-custom',
+          path: '/setting/openai-custom',
+          pageBuilder: (context, state) => transitionResolver(
+            OpenAISettingScreen(
+              settings: settingRepo,
+              source: state.queryParameters['source'],
+            ),
+          ),
+        ),
+
+        GoRoute(
+          name: 'creative-upscale',
+          path: '/creative-draw/create-upscale',
+          pageBuilder: (context, state) => transitionResolver(
+            MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                    create: (context) =>
+                        CreativeIslandBloc(creativeIslandRepo)),
+              ],
+              child: ImageEditDirectScreen(
+                setting: settingRepo,
+                title: AppLocale.superResolution.getString(context),
+                apiEndpoint: 'upscale',
+                note: state.queryParameters['note'],
+                initWaitDuration: 15,
+                initImage: state.queryParameters['init_image'],
+              ),
+            ),
+          ),
+        ),
+        GoRoute(
+          name: 'creative-colorize',
+          path: '/creative-draw/create-colorize',
+          pageBuilder: (context, state) => transitionResolver(
+            MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                    create: (context) =>
+                        CreativeIslandBloc(creativeIslandRepo)),
+              ],
+              child: ImageEditDirectScreen(
+                setting: settingRepo,
+                title: AppLocale.colorizeImage.getString(context),
+                apiEndpoint: 'colorize',
+                note: state.queryParameters['note'],
+                initWaitDuration: 15,
+                initImage: state.queryParameters['init_image'],
+              ),
+            ),
+          ),
+        ),
+        GoRoute(
+          name: 'creative-video',
+          path: '/creative-draw/create-video',
+          pageBuilder: (context, state) => transitionResolver(
+            MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                    create: (context) =>
+                        CreativeIslandBloc(creativeIslandRepo)),
+              ],
+              child: ImageEditDirectScreen(
+                setting: settingRepo,
+                title: '图生视频',
+                apiEndpoint: 'image-to-video',
+                note: state.queryParameters['note'],
+                initWaitDuration: 60,
+                initImage: state.queryParameters['init_image'],
+              ),
+            ),
+          ),
+        ),
+        GoRoute(
+          name: 'creative-draw-gallery-preview',
+          path: '/creative-draw/gallery/:id',
+          pageBuilder: (context, state) => transitionResolver(
+            MultiBlocProvider(
+              providers: [
+                BlocProvider.value(value: galleryBloc),
+              ],
+              child: GalleryItemScreen(
+                setting: settingRepo,
+                galleryId: int.parse(state.pathParameters['id']!),
+              ),
+            ),
+          ),
+        ),
+        GoRoute(
+          name: 'creative-draw-create',
+          path: '/creative-draw/create',
+          pageBuilder: (context, state) => transitionResolver(
+            MultiBlocProvider(
+              providers: [
+                BlocProvider.value(value: galleryBloc),
+              ],
+              child: DrawCreateScreen(
+                setting: settingRepo,
+                galleryCopyId: int.tryParse(
+                  state.queryParameters['gallery_copy_id'] ?? '',
+                ),
+                mode: state.queryParameters['mode']!,
+                id: state.queryParameters['id']!,
+                note: state.queryParameters['note'],
+                initImage: state.queryParameters['init_image'],
+              ),
+            ),
+          ),
+        ),
+        GoRoute(
+          name: 'creative-artistic-text',
+          path: '/creative-draw/artistic-text',
+          pageBuilder: (context, state) => transitionResolver(
+            MultiBlocProvider(
+              providers: [
+                BlocProvider.value(value: galleryBloc),
+              ],
+              child: ArtisticQRScreen(
+                setting: settingRepo,
+                galleryCopyId: int.tryParse(
+                  state.queryParameters['gallery_copy_id'] ?? '',
+                ),
+                type: state.queryParameters['type']!,
+                id: state.queryParameters['id']!,
+                note: state.queryParameters['note'],
+              ),
+            ),
+          ),
+        ),
+        GoRoute(
+          name: 'creative-artistic-wordart',
+          path: '/creative-draw/artistic-wordart',
+          pageBuilder: (context, state) => transitionResolver(
+            MultiBlocProvider(
+              providers: [
+                BlocProvider.value(value: galleryBloc),
+              ],
+              child: ArtisticWordArtScreen(
+                setting: settingRepo,
+                galleryCopyId: int.tryParse(
+                  state.queryParameters['gallery_copy_id'] ?? '',
+                ),
+                id: state.queryParameters['id']!,
+                note: state.queryParameters['note'],
+              ),
+            ),
+          ),
+        ),
+        GoRoute(
+          name: 'creative-island-history-all',
+          path: '/creative-island/history',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                      create: (context) =>
+                          CreativeIslandBloc(creativeIslandRepo)),
+                ],
+                child: MyCreationScreen(
+                  setting: settingRepo,
+                  mode: state.queryParameters['mode'] ?? '',
+                ),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'creative-island-models',
+          path: '/creative-island/models',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                      create: (context) =>
+                          CreativeIslandBloc(creativeIslandRepo)),
+                ],
+                child: CreativeModelScreen(setting: settingRepo),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'creative-island-history-item',
+          path: '/creative-island/:id/history/:item_id',
+          pageBuilder: (context, state) {
+            final id = state.pathParameters['id']!;
+            final itemId = int.tryParse(state.pathParameters['item_id']!);
+            final showErrorMessage =
+                state.queryParameters['show_error'] == 'true';
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                      create: (context) =>
+                          CreativeIslandBloc(creativeIslandRepo)),
+                ],
+                child: MyCreationItemPage(
+                  setting: settingRepo,
+                  islandId: id,
+                  itemId: itemId!,
+                  showErrorMessage: showErrorMessage,
+                ),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'quota-details',
+          path: '/quota-details',
+          pageBuilder: (context, state) => transitionResolver(
+            PaymentHistoryScreen(setting: settingRepo),
+          ),
+        ),
+        GoRoute(
+          name: 'quota-usage-statistics',
+          path: '/quota-usage-statistics',
+          pageBuilder: (context, state) => transitionResolver(
+            QuotaUsageStatisticsScreen(setting: settingRepo),
+          ),
+        ),
+        GoRoute(
+          name: 'quota-usage-daily-details',
+          path: '/quota-usage-daily-details',
+          pageBuilder: (context, state) => transitionResolver(
+            QuotaUsageDetailScreen(
+              setting: settingRepo,
+              date: state.queryParameters['date'] ??
+                  DateFormat('yyyy-MM-dd').format(DateTime.now()),
+            ),
+          ),
+        ),
+        GoRoute(
+          name: 'prompt-editor',
+          path: '/prompt-editor',
+          pageBuilder: (context, state) {
+            var prompt = state.queryParameters['prompt'] ?? '';
+            return transitionResolver(PromptScreen(prompt: prompt));
+          },
+        ),
+        GoRoute(
+          name: 'payment',
+          path: '/payment',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(create: ((context) => PaymentBloc())),
+                ],
+                child: PaymentScreen(setting: settingRepo),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'bind-phone',
+          path: '/bind-phone',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider.value(value: accountBloc),
+                ],
+                child: BindPhoneScreen(
+                  setting: settingRepo,
+                  isSignIn: state.queryParameters['is_signin'] != 'false',
+                ),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'diagnosis',
+          path: '/diagnosis',
+          pageBuilder: (context, state) => transitionResolver(
+            DiagnosisScreen(setting: settingRepo),
+          ),
+        ),
+        GoRoute(
+          name: 'free-statistics',
+          path: '/free-statistics',
+          pageBuilder: (context, state) => transitionResolver(
+            MultiBlocProvider(
+              providers: [BlocProvider.value(value: freeCountBloc)],
+              child: FreeStatisticsPage(setting: settingRepo),
+            ),
+          ),
+        ),
+        GoRoute(
+          name: 'custom-home-models',
+          path: '/setting/custom-home-models',
+          pageBuilder: (context, state) => transitionResolver(
+            CustomHomeModelsPage(setting: settingRepo),
+          ),
+        ),
+        GoRoute(
+          name: 'group-chat-chat',
+          path: '/group-chat/:group_id/chat',
+          pageBuilder: (context, state) {
+            final groupId = int.tryParse(state.pathParameters['group_id']!);
+
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: ((context) =>
+                        GroupChatBloc(stateManager: messageStateManager)),
+                  ),
+                  BlocProvider.value(value: chatRoomBloc),
+                ],
+                child: GroupChatPage(
+                  setting: settingRepo,
+                  stateManager: messageStateManager,
+                  groupId: groupId!,
+                ),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'group-chat-create',
+          path: '/group-chat-create',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: ((context) =>
+                        GroupChatBloc(stateManager: messageStateManager)),
+                  ),
+                  BlocProvider.value(value: chatRoomBloc),
+                ],
+                child: GroupCreatePage(setting: settingRepo),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'group-chat-edit',
+          path: '/group-chat/:group_id/edit',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: ((context) =>
+                        GroupChatBloc(stateManager: messageStateManager)),
+                  ),
+                  BlocProvider.value(value: chatRoomBloc),
+                ],
+                child: GroupEditPage(
+                  setting: settingRepo,
+                  groupId: int.tryParse(state.pathParameters['group_id']!)!,
+                ),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'user-api-keys',
+          path: '/setting/user-api-keys',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: ((context) => UserApiKeysBloc()),
+                  ),
+                ],
+                child: UserAPIKeysScreen(setting: settingRepo),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'notifications',
+          path: '/notifications',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              NotificationScreen(setting: settingRepo),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'articles',
+          path: '/article',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              ArticleScreen(
+                settings: settingRepo,
+                id: int.tryParse(state.queryParameters['id'] ?? '') ?? 0,
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'web-payment-result',
+          path: '/payment/result',
+          pageBuilder: (context, state) {
+            return transitionResolver(WebPaymentResult(
+              paymentId: state.queryParameters['payment_id']!,
+              action: state.queryParameters['action'],
+            ));
+          },
+        ),
+        GoRoute(
+          name: 'web-payment-proxy',
+          path: '/payment/proxy',
+          pageBuilder: (context, state) {
+            return transitionResolver(WebPaymentProxy(
+              setting: settingRepo,
+              paymentId: state.queryParameters['id']!,
+              paymentIntent: state.queryParameters['intent']!,
+              price: state.queryParameters['price']!,
+              publishableKey: state.queryParameters['key']!,
+              finishAction: state.queryParameters['finish_action'] ?? 'close',
+            ));
+          },
+        ),
+
+        /// 管理员接口
+        GoRoute(
+          name: 'admin-dashboard',
+          path: '/admin/dashboard',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              AdminDashboardPage(setting: settingRepo),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'admin-models',
+          path: '/admin/models',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => ModelBloc(),
+                  ),
+                ],
+                child: AdminModelsPage(setting: settingRepo),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'admin-models-create',
+          path: '/admin/models/create',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => ModelBloc(),
+                  ),
+                ],
+                child: AdminModelCreatePage(setting: settingRepo),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'admin-models-edit',
+          path: '/admin/models/edit/:id',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => ModelBloc(),
+                  ),
+                ],
+                child: AdminModelEditPage(
+                  setting: settingRepo,
+                  modelId: state.pathParameters['id']!,
+                ),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'admin-channels',
+          path: '/admin/channels',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => ChannelBloc(),
+                  ),
+                ],
+                child: ChannelsPage(setting: settingRepo),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'admin-channels-create',
+          path: '/admin/channels/create',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => ChannelBloc(),
+                  ),
+                ],
+                child: ChannelAddPage(setting: settingRepo),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'admin-channels-edit',
+          path: '/admin/channels/edit/:id',
+          pageBuilder: (context, state) {
+            final channelId = int.parse(state.pathParameters['id']!);
+
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => ChannelBloc(),
+                  ),
+                ],
+                child: ChannelEditPage(
+                  setting: settingRepo,
+                  channelId: channelId,
+                ),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'admin-users',
+          path: '/admin/users',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => UserBloc(),
+                  ),
+                ],
+                child: AdminUsersPage(setting: settingRepo),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'admin-users-detail',
+          path: '/admin/users/:id',
+          pageBuilder: (context, state) {
+            final userId = int.parse(state.pathParameters['id']!);
+
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => UserBloc(),
+                  ),
+                ],
+                child: AdminUserPage(setting: settingRepo, userId: userId),
+              ),
+            );
+          },
+        ),
+
+        GoRoute(
+          name: 'admin-payment-histories',
+          path: '/admin/payment/histories',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => AdminPaymentBloc(),
+                  ),
+                ],
+                child: PaymentHistoriesPage(setting: settingRepo),
+              ),
+            );
+          },
+        ),
+
+        GoRoute(
+          name: 'admin-user-rooms',
+          path: '/admin/users/:id/rooms',
+          pageBuilder: (context, state) {
+            final userId = int.parse(state.pathParameters['id']!);
+
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => AdminRoomBloc(),
+                  ),
+                ],
+                child: AdminRoomsPage(setting: settingRepo, userId: userId),
+              ),
+            );
+          },
+        ),
+
+        GoRoute(
+          name: 'admin-user-rooms-messages',
+          path: '/admin/users/:id/rooms/:room_id/messages',
+          pageBuilder: (context, state) {
+            final userId = int.parse(state.pathParameters['id']!);
+            final roomId = int.parse(state.pathParameters['room_id']!);
+
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => AdminRoomBloc(),
+                  ),
+                ],
+                child: AdminRoomMessagesPage(
+                  setting: settingRepo,
+                  userId: userId,
+                  roomId: roomId,
+                  roomType: int.parse(state.queryParameters['room_type']!),
+                ),
+              ),
+            );
+          },
+        ),
+
+        GoRoute(
+          name: 'admin-recently-messages',
+          path: '/admin/recently-messages',
+          pageBuilder: (context, state) {
+            return transitionResolver(
+              MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) => AdminRoomBloc(),
+                  ),
+                ],
+                child: AdminRecentlyMessagesPage(setting: settingRepo),
+              ),
+            );
+          },
+        ),
       ],
     );
   }
@@ -1408,25 +1363,25 @@ class _MyAppState extends State<MyApp> {
                     // TODO 后面要增加一个设置项，允许用户自定义字体大小
                     return MediaQuery(
                       data:
-                          MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                      MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
                       child: BotToastInit()(context, child),
                     );
                   },
                   routerConfig: widget._router,
                   supportedLocales: widget.localization.supportedLocales,
                   localizationsDelegates:
-                      widget.localization.localizationsDelegates,
+                  widget.localization.localizationsDelegates,
                   scrollBehavior:
-                      PlatformTool.isAndroid() || PlatformTool.isIOS()
-                          ? null
-                          : const MaterialScrollBehavior().copyWith(
-                              dragDevices: {
-                                PointerDeviceKind.touch,
-                                PointerDeviceKind.mouse,
-                                PointerDeviceKind.stylus,
-                                PointerDeviceKind.trackpad,
-                              },
-                            ),
+                  PlatformTool.isAndroid() || PlatformTool.isIOS()
+                      ? null
+                      : const MaterialScrollBehavior().copyWith(
+                    dragDevices: {
+                      PointerDeviceKind.touch,
+                      PointerDeviceKind.mouse,
+                      PointerDeviceKind.stylus,
+                      PointerDeviceKind.trackpad,
+                    },
+                  ),
                 );
               },
             );
@@ -1446,10 +1401,10 @@ ThemeData createLightThemeData() {
     ),
     iconButtonTheme: PlatformTool.isMacOS()
         ? IconButtonThemeData(
-            style: ButtonStyle(
-              overlayColor: MaterialStateProperty.all(Colors.transparent),
-            ),
-          )
+      style: ButtonStyle(
+        overlayColor: MaterialStateProperty.all(Colors.transparent),
+      ),
+    )
         : null,
     dividerColor: Colors.transparent,
     dialogBackgroundColor: Colors.white,
@@ -1479,10 +1434,10 @@ ThemeData createDarkThemeData() {
     ),
     iconButtonTheme: PlatformTool.isMacOS()
         ? IconButtonThemeData(
-            style: ButtonStyle(
-              overlayColor: MaterialStateProperty.all(Colors.transparent),
-            ),
-          )
+      style: ButtonStyle(
+        overlayColor: MaterialStateProperty.all(Colors.transparent),
+      ),
+    )
         : null,
     dividerColor: Colors.transparent,
     dialogBackgroundColor: const Color.fromARGB(255, 48, 48, 48),

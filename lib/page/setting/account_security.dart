@@ -239,7 +239,7 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
                                   scope: "snsapi_userinfo",
                                   state: "wechat_sdk_demo_test");
                               if (!ok) {
-                                showErrorMessage('请先安装微信后再使用改功能');
+                                showErrorMessage('请先安装微信后再使用该功能');
                               }
                             }
                           },
