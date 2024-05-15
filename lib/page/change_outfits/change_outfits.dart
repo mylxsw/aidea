@@ -206,7 +206,9 @@ class _ChangeOutfitsState extends State<ChangeOutfits> {
 
           Padding(padding: const EdgeInsets.all(5),child: EnhancedButton(
             title: AppLocale.generate.getString(context),
-            onPressed: (){},
+            onPressed: (){
+              logic.work();
+            },
           ),)
           // Container(
           //   padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),

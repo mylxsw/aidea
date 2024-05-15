@@ -1,9 +1,11 @@
 import 'dart:convert';
 
-import 'package:get/get.dart';
+import 'package:dio/dio.dart';
+import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
 import '../../helper/pb.dart';
 import '../change_outfits/cloth.dart';
+final dio = Dio();
 
 class Change_outfitLogic extends GetxController {
   late List<Cloth> clothList=[];
@@ -61,5 +63,25 @@ class Change_outfitLogic extends GetxController {
     }
     modelList[index].selected=true;
     update();
+  }
+
+  Future<void> work() async {
+    var response;
+    String clothUrl="";
+    String modelUrl="";
+    modelList.forEach((element) {
+      if(element.selected){
+        modelUrl=element.url;
+      }
+    });
+    clothList.forEach((element) {
+      if(element.selected){
+        clothUrl=element.url;
+      }
+    });
+
+    response= await dio.post("https://ott-api.nicegpt.net/work",data: {"models":modelUrl,"clothes":clothUrl});
+    print(response);
+    // HttpClient().get(,que);
   }
 }
