@@ -29,6 +29,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -182,6 +183,10 @@ class _SettingScreenState extends State<SettingScreen> {
                               // ignore: use_build_context_synchronously
                               AppLocale.operateSuccess.getString(context),
                             );
+
+                            if (context.mounted) {
+                              Phoenix.rebirth(context);
+                            }
                           },
                           danger: true,
                         );
