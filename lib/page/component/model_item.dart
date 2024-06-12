@@ -149,7 +149,7 @@ class _ModelItemState extends State<ModelItem> {
                                 children: [
                                   if (item.avatarUrl != null) ...[
                                     _buildAvatar(
-                                        avatarUrl: item.avatarUrl, size: 45),
+                                        avatarUrl: item.avatarUrl, size: 50),
                                     const SizedBox(width: 10),
                                   ],
                                   Expanded(
@@ -170,7 +170,7 @@ class _ModelItemState extends State<ModelItem> {
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                   style: const TextStyle(
-                                                      fontSize: 14),
+                                                      fontSize: 15),
                                                 ),
                                               ),
                                             ),
@@ -211,7 +211,7 @@ class _ModelItemState extends State<ModelItem> {
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
-                                              fontSize: 10,
+                                              fontSize: 12,
                                               color: customColors.weakTextColor,
                                             ),
                                           ),
@@ -259,7 +259,7 @@ class _ModelItemState extends State<ModelItem> {
         category,
         style: TextStyle(
           color: customColors.dialogDefaultTextColor,
-          fontSize: 12,
+          fontSize: 14,
         ),
       ),
     );

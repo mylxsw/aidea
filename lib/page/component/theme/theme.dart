@@ -19,6 +19,14 @@ class AppTheme extends ChangeNotifier {
 
   static AppTheme instance = AppTheme('system');
 
+  static AppTheme get() {
+    if (!instance.mounted) {
+      instance = AppTheme('system');
+    }
+
+    return instance;
+  }
+
   static ThemeMode themeModeFormString(String mode) {
     switch (mode) {
       case 'light':
@@ -33,5 +41,14 @@ class AppTheme extends ChangeNotifier {
   set mode(ThemeMode mode) {
     _mode = mode;
     notifyListeners();
+  }
+
+  bool _mounted = false;
+  bool get mounted => _mounted;
+
+  @override
+  void dispose() {
+    super.dispose();
+    _mounted = true;
   }
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION=1.0.13.1
+VERSION=1.0.14
 
 rm -fr build/web
 
