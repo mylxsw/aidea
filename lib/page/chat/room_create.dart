@@ -623,8 +623,11 @@ void openSelectModelDialog(
       final index = models.indexWhere(
           (e) => e.id == priorityModelId || e.uid() == priorityModelId);
       if (index != -1) {
-        final model = models.removeAt(index);
-        models.insert(0, model);
+        models.insert(
+            0,
+            models[index]
+                // ignore: use_build_context_synchronously
+                .copyWith(category: AppLocale.recentlyUsed.getString(context)));
       }
     }
 

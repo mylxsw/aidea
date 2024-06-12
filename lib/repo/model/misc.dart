@@ -602,13 +602,17 @@ class Model {
   String name;
   String shortName;
   String? description;
-  String category;
   bool isChat;
   bool isImage;
   bool disabled;
-  String? tag;
   String? avatarUrl;
   bool supportVision;
+
+  String category;
+  String? tag;
+  String? tagTextColor;
+  String? tagBgColor;
+  bool isNew;
 
   String get realModelId {
     return id.split(':').last;
@@ -626,6 +630,9 @@ class Model {
     this.tag,
     this.avatarUrl,
     this.supportVision = false,
+    this.tagBgColor,
+    this.tagTextColor,
+    this.isNew = false,
   });
 
   toJson() => {
@@ -640,6 +647,9 @@ class Model {
         'tag': tag,
         'avatar_url': avatarUrl,
         'support_vision': supportVision,
+        'tag_bg_color': tagBgColor,
+        'tag_text_color': tagTextColor,
+        'is_new': isNew,
       };
 
   static Model fromJson(Map<String, dynamic> json) {
@@ -655,6 +665,9 @@ class Model {
       tag: json['tag'],
       avatarUrl: json['avatar_url'],
       supportVision: json['support_vision'] ?? false,
+      tagBgColor: json['tag_bg_color'],
+      tagTextColor: json['tag_text_color'],
+      isNew: json['is_new'] ?? false,
     );
   }
 }

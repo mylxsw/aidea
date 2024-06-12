@@ -9,6 +9,7 @@ import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -151,57 +152,172 @@ class _AdminRecentlyMessagesPageState extends State<AdminRecentlyMessagesPage> {
                                       borderRadius: BorderRadius.circular(
                                           customColors.borderRadius ?? 8),
                                     ),
-                                    child: Material(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(
-                                              customColors.borderRadius ?? 8)),
-                                      color: customColors
-                                          .columnBlockBackgroundColor,
-                                      child: InkWell(
+                                    child: Slidable(
+                                      startActionPane: ActionPane(
+                                          motion: const ScrollMotion(),
+                                          children: [
+                                            SlidableAction(
+                                              label: '数字人',
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(
+                                                    customColors.borderRadius ??
+                                                        8),
+                                                bottomLeft: Radius.circular(
+                                                    customColors.borderRadius ??
+                                                        8),
+                                                topRight: Radius.circular(
+                                                    customColors.borderRadius ??
+                                                        8),
+                                                bottomRight: Radius.circular(
+                                                    customColors.borderRadius ??
+                                                        8),
+                                              ),
+                                              backgroundColor: Colors.blue,
+                                              icon: Icons.people,
+                                              foregroundColor: Colors.white,
+                                              onPressed: (_) {
+                                                context.push(
+                                                    '/admin/users/${message.userId}/rooms');
+                                              },
+                                            ),
+                                          ]),
+                                      endActionPane: ActionPane(
+                                        motion: const ScrollMotion(),
+                                        children: [
+                                          const SizedBox(width: 10),
+                                          SlidableAction(
+                                            label: '用户',
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(
+                                                  customColors.borderRadius ??
+                                                      8),
+                                              bottomLeft: Radius.circular(
+                                                  customColors.borderRadius ??
+                                                      8),
+                                              topRight: Radius.circular(
+                                                  customColors.borderRadius ??
+                                                      8),
+                                              bottomRight: Radius.circular(
+                                                  customColors.borderRadius ??
+                                                      8),
+                                            ),
+                                            backgroundColor:
+                                                customColors.linkColor ??
+                                                    Colors.green,
+                                            icon: Icons.person,
+                                            foregroundColor: Colors.white,
+                                            onPressed: (_) {
+                                              context.push(
+                                                  '/admin/users/${message.userId}');
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                      child: Material(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(
                                                 customColors.borderRadius ??
                                                     8)),
-                                        onTap: () {
-                                          context.push(
-                                              '/admin/users/${message.userId}/rooms/${message.roomId}/messages?room_type=1');
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.all(15),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                        color: customColors
+                                            .columnBlockBackgroundColor,
+                                        child: InkWell(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(
+                                                  customColors.borderRadius ??
+                                                      8)),
+                                          onTap: () {
+                                            context.push(
+                                                '/admin/users/${message.userId}/rooms/${message.roomId}/messages?room_type=1');
+                                          },
+                                          child: Stack(
                                             children: [
-                                              Text(
-                                                state.messages.data[index].text,
-                                                maxLines: 2,
-                                                style: const TextStyle(
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 5),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    '${message.userId}#${message.id}',
-                                                    style: const TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.grey,
+                                              Positioned(
+                                                top: 0,
+                                                right: 0,
+                                                child: Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    horizontal: 5,
+                                                    vertical: 2,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: customColors
+                                                        .columnBlockBackgroundColor
+                                                        ?.withAlpha(100),
+                                                    borderRadius:
+                                                        BorderRadius.only(
+                                                      topRight: Radius.circular(
+                                                          customColors
+                                                                  .borderRadius ??
+                                                              8),
+                                                      bottomLeft: Radius
+                                                          .circular(customColors
+                                                                  .borderRadius ??
+                                                              8),
                                                     ),
                                                   ),
-                                                  if (message.ts != null)
+                                                  child: Text(
+                                                    '@ ${message.userId}',
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: customColors
+                                                          .weakTextColor
+                                                          ?.withAlpha(100),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.all(15),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
                                                     Text(
-                                                      '  ${DateFormat('yyyy/MM/dd HH:mm').format(message.ts!.toLocal())}',
+                                                      state.messages.data[index]
+                                                          .text,
+                                                      maxLines: 2,
                                                       style: const TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.grey,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
                                                       ),
                                                     ),
-                                                ],
+                                                    const SizedBox(height: 5),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Expanded(
+                                                          child: Text(
+                                                            '${message.model}',
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 12,
+                                                              color:
+                                                                  Colors.grey,
+                                                            ),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            maxLines: 1,
+                                                          ),
+                                                        ),
+                                                        if (message.ts != null)
+                                                          Text(
+                                                            '  ${DateFormat('MM/dd HH:mm').format(message.ts!.toLocal())}',
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 12,
+                                                              color:
+                                                                  Colors.grey,
+                                                            ),
+                                                          ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ],
                                           ),

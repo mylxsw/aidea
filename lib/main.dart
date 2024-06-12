@@ -20,6 +20,7 @@ import 'package:askaide/page/admin/users.dart';
 import 'package:askaide/page/balance/web_payment_proxy.dart';
 import 'package:askaide/page/balance/web_payment_result.dart';
 import 'package:askaide/page/creative_island/draw/artistic_wordart.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:path/path.dart';
 
 import 'package:askaide/bloc/account_bloc.dart';
@@ -198,7 +199,7 @@ void main() async {
   );
 
   final creativeIslandRepo =
-  CreativeIslandRepository(CreativeIslandDataProvider(db));
+      CreativeIslandRepository(CreativeIslandDataProvider(db));
 
   // 聊天状态加载器
   final stateManager = MessageStateManager(cacheRepo);
@@ -247,13 +248,15 @@ void main() async {
     );
   });
 
-  runApp(MyApp(
-    settingRepo: settingRepo,
-    chatMsgRepo: chatMsgRepo,
-    openAIRepo: openAIRepo,
-    cacheRepo: cacheRepo,
-    creativeIslandRepo: creativeIslandRepo,
-    messageStateManager: stateManager,
+  runApp(Phoenix(
+    child: MyApp(
+      settingRepo: settingRepo,
+      chatMsgRepo: chatMsgRepo,
+      openAIRepo: openAIRepo,
+      cacheRepo: cacheRepo,
+      creativeIslandRepo: creativeIslandRepo,
+      messageStateManager: stateManager,
+    ),
   ));
 }
 
@@ -293,11 +296,11 @@ class MyApp extends StatefulWidget {
     var usingGuestMode = settingRepo.boolDefault(settingUsingGuestMode, false);
 
     final openAISelfHosted =
-    settingRepo.boolDefault(settingOpenAISelfHosted, false);
+        settingRepo.boolDefault(settingOpenAISelfHosted, false);
     final deepAISelfHosted =
-    settingRepo.boolDefault(settingDeepAISelfHosted, false);
+        settingRepo.boolDefault(settingDeepAISelfHosted, false);
     final stabilityAISelfHosted =
-    settingRepo.boolDefault(settingStabilityAISelfHosted, false);
+        settingRepo.boolDefault(settingStabilityAISelfHosted, false);
 
     final shouldLogin = (apiServerToken == null || apiServerToken == '') &&
         !usingGuestMode &&
@@ -316,10 +319,10 @@ class MyApp extends StatefulWidget {
           // navigatorKey: _shellNavigatorKey,
           //parentNavigatorKey: _rootNavigatorKey,
           builder: (
-              BuildContext context,
-              GoRouterState state,
-              StatefulNavigationShell navigationShell,
-              ) {
+            BuildContext context,
+            GoRouterState state,
+            StatefulNavigationShell navigationShell,
+          ) {
             return AppScaffold(
               settingRepo: settingRepo,
               navigationShell: navigationShell,
@@ -340,10 +343,10 @@ class MyApp extends StatefulWidget {
                     child: HomePage(
                       setting: settingRepo,
                       showInitialDialog:
-                      state.queryParameters['show_initial_dialog'] ==
-                          'true',
+                          state.queryParameters['show_initial_dialog'] ==
+                              'true',
                       reward:
-                      int.tryParse(state.queryParameters['reward'] ?? '0'),
+                          int.tryParse(state.queryParameters['reward'] ?? '0'),
                     ),
                   ),
                 ),
@@ -481,7 +484,7 @@ class MyApp extends StatefulWidget {
                   value: ChatBlocManager().getBloc(
                     chatAnywhereRoomId,
                     chatHistoryId:
-                    int.tryParse(state.queryParameters['chat_id'] ?? ''),
+                        int.tryParse(state.queryParameters['chat_id'] ?? ''),
                   ),
                 ),
                 BlocProvider.value(value: chatRoomBloc),
@@ -610,7 +613,7 @@ class MyApp extends StatefulWidget {
                         CreativeIslandBloc(creativeIslandRepo)),
               ],
               child:
-              UserCenterScreen(settings: context.read<SettingRepository>()),
+                  UserCenterScreen(settings: context.read<SettingRepository>()),
             ),
           ),
         ),
@@ -1345,7 +1348,7 @@ class _MyAppState extends State<MyApp> {
             create: (context) => widget.cacheRepo),
       ],
       child: ChangeNotifierProvider(
-          create: (context) => AppTheme.instance
+          create: (context) => AppTheme.get()
             ..mode = AppTheme.themeModeFormString(
                 widget.settingRepo.stringDefault(settingThemeMode, 'system')),
           builder: (context, _) {
@@ -1363,25 +1366,25 @@ class _MyAppState extends State<MyApp> {
                     // TODO 后面要增加一个设置项，允许用户自定义字体大小
                     return MediaQuery(
                       data:
-                      MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                          MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
                       child: BotToastInit()(context, child),
                     );
                   },
                   routerConfig: widget._router,
                   supportedLocales: widget.localization.supportedLocales,
                   localizationsDelegates:
-                  widget.localization.localizationsDelegates,
+                      widget.localization.localizationsDelegates,
                   scrollBehavior:
-                  PlatformTool.isAndroid() || PlatformTool.isIOS()
-                      ? null
-                      : const MaterialScrollBehavior().copyWith(
-                    dragDevices: {
-                      PointerDeviceKind.touch,
-                      PointerDeviceKind.mouse,
-                      PointerDeviceKind.stylus,
-                      PointerDeviceKind.trackpad,
-                    },
-                  ),
+                      PlatformTool.isAndroid() || PlatformTool.isIOS()
+                          ? null
+                          : const MaterialScrollBehavior().copyWith(
+                              dragDevices: {
+                                PointerDeviceKind.touch,
+                                PointerDeviceKind.mouse,
+                                PointerDeviceKind.stylus,
+                                PointerDeviceKind.trackpad,
+                              },
+                            ),
                 );
               },
             );
@@ -1401,10 +1404,10 @@ ThemeData createLightThemeData() {
     ),
     iconButtonTheme: PlatformTool.isMacOS()
         ? IconButtonThemeData(
-      style: ButtonStyle(
-        overlayColor: MaterialStateProperty.all(Colors.transparent),
-      ),
-    )
+            style: ButtonStyle(
+              overlayColor: MaterialStateProperty.all(Colors.transparent),
+            ),
+          )
         : null,
     dividerColor: Colors.transparent,
     dialogBackgroundColor: Colors.white,
@@ -1434,10 +1437,10 @@ ThemeData createDarkThemeData() {
     ),
     iconButtonTheme: PlatformTool.isMacOS()
         ? IconButtonThemeData(
-      style: ButtonStyle(
-        overlayColor: MaterialStateProperty.all(Colors.transparent),
-      ),
-    )
+            style: ButtonStyle(
+              overlayColor: MaterialStateProperty.all(Colors.transparent),
+            ),
+          )
         : null,
     dividerColor: Colors.transparent,
     dialogBackgroundColor: const Color.fromARGB(255, 48, 48, 48),

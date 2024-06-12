@@ -205,6 +205,11 @@ mixin AppLocale {
   static const String customHomeModels = 'custom-home-models';
   static const String userApiKeys = "user-api-keys";
 
+  static const String others = 'others';
+  static const String recentlyUsed = 'recently-used';
+  static const String visionTag = 'vision-tag';
+  static const String newTag = 'new-tag';
+
   static const Map<String, dynamic> zh = {
     required: '必填',
     systemInfo: '系统信息',
@@ -398,6 +403,10 @@ mixin AppLocale {
     discover: '绘玩',
     customHomeModels: '常用模型',
     userApiKeys: 'API Keys',
+    others: '其它',
+    recentlyUsed: '最近使用',
+    visionTag: '视觉',
+    newTag: '新',
   };
 
   static const Map<String, dynamic> en = {
@@ -607,6 +616,10 @@ mixin AppLocale {
     discover: 'Discover',
     customHomeModels: 'Favorite Models',
     userApiKeys: 'API Keys',
+    others: 'Others',
+    recentlyUsed: 'Recently Used',
+    visionTag: 'Vision',
+    newTag: 'New',
   };
 }
 
