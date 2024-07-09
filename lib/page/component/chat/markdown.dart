@@ -10,7 +10,6 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_highlight/themes/default.dart';
-import 'package:flutter_highlight/themes/monokai.dart';
 import 'package:flutter_markdown/flutter_markdown.dart' as md;
 import 'package:markdown/markdown.dart' as mm;
 import 'package:markdown_widget/config/all.dart';
