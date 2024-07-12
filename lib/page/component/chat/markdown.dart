@@ -143,7 +143,7 @@ class MarkdownPlus extends StatelessWidget {
           ),
           margin: const EdgeInsets.symmetric(vertical: 0.0),
           padding:
-              const EdgeInsets.only(top: 30, left: 10, right: 10, bottom: 10),
+              const EdgeInsets.only(top: 35, left: 10, right: 10, bottom: 10),
           textStyle: const TextStyle(fontSize: 14),
           wrapper: (child, code, language) {
             return Stack(
@@ -154,10 +154,22 @@ class MarkdownPlus extends StatelessWidget {
                   top: 0,
                   child: IconButton(
                     tooltip: '复制代码',
-                    icon: Icon(
-                      Icons.copy,
-                      size: 12,
-                      color: customColors.weakLinkColor,
+                    icon: Row(
+                      children: [
+                        Icon(
+                          Icons.copy,
+                          size: 12,
+                          color: customColors.weakLinkColor,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          'Copy',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: customColors.weakLinkColor,
+                          ),
+                        ),
+                      ],
                     ),
                     onPressed: () {
                       FlutterClipboard.copy(code).then((value) {
