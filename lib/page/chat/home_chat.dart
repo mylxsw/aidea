@@ -408,7 +408,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
               if (!enableInput.value)
                 Positioned(
                   bottom: 10,
-                  width: MediaQuery.of(context).size.width,
+                  width: maxWindowWidth(context),
                   child: Center(
                     child: StopButton(
                       label: '停止输出',
@@ -717,5 +717,12 @@ class _HomeChatPageState extends State<HomeChatPage> {
     }
 
     return const LocalAvatar(assetName: 'assets/app.png', size: 30);
+  }
+
+  double maxWindowWidth(BuildContext context) {
+    final windowSize = MediaQuery.of(context).size.width;
+    return windowSize > CustomSize.maxWindowSize
+        ? CustomSize.maxWindowSize
+        : windowSize;
   }
 }

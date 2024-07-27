@@ -184,7 +184,7 @@ class _RoomChatPageState extends State<RoomChatPage> {
                       if (!_inputEnabled.value)
                         Positioned(
                           bottom: 10,
-                          width: MediaQuery.of(context).size.width,
+                          width: maxWindowWidth(context),
                           child: Center(
                             child: StopButton(
                               label: '停止输出',
@@ -592,6 +592,13 @@ class _RoomChatPageState extends State<RoomChatPage> {
     context
         .read<RoomBloc>()
         .add(RoomLoadEvent(widget.roomId, cascading: false));
+  }
+
+  double maxWindowWidth(BuildContext context) {
+    final windowSize = MediaQuery.of(context).size.width;
+    return windowSize > CustomSize.maxWindowSize
+        ? CustomSize.maxWindowSize
+        : windowSize;
   }
 }
 
