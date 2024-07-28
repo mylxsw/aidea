@@ -178,7 +178,8 @@ class _SettingScreenState extends State<SettingScreen> {
                           AppLocale.confirmClearCache.getString(context),
                           () async {
                             await Cache().clearAll();
-                            await HttpClient.cacheManager.clearAll();
+                            await HttpClient.cleanCache();
+
                             showSuccessMessage(
                               // ignore: use_build_context_synchronously
                               AppLocale.operateSuccess.getString(context),

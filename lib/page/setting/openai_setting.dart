@@ -270,7 +270,7 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
 
     final dio = Dio(BaseOptions(
       baseUrl: url,
-      connectTimeout: 5 * 1000,
+      connectTimeout: const Duration(seconds: 5),
     ));
 
     try {
@@ -279,8 +279,8 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
         options: Options(
           headers: headers,
           receiveDataWhenStatusError: true,
-          sendTimeout: 3 * 1000,
-          receiveTimeout: 3 * 1000,
+          sendTimeout: const Duration(seconds: 3),
+          receiveTimeout: const Duration(seconds: 3),
         ),
       );
 
@@ -302,7 +302,7 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
       });
 
       cancelLoading();
-      if (e is DioError) {
+      if (e is DioException) {
         if (e.response != null && e.response!.data != null) {
           return Future.error(
               '验证失败，请检查网络 或 API Key：${e.response!.data["error"]["message"]}');
