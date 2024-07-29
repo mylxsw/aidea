@@ -121,9 +121,8 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                       children: [
                         Theme(
                           data: Theme.of(context).copyWith(
-                            colorScheme: Theme.of(context)
-                                .colorScheme
-                                .copyWith(surfaceVariant: Colors.transparent),
+                            colorScheme: Theme.of(context).colorScheme.copyWith(
+                                surfaceContainerHighest: Colors.transparent),
                           ),
                           child: TabBar(
                             tabs: [
@@ -137,7 +136,7 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                             labelPadding:
                                 const EdgeInsets.only(right: 5, left: 10),
                             overlayColor:
-                                MaterialStateProperty.all(Colors.transparent),
+                                WidgetStateProperty.all(Colors.transparent),
                             tabAlignment: TabAlignment.center,
                           ),
                         ),
@@ -706,7 +705,7 @@ void openSystemPromptSelectDialog(
                           style: TextStyle(
                             color: customColors.weakTextColor,
                           ),
-                          textScaleFactor: 0.8,
+                          textScaler: const TextScaler.linear(0.8),
                         )
                       ],
                     ),

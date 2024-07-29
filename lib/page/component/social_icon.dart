@@ -110,9 +110,9 @@ class SocialIconGroup extends StatelessWidget {
                   const SizedBox(width: 10),
                   Text(e.name),
                 ]),
-                trailing: Icon(
+                trailing: const Icon(
                   CupertinoIcons.chevron_forward,
-                  size: MediaQuery.of(context).textScaleFactor * 18,
+                  size: 18,
                   color: Colors.grey,
                 ),
                 onPressed: (context) {

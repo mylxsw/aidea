@@ -139,9 +139,9 @@ class _SettingScreenState extends State<SettingScreen> {
                     if (PlatformTool.isWeb())
                       SettingsTile(
                         title: const Text('APP 下载'),
-                        trailing: Icon(
+                        trailing: const Icon(
                           Icons.download,
-                          size: MediaQuery.of(context).textScaleFactor * 18,
+                          size: 18,
                           color: Colors.grey,
                         ),
                         onPressed: (context) {
@@ -155,9 +155,9 @@ class _SettingScreenState extends State<SettingScreen> {
                     if (Ability().serviceStatusPage != '')
                       SettingsTile(
                         title: const Text('服务状态'),
-                        trailing: Icon(
+                        trailing: const Icon(
                           CupertinoIcons.chevron_forward,
-                          size: MediaQuery.of(context).textScaleFactor * 18,
+                          size: 18,
                           color: Colors.grey,
                         ),
                         onPressed: (_) {
@@ -167,9 +167,9 @@ class _SettingScreenState extends State<SettingScreen> {
                     // 清空缓存
                     SettingsTile(
                       title: Text(AppLocale.clearCache.getString(context)),
-                      trailing: Icon(
+                      trailing: const Icon(
                         CupertinoIcons.refresh,
-                        size: MediaQuery.of(context).textScaleFactor * 18,
+                        size: 18,
                         color: Colors.grey,
                       ),
                       onPressed: (_) {
@@ -178,7 +178,8 @@ class _SettingScreenState extends State<SettingScreen> {
                           AppLocale.confirmClearCache.getString(context),
                           () async {
                             await Cache().clearAll();
-                            await HttpClient.cacheManager.clearAll();
+                            await HttpClient.cleanCache();
+
                             showSuccessMessage(
                               // ignore: use_build_context_synchronously
                               AppLocale.operateSuccess.getString(context),
@@ -197,9 +198,9 @@ class _SettingScreenState extends State<SettingScreen> {
                     if (!PlatformTool.isIOS())
                       SettingsTile(
                         title: Text(AppLocale.updateCheck.getString(context)),
-                        trailing: Icon(
+                        trailing: const Icon(
                           CupertinoIcons.chevron_forward,
-                          size: MediaQuery.of(context).textScaleFactor * 18,
+                          size: 18,
                           color: Colors.grey,
                         ),
                         onPressed: (_) {
@@ -229,9 +230,9 @@ class _SettingScreenState extends State<SettingScreen> {
                     // 用户协议
                     SettingsTile(
                       title: Text(AppLocale.userTerms.getString(context)),
-                      trailing: Icon(
+                      trailing: const Icon(
                         CupertinoIcons.chevron_forward,
-                        size: MediaQuery.of(context).textScaleFactor * 18,
+                        size: 18,
                         color: Colors.grey,
                       ),
                       onPressed: (_) {
@@ -242,9 +243,9 @@ class _SettingScreenState extends State<SettingScreen> {
                     // 隐私政策
                     SettingsTile(
                       title: Text(AppLocale.privacyPolicy.getString(context)),
-                      trailing: Icon(
+                      trailing: const Icon(
                         CupertinoIcons.chevron_forward,
-                        size: MediaQuery.of(context).textScaleFactor * 18,
+                        size: 18,
                         color: Colors.grey,
                       ),
                       onPressed: (_) {
@@ -256,9 +257,9 @@ class _SettingScreenState extends State<SettingScreen> {
                     // 关于
                     SettingsTile(
                       title: Text(AppLocale.about.getString(context)),
-                      trailing: Icon(
+                      trailing: const Icon(
                         CupertinoIcons.chevron_forward,
-                        size: MediaQuery.of(context).textScaleFactor * 18,
+                        size: 18,
                         color: Colors.grey,
                       ),
                       onPressed: (_) {
@@ -421,9 +422,9 @@ class _SettingScreenState extends State<SettingScreen> {
   SettingsTile _buildCommonLanguageSetting() {
     return SettingsTile(
       title: Text(AppLocale.language.getString(context)),
-      trailing: Icon(
+      trailing: const Icon(
         CupertinoIcons.chevron_forward,
-        size: MediaQuery.of(context).textScaleFactor * 18,
+        size: 18,
         color: Colors.grey,
       ),
       onPressed: (_) {
@@ -514,9 +515,9 @@ class _SettingScreenState extends State<SettingScreen> {
         return [
           SettingsTile(
             title: Text(resolveError(context, state.error!)),
-            trailing: Icon(
+            trailing: const Icon(
               CupertinoIcons.chevron_forward,
-              size: MediaQuery.of(context).textScaleFactor * 18,
+              size: 18,
               color: Colors.grey,
             ),
             onPressed: (_) {
@@ -540,9 +541,9 @@ class _SettingScreenState extends State<SettingScreen> {
                 fontSize: 13,
               ),
             ),
-            Icon(
+            const Icon(
               CupertinoIcons.chevron_forward,
-              size: MediaQuery.of(context).textScaleFactor * 18,
+              size: 18,
               color: Colors.grey,
             ),
           ]),
@@ -552,9 +553,9 @@ class _SettingScreenState extends State<SettingScreen> {
         ),
         SettingsTile(
           title: const Text('免费畅享额度'),
-          trailing: Icon(
+          trailing: const Icon(
             CupertinoIcons.chevron_forward,
-            size: MediaQuery.of(context).textScaleFactor * 18,
+            size: 18,
             color: Colors.grey,
           ),
           onPressed: (context) {
@@ -574,9 +575,9 @@ class _SettingScreenState extends State<SettingScreen> {
       SettingsTile(
         leading: const Icon(Icons.account_circle),
         title: Text(AppLocale.signIn.getString(context)),
-        trailing: Icon(
+        trailing: const Icon(
           CupertinoIcons.chevron_forward,
-          size: MediaQuery.of(context).textScaleFactor * 18,
+          size: 18,
           color: Colors.grey,
         ),
         onPressed: (_) {
@@ -706,9 +707,9 @@ class _SettingScreenState extends State<SettingScreen> {
   SettingsTile _buildServerSelfHostedSetting(CustomColors customColors) {
     return SettingsTile(
       title: const Text('自定义服务器'),
-      trailing: Icon(
+      trailing: const Icon(
         CupertinoIcons.chevron_forward,
-        size: MediaQuery.of(context).textScaleFactor * 18,
+        size: 18,
         color: Colors.grey,
       ),
       onPressed: (_) {

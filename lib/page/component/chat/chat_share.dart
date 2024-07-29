@@ -84,8 +84,8 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                   if (data != null) {
                     final file = await writeTempFile('share-image.png', data);
                     cancel();
-                    // ignore: use_build_context_synchronously
                     await shareTo(
+                      // ignore: use_build_context_synchronously
                       context,
                       content: 'images',
                       images: [
@@ -139,7 +139,7 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                       } else {
                         if (PlatformTool.isWindows()) {
                           FileSaver.instance
-                            .saveAs(
+                              .saveAs(
                             name: randomId(),
                             bytes: data,
                             ext: '.png',
@@ -147,7 +147,7 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                           )
                               .then((value) async {
                             if (value == null) {
-                              return ;
+                              return;
                             }
 
                             await File(value).writeAsBytes(data);
@@ -167,7 +167,6 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                             showSuccessMessage('文件保存成功');
                           });
                         }
-                        
                       }
                     }
                   } finally {

@@ -38,7 +38,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       await settings.set(settingAPIServerToken, '');
       await settings.set(settingUserInfo, '');
 
-      HttpClient.cacheManager.clearAll();
+      await HttpClient.cleanCache();
       emit(AccountNeedSignIn());
     });
 

@@ -412,7 +412,8 @@ class _AdminUserPageState extends State<AdminUserPage> {
                                         DateFormat(
                                           'yyyy/MM/dd HH:mm',
                                         ).format(item.createdAt.toLocal()),
-                                        textScaleFactor: 0.8,
+                                        textScaler:
+                                            const TextScaler.linear(0.8),
                                         style: TextStyle(
                                           color: Colors.grey[600],
                                         ),
@@ -431,7 +432,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
                                     ),
                                     Text(
                                       '${DateFormat('yyyy/MM/dd').format(item.periodEndAt.toLocal())} 过期',
-                                      textScaleFactor: 0.7,
+                                      textScaler: const TextScaler.linear(0.7),
                                     ),
                                   ],
                                 ),
@@ -480,7 +481,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
         ),
         child: Text(
           text,
-          textScaleFactor: 0.6,
+          textScaler: const TextScaler.linear(0.6),
           style: const TextStyle(color: Colors.white70),
         ),
       ),

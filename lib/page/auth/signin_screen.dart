@@ -118,10 +118,11 @@ class _SignInScreenState extends State<SignInScreen> {
       await widget.settings.set(settingAPIServerToken, value.token);
       await widget.settings.set(settingUserInfo, jsonEncode(value));
 
-      await HttpClient.cacheManager.clearAll();
+      await HttpClient.cleanCache();
 
       if (value.needBindPhone) {
         if (context.mounted) {
+          // ignore: use_build_context_synchronously
           context.push('/bind-phone').then((value) async {
             if (value == 'logout') {
               await widget.settings.set(settingAPIServerToken, '');
@@ -522,7 +523,7 @@ class _SignInScreenState extends State<SignInScreen> {
         await widget.settings.set(settingAPIServerToken, value.token);
         await widget.settings.set(settingUserInfo, jsonEncode(value));
 
-        HttpClient.cacheManager.clearAll().then((_) {
+        () {
           if (value.needBindPhone) {
             if (context.mounted) {
               context.push('/bind-phone').then((value) async {
@@ -537,7 +538,24 @@ class _SignInScreenState extends State<SignInScreen> {
             context.go(
                 '${Ability().homeRoute}?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
           }
-        });
+        }();
+
+        // HttpClient.cacheManager.clearAll().then((_) {
+        //   if (value.needBindPhone) {
+        //     if (context.mounted) {
+        //       context.push('/bind-phone').then((value) async {
+        //         if (value == 'logout') {
+        //           await widget.settings.set(settingAPIServerToken, '');
+        //           await widget.settings.set(settingUserInfo, '');
+        //         }
+        //       });
+        //     }
+        //     return;
+        //   } else {
+        //     context.go(
+        //         '${Ability().homeRoute}?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
+        //   }
+        // });
       }).catchError((e) {
         Logger.instance.e(e);
         showErrorMessage(AppLocale.signInFailed.getString(context));

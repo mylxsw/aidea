@@ -184,7 +184,7 @@ class _RoomChatPageState extends State<RoomChatPage> {
                       if (!_inputEnabled.value)
                         Positioned(
                           bottom: 10,
-                          width: MediaQuery.of(context).size.width,
+                          width: maxWindowWidth(context),
                           child: Center(
                             child: StopButton(
                               label: '停止输出',
@@ -593,6 +593,13 @@ class _RoomChatPageState extends State<RoomChatPage> {
         .read<RoomBloc>()
         .add(RoomLoadEvent(widget.roomId, cascading: false));
   }
+
+  double maxWindowWidth(BuildContext context) {
+    final windowSize = MediaQuery.of(context).size.width;
+    return windowSize > CustomSize.maxWindowSize
+        ? CustomSize.maxWindowSize
+        : windowSize;
+  }
 }
 
 /// 处理消息删除事件
@@ -657,7 +664,7 @@ void handleOpenExampleQuestion(
                 ),
                 child: Text(
                   AppLocale.examples.getString(context),
-                  textScaleFactor: 1.2,
+                  textScaler: const TextScaler.linear(1.2),
                 ),
               ),
               Expanded(
@@ -710,7 +717,7 @@ void handleOpenExampleQuestion(
                           title: Text(
                             AppLocale.confirmSend.getString(context),
                             textAlign: TextAlign.left,
-                            textScaleFactor: 0.8,
+                            textScaler: const TextScaler.linear(0.8),
                           ),
                           builder: Builder(
                             builder: (context) {

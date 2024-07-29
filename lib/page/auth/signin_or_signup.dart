@@ -401,6 +401,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
 
       if (value.needBindPhone) {
         if (context.mounted) {
+          // ignore: use_build_context_synchronously
           context.push('/bind-phone').then((value) async {
             if (value == 'logout') {
               await widget.settings.set(settingAPIServerToken, '');
@@ -412,6 +413,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
         return;
       } else {
         if (context.mounted) {
+          // ignore: use_build_context_synchronously
           context.go(
               '${Ability().homeRoute}?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
         }

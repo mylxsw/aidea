@@ -107,8 +107,8 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                           .invokeMethod('SystemNavigator.pop');
                     } catch (e) {
                       Logger.instance.e(e);
-                      // ignore: use_build_context_synchronously
                       showBeautyDialog(
+                        // ignore: use_build_context_synchronously
                         context,
                         type: QuickAlertType.error,
                         text: '数据文件删除失败，请先关闭应用后，手动删除目录 $databasePath 之后再重启应用',

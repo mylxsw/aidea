@@ -88,8 +88,7 @@ class _EmptyPreviewState extends State<EmptyPreview> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     style: ButtonStyle(
-                      overlayColor:
-                          MaterialStateProperty.all(Colors.transparent),
+                      overlayColor: WidgetStateProperty.all(Colors.transparent),
                     ),
                     onPressed: () {
                       setState(() {
@@ -110,7 +109,7 @@ class _EmptyPreviewState extends State<EmptyPreview> {
                           style: TextStyle(
                             color: customColors.chatExampleItemText,
                           ),
-                          textScaleFactor: 0.9,
+                          textScaler: const TextScaler.linear(0.9),
                         ),
                       ],
                     ),

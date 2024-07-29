@@ -38,7 +38,7 @@ class EnhancedErrorWidget extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               child: Text(
                 '点击此处重新登录',
-                textScaleFactor: 0.8,
+                textScaler: TextScaler.linear(0.8),
                 style: TextStyle(
                   color: Colors.red,
                 ),

@@ -658,7 +658,7 @@ class _HomePageState extends State<HomePage> {
                     child: TextButton(
                       style: ButtonStyle(
                         overlayColor:
-                            MaterialStateProperty.all(Colors.transparent),
+                            WidgetStateProperty.all(Colors.transparent),
                       ),
                       onPressed: () {
                         setState(() {
@@ -679,7 +679,7 @@ class _HomePageState extends State<HomePage> {
                             style: TextStyle(
                               color: customColors.weakTextColor,
                             ),
-                            textScaleFactor: 0.9,
+                            textScaler: const TextScaler.linear(0.9),
                           ),
                         ],
                       ),

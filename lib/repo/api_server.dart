@@ -71,17 +71,17 @@ class APIServer {
     });
   }
 
-  final List<DioErrorType> _retryableErrors = [
-    DioErrorType.connectTimeout,
-    DioErrorType.sendTimeout,
-    DioErrorType.receiveTimeout,
+  final List<DioExceptionType> _retryableErrors = [
+    DioExceptionType.connectionTimeout,
+    DioExceptionType.sendTimeout,
+    DioExceptionType.receiveTimeout,
   ];
 
   /// 异常处理
   Object _exceptionHandle(Object e, Object? stackTrace) {
     Logger.instance.e(e, stackTrace: stackTrace as StackTrace?);
 
-    if (e is DioError) {
+    if (e is DioException) {
       if (e.response != null) {
         final resp = e.response!;
 
@@ -114,8 +114,12 @@ class APIServer {
     return Options(
       headers: _buildAuthHeaders(),
       receiveDataWhenStatusError: true,
-      sendTimeout: requestTimeout,
-      receiveTimeout: requestTimeout,
+      sendTimeout: requestTimeout != null
+          ? Duration(milliseconds: requestTimeout)
+          : null,
+      receiveTimeout: requestTimeout != null
+          ? Duration(milliseconds: requestTimeout)
+          : null,
     );
   }
 
@@ -303,7 +307,7 @@ class APIServer {
   }) async {
     try {
       final resp = await respFuture;
-      if (resp.statusCode != 200) {
+      if (resp.statusCode != 200 && resp.statusCode != 304) {
         return Future.error(resp.data['error']);
       }
 
@@ -1183,8 +1187,7 @@ class APIServer {
         'members': members?.map((e) => e.toJson()).toList(),
       },
       finallyCallback: () {
-        HttpClient.cacheManager
-            .deleteByPrimaryKey('$url/v2/rooms', requestMethod: 'GET');
+        HttpClient.cleanCache();
       },
     );
   }
@@ -1206,12 +1209,7 @@ class APIServer {
         'members': members?.map((e) => e.toJson()).toList(),
       },
       finallyCallback: () {
-        HttpClient.cacheManager
-            .deleteByPrimaryKey('$url/v2/rooms', requestMethod: 'GET');
-
-        HttpClient.cacheManager.deleteByPrimaryKey(
-            '$url/v1/group-chat/$groupId',
-            requestMethod: 'GET');
+        HttpClient.cleanCache();
       },
     );
   }
@@ -1243,8 +1241,7 @@ class APIServer {
         'init_message': initMessage,
       }),
       finallyCallback: () {
-        HttpClient.cacheManager
-            .deleteByPrimaryKey('$url/v2/rooms', requestMethod: 'GET');
+        HttpClient.cleanCache();
       },
     );
   }
@@ -1277,10 +1274,7 @@ class APIServer {
         'init_message': initMessage,
       }),
       finallyCallback: () {
-        HttpClient.cacheManager
-            .deleteByPrimaryKey('$url/v2/rooms', requestMethod: 'GET');
-        HttpClient.cacheManager
-            .deleteByPrimaryKey('$url/v1/rooms/$roomId', requestMethod: 'GET');
+        HttpClient.cleanCache();
       },
     );
   }
@@ -1291,10 +1285,7 @@ class APIServer {
       '/v1/rooms/$roomId',
       (resp) {},
       finallyCallback: () {
-        HttpClient.cacheManager
-            .deleteByPrimaryKey('$url/v2/rooms', requestMethod: 'GET');
-        HttpClient.cacheManager
-            .deleteByPrimaryKey('$url/v1/rooms/$roomId', requestMethod: 'GET');
+        HttpClient.cleanCache();
       },
     );
   }
@@ -1639,8 +1630,7 @@ class APIServer {
       (resp) {},
       formData: {'avatar_url': avatarURL},
       finallyCallback: () {
-        HttpClient.cacheManager
-            .deleteByPrimaryKey('$url/v1/users/current', requestMethod: 'GET');
+        HttpClient.cleanCache();
       },
     );
   }
@@ -1652,8 +1642,7 @@ class APIServer {
       (resp) {},
       formData: {'realname': realname},
       finallyCallback: () {
-        HttpClient.cacheManager
-            .deleteByPrimaryKey('$url/v1/users/current', requestMethod: 'GET');
+        HttpClient.cleanCache();
       },
     );
   }

@@ -20,7 +20,6 @@ import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -216,7 +215,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           if (Ability().isUserLogon())
             TextButton(
               style: ButtonStyle(
-                overlayColor: MaterialStateProperty.all(Colors.transparent),
+                overlayColor: WidgetStateProperty.all(Colors.transparent),
               ),
               onPressed: () {
                 context.push('/quota-details');
@@ -224,7 +223,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               child: Text(
                 AppLocale.paymentHistory.getString(context),
                 style: TextStyle(color: customColors.weakLinkColor),
-                textScaleFactor: 0.9,
+                textScaler: const TextScaler.linear(0.9),
               ),
             ),
         ],
@@ -984,9 +983,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
       created.params,
       evn: env,
     ).whenComplete(() => _closePaymentLoading());
-    print("=================");
-    print(aliPayRes);
-    print(aliPayRes["resultStatus"]);
+    Logger.instance.d("=================");
+    Logger.instance.d(aliPayRes);
+    Logger.instance.d(aliPayRes["resultStatus"]);
     if (aliPayRes['resultStatus'] == '9000') {
       await APIServer().otherPayClientConfirm(
         aliPayRes.map((key, value) => MapEntry(key.toString(), value)),
@@ -1015,7 +1014,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           showErrorMessage('支付失败');
       }
     }
-    print("-----------------");
+    Logger.instance.d("-----------------");
   }
 }
 

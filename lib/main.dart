@@ -146,7 +146,7 @@ void main() async {
       error: details.exception,
       stackTrace: details.stack,
     );
-    print(details.stack);
+    Logger.instance.d(details.stack);
   };
 
   if (kIsWeb) {
@@ -1365,8 +1365,8 @@ class _MyAppState extends State<MyApp> {
                     // 这里设置了全局字体固定大小，不随系统设置变更
                     // TODO 后面要增加一个设置项，允许用户自定义字体大小
                     return MediaQuery(
-                      data:
-                          MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                      data: MediaQuery.of(context)
+                          .copyWith(textScaler: TextScaler.noScaling),
                       child: BotToastInit()(context, child),
                     );
                   },
@@ -1394,9 +1394,8 @@ class _MyAppState extends State<MyApp> {
 }
 
 ThemeData createLightThemeData() {
-  return ThemeData.light().copyWith(
+  return ThemeData.light(useMaterial3: true).copyWith(
     extensions: [CustomColors.light],
-    useMaterial3: true,
     appBarTheme: const AppBarTheme(
       // backgroundColor: Color.fromARGB(255, 250, 250, 250),
       backgroundColor: Colors.transparent,
@@ -1405,7 +1404,7 @@ ThemeData createLightThemeData() {
     iconButtonTheme: PlatformTool.isMacOS()
         ? IconButtonThemeData(
             style: ButtonStyle(
-              overlayColor: MaterialStateProperty.all(Colors.transparent),
+              overlayColor: WidgetStateProperty.all(Colors.transparent),
             ),
           )
         : null,
@@ -1427,9 +1426,8 @@ ThemeData createLightThemeData() {
 }
 
 ThemeData createDarkThemeData() {
-  return ThemeData.dark().copyWith(
+  return ThemeData.dark(useMaterial3: true).copyWith(
     extensions: [CustomColors.dark],
-    useMaterial3: true,
     appBarTheme: const AppBarTheme(
       // backgroundColor: Color.fromARGB(255, 48, 48, 48),
       backgroundColor: Colors.transparent,
@@ -1438,7 +1436,7 @@ ThemeData createDarkThemeData() {
     iconButtonTheme: PlatformTool.isMacOS()
         ? IconButtonThemeData(
             style: ButtonStyle(
-              overlayColor: MaterialStateProperty.all(Colors.transparent),
+              overlayColor: WidgetStateProperty.all(Colors.transparent),
             ),
           )
         : null,

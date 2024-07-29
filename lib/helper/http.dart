@@ -1,23 +1,26 @@
-import 'package:askaide/helper/env.dart';
 import 'package:askaide/helper/logger.dart';
-import 'package:askaide/helper/platform.dart';
 import 'package:dio/dio.dart';
-import 'package:dio_http_cache_lts/dio_http_cache_lts.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:dio_smart_retry/dio_smart_retry.dart';
 
 class HttpClient {
-  static final cacheManager = DioCacheManager(
-    CacheConfig(
-      baseUrl: apiServerURL,
-    ),
-  );
   static final dio = Dio();
 
-  static init() {
-    if (!PlatformTool.isWeb()) {
-      dio.interceptors.add(cacheManager.interceptor);
-    }
+  static final cacheStore = MemCacheStore();
 
+  static final cacheOptions = CacheOptions(
+    store: cacheStore,
+    policy: CachePolicy.request,
+    hitCacheOnErrorExcept: [401, 403],
+    maxStale: const Duration(days: 7),
+    allowPostMethod: false,
+    keyBuilder: CacheOptions.defaultCacheKeyBuilder,
+  );
+
+  static init() {
+    dio.interceptors.add(DioCacheInterceptor(
+      options: cacheOptions,
+    ));
     dio.interceptors.add(RetryInterceptor(
       dio: dio,
       retries: 3,
@@ -50,23 +53,30 @@ class HttpClient {
     Options? options,
   }) async {
     options ??= Options();
+
     final resp = await dio.get(
       url,
       queryParameters: queryParameters,
-      options: buildCacheOptions(
-        duration,
-        subKey: subKey,
-        options: options.copyWith(sendTimeout: 10000, receiveTimeout: 10000),
-        forceRefresh: forceRefresh,
-        maxStale: const Duration(days: 30),
-      ),
+      options: options.copyWith(
+          extra: cacheOptions
+              .copyWith(
+                maxStale: Nullable<Duration>(duration),
+                policy: forceRefresh
+                    ? CachePolicy.refreshForceCache
+                    : CachePolicy.forceCache,
+              )
+              .toExtra()),
     );
-
     // print("=======================");
-    // print("request: $url");
+    Logger.instance.d("request: $url [${resp.statusCode}]");
     // print("response: ${resp.data}");
 
     return resp;
+  }
+
+  // 清空缓存
+  static Future<void> cleanCache() async {
+    return await cacheStore.clean();
   }
 
   static Future<Response> post(
