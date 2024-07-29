@@ -96,9 +96,9 @@ class EnhancedInput extends StatelessWidget {
                       ),
                       const SizedBox(width: 10),
                       icon ??
-                          Icon(
+                          const Icon(
                             CupertinoIcons.chevron_forward,
-                            size: MediaQuery.of(context).textScaleFactor * 18,
+                            size: 18,
                             color: Colors.grey,
                           ),
                     ],

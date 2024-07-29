@@ -144,6 +144,7 @@ class _DestroyAccountScreenState extends State<DestroyAccountScreen> {
       showSuccessMessage('账号注销成功');
 
       if (context.mounted) {
+        // ignore: use_build_context_synchronously
         context.go('/login');
       }
     }).catchError((e) {

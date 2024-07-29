@@ -924,8 +924,8 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
 
         stopPeriodQuery = false;
 
-        // ignore: use_build_context_synchronously
         Navigator.push(
+          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
             fullscreenDialog: true,
@@ -957,8 +957,10 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
       if (!res.enough) {
         if (context.mounted) {
           showBeautyDialog(
+            // ignore: use_build_context_synchronously
             context,
             type: QuickAlertType.warning,
+            // ignore: use_build_context_synchronously
             text: AppLocale.quotaExceeded.getString(context),
             confirmBtnText: '立即购买',
             showCancelBtn: true,
@@ -972,8 +974,8 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
       }
       if (res.cost > 0) {
         cancel();
-        // ignore: use_build_context_synchronously
         openConfirmDialog(
+          // ignore: use_build_context_synchronously
           context,
           '本次请求预计消耗 ${res.cost} 个智慧果，是否继续操作？',
           () => request(res.waitDuration ?? 60),

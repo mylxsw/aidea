@@ -44,6 +44,9 @@ class ModelWithMemberId {
           runtimeType == other.runtimeType &&
           model == other.model &&
           memberId == other.memberId;
+
+  @override
+  int get hashCode => model.hashCode ^ memberId.hashCode;
 }
 
 class GroupEditPage extends StatefulWidget {

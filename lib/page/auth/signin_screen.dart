@@ -122,6 +122,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
       if (value.needBindPhone) {
         if (context.mounted) {
+          // ignore: use_build_context_synchronously
           context.push('/bind-phone').then((value) async {
             if (value == 'logout') {
               await widget.settings.set(settingAPIServerToken, '');

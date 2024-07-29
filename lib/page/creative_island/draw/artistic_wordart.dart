@@ -24,7 +24,6 @@ import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/model/misc.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
@@ -460,8 +459,8 @@ class _ArtisticWordArtScreenState extends State<ArtisticWordArtScreen> {
         stopPeriodQuery = false;
 
         cancel();
-        // ignore: use_build_context_synchronously
         Navigator.push(
+          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
             fullscreenDialog: true,

@@ -293,11 +293,13 @@ class _BindPhoneScreenState extends State<BindPhoneScreen> {
 
       if (widget.isSignIn) {
         if (context.mounted) {
+          // ignore: use_build_context_synchronously
           context.go(
               '${Ability().homeRoute}?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
         }
       } else {
         if (context.mounted) {
+          // ignore: use_build_context_synchronously
           showSuccessMessage(AppLocale.operateSuccess.getString(context));
         }
       }

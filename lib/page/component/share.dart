@@ -24,8 +24,8 @@ Future<void> shareTo(
 
   if ((PlatformTool.isIOS() || PlatformTool.isAndroid()) &&
       await isWeChatInstalled) {
-    // ignore: use_build_context_synchronously
     openModalBottomSheet(
+      // ignore: use_build_context_synchronously
       context,
       (context) => Column(
         mainAxisAlignment: MainAxisAlignment.center,

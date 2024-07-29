@@ -165,7 +165,7 @@ class SliverTabComponent extends StatelessWidget {
               data: Theme.of(context).copyWith(
                 colorScheme: Theme.of(context)
                     .colorScheme
-                    .copyWith(surfaceVariant: Colors.transparent),
+                    .copyWith(surfaceContainerHighest: Colors.transparent),
               ),
               child: SliverOverlapAbsorber(
                 handle:
@@ -212,7 +212,7 @@ class SliverTabComponent extends StatelessWidget {
                     isScrollable: true,
                     labelColor: customColors.linkColor,
                     indicator: const BoxDecoration(),
-                    overlayColor: MaterialStateProperty.all(Colors.transparent),
+                    overlayColor: WidgetStateProperty.all(Colors.transparent),
                   ),
                 ),
               ),

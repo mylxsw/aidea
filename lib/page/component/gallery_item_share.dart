@@ -70,8 +70,8 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
                   if (data != null) {
                     final file = await writeTempFile('share-image.png', data);
                     cancel();
-                    // ignore: use_build_context_synchronously
                     await shareTo(
+                      // ignore: use_build_context_synchronously
                       context,
                       content: 'images',
                       images: [
@@ -125,7 +125,7 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
                       } else {
                         if (PlatformTool.isWindows()) {
                           FileSaver.instance
-                            .saveAs(
+                              .saveAs(
                             name: randomId(),
                             bytes: data,
                             ext: '.png',
@@ -133,7 +133,7 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
                           )
                               .then((value) async {
                             if (value == null) {
-                              return ;
+                              return;
                             }
 
                             await File(value).writeAsBytes(data);
@@ -141,7 +141,7 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
                             Logger.instance.d('文件保存成功: $value');
                             showSuccessMessage('文件保存成功');
                           });
-                        }  else {
+                        } else {
                           FileSaver.instance
                               .saveFile(
                             name: randomId(),
@@ -154,7 +154,6 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
                             showSuccessMessage('文件保存成功');
                           });
                         }
-                        
                       }
                     }
                   } finally {

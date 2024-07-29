@@ -59,7 +59,7 @@ class _PromptScreenState extends State<PromptScreen> {
               title: Text(
                 AppLocale.examples.getString(context),
                 style: TextStyle(color: customColors.linkColor),
-                textScaleFactor: 0.8,
+                textScaler: const TextScaler.linear(0.8),
               ),
               onTap: () {
                 openSystemPromptSelectDialog(

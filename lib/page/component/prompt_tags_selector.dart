@@ -67,9 +67,8 @@ class _PromptTagsSelectorState extends State<PromptTagsSelector> {
                   children: [
                     Theme(
                       data: Theme.of(context).copyWith(
-                        colorScheme: Theme.of(context)
-                            .colorScheme
-                            .copyWith(surfaceVariant: Colors.transparent),
+                        colorScheme: Theme.of(context).colorScheme.copyWith(
+                            surfaceContainerHighest: Colors.transparent),
                       ),
                       child: TabBar(
                         tabs: [
@@ -85,7 +84,7 @@ class _PromptTagsSelectorState extends State<PromptTagsSelector> {
                         ),
                         indicator: const BoxDecoration(),
                         overlayColor:
-                            MaterialStateProperty.all(Colors.transparent),
+                            WidgetStateProperty.all(Colors.transparent),
                       ),
                     ),
                     Expanded(

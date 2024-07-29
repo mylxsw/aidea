@@ -142,9 +142,9 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
                                 fontSize: 13,
                               ),
                             ),
-                            Icon(
+                            const Icon(
                               CupertinoIcons.chevron_forward,
-                              size: MediaQuery.of(context).textScaleFactor * 18,
+                              size: 18,
                               color: Colors.grey,
                             ),
                           ],
@@ -186,10 +186,9 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
                               const SizedBox(width: 5),
                             if (state.user!.user.phone == null ||
                                 state.user!.user.phone == '')
-                              Icon(
+                              const Icon(
                                 CupertinoIcons.chevron_forward,
-                                size:
-                                    MediaQuery.of(context).textScaleFactor * 18,
+                                size: 18,
                                 color: Colors.grey,
                               ),
                           ],
@@ -224,10 +223,9 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
                                 const SizedBox(width: 5),
                               if (state.user!.user.unionId == null ||
                                   state.user!.user.unionId == '')
-                                Icon(
+                                const Icon(
                                   CupertinoIcons.chevron_forward,
-                                  size: MediaQuery.of(context).textScaleFactor *
-                                      18,
+                                  size: 18,
                                   color: Colors.grey,
                                 ),
                             ],
@@ -248,9 +246,9 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
                         title: Text(state.user!.control.isSetPassword
                             ? '修改密码'
                             : '设置密码'),
-                        trailing: Icon(
+                        trailing: const Icon(
                           CupertinoIcons.chevron_forward,
-                          size: MediaQuery.of(context).textScaleFactor * 18,
+                          size: 18,
                           color: Colors.grey,
                         ),
                         onPressed: (context) {
@@ -263,9 +261,9 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
                     tiles: [
                       SettingsTile(
                         title: Text(AppLocale.signOut.getString(context)),
-                        trailing: Icon(
+                        trailing: const Icon(
                           Icons.logout,
-                          size: MediaQuery.of(context).textScaleFactor * 18,
+                          size: 18,
                           color: Colors.grey,
                         ),
                         onPressed: (_) {

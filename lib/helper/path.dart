@@ -1,4 +1,5 @@
 import 'dart:io' show Directory, Platform;
+import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -33,7 +34,7 @@ class PathHelper {
     try {
       Directory(getHomePath).create(recursive: true);
     } catch (e) {
-      print('创建 $getHomePath 目录失败: $e');
+      Logger.instance.e('创建 $getHomePath 目录失败: $e');
     }
   }
 

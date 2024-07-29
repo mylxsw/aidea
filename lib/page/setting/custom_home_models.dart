@@ -2,6 +2,7 @@ import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/image.dart';
+import 'package:askaide/helper/logger.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
@@ -360,9 +361,9 @@ class HomeModelItem extends StatelessWidget {
       itemBuilder: (context, i) {
         var item = models[i];
         if (item.avatarUrl == null) {
-          // TODO: remove this debug print
-          print(item.toJson());
+          Logger.instance.w(item.toJson());
         }
+
         return ListTile(
           title: Container(
             alignment: Alignment.center,

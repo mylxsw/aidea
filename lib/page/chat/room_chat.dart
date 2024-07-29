@@ -664,7 +664,7 @@ void handleOpenExampleQuestion(
                 ),
                 child: Text(
                   AppLocale.examples.getString(context),
-                  textScaleFactor: 1.2,
+                  textScaler: const TextScaler.linear(1.2),
                 ),
               ),
               Expanded(
@@ -717,7 +717,7 @@ void handleOpenExampleQuestion(
                           title: Text(
                             AppLocale.confirmSend.getString(context),
                             textAlign: TextAlign.left,
-                            textScaleFactor: 0.8,
+                            textScaler: const TextScaler.linear(0.8),
                           ),
                           builder: Builder(
                             builder: (context) {

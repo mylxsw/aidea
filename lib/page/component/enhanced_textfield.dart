@@ -20,7 +20,7 @@ class InputSelector extends StatelessWidget {
     return TextButton(
       onPressed: onTap,
       style: ButtonStyle(
-        overlayColor: MaterialStateProperty.all(Colors.transparent),
+        overlayColor: WidgetStateProperty.all(Colors.transparent),
       ),
       child: title,
     );

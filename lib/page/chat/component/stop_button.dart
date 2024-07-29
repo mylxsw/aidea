@@ -14,9 +14,9 @@ class StopButton extends StatelessWidget {
       style: ButtonStyle(
         // minimumSize: MaterialStateProperty.all(const Size(0, 0)),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        iconColor: const MaterialStatePropertyAll(Colors.red),
+        iconColor: const WidgetStatePropertyAll(Colors.red),
         backgroundColor:
-            MaterialStatePropertyAll(customColors.chatInputPanelBackground),
+            WidgetStatePropertyAll(customColors.chatInputPanelBackground),
       ),
       label: Text(
         label,
