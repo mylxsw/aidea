@@ -44,7 +44,7 @@ https://aidea.aicode.cc
 
 - 微信技术交流群：
 
-    <img src="https://github.com/mylxsw/aidea/assets/2330911/50e400ec-3e8d-4e39-a08b-874a2c527b6d" width="400"/>
+    <img src="https://github.com/mylxsw/aidea/assets/2330911/0a697937-b357-4d88-bb16-c07c5517d13c" width="400"/>
 
     如果无法加入，请添加微信号 `x-prometheus` 为好友，拉你进群。
 
