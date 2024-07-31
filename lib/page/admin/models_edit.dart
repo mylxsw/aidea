@@ -120,9 +120,9 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
     });
 
     // 初始值设置
-    maxContextController.value = const TextEditingValue(text: '3500');
-    inputPriceController.value = const TextEditingValue(text: '1');
-    outputPriceController.value = const TextEditingValue(text: '1');
+    maxContextController.value = const TextEditingValue(text: '7500');
+    inputPriceController.value = const TextEditingValue(text: '0');
+    outputPriceController.value = const TextEditingValue(text: '0');
 
     super.initState();
   }
