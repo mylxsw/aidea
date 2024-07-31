@@ -92,12 +92,16 @@ class _ModelItemState extends State<ModelItem> {
 
                       var tags = <Widget>[];
                       if (item.tag != null) {
-                        tags.add(buildTag(
-                          customColors,
-                          item.tag!,
-                          tagTextColor: item.tagTextColor,
-                          tagBgColor: item.tagBgColor,
-                        ));
+                        item.tag!.split(",").forEach((tag) {
+                          if (tag.isEmpty) return;
+
+                          tags.add(buildTag(
+                            customColors,
+                            tag,
+                            tagTextColor: item.tagTextColor,
+                            tagBgColor: item.tagBgColor,
+                          ));
+                        });
                       }
 
                       if (item.supportVision) {
