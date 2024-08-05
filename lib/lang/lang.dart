@@ -34,6 +34,7 @@ mixin AppLocale {
   static const String cancel = 'cancel';
   static const String select = 'select';
   static const String tips = 'tips';
+  static const String goodTips = 'good-tips';
   static const String basicInfo = 'basic-info';
   static const String delete = 'delete';
   static const String edit = 'edit';
@@ -50,14 +51,29 @@ mixin AppLocale {
   static const String continueMessage = 'continue';
   static const String messageInputTips = 'message-input-tips';
   static const String uploadImage = 'upload-image';
+  static const String uploadDocument = 'upload-document';
+  static const String upload = 'upload';
   static const String longPressSpeak = 'long-press-speak';
   static const String send = 'send';
+  static const String sendRetry = 'send-retry';
+  static const String sendRetryS = 'send-retry-s';
+  static const String selectText = 'select-text';
+  static const String text = 'text';
   static const String uploading = 'uploading';
   static const String robotIsThinkingMessage = 'robot-is-thinking-message';
   static const String robotHasSomeError = 'robot-has-some-error';
   static const String questionExamples = 'question-examples';
   static const String noRecords = 'no-records';
   static const String contextBreakMessage = 'context-break-message';
+  static const String translateFinished = 'translate-finished';
+  static const String textCopied = 'text-copied';
+  static const String copy = 'copy';
+  static const String translate = 'translate';
+  static const String hide = 'hide';
+  static const String readByVoice = 'read-by-voice';
+  static const String unknownFile = 'unknown-file';
+  static const String switchModel = 'switch-model';
+  static const String switchModelTitle = 'switch-model-title';
 
   static const String room = "room";
   static const String createRoom = "create-room";
@@ -210,6 +226,9 @@ mixin AppLocale {
   static const String visionTag = 'vision-tag';
   static const String newTag = 'new-tag';
 
+  static const String uploadImageLimit4 = 'upload-image-limit-4';
+  static const String confirmStopOutput = 'confirm-stop-output';
+
   static const Map<String, dynamic> zh = {
     required: '必填',
     systemInfo: '系统信息',
@@ -218,6 +237,7 @@ mixin AppLocale {
     cancel: '取消',
     select: '选择',
     tips: '提示',
+    goodTips: '温馨提示',
     basicInfo: '基本信息',
     delete: '删除',
     edit: '编辑',
@@ -233,8 +253,14 @@ mixin AppLocale {
     continueMessage: '继续',
     messageInputTips: '有问题尽管问我',
     uploadImage: '上传图片',
+    uploadDocument: '上传文档',
+    upload: '上传',
     longPressSpeak: '长按说话',
     send: '发送',
+    sendRetry: '重新发送',
+    sendRetryS: '重发',
+    selectText: '选择文本',
+    text: '文本',
     uploading: '上传中...',
     robotIsThinkingMessage: '数字人正在思考中...',
     robotHasSomeError: '发送失败，重发该消息？',
@@ -282,6 +308,15 @@ mixin AppLocale {
     questionExamples: '问题示例',
     noRecords: '暂无记录',
     contextBreakMessage: '~ 以下是新的对话 ~',
+    translateFinished: '翻译完成',
+    textCopied: '已复制到剪贴板',
+    copy: '复制',
+    translate: '翻译',
+    hide: '隐藏',
+    readByVoice: '朗读',
+    unknownFile: '未知文件',
+    switchModel: '切换对话模型',
+    switchModelTitle: '选择要切换的对话模型',
     noMessageSelected: '没有选择任何消息',
     modelUsage: '模型用于设置采用的 AI 数字人类型',
     promptUsage: '领域设定用于设置 AI 数字人的行为',
@@ -407,6 +442,8 @@ mixin AppLocale {
     recentlyUsed: '最近使用',
     visionTag: '视觉',
     newTag: '新',
+    uploadImageLimit4: '最多只能上传 4 张图片',
+    confirmStopOutput: '确定要停止当前输出？',
   };
 
   static const Map<String, dynamic> en = {
@@ -417,6 +454,7 @@ mixin AppLocale {
     cancel: 'Cancel',
     select: 'Select',
     tips: 'Tips',
+    goodTips: 'Tips',
     basicInfo: 'Basic',
     delete: 'Delete',
     edit: 'Edit',
@@ -431,9 +469,15 @@ mixin AppLocale {
     examples: 'Examples',
     continueMessage: 'Continue',
     messageInputTips: 'Ask me something...',
-    uploadImage: 'Upload',
+    uploadImage: 'Upload Image',
+    uploadDocument: 'Upload Document',
+    upload: 'Upload',
     longPressSpeak: 'Long press to speak',
     send: 'Send',
+    sendRetry: 'Retry',
+    sendRetryS: 'Retry',
+    selectText: 'Select Text',
+    text: 'Text',
     uploading: 'Uploading...',
     robotIsThinkingMessage: 'Thinking...',
     robotHasSomeError:
@@ -482,6 +526,15 @@ mixin AppLocale {
     questionExamples: 'Question Examples',
     noRecords: 'No Records',
     contextBreakMessage: '~ Context cleared ~',
+    translateFinished: 'Translate finished',
+    textCopied: 'Text copied',
+    copy: 'Copy',
+    translate: 'Translate',
+    hide: 'Hide',
+    readByVoice: 'Voice',
+    unknownFile: 'Unknown File',
+    switchModel: 'Switch Model',
+    switchModelTitle: 'Select a model to switch',
     noMessageSelected: 'No message selected',
     modelUsage: 'The model is used to set the type of AI character used',
     promptUsage: 'Prompt is used to set the behavior of the AI character',
@@ -563,6 +616,7 @@ mixin AppLocale {
         'Reference Image\n\nAI will create based on the reference image provided.',
     selectReferenceImage: 'Please select a reference image',
     random: 'Random',
+    followSystem: 'Follow System',
     darkThemeMode: 'Dark mode',
     lightThemeMode: 'Light mode',
     forgotPassword: 'Forgot password',
@@ -620,6 +674,8 @@ mixin AppLocale {
     recentlyUsed: 'Recently Used',
     visionTag: 'Vision',
     newTag: 'New',
+    uploadImageLimit4: 'You can only upload up to 4 images',
+    confirmStopOutput: 'Are you sure you want to stop current output?',
   };
 }
 

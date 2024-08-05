@@ -200,11 +200,15 @@ class ModelResolver {
             ? ChatMessage(
                 role: OpenAIChatMessageRole.assistant,
                 content: e.text,
-                images: e.images)
+                images: e.images,
+                file: e.file,
+              )
             : ChatMessage(
                 role: OpenAIChatMessageRole.user,
                 content: e.text,
-                images: e.images))
+                images: e.images,
+                file: e.file,
+              ))
         .toList();
 
     if (contextMessages.length > room.maxContext * 2) {

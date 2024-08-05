@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
@@ -67,9 +69,12 @@ class _RoomChatPageState extends State<RoomChatPage> {
   bool showAudioPlayer = false;
   bool audioLoadding = false;
 
+  // The selected image files for image upload
   List<FileUpload> selectedImageFiles = [];
+  // The selected file for file upload
+  FileUpload? selectedFile;
 
-  /// 当前选择的模型
+  /// Currently selected model
   mm.Model? tempModel;
 
   // 全量模型列表
@@ -223,6 +228,10 @@ class _RoomChatPageState extends State<RoomChatPage> {
                         }
                       }
 
+                      final enableImageUpload = tempModel == null
+                          ? (roomModel != null && roomModel!.supportVision)
+                          : (tempModel?.supportVision ?? false);
+
                       return _chatPreviewController.selectMode
                           ? buildSelectModeToolbars(
                               context,
@@ -235,16 +244,21 @@ class _RoomChatPageState extends State<RoomChatPage> {
                                 _handleSubmit(value);
                                 FocusManager.instance.primaryFocus?.unfocus();
                               },
-                              enableImageUpload: tempModel == null
-                                  ? (roomModel != null &&
-                                      roomModel!.supportVision)
-                                  : (tempModel?.supportVision ?? false),
+                              enableImageUpload:
+                                  enableImageUpload && selectedFile == null,
                               onImageSelected: (files) {
                                 setState(() {
                                   selectedImageFiles = files;
                                 });
                               },
                               selectedImageFiles: selectedImageFiles,
+                              enableFileUpload: selectedImageFiles.isEmpty,
+                              onFileSelected: (file) {
+                                setState(() {
+                                  selectedFile = file;
+                                });
+                              },
+                              selectedFile: selectedFile,
                               onNewChat: () => handleResetContext(context),
                               hintText: hintText,
                               onVoiceRecordTappedEvent: () {
@@ -291,6 +305,7 @@ class _RoomChatPageState extends State<RoomChatPage> {
         if (state is ChatMessagesLoaded && state.error == null) {
           setState(() {
             selectedImageFiles = [];
+            selectedFile = null;
           });
         }
         // 显示错误提示
@@ -424,6 +439,7 @@ class _RoomChatPageState extends State<RoomChatPage> {
             ),
             centerTitle: true,
             elevation: 0,
+            leadingWidth: 80,
             leading: TextButton(
               onPressed: () {
                 _chatPreviewController.exitSelectMode();
@@ -521,11 +537,49 @@ class _RoomChatPageState extends State<RoomChatPage> {
       _inputEnabled.value = false;
     });
 
+    if (selectedFile != null) {
+      final cancel = BotToast.showCustomLoading(
+        toastBuilder: (cancel) {
+          return const LoadingIndicator(
+            message: '正在上传，请稍后...',
+          );
+        },
+        allowClick: false,
+      );
+
+      try {
+        final uploader = QiniuUploader(widget.setting);
+
+        if (!selectedFile!.uploaded) {
+          final path = selectedFile!.file.path;
+          if (path != null && path.isNotEmpty) {
+            final uploadRes =
+                await uploader.uploadFile(path, usage: 'document');
+            selectedFile!.setUrl(uploadRes.url);
+          } else if (selectedFile!.file.bytes != null &&
+              selectedFile!.file.bytes!.isNotEmpty) {
+            final uploadRes = await uploader.upload(
+              'file-${DateTime.now().millisecondsSinceEpoch}.${selectedFile!.file.name}',
+              selectedFile!.file.bytes!,
+              usage: 'document',
+            );
+            selectedFile!.setUrl(uploadRes.url);
+          }
+        }
+      } catch (e) {
+        // ignore: use_build_context_synchronously
+        showErrorMessageEnhanced(context, e);
+        return;
+      } finally {
+        cancel();
+      }
+    }
+
     if (selectedImageFiles.isNotEmpty) {
       final cancel = BotToast.showCustomLoading(
         toastBuilder: (cancel) {
           return const LoadingIndicator(
-            message: '正在上传图片，请稍后...',
+            message: '正在上传，请稍后...',
           );
         },
         allowClick: false,
@@ -579,6 +633,12 @@ class _RoomChatPageState extends State<RoomChatPage> {
                   .where((e) => e.uploaded)
                   .map((e) => e.url!)
                   .toList(),
+              file: selectedFile != null && selectedFile!.uploaded
+                  ? jsonEncode({
+                      'name': selectedFile!.file.name,
+                      'url': selectedFile!.url,
+                    })
+                  : null,
             ),
             index: index,
             isResent: isResent,

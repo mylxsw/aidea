@@ -63,6 +63,8 @@ class Message {
 
   /// 消息图片列表
   List<String>? images;
+  // Uploaded file by user (json(name, url))
+  String? file;
 
   Message(
     this.role,
@@ -84,6 +86,7 @@ class Message {
     this.avatarUrl,
     this.senderName,
     this.images,
+    this.file,
   });
 
   /// 获取消息附加信息
@@ -165,6 +168,7 @@ class Message {
       'token_consumed': tokenConsumed,
       'quota_consumed': quotaConsumed,
       'images': images != null ? jsonEncode(images) : null,
+      'file': file,
     };
   }
 
@@ -190,7 +194,8 @@ class Message {
         images = map['images'] == null
             ? null
             : (jsonDecode(map['images'] as String) as List<dynamic>)
-                .cast<String>();
+                .cast<String>(),
+        file = map['file'] as String?;
 }
 
 enum Role {

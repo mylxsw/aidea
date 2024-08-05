@@ -7,11 +7,14 @@ import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/voice_record.dart';
 import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/page/component/enhanced_popup_menu.dart';
+import 'package:askaide/page/component/file_preview.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -32,6 +35,12 @@ class ChatInput extends StatefulWidget {
   final Function()? onStopGenerate;
   final Function(bool hasFocus)? onFocusChange;
 
+  // Whether to enable file uploading
+  final bool enableFileUpload;
+  // Selected file for uploading
+  final FileUpload? selectedFile;
+  final Function(FileUpload? file)? onFileSelected;
+
   const ChatInput({
     super.key,
     required this.onSubmit,
@@ -46,6 +55,9 @@ class ChatInput extends StatefulWidget {
     this.selectedImageFiles,
     this.onStopGenerate,
     this.onFocusChange,
+    this.enableFileUpload = false,
+    this.selectedFile,
+    this.onFileSelected,
   });
 
   @override
@@ -100,6 +112,17 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  // Whether the user can upload images
+  bool get canUploadImage =>
+      widget.enableImageUpload &&
+      Ability().supportImageUploader &&
+      widget.onImageSelected != null &&
+      Ability().supportWebSocket;
+
+  // Whether the user can upload files
+  bool get canUploadFile =>
+      widget.enableFileUpload && Ability().supportWebSocket;
+
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
@@ -113,70 +136,13 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
         return SafeArea(
           child: Column(
             children: [
+              // 选中的图片预览
               if (widget.selectedImageFiles != null &&
                   widget.selectedImageFiles!.isNotEmpty)
-                SizedBox(
-                  height: 110,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: widget.selectedImageFiles!
-                        .map(
-                          (e) => Container(
-                            margin: const EdgeInsets.only(right: 8),
-                            padding: const EdgeInsets.all(5),
-                            child: Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(5),
-                                  child: e.file.bytes != null
-                                      ? Image.memory(
-                                          e.file.bytes!,
-                                          fit: BoxFit.cover,
-                                          width: 100,
-                                          height: 100,
-                                        )
-                                      : Image.file(
-                                          File(e.file.path!),
-                                          fit: BoxFit.cover,
-                                          width: 100,
-                                          height: 100,
-                                        ),
-                                ),
-                                if (widget.enableNotifier.value)
-                                  Positioned(
-                                    right: 5,
-                                    top: 5,
-                                    child: InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          widget.selectedImageFiles!.remove(e);
-                                          widget.onImageSelected?.call(
-                                              widget.selectedImageFiles!);
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.all(3),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          color:
-                                              customColors.chatRoomBackground,
-                                        ),
-                                        child: Icon(
-                                          Icons.close,
-                                          size: 10,
-                                          color: customColors.weakTextColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
+                buildSelectedImagePreview(customColors),
+              // 选中文件预览
+              if (widget.selectedFile != null)
+                buildSelectedFilePreview(customColors),
               // 工具栏
               if (widget.toolbar != null) widget.toolbar!,
               // if (widget.toolbar != null)
@@ -211,12 +177,8 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                           if (widget.leftSideToolsBuilder != null)
                             ...widget.leftSideToolsBuilder!(),
                           if (widget.enableNotifier.value &&
-                              widget.enableImageUpload &&
-                              Ability().supportImageUploader &&
-                              widget.onImageSelected != null &&
-                              Ability().supportWebSocket)
-                            _buildImageUploadButton(
-                                context, setting, customColors),
+                              (canUploadImage || canUploadFile))
+                            buildUploadButtons(context, setting, customColors),
                         ],
                       ),
                       // 聊天输入框
@@ -279,6 +241,122 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
     );
   }
 
+  Widget buildSelectedFilePreview(CustomColors customColors) {
+    var maxWidth = MediaQuery.of(context).size.width * 0.8;
+    if (maxWidth > 300) {
+      maxWidth = 300;
+    }
+
+    return SizedBox(
+      height: 30,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.all(5),
+            child: Stack(
+              children: [
+                FilePreview(
+                  fileType: widget.selectedFile!.file.extension ?? '',
+                  maxWidth: maxWidth,
+                  filename: widget.selectedFile!.file.name,
+                ),
+                if (widget.enableNotifier.value)
+                  Positioned(
+                    right: 5,
+                    top: 5,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          widget.onFileSelected?.call(null);
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: customColors.chatRoomBackground,
+                        ),
+                        child: Icon(
+                          Icons.close,
+                          size: 10,
+                          color: customColors.weakTextColor,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildSelectedImagePreview(CustomColors customColors) {
+    return SizedBox(
+      height: 110,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: widget.selectedImageFiles!
+            .map(
+              (e) => Container(
+                margin: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.all(5),
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: e.file.bytes != null
+                          ? Image.memory(
+                              e.file.bytes!,
+                              fit: BoxFit.cover,
+                              width: 100,
+                              height: 100,
+                            )
+                          : Image.file(
+                              File(e.file.path!),
+                              fit: BoxFit.cover,
+                              width: 100,
+                              height: 100,
+                            ),
+                    ),
+                    if (widget.enableNotifier.value)
+                      Positioned(
+                        right: 5,
+                        top: 5,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              widget.selectedImageFiles!.remove(e);
+                              widget.onImageSelected
+                                  ?.call(widget.selectedImageFiles!);
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: customColors.chatRoomBackground,
+                            ),
+                            child: Icon(
+                              Icons.close,
+                              size: 10,
+                              color: customColors.weakTextColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+
   /// 构建发送或者语音按钮
   Widget _buildSendOrVoiceButton(
     BuildContext context,
@@ -290,7 +368,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
           if (widget.onStopGenerate != null) {
             openConfirmDialog(
               context,
-              '确定要停止当前输出？',
+              AppLocale.confirmStopOutput.getString(context),
               () {
                 widget.onStopGenerate!();
                 HapticFeedbackHelper.heavyImpact();
@@ -347,36 +425,90 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
           );
   }
 
-  /// 构建图片上传按钮
-  Widget _buildImageUploadButton(
+  // Image upload button event
+  void onImageUploadButtonPressed() async {
+    HapticFeedbackHelper.mediumImpact();
+    if (widget.selectedImageFiles != null &&
+        widget.selectedImageFiles!.length >= 4) {
+      showSuccessMessage(AppLocale.uploadImageLimit4.getString(context));
+      return;
+    }
+
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowMultiple: true,
+      allowCompression: true,
+    );
+    if (result != null && result.files.isNotEmpty) {
+      final files = widget.selectedImageFiles ?? [];
+      files.addAll(result.files.map((e) => FileUpload(file: e)).toList());
+      widget.onImageSelected
+          ?.call(files.sublist(0, files.length > 4 ? 4 : files.length));
+    }
+  }
+
+  // File upload button event
+  void onFileUploadButtonPressed() async {
+    HapticFeedbackHelper.mediumImpact();
+
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'docx', 'txt', 'md'],
+      allowMultiple: false,
+    );
+    if (result != null && result.files.isNotEmpty) {
+      if (widget.onFileSelected != null) {
+        widget.onFileSelected?.call(FileUpload(file: result.files.first));
+      }
+    }
+  }
+
+  /// Build image or file upload button
+  Widget buildUploadButtons(
     BuildContext context,
     SettingRepository setting,
     CustomColors customColors,
   ) {
-    return IconButton(
-      onPressed: () async {
-        HapticFeedbackHelper.mediumImpact();
-        if (widget.selectedImageFiles != null &&
-            widget.selectedImageFiles!.length >= 4) {
-          showSuccessMessage('最多只能上传 4 张图片');
-          return;
-        }
+    if (canUploadImage && !canUploadFile) {
+      return IconButton(
+        onPressed: onImageUploadButtonPressed,
+        icon: const Icon(Icons.camera_alt),
+        color: customColors.chatInputPanelText,
+        splashRadius: 20,
+        tooltip: AppLocale.uploadImage.getString(context),
+      );
+    }
 
-        FilePickerResult? result = await FilePicker.platform.pickFiles(
-          type: FileType.image,
-          allowMultiple: true,
-        );
-        if (result != null && result.files.isNotEmpty) {
-          final files = widget.selectedImageFiles ?? [];
-          files.addAll(result.files.map((e) => FileUpload(file: e)).toList());
-          widget.onImageSelected
-              ?.call(files.sublist(0, files.length > 4 ? 4 : files.length));
-        }
-      },
-      icon: const Icon(Icons.camera_alt),
+    if (!canUploadImage && canUploadFile) {
+      return IconButton(
+        onPressed: onFileUploadButtonPressed,
+        icon: const Icon(Icons.upload_file),
+        color: customColors.chatInputPanelText,
+        splashRadius: 20,
+        tooltip: AppLocale.uploadDocument.getString(context),
+      );
+    }
+
+    return EnhancedPopupMenu(
+      icon: Icons.upload_file,
       color: customColors.chatInputPanelText,
-      splashRadius: 20,
-      tooltip: AppLocale.uploadImage.getString(context),
+      tooltip: AppLocale.upload.getString(context),
+      items: [
+        EnhancedPopupMenuItem(
+          title: AppLocale.uploadImage.getString(context),
+          icon: Icons.camera_alt,
+          onTap: (ctx) async {
+            onImageUploadButtonPressed();
+          },
+        ),
+        EnhancedPopupMenuItem(
+          title: AppLocale.uploadDocument.getString(context),
+          icon: Icons.attach_file,
+          onTap: (ctx) {
+            onFileUploadButtonPressed();
+          },
+        ),
+      ],
     );
   }
 

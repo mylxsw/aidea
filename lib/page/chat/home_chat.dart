@@ -253,6 +253,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
         title: Text(AppLocale.select.getString(context)),
         backgroundColor: Colors.transparent,
         centerTitle: true,
+        leadingWidth: 80,
         leading: TextButton(
           onPressed: () {
             chatPreviewController.exitSelectMode();

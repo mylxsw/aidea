@@ -73,7 +73,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
           roomId,
           userId: APIServer().localUserID(),
         ),
-        error: '选择的数字人不存在',
+        error: 'The selected item does not exist',
       ));
       return;
     }
@@ -133,7 +133,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
           roomId,
           userId: APIServer().localUserID(),
         ),
-        error: '选择的数字人不存在',
+        error: 'The selected item does not exist',
       ));
       return;
     }
@@ -187,7 +187,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     }
   }
 
-  /// 消息发送事件处理
+  /// Message sending event processing
   Future<void> _messageSendEventHandler(event, emit) async {
     if (event.message is! Message) {
       return;
@@ -224,7 +224,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
           userId: APIServer().localUserID(),
           chatHistoryId: localChatHistoryId,
         ),
-        error: '选择的数字人不存在',
+        error: 'The selected item does not exist',
         chatHistory: localChatHistory,
       ));
       return;
@@ -392,7 +392,8 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
           // 失败处理
           for (var e in items) {
             if (e.code != null && e.code! > 0) {
-              error = RequestFailedException(e.error ?? '请求处理失败', e.code!);
+              error = RequestFailedException(
+                  e.error ?? 'Request processing failure', e.code!);
             }
           }
         });
@@ -411,7 +412,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
         waitMessage.text = waitMessage.text.trim();
         if (waitMessage.text.isEmpty) {
-          error = RequestFailedException('机器人没有回答任何内容', 500);
+          error = RequestFailedException('The answer is empty', 500);
         }
 
         if (error != null) {
@@ -419,7 +420,8 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
         }
       } catch (e) {
         if (waitMessage.text.isEmpty) {
-          Logger.instance.e('响应过程中出错了: $e');
+          Logger.instance
+              .e('An error occurred during the response process: $e');
           rethrow;
         }
       }

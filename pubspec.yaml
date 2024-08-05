@@ -200,6 +200,11 @@ flutter:
     - assets/zhifubao.png
     - assets/stripe.png
     - assets/apple.webp
+    - assets/icons/doc.png
+    - assets/icons/file.png
+    - assets/icons/mp3.png
+    - assets/icons/pdf.png
+    - assets/icons/txt.png
 
   
   #   - images/a_dot_ham.jpeg

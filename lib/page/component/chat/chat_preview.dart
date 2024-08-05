@@ -13,6 +13,7 @@ import 'package:askaide/page/component/chat/enhanced_selectable_text.dart';
 import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/page/component/file_preview.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/repo/api_server.dart';
@@ -224,20 +225,47 @@ class _ChatPreviewState extends State<ChatPreview> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            if (message.file != null)
+              Container(
+                margin: message.role == Role.sender
+                    ? const EdgeInsets.fromLTRB(0, 0, 10, 7)
+                    : const EdgeInsets.fromLTRB(10, 0, 0, 7),
+                padding: const EdgeInsets.only(bottom: 5, left: 5),
+                constraints: BoxConstraints(
+                  maxWidth: _chatBoxFilePreviewWidth(context),
+                ),
+                child: Builder(builder: (context) {
+                  try {
+                    final file = jsonDecode(message.file!);
+                    final filename = file['name'];
+                    // final fileUrl = file['url'];
+
+                    return FilePreview(
+                      filename: filename,
+                      fileType: filename.split('.').last,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                    );
+                  } catch (e) {
+                    return FilePreview(
+                      fileType: '',
+                      filename: AppLocale.unknownFile.getString(context),
+                      mainAxisAlignment: MainAxisAlignment.end,
+                    );
+                  }
+                }),
+              ),
             if (message.images != null && message.images!.isNotEmpty)
               Container(
                 margin: message.role == Role.sender
                     ? const EdgeInsets.fromLTRB(0, 0, 10, 7)
                     : const EdgeInsets.fromLTRB(10, 0, 0, 7),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: _chatBoxImagePreviewWidth(
-                      context,
-                      (message.images ?? []).length,
-                    ),
+                constraints: BoxConstraints(
+                  maxWidth: _chatBoxImagePreviewWidth(
+                    context,
+                    (message.images ?? []).length,
                   ),
-                  child: FileUploadPreview(images: message.images ?? []),
                 ),
+                child: FileUploadPreview(images: message.images ?? []),
               ),
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -390,7 +418,8 @@ class _ChatPreviewState extends State<ChatPreview> {
                                           confirmBtnText: AppLocale.gotIt
                                               .getString(context),
                                           showCancelBtn: false,
-                                          title: '温馨提示',
+                                          title: AppLocale.goodTips
+                                              .getString(context),
                                           child: Markdown(
                                             data: extraInfo,
                                             onUrlTap: (value) {
@@ -446,18 +475,19 @@ class _ChatPreviewState extends State<ChatPreview> {
                                                 customColors.chatRoomSenderText,
                                           ),
                                         ),
-                                  const Row(
+                                  Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.check_circle,
                                         size: 12,
                                         color: Colors.green,
                                       ),
-                                      SizedBox(width: 5),
+                                      const SizedBox(width: 5),
                                       Text(
-                                        '翻译完成',
-                                        style: TextStyle(
+                                        AppLocale.translateFinished
+                                            .getString(context),
+                                        style: const TextStyle(
                                           fontSize: 12,
                                           color: Color.fromARGB(
                                               255, 145, 145, 145),
@@ -522,7 +552,7 @@ class _ChatPreviewState extends State<ChatPreview> {
               widget.onResentEvent!(message, index);
             },
             title: Text(AppLocale.robotHasSomeError.getString(context)),
-            confirmText: '重新发送',
+            confirmText: AppLocale.sendRetry.getString(context),
           );
         },
         child: const Icon(Icons.error, color: Colors.red, size: 20),
@@ -612,7 +642,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                     text: message.text,
                   ),
                 ),
-                title: '选择文本',
+                title: AppLocale.selectText.getString(context),
               );
 
               cancel();
@@ -626,9 +656,9 @@ class _ChatPreviewState extends State<ChatPreview> {
                   color: const Color.fromARGB(255, 255, 255, 255),
                   size: 14,
                 ),
-                const Text(
-                  "文本",
-                  style: TextStyle(fontSize: 12, color: Colors.white),
+                Text(
+                  AppLocale.text.getString(context),
+                  style: const TextStyle(fontSize: 12, color: Colors.white),
                 ),
               ],
             ),
@@ -636,22 +666,22 @@ class _ChatPreviewState extends State<ChatPreview> {
           TextButton.icon(
             onPressed: () {
               FlutterClipboard.copy(message.text).then((value) {
-                showSuccessMessage('已复制到剪贴板');
+                showSuccessMessage(AppLocale.textCopied.getString(context));
               });
               cancel();
             },
             label: const Text(''),
-            icon: const Column(
+            icon: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
+                const Icon(
                   Icons.copy,
                   color: Color.fromARGB(255, 255, 255, 255),
                   size: 14,
                 ),
                 Text(
-                  "复制",
-                  style: TextStyle(fontSize: 12, color: Colors.white),
+                  AppLocale.copy.getString(context),
+                  style: const TextStyle(fontSize: 12, color: Colors.white),
                 ),
               ],
             ),
@@ -713,7 +743,9 @@ class _ChatPreviewState extends State<ChatPreview> {
                       size: 14,
                     ),
                     Text(
-                      showTranslate ? '隐藏' : '翻译',
+                      showTranslate
+                          ? AppLocale.hide.getString(context)
+                          : AppLocale.translate.getString(context),
                       style: const TextStyle(fontSize: 12, color: Colors.white),
                     )
                   ],
@@ -836,17 +868,17 @@ class _ChatPreviewState extends State<ChatPreview> {
                 widget.onSpeakEvent!(message);
               },
               label: const Text(''),
-              icon: const Column(
+              icon: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.record_voice_over,
                     color: Color.fromARGB(255, 255, 255, 255),
                     size: 14,
                   ),
                   Text(
-                    '朗读',
-                    style: TextStyle(fontSize: 12, color: Colors.white),
+                    AppLocale.readByVoice.getString(context),
+                    style: const TextStyle(fontSize: 12, color: Colors.white),
                   )
                 ],
               ),
@@ -858,17 +890,17 @@ class _ChatPreviewState extends State<ChatPreview> {
                 cancel();
               },
               label: const Text(''),
-              icon: const Column(
+              icon: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.restore,
                     color: Color.fromARGB(255, 255, 255, 255),
                     size: 14,
                   ),
                   Text(
-                    '重发',
-                    style: TextStyle(fontSize: 12, color: Colors.white),
+                    AppLocale.sendRetryS.getString(context),
+                    style: const TextStyle(fontSize: 12, color: Colors.white),
                   ),
                 ],
               ),
@@ -893,6 +925,16 @@ class _ChatPreviewState extends State<ChatPreview> {
     final expect = _chatBoxMaxWidth(context) / 1.3;
     final max = imageCount > 1 ? 600.0 : 400.0;
     return expect > max ? max : expect;
+  }
+
+  // 获取文件预览的最大宽度
+  double _chatBoxFilePreviewWidth(BuildContext context) {
+    var maxWidth = MediaQuery.of(context).size.width * 0.8;
+    if (maxWidth > 300) {
+      maxWidth = 300;
+    }
+
+    return maxWidth;
   }
 }
 

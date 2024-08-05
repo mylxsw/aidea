@@ -1,34 +1,52 @@
+import 'dart:convert';
+
 import 'package:dart_openai/openai.dart';
 
 class ChatMessage extends OpenAIChatCompletionChoiceMessageModel {
   final List<String>? images;
-  ChatMessage({required super.role, required super.content, this.images});
+  final String? file;
+  ChatMessage(
+      {required super.role, required super.content, this.images, this.file});
 
   @override
   Map<String, dynamic> toMap() {
-    if (images == null || images!.isEmpty) {
-      return {
-        "role": role.name,
-        "content": content,
-      };
-    }
-
-    return {
+    final Map<String, dynamic> res = {
       "role": role.name,
       "content": content,
-      "multipart_content": [
-        ...(images
+    };
+
+    if (file != null || (images != null && images!.isNotEmpty)) {
+      final multipartContent = <dynamic>[];
+
+      if (file != null) {
+        try {
+          multipartContent.add({
+            'type': 'file',
+            'file': jsonDecode(file!),
+          });
+        } catch (ignore) {
+          // ignore
+        }
+      }
+
+      if (images != null && images!.isNotEmpty) {
+        multipartContent.addAll(images
                 ?.map((e) => {
                       'type': 'image_url',
                       'image_url': {'url': e}
                     })
                 .toList() ??
-            []),
-        {
-          'type': 'text',
-          'text': content,
-        },
-      ],
-    };
+            []);
+      }
+
+      multipartContent.add({
+        'type': 'text',
+        'text': content,
+      });
+
+      res['multipart_content'] = multipartContent;
+    }
+
+    return res;
   }
 }
