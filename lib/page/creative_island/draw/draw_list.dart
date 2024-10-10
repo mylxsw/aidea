@@ -113,52 +113,64 @@ class _DrawListScreenState extends State<DrawListScreen> {
                 .where((e) => e.size != 'large' && e.size != 'medium')
                 .toList();
 
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  GridView.count(
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: const EdgeInsets.only(top: 0, left: 10, right: 10),
-                    crossAxisCount: _calCrossAxisCount(context),
-                    childAspectRatio: 2,
-                    shrinkWrap: true,
-                    children: largeItems
-                        .map((e) => Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 5, vertical: 10),
-                              child: e,
-                            ))
-                        .toList(),
-                  ),
-                  GridView.count(
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
-                    crossAxisCount: _calCrossAxisCount(context) * 2,
-                    childAspectRatio: 1,
-                    shrinkWrap: true,
-                    children: mediumItems
-                        .map((e) => Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 5, vertical: 5),
-                              child: e,
-                            ))
-                        .toList(),
-                  ),
-                  GridView.count(
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
-                    crossAxisCount: _calCrossAxisCount(context) * 2,
-                    childAspectRatio: 2,
-                    shrinkWrap: true,
-                    children: otherItems
-                        .map((e) => Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 5, vertical: 5),
-                              child: e,
-                            ))
-                        .toList(),
-                  ),
-                ],
+            return RefreshIndicator(
+              onRefresh: () async {
+                context
+                    .read<CreativeIslandBloc>()
+                    .add(CreativeIslandItemsV2LoadEvent(forceRefresh: true));
+              },
+              color: customColors.linkColor,
+              displacement: 20,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    GridView.count(
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding:
+                          const EdgeInsets.only(top: 0, left: 10, right: 10),
+                      crossAxisCount: _calCrossAxisCount(context),
+                      childAspectRatio: 2,
+                      shrinkWrap: true,
+                      children: largeItems
+                          .map((e) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 5, vertical: 10),
+                                child: e,
+                              ))
+                          .toList(),
+                    ),
+                    GridView.count(
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding:
+                          const EdgeInsets.only(top: 5, left: 10, right: 10),
+                      crossAxisCount: _calCrossAxisCount(context) * 2,
+                      childAspectRatio: 1,
+                      shrinkWrap: true,
+                      children: mediumItems
+                          .map((e) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 5, vertical: 5),
+                                child: e,
+                              ))
+                          .toList(),
+                    ),
+                    GridView.count(
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding:
+                          const EdgeInsets.only(top: 5, left: 10, right: 10),
+                      crossAxisCount: _calCrossAxisCount(context) * 2,
+                      childAspectRatio: 2,
+                      shrinkWrap: true,
+                      children: otherItems
+                          .map((e) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 5, vertical: 5),
+                                child: e,
+                              ))
+                          .toList(),
+                    ),
+                  ],
+                ),
               ),
             );
           }

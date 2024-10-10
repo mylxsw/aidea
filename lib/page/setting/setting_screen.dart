@@ -95,276 +95,279 @@ class _SettingScreenState extends State<SettingScreen> {
           ],
           child: BlocBuilder<AccountBloc, AccountState>(
             builder: (_, state) {
-              return buildSettingsList([
-                // 智慧果信息、充值入口
-                _buildAccountQuotaCard(context, state),
+              return buildSettingsList(
+                context,
+                [
+                  // 智慧果信息、充值入口
+                  _buildAccountQuotaCard(context, state),
 
-                // 账号信息
-                SettingsSection(
-                  title: Text(AppLocale.accountInfo.getString(context)),
-                  tiles: _buildAccountSetting(state, customColors),
-                ),
+                  // 账号信息
+                  SettingsSection(
+                    title: Text(AppLocale.accountInfo.getString(context)),
+                    tiles: _buildAccountSetting(state, customColors),
+                  ),
 
-                // 邀请卡片
-                if (state is AccountLoaded && state.user != null)
-                  _buildInviteCard(context, state),
+                  // 邀请卡片
+                  if (state is AccountLoaded && state.user != null)
+                    _buildInviteCard(context, state),
 
-                // 自定义设置
-                SettingsSection(
-                  title: Text(AppLocale.custom.getString(context)),
-                  tiles: [
-                    // 主题设置
-                    _buildCommonThemeSetting(customColors),
-                    // 语言设置
-                    _buildCommonLanguageSetting(),
-                    // 常用模型
-                    if (Ability().isUserLogon())
-                      _buildCustomHomeModelsSetting(customColors),
-                    // OpenAI 自定义配置
-                    if (Ability().enableOpenAI)
-                      _buildOpenAISelfHostedSetting(customColors),
-                    // 用户 API Keys 配置
-                    if (state is AccountLoaded &&
-                        state.user != null &&
-                        Ability().supportAPIKeys)
-                      _buildUserAPIKeySetting(customColors),
-                  ],
-                ),
+                  // 自定义设置
+                  SettingsSection(
+                    title: Text(AppLocale.custom.getString(context)),
+                    tiles: [
+                      // 主题设置
+                      _buildCommonThemeSetting(customColors),
+                      // 语言设置
+                      _buildCommonLanguageSetting(),
+                      // 常用模型
+                      if (Ability().isUserLogon())
+                        _buildCustomHomeModelsSetting(customColors),
+                      // OpenAI 自定义配置
+                      if (Ability().enableOpenAI)
+                        _buildOpenAISelfHostedSetting(customColors),
+                      // 用户 API Keys 配置
+                      if (state is AccountLoaded &&
+                          state.user != null &&
+                          Ability().supportAPIKeys)
+                        _buildUserAPIKeySetting(customColors),
+                    ],
+                  ),
 
-                // 系统信息
-                SettingsSection(
-                  title: Text(AppLocale.systemInfo.getString(context)),
-                  tiles: [
-                    // 只有 Web 端才展示 App 下载
-                    if (PlatformTool.isWeb())
+                  // 系统信息
+                  SettingsSection(
+                    title: Text(AppLocale.systemInfo.getString(context)),
+                    tiles: [
+                      // 只有 Web 端才展示 App 下载
+                      if (PlatformTool.isWeb())
+                        SettingsTile(
+                          title: const Text('APP 下载'),
+                          trailing: const Icon(
+                            Icons.download,
+                            size: 18,
+                            color: Colors.grey,
+                          ),
+                          onPressed: (context) {
+                            launchUrlString(
+                              'https://aidea.aicode.cc',
+                              mode: LaunchMode.externalApplication,
+                            );
+                          },
+                        ),
+                      // 服务状态
+                      if (Ability().serviceStatusPage != '')
+                        SettingsTile(
+                          title: const Text('服务状态'),
+                          trailing: const Icon(
+                            CupertinoIcons.chevron_forward,
+                            size: 18,
+                            color: Colors.grey,
+                          ),
+                          onPressed: (_) {
+                            launchUrlString(Ability().serviceStatusPage);
+                          },
+                        ),
+                      // 清空缓存
                       SettingsTile(
-                        title: const Text('APP 下载'),
+                        title: Text(AppLocale.clearCache.getString(context)),
                         trailing: const Icon(
-                          Icons.download,
+                          CupertinoIcons.refresh,
                           size: 18,
                           color: Colors.grey,
                         ),
-                        onPressed: (context) {
-                          launchUrlString(
-                            'https://aidea.aicode.cc',
-                            mode: LaunchMode.externalApplication,
+                        onPressed: (_) {
+                          openConfirmDialog(
+                            context,
+                            AppLocale.confirmClearCache.getString(context),
+                            () async {
+                              await Cache().clearAll();
+                              await HttpClient.cleanCache();
+
+                              showSuccessMessage(
+                                // ignore: use_build_context_synchronously
+                                AppLocale.operateSuccess.getString(context),
+                              );
+
+                              if (context.mounted) {
+                                Phoenix.rebirth(context);
+                              }
+                            },
+                            danger: true,
                           );
                         },
                       ),
-                    // 服务状态
-                    if (Ability().serviceStatusPage != '')
-                      SettingsTile(
-                        title: const Text('服务状态'),
-                        trailing: const Icon(
-                          CupertinoIcons.chevron_forward,
-                          size: 18,
-                          color: Colors.grey,
-                        ),
-                        onPressed: (_) {
-                          launchUrlString(Ability().serviceStatusPage);
-                        },
-                      ),
-                    // 清空缓存
-                    SettingsTile(
-                      title: Text(AppLocale.clearCache.getString(context)),
-                      trailing: const Icon(
-                        CupertinoIcons.refresh,
-                        size: 18,
-                        color: Colors.grey,
-                      ),
-                      onPressed: (_) {
-                        openConfirmDialog(
-                          context,
-                          AppLocale.confirmClearCache.getString(context),
-                          () async {
-                            await Cache().clearAll();
-                            await HttpClient.cleanCache();
 
-                            showSuccessMessage(
-                              // ignore: use_build_context_synchronously
-                              AppLocale.operateSuccess.getString(context),
-                            );
-
-                            if (context.mounted) {
-                              Phoenix.rebirth(context);
-                            }
-                          },
-                          danger: true,
-                        );
-                      },
-                    ),
-
-                    // 检查更新
-                    if (!PlatformTool.isIOS())
-                      SettingsTile(
-                        title: Text(AppLocale.updateCheck.getString(context)),
-                        trailing: const Icon(
-                          CupertinoIcons.chevron_forward,
-                          size: 18,
-                          color: Colors.grey,
-                        ),
-                        onPressed: (_) {
-                          APIServer().versionCheck(cache: false).then((resp) {
-                            if (resp.hasUpdate) {
-                              showBeautyDialog(
-                                context,
-                                type: QuickAlertType.success,
-                                text: resp.message,
-                                confirmBtnText: '去更新',
-                                onConfirmBtnTap: () {
-                                  launchUrlString(
-                                    resp.url,
-                                    mode: LaunchMode.externalApplication,
-                                  );
-                                },
-                                cancelBtnText: '暂不更新',
-                                showCancelBtn: true,
-                              );
-                            } else {
-                              showSuccessMessage(
-                                  AppLocale.latestVersion.getString(context));
-                            }
-                          });
-                        },
-                      ),
-                    // 用户协议
-                    SettingsTile(
-                      title: Text(AppLocale.userTerms.getString(context)),
-                      trailing: const Icon(
-                        CupertinoIcons.chevron_forward,
-                        size: 18,
-                        color: Colors.grey,
-                      ),
-                      onPressed: (_) {
-                        launchUrl(
-                            Uri.parse('https://ai.aicode.cc/terms-user.html'));
-                      },
-                    ),
-                    // 隐私政策
-                    SettingsTile(
-                      title: Text(AppLocale.privacyPolicy.getString(context)),
-                      trailing: const Icon(
-                        CupertinoIcons.chevron_forward,
-                        size: 18,
-                        color: Colors.grey,
-                      ),
-                      onPressed: (_) {
-                        launchUrl(Uri.parse(
-                            'https://ai.aicode.cc/privacy-policy.html'));
-                      },
-                    ),
-
-                    // 关于
-                    SettingsTile(
-                      title: Text(AppLocale.about.getString(context)),
-                      trailing: const Icon(
-                        CupertinoIcons.chevron_forward,
-                        size: 18,
-                        color: Colors.grey,
-                      ),
-                      onPressed: (_) {
-                        var tapCount = 0;
-                        showAboutDialog(
-                          context: context,
-                          applicationName: 'AIdea',
-                          applicationIcon: GestureDetector(
-                            onTap: () {
-                              if (userHasLabPermission(state)) {
-                                return;
-                              }
-
-                              tapCount++;
-
-                              if (tapCount > 5) {
-                                tapCount = 0;
-
-                                final showLab = forceShowLab();
-                                widget.settings.set(settingForceShowLab,
-                                    showLab ? 'false' : 'true');
-
-                                showSuccessMessage(
-                                    showLab ? '已关闭实验室功能' : '已启用实验室功能');
-
-                                setState(() {});
-                              }
-                            },
-                            child: Image.asset('assets/app.png', width: 40),
-                          ),
-                          applicationVersion: clientVersion,
-                          children: [
-                            Text(AppLocale.aIdeaApp.getString(context)),
-                          ],
-                        );
-                      },
-                    ),
-                  ],
-                ),
-
-                if (userHasLabPermission(state) || forceShowLab())
-                  SettingsSection(
-                    title: const Text('实验室'),
-                    tiles: [
-                      if (userHasLabPermission(state))
+                      // 检查更新
+                      if (!PlatformTool.isIOS())
                         SettingsTile(
-                          title: const Text('画板'),
+                          title: Text(AppLocale.updateCheck.getString(context)),
+                          trailing: const Icon(
+                            CupertinoIcons.chevron_forward,
+                            size: 18,
+                            color: Colors.grey,
+                          ),
+                          onPressed: (_) {
+                            APIServer().versionCheck(cache: false).then((resp) {
+                              if (resp.hasUpdate) {
+                                showBeautyDialog(
+                                  context,
+                                  type: QuickAlertType.success,
+                                  text: resp.message,
+                                  confirmBtnText: '去更新',
+                                  onConfirmBtnTap: () {
+                                    launchUrlString(
+                                      resp.url,
+                                      mode: LaunchMode.externalApplication,
+                                    );
+                                  },
+                                  cancelBtnText: '暂不更新',
+                                  showCancelBtn: true,
+                                );
+                              } else {
+                                showSuccessMessage(
+                                    AppLocale.latestVersion.getString(context));
+                              }
+                            });
+                          },
+                        ),
+                      // 用户协议
+                      SettingsTile(
+                        title: Text(AppLocale.userTerms.getString(context)),
+                        trailing: const Icon(
+                          CupertinoIcons.chevron_forward,
+                          size: 18,
+                          color: Colors.grey,
+                        ),
+                        onPressed: (_) {
+                          launchUrl(Uri.parse(
+                              'https://ai.aicode.cc/terms-user.html'));
+                        },
+                      ),
+                      // 隐私政策
+                      SettingsTile(
+                        title: Text(AppLocale.privacyPolicy.getString(context)),
+                        trailing: const Icon(
+                          CupertinoIcons.chevron_forward,
+                          size: 18,
+                          color: Colors.grey,
+                        ),
+                        onPressed: (_) {
+                          launchUrl(Uri.parse(
+                              'https://ai.aicode.cc/privacy-policy.html'));
+                        },
+                      ),
+
+                      // 关于
+                      SettingsTile(
+                        title: Text(AppLocale.about.getString(context)),
+                        trailing: const Icon(
+                          CupertinoIcons.chevron_forward,
+                          size: 18,
+                          color: Colors.grey,
+                        ),
+                        onPressed: (_) {
+                          var tapCount = 0;
+                          showAboutDialog(
+                            context: context,
+                            applicationName: 'AIdea',
+                            applicationIcon: GestureDetector(
+                              onTap: () {
+                                if (userHasLabPermission(state)) {
+                                  return;
+                                }
+
+                                tapCount++;
+
+                                if (tapCount > 5) {
+                                  tapCount = 0;
+
+                                  final showLab = forceShowLab();
+                                  widget.settings.set(settingForceShowLab,
+                                      showLab ? 'false' : 'true');
+
+                                  showSuccessMessage(
+                                      showLab ? '已关闭实验室功能' : '已启用实验室功能');
+
+                                  setState(() {});
+                                }
+                              },
+                              child: Image.asset('assets/app.png', width: 40),
+                            ),
+                            applicationVersion: clientVersion,
+                            children: [
+                              Text(AppLocale.aIdeaApp.getString(context)),
+                            ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+
+                  if (userHasLabPermission(state) || forceShowLab())
+                    SettingsSection(
+                      title: const Text('实验室'),
+                      tiles: [
+                        if (userHasLabPermission(state))
+                          SettingsTile(
+                            title: const Text('画板'),
+                            trailing: const Icon(
+                              CupertinoIcons.chevron_forward,
+                              size: 18,
+                              color: Colors.grey,
+                            ),
+                            onPressed: (context) {
+                              context.push('/lab/draw-board');
+                            },
+                          ),
+
+                        // 自定义服务器
+                        _buildServerSelfHostedSetting(customColors),
+                        // 诊断
+                        SettingsTile(
+                          title: Text(AppLocale.diagnostic.getString(context)),
                           trailing: const Icon(
                             CupertinoIcons.chevron_forward,
                             size: 18,
                             color: Colors.grey,
                           ),
                           onPressed: (context) {
-                            context.push('/lab/draw-board');
+                            context.push('/diagnosis');
                           },
                         ),
-
-                      // 自定义服务器
-                      _buildServerSelfHostedSetting(customColors),
-                      // 诊断
-                      SettingsTile(
-                        title: Text(AppLocale.diagnostic.getString(context)),
-                        trailing: const Icon(
-                          CupertinoIcons.chevron_forward,
-                          size: 18,
-                          color: Colors.grey,
-                        ),
-                        onPressed: (context) {
-                          context.push('/diagnosis');
-                        },
-                      ),
-                    ],
-                  ),
-                // 社交媒体图标
-                _buildSocialIcons(context),
-                // 版权信息
-                CustomSettingsSection(
-                  child: Column(
-                    children: [
-                      Text(
-                        'Copyright © 2023-${DateTime.now().year}',
-                        style: TextStyle(
-                          color: customColors.weakTextColor,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          launchUrlString(
-                            'https://aidea.aicode.cc',
-                            mode: LaunchMode.externalApplication,
-                          );
-                        },
-                        child: Text(
-                          'Gulu Artificial Intelligence Technology Co., Ltd.',
+                      ],
+                    ),
+                  // 社交媒体图标
+                  _buildSocialIcons(context),
+                  // 版权信息
+                  CustomSettingsSection(
+                    child: Column(
+                      children: [
+                        Text(
+                          'Copyright © 2023-${DateTime.now().year}',
                           style: TextStyle(
                             color: customColors.weakTextColor,
-                            fontSize: 12,
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 15),
-                    ],
+                        GestureDetector(
+                          onTap: () {
+                            launchUrlString(
+                              'https://aidea.aicode.cc',
+                              mode: LaunchMode.externalApplication,
+                            );
+                          },
+                          child: Text(
+                            'Gulu Artificial Intelligence Technology Co., Ltd.',
+                            style: TextStyle(
+                              color: customColors.weakTextColor,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                      ],
+                    ),
                   ),
-                ),
-              ]);
+                ],
+              );
             },
           ),
         ),

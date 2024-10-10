@@ -555,14 +555,22 @@ class UploadInitResponse {
   String key;
   String token;
   String url;
+  bool uploaded;
 
-  UploadInitResponse(this.key, this.bucket, this.token, this.url);
+  UploadInitResponse(
+    this.key,
+    this.bucket,
+    this.token,
+    this.url, {
+    this.uploaded = false,
+  });
 
   toJson() => {
         'bucket': bucket,
         'key': key,
         'token': token,
         'url': url,
+        'uploaded': uploaded,
       };
 
   static fromJson(Map<String, dynamic> json) {
@@ -571,6 +579,7 @@ class UploadInitResponse {
       json['bucket'],
       json['token'],
       json['url'],
+      uploaded: json['uploaded'] ?? false,
     );
   }
 }

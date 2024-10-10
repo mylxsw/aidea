@@ -288,6 +288,10 @@ class QiniuUploader {
       final initResp =
           await APIServer().uploadInit(filename, data.length, usage: usage);
 
+      if (initResp.uploaded) {
+        return UploadedFile(filename, initResp.url);
+      }
+
       var storage = Storage(config: Config(retryLimit: 3));
 
       await storage.putBytes(
@@ -309,6 +313,10 @@ class QiniuUploader {
       var filename = path.substring(path.lastIndexOf('/') + 1);
       final initResp = await APIServer()
           .uploadInit(filename, File(path).lengthSync(), usage: usage);
+
+      if (initResp.uploaded) {
+        return UploadedFile(filename, initResp.url);
+      }
 
       var storage = Storage(config: Config(retryLimit: 3));
 
