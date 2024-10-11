@@ -170,14 +170,18 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       his = await chatMsgRepo.getChatHistory(event.chatHistoryId!);
     }
 
-    emit(ChatMessagesLoaded(
-      await chatMsgRepo.getRecentMessages(
-        roomId,
-        userId: APIServer().localUserID(),
-        chatHistoryId: event.chatHistoryId,
-      ),
-      chatHistory: his,
-    ));
+    if (roomId == chatAnywhereRoomId && his == null) {
+      emit(ChatMessagesLoaded(const []));
+    } else {
+      emit(ChatMessagesLoaded(
+        await chatMsgRepo.getRecentMessages(
+          roomId,
+          userId: APIServer().localUserID(),
+          chatHistoryId: event.chatHistoryId,
+        ),
+        chatHistory: his,
+      ));
+    }
   }
 
   /// 停止输出事件处理
@@ -195,10 +199,11 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
     Message message = event.message as Message;
     ChatHistory? localChatHistory;
+    int? localChatHistoryId = message.chatHistoryId;
 
     // 如果是聊一聊，自动创建聊天记录历史
     if (roomId == chatAnywhereRoomId) {
-      if (message.chatHistoryId == null || message.chatHistoryId! <= 0) {
+      if (localChatHistoryId == null || localChatHistoryId <= 0) {
         final chatHistory = await chatMsgRepo.createChatHistory(
           title: event.message.text,
           userId: APIServer().localUserID(),
@@ -208,12 +213,16 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
         );
 
         localChatHistory = chatHistory;
+        localChatHistoryId = chatHistory.id;
         message.chatHistoryId = chatHistory.id;
         emit(ChatAnywhereInited(chatHistory.id!));
+      } else {
+        if (localChatHistoryId > 0) {
+          localChatHistory =
+              await chatMsgRepo.getChatHistory(localChatHistoryId);
+        }
       }
     }
-
-    int? localChatHistoryId = message.chatHistoryId;
 
     // 查询当前 Room 信息
     final room = await queryRoomById(chatMsgRepo, roomId);
@@ -230,14 +239,8 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       return;
     }
 
-    if (roomId == chatAnywhereRoomId &&
-        localChatHistoryId != null &&
-        localChatHistoryId > 0) {
-      final chatHistory = await chatMsgRepo.getChatHistory(localChatHistoryId);
-      if (chatHistory != null && chatHistory.model != null) {
-        room.model = chatHistory.model!;
-        localChatHistory = chatHistory;
-      }
+    if (localChatHistory != null && localChatHistory.model != null) {
+      room.model = localChatHistory.model!;
     }
 
     // 查询最后一条消息
@@ -334,8 +337,11 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
     messages.add(waitMessage);
 
-    emit(ChatMessagesLoaded(messages,
-        processing: true, chatHistory: localChatHistory));
+    emit(ChatMessagesLoaded(
+      messages,
+      processing: true,
+      chatHistory: localChatHistory,
+    ));
     emit(ChatMessageUpdated(waitMessage, processing: true));
 
     // 等待监听机器人应答消息

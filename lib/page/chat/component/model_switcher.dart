@@ -18,21 +18,33 @@ class ModelSwitcher extends StatelessWidget {
     this.value,
   });
 
+  static void openActionDialog({
+    required BuildContext context,
+    required Function(mm.Model? selected) onSelected,
+    mm.Model? initValue,
+  }) {
+    HapticFeedbackHelper.mediumImpact();
+    openSelectModelDialog(
+      context,
+      (selected) {
+        onSelected(selected);
+      },
+      initValue: initValue?.uid(),
+      enableClear: true,
+      title: AppLocale.switchModelTitle.getString(context),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
     return IconButton(
       onPressed: () async {
-        HapticFeedbackHelper.mediumImpact();
-        openSelectModelDialog(
-          context,
-          (selected) {
-            onSelected(selected);
-          },
-          initValue: value?.uid(),
-          enableClear: true,
-          title: AppLocale.switchModelTitle.getString(context),
+        openActionDialog(
+          context: context,
+          onSelected: onSelected,
+          initValue: value,
         );
       },
       icon: value == null

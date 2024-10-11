@@ -14,4 +14,11 @@ class CustomSize {
 
     return kToolbarHeight;
   }
+
+  static double adaptiveMaxWindowWidth(BuildContext context) {
+    final windowSize = MediaQuery.of(context).size.width;
+    return windowSize > CustomSize.maxWindowSize
+        ? CustomSize.maxWindowSize
+        : windowSize;
+  }
 }

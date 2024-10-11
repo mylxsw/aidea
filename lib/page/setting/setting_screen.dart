@@ -99,7 +99,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 context,
                 [
                   // 智慧果信息、充值入口
-                  _buildAccountQuotaCard(context, state),
+                  // _buildAccountQuotaCard(context, state),
 
                   // 账号信息
                   SettingsSection(

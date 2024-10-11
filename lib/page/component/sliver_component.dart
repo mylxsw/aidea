@@ -91,7 +91,7 @@ class SliverComponent extends StatelessWidget {
       headerSliverBuilder: (context, innerBoxIsScrolled) {
         return [
           SliverAppBar(
-            automaticallyImplyLeading: false,
+            automaticallyImplyLeading: true,
             toolbarHeight: CustomSize.toolbarHeight,
             expandedHeight: expendedHeight,
             floating: false,

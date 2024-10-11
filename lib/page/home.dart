@@ -1,3 +1,5 @@
+import 'package:askaide/bloc/account_bloc.dart';
+import 'package:askaide/bloc/chat_chat_bloc.dart';
 import 'package:askaide/bloc/chat_message_bloc.dart';
 import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/bloc/notify_bloc.dart';
@@ -5,7 +7,6 @@ import 'package:askaide/bloc/room_bloc.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/cache.dart';
 import 'package:askaide/helper/constant.dart';
-import 'package:askaide/helper/global_store.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/model.dart';
 import 'package:askaide/helper/upload.dart';
@@ -14,7 +15,6 @@ import 'package:askaide/page/chat/component/model_switcher.dart';
 import 'package:askaide/page/chat/component/stop_button.dart';
 import 'package:askaide/page/chat/room_chat.dart';
 import 'package:askaide/page/component/audio_player.dart';
-import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/chat/chat_input.dart';
 import 'package:askaide/page/component/chat/chat_preview.dart';
 import 'package:askaide/page/component/chat/empty.dart';
@@ -22,13 +22,15 @@ import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/help_tips.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/chat/role_avatar.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/enhanced_error.dart';
 import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/loading.dart';
-import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/select_mode_toolbar.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/custom_scaffold.dart';
+import 'package:askaide/page/drawer.dart';
 import 'package:askaide/repo/api/model.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/model/message.dart';
@@ -40,42 +42,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
 
-class HomeChatPage extends StatefulWidget {
+class NewHomePage extends StatefulWidget {
+  final SettingRepository settings;
+
   /// 聊天内容窗口状态管理器
   final MessageStateManager stateManager;
-
-  /// 设置仓库
-  final SettingRepository setting;
-
-  /// 当前聊天 ID
-  final int? chatId;
-
-  /// 初始消息，该消息会在进入页面时自动发送到服务端
-  final String? initialMessage;
-
-  /// 当前聊天所使用的模型，对于
-  /// - v1 版本，该值为模型 ID
-  /// - v2 版本，该值为 homeModel 的 ID，格式为 v2@type|id
-  final String? model;
-
-  /// 当前页面的标题
-  final String? title;
-
-  const HomeChatPage({
+  const NewHomePage({
     super.key,
+    required this.settings,
     required this.stateManager,
-    required this.setting,
-    this.chatId,
-    this.initialMessage,
-    this.model,
-    this.title,
   });
 
   @override
-  State<HomeChatPage> createState() => _HomeChatPageState();
+  State<NewHomePage> createState() => _NewHomePageState();
 }
 
-class _HomeChatPageState extends State<HomeChatPage> {
+class _NewHomePageState extends State<NewHomePage> {
   // 聊天内容界面控制器
   final ChatPreviewController chatPreviewController = ChatPreviewController();
   // 聊天内容滚动控制器
@@ -88,39 +70,81 @@ class _HomeChatPageState extends State<HomeChatPage> {
 
   // 聊天室 ID，当没有值时，会在第一个聊天消息发送后自动设置新值
   int? chatId;
-  // 当前选择的图片文件
+  // The selected image files for image upload
   List<FileUpload> selectedImageFiles = [];
+  // The selected file for file upload
+  FileUpload? selectedFile;
 
   // 是否显示音频播放器
   bool showAudioPlayer = false;
   // 是否显示音频播放器加载中
   bool audioLoadding = false;
 
-  // 全量模型列表（v1 使用）
+  /// 当前选择的模型
+  mm.Model? selectedModel;
+  // 全量模型列表
   List<mm.Model> supportModels = [];
-  // 全量模型列表（v2 使用）
-  List<HomeModelV2> supportModelsV2 = [];
   // 当前聊天所使用的模型（v2）
   HomeModelV2? currentModelV2;
 
-  /// 当前选择的模型
-  mm.Model? selectedModel;
-
   @override
   void initState() {
-    // 设置当前聊天 ID，当没有值时，会在第一个聊天消息发送后自动设置新值
-    chatId = widget.chatId;
+    super.initState();
+
+    Cache().intGet(key: 'last_chat_id').then((value) {
+      chatId = value;
+      reloadPage();
+    });
+
+    reloadModels();
+    initListeners();
+  }
+
+  /// 重新加载页面
+  void reloadPage() {
+    // 加载当前用户信息
+    context.read<AccountBloc>().add(AccountLoadEvent());
+
     // 加载当前聊天室信息
     context.read<RoomBloc>().add(RoomLoadEvent(
           chatAnywhereRoomId,
           chatHistoryId: chatId,
           cascading: true,
         ));
+
     // 查询最近聊天记录
     context
         .read<ChatMessageBloc>()
-        .add(ChatMessageGetRecentEvent(chatHistoryId: widget.chatId));
+        .add(ChatMessageGetRecentEvent(chatHistoryId: chatId));
+  }
 
+  /// 加载模型列表，用于查询模型名称
+  void reloadModels() {
+    ModelAggregate.models().then((value) {
+      setState(() {
+        supportModels = value;
+      });
+
+      Cache().stringGet(key: 'last_selected_model').then((value) {
+        final selected = supportModels.where((e) => e.id == value).firstOrNull;
+        if (selected != null) {
+          setState(() {
+            selectedModel = selected;
+          });
+        }
+
+        if (selectedModel == null) {
+          setState(() {
+            selectedModel = supportModels.first;
+          });
+        }
+
+        loadCurrentModel(selectedModel!.id);
+      });
+    });
+  }
+
+  void initListeners() {
     chatPreviewController.addListener(() {
       setState(() {});
     });
@@ -140,46 +164,37 @@ class _HomeChatPageState extends State<HomeChatPage> {
         audioLoadding = loading;
       });
     };
+  }
 
-    // 加载模型列表，用于查询模型名称
-    ModelAggregate.models().then((value) {
-      setState(() {
-        supportModels = value;
-      });
-
-      if (widget.model != null) {
-        selectedModel =
-            supportModels.where((e) => e.id == widget.model).firstOrNull;
-      }
-
-      if (selectedModel == null) {
-        Cache().stringGet(key: 'last_selected_model').then((value) {
-          final selected =
-              supportModels.where((e) => e.id == value).firstOrNull;
-          if (selected != null) {
-            setState(() {
-              selectedModel = selected;
-            });
-          }
-        });
-      }
+  /// 创建新的聊天
+  void createNewChat() {
+    Cache().setInt(
+      key: 'last_chat_id',
+      value: 0,
+      duration: const Duration(days: 3650),
+    );
+    setState(() {
+      chatId = null;
     });
 
-    if (widget.model != null) {
-      loadCurrentModel(widget.model!);
+    reloadPage();
+  }
+
+  /// 更新当前聊天
+  void updateCurrentChat(int chatId) {
+    Cache().setInt(
+      key: 'last_chat_id',
+      value: chatId,
+      duration: const Duration(days: 3650),
+    );
+    if (this.chatId == chatId) {
+      return;
     }
 
-    // 当参数 initialMessage 不为空时，延迟 500 毫秒后发送初始消息
-    if (widget.initialMessage != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Future.delayed(const Duration(milliseconds: 500), () {
-          selectedImageFiles = GlobalStore().uploadedFiles;
-          handleSubmit(widget.initialMessage!);
-        });
-      });
-    }
-
-    super.initState();
+    setState(() {
+      this.chatId = chatId;
+    });
+    reloadPage();
   }
 
   @override
@@ -187,6 +202,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
     scrollController.dispose();
     chatPreviewController.dispose();
     audioPlayerController.dispose();
+
     super.dispose();
   }
 
@@ -205,157 +221,145 @@ class _HomeChatPageState extends State<HomeChatPage> {
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
-    return BackgroundContainer(
-      setting: widget.setting,
-      child: Scaffold(
-        // AppBar
-        appBar: buildAppBar(context, customColors),
-        backgroundColor: Colors.transparent,
-        // 聊天内容窗口
-        body: BlocConsumer<RoomBloc, RoomState>(
-          listenWhen: (previous, current) => current is RoomLoaded,
-          listener: (context, state) async {
-            if (state is RoomLoaded && currentModelV2 == null) {
-              await loadCurrentModel(state.room.model);
-            }
+    return CustomScaffold(
+      settings: widget.settings,
+      appBarBackground: Image.asset(
+        customColors.appBarBackgroundImage!,
+        fit: BoxFit.cover,
+      ),
+      // 标题，点击后弹出模型选择对话框
+      title: GestureDetector(
+        onTap: () {
+          ModelSwitcher.openActionDialog(
+            context: context,
+            onSelected: (selected) {
+              setState(() {
+                selectedModel = selected;
+              });
 
-            if (state is RoomLoaded && state.cascading) {
-              if (state.room.model.startsWith('v2@')) {
-                if (currentModelV2 != null && currentModelV2!.modelId != null) {
-                  // 加载免费使用次数
-                  // ignore: use_build_context_synchronously
-                  context.read<FreeCountBloc>().add(FreeCountReloadEvent(
-                        model: currentModelV2!.modelId!,
-                      ));
-                }
-              } else {
+              if (selected != null) {
+                Cache().setString(
+                  key: 'last_selected_model',
+                  value: selected.id,
+                  duration: const Duration(days: 3650),
+                );
+              }
+            },
+            initValue: selectedModel,
+          );
+        },
+        child: Column(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width / 2,
+              alignment: Alignment.center,
+              child: BlocBuilder<ChatMessageBloc, ChatMessageState>(
+                buildWhen: (previous, current) => current is ChatMessagesLoaded,
+                builder: (context, state) {
+                  if (state is ChatMessagesLoaded) {
+                    return Text(
+                      state.chatHistory == null ||
+                              state.chatHistory!.title == null
+                          ? AppLocale.chatAnywhere.getString(context)
+                          : state.chatHistory!.title!,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: const TextStyle(
+                        fontSize: CustomSize.appBarTitleSize,
+                      ),
+                    );
+                  }
+
+                  return Text(
+                    AppLocale.chatAnywhere.getString(context),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style:
+                        const TextStyle(fontSize: CustomSize.appBarTitleSize),
+                  );
+                },
+              ),
+            ),
+            if (selectedModel != null)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    selectedModel!.name,
+                    style: TextStyle(
+                      fontSize: CustomSize.appBarTitleSize * 0.6,
+                      color: customColors.backgroundInvertedColor,
+                    ),
+                  ),
+                  Icon(
+                    Icons.unfold_more,
+                    color: customColors.backgroundInvertedColor,
+                    size: CustomSize.appBarTitleSize * 0.6,
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.post_add),
+          onPressed: createNewChat,
+        ),
+      ],
+      body: BlocConsumer<RoomBloc, RoomState>(
+        listenWhen: (previous, current) => current is RoomLoaded,
+        listener: (context, state) async {
+          if (state is RoomLoaded && currentModelV2 == null) {
+            await loadCurrentModel(state.room.model);
+          }
+
+          if (state is RoomLoaded && state.cascading) {
+            if (state.room.model.startsWith('v2@')) {
+              if (currentModelV2 != null && currentModelV2!.modelId != null) {
                 // 加载免费使用次数
                 // ignore: use_build_context_synchronously
                 context.read<FreeCountBloc>().add(FreeCountReloadEvent(
-                      model: selectedModel?.name ??
-                          widget.model ??
-                          state.room.model,
+                      model: currentModelV2!.modelId!,
                     ));
               }
-            }
-          },
-          buildWhen: (previous, current) => current is RoomLoaded,
-          builder: (context, room) {
-            // 加载聊天室
-            if (room is RoomLoaded) {
-              if (room.error != null) {
-                return EnhancedErrorWidget(error: room.error);
-              }
-
-              return buildChatComponents(
-                customColors,
-                context,
-                room,
-              );
             } else {
-              return Container();
+              // 加载免费使用次数
+              // ignore: use_build_context_synchronously
+              context.read<FreeCountBloc>().add(FreeCountReloadEvent(
+                    model: selectedModel?.id ?? state.room.model,
+                  ));
             }
-          },
-        ),
-      ),
-    );
-  }
-
-  /// 构建 AppBar
-  AppBar buildAppBar(BuildContext context, CustomColors customColors) {
-    if (chatPreviewController.selectMode) {
-      return AppBar(
-        title: Text(AppLocale.select.getString(context)),
-        backgroundColor: Colors.transparent,
-        centerTitle: true,
-        leadingWidth: 80,
-        leading: TextButton(
-          onPressed: () {
-            chatPreviewController.exitSelectMode();
-          },
-          child: Text(
-            AppLocale.cancel.getString(context),
-            style: TextStyle(color: customColors.linkColor),
-          ),
-        ),
-      );
-    }
-
-    return AppBar(
-      centerTitle: true,
-      elevation: 0,
-      toolbarHeight: CustomSize.toolbarHeight,
-      title: BlocBuilder<ChatMessageBloc, ChatMessageState>(
-        buildWhen: (previous, current) => current is ChatMessagesLoaded,
-        builder: (context, state) {
-          if (state is ChatMessagesLoaded) {
-            return GestureDetector(
-              onTap: () {
-                ModelSwitcher.openActionDialog(
-                  context: context,
-                  onSelected: (selected) {
-                    setState(() {
-                      selectedModel = selected;
-                    });
-                  },
-                  initValue: selectedModel,
-                );
-              },
-              child: Column(
-                children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width / 2,
-                    alignment: Alignment.center,
-                    child: Text(
-                      widget.title ?? AppLocale.chatAnywhere.getString(context),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style:
-                          const TextStyle(fontSize: CustomSize.appBarTitleSize),
-                    ),
-                  ),
-                  if (selectedModel != null)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          selectedModel!.name,
-                          style: TextStyle(
-                            color: customColors.weakTextColor,
-                            fontSize: 10,
-                          ),
-                        ),
-                        Icon(
-                          Icons.unfold_more,
-                          color: customColors.backgroundInvertedColor,
-                          size: CustomSize.appBarTitleSize * 0.6,
-                        ),
-                      ],
-                    )
-                ],
-              ),
-            );
           }
+        },
+        buildWhen: (previous, current) => current is RoomLoaded,
+        builder: (context, room) {
+          // 加载聊天室
+          if (room is RoomLoaded) {
+            if (room.error != null) {
+              return EnhancedErrorWidget(error: room.error);
+            }
 
-          return const SizedBox();
+            return buildChatComponents(
+              customColors,
+              context,
+              room,
+            );
+          } else {
+            return Container();
+          }
         },
       ),
-      flexibleSpace: SizedBox(
-        width: double.infinity,
-        child: ShaderMask(
-          shaderCallback: (rect) {
-            return const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Colors.black, Colors.transparent],
-            ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
-          },
-          blendMode: BlendMode.dstIn,
-          child: Image.asset(
-            customColors.appBarBackgroundImage!,
-            fit: BoxFit.cover,
+      drawer: MultiBlocProvider(
+        providers: [
+          BlocProvider.value(
+            value: context.read<AccountBloc>(),
           ),
-        ),
+          BlocProvider.value(
+            value: context.read<ChatChatBloc>(),
+          ),
+        ],
+        child: const LeftDrawer(),
       ),
     );
   }
@@ -382,9 +386,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
               BlocConsumer<ChatMessageBloc, ChatMessageState>(
                 listener: (context, state) {
                   if (state is ChatAnywhereInited) {
-                    setState(() {
-                      chatId = state.chatId;
-                    });
+                    updateCurrentChat(state.chatId);
                   }
 
                   if (state is ChatMessagesLoaded && state.error == null) {
@@ -413,9 +415,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
                     } else if (!state.processing && !enableInput.value) {
                       // 更新免费使用次数
                       context.read<FreeCountBloc>().add(FreeCountReloadEvent(
-                          model: selectedModel?.name ??
-                              widget.model ??
-                              room.room.model));
+                          model: selectedModel?.id ?? room.room.model));
 
                       // 聊天回复完成时，取消输入框的禁止编辑状态
                       setState(() {
@@ -472,8 +472,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
               builder: (context, freeState) {
                 var hintText = '有问题尽管问我';
                 if (freeState is FreeCountLoadedState) {
-                  final matched = freeState.model(
-                      selectedModel?.name ?? widget.model ?? room.room.model);
+                  final matched = freeState.model(room.room.model);
                   if (matched != null &&
                       matched.leftCount > 0 &&
                       matched.maxCount > 0) {
@@ -657,7 +656,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
       );
 
       try {
-        final uploader = ImageUploader(widget.setting);
+        final uploader = ImageUploader(widget.settings);
 
         for (var file in selectedImageFiles) {
           if (file.uploaded) {
@@ -699,7 +698,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
               text,
               user: 'me',
               ts: DateTime.now(),
-              model: selectedModel?.id ?? widget.model,
+              model: selectedModel!.id,
               type: messagetType,
               chatHistoryId: chatId,
               images: selectedImageFiles

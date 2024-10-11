@@ -13,17 +13,21 @@ import 'package:url_launcher/url_launcher.dart';
 class AccountQuotaCard extends StatelessWidget {
   final UserInfo? userInfo;
   final VoidCallback? onPaymentReturn;
-  const AccountQuotaCard({super.key, this.userInfo, this.onPaymentReturn});
+  final bool noBorder;
+  const AccountQuotaCard(
+      {super.key, this.userInfo, this.onPaymentReturn, this.noBorder = false});
 
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      margin: noBorder
+          ? null
+          : const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(noBorder ? 0 : 15),
         boxShadow: [
           BoxShadow(
             color: Colors.white.withOpacity(0.1),
@@ -59,10 +63,16 @@ class AccountQuotaCard extends StatelessWidget {
       ),
       height: 140,
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 30,
-        ),
+        padding: noBorder
+            ? const EdgeInsets.only(
+                top: 35,
+                left: 20,
+                right: 20,
+              )
+            : const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 30,
+              ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

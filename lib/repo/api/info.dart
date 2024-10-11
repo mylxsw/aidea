@@ -63,7 +63,7 @@ class Capabilities {
     required this.mailEnabled,
     required this.openaiEnabled,
     required this.homeModels,
-    this.homeRoute = '/chat-chat',
+    this.homeRoute = '/',
     this.showHomeModelDescription = true,
     this.supportWebsocket = false,
     this.supportAPIKeys = false,
@@ -89,7 +89,8 @@ class Capabilities {
       homeModels: ((json['home_models_v2'] ?? []) as List<dynamic>)
           .map((e) => HomeModelV2.fromJson(e))
           .toList(),
-      homeRoute: json['home_route'] ?? '/chat-chat',
+      // homeRoute: json['home_route'] ?? '/',
+      homeRoute: '/',
       showHomeModelDescription: json['show_home_model_description'] ?? true,
       supportWebsocket: json['support_websocket'] ?? false,
       supportAPIKeys: json['support_api_keys'] ?? false,

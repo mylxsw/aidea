@@ -2,9 +2,7 @@ import 'dart:convert';
 
 import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/helper/ability.dart';
-import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
-import 'package:askaide/helper/image.dart';
 import 'package:askaide/helper/model.dart';
 import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
@@ -12,17 +10,17 @@ import 'package:askaide/page/chat/component/model_switcher.dart';
 import 'package:askaide/page/chat/component/stop_button.dart';
 import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/background_container.dart';
-import 'package:askaide/page/component/chat/chat_share.dart';
 import 'package:askaide/page/component/chat/empty.dart';
 import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/help_tips.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
+import 'package:askaide/page/component/chat/role_avatar.dart';
 import 'package:askaide/page/component/effect/glass.dart';
 import 'package:askaide/page/component/enhanced_popup_menu.dart';
 import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/loading.dart';
-import 'package:askaide/page/component/random_avatar.dart';
+import 'package:askaide/page/component/select_mode_toolbar.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/bloc/chat_message_bloc.dart';
@@ -37,7 +35,6 @@ import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_initicon/flutter_initicon.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
@@ -189,7 +186,7 @@ class _RoomChatPageState extends State<RoomChatPage> {
                       if (!_inputEnabled.value)
                         Positioned(
                           bottom: 10,
-                          width: maxWindowWidth(context),
+                          width: CustomSize.adaptiveMaxWindowWidth(context),
                           child: Center(
                             child: StopButton(
                               label: '停止输出',
@@ -233,10 +230,8 @@ class _RoomChatPageState extends State<RoomChatPage> {
                           : (tempModel?.supportVision ?? false);
 
                       return _chatPreviewController.selectMode
-                          ? buildSelectModeToolbars(
-                              context,
-                              _chatPreviewController,
-                              customColors,
+                          ? SelectModeToolbar(
+                              chatPreviewController: _chatPreviewController,
                             )
                           : ChatInput(
                               enableNotifier: _inputEnabled,
@@ -399,7 +394,12 @@ class _RoomChatPageState extends State<RoomChatPage> {
             scrollController: _scrollController,
             controller: _chatPreviewController,
             stateManager: widget.stateManager,
-            robotAvatar: selectMode ? null : _buildAvatar(room.room),
+            robotAvatar: selectMode
+                ? null
+                : RoleAvatar(
+                    avatarUrl: room.room.avatarUrl,
+                    name: room.room.name,
+                  ),
             onDeleteMessage: (id) {
               handleDeleteMessage(context, id);
             },
@@ -508,22 +508,6 @@ class _RoomChatPageState extends State<RoomChatPage> {
             ],
             toolbarHeight: CustomSize.toolbarHeight,
           );
-  }
-
-  Widget _buildAvatar(Room room) {
-    if (room.avatarUrl != null && room.avatarUrl!.startsWith('http')) {
-      return RemoteAvatar(
-        avatarUrl: imageURL(room.avatarUrl!, qiniuImageTypeAvatar),
-        size: 30,
-      );
-    }
-
-    return Initicon(
-      text: room.name.split('、').join(' '),
-      size: 30,
-      backgroundColor: Colors.grey.withAlpha(100),
-      borderRadius: BorderRadius.circular(8),
-    );
   }
 
   /// 提交新消息
@@ -652,13 +636,6 @@ class _RoomChatPageState extends State<RoomChatPage> {
     context
         .read<RoomBloc>()
         .add(RoomLoadEvent(widget.roomId, cascading: false));
-  }
-
-  double maxWindowWidth(BuildContext context) {
-    final windowSize = MediaQuery.of(context).size.width;
-    return windowSize > CustomSize.maxWindowSize
-        ? CustomSize.maxWindowSize
-        : windowSize;
   }
 }
 
@@ -805,127 +782,6 @@ void handleOpenExampleQuestion(
         ),
       );
     },
-  );
-}
-
-/// 构建聊天内容窗口
-Widget buildSelectModeToolbars(
-  BuildContext context,
-  ChatPreviewController chatPreviewController,
-  CustomColors customColors,
-) {
-  return Container(
-    padding: const EdgeInsets.all(10),
-    decoration: BoxDecoration(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(10),
-        topRight: Radius.circular(10),
-      ),
-      color: customColors.backgroundColor,
-    ),
-    child: SafeArea(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          TextButton.icon(
-            onPressed: () {
-              var messages = chatPreviewController.selectedMessages();
-              if (messages.isEmpty) {
-                showErrorMessageEnhanced(
-                    context, AppLocale.noMessageSelected.getString(context));
-                return;
-              }
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  fullscreenDialog: true,
-                  builder: (context) => ChatShareScreen(
-                    messages: messages
-                        .map((e) => ChatShareMessage(
-                              content: e.message.text,
-                              username: e.message.senderName,
-                              avatarURL: e.message.avatarUrl,
-                              leftSide: e.message.role == Role.receiver,
-                              images: e.message.images,
-                            ))
-                        .toList(),
-                  ),
-                ),
-              );
-              // var messages = chatPreviewController.selectedMessages();
-              // if (messages.isEmpty) {
-              //   showErrorMessageEnhanced(
-              //       context, AppLocale.noMessageSelected.getString(context));
-              //   return;
-              // }
-              // var shareText = messages.map((e) {
-              //   if (e.message.role == Role.sender) {
-              //     return '我：\n${e.message.text}';
-              //   }
-
-              //   return '助理：\n${e.message.text}';
-              // }).join('\n\n');
-
-              // shareTo(
-              //   context,
-              //   content: shareText,
-              //   title: AppLocale.chatHistory.getString(context),
-              // );
-            },
-            icon: Icon(Icons.share, color: customColors.linkColor),
-            label: Text(
-              AppLocale.share.getString(context),
-              style: TextStyle(color: customColors.linkColor),
-            ),
-          ),
-          TextButton.icon(
-            onPressed: () {
-              chatPreviewController.selectAllMessage();
-            },
-            icon:
-                Icon(Icons.select_all_outlined, color: customColors.linkColor),
-            label: Text(
-              AppLocale.selectAll.getString(context),
-              style: TextStyle(color: customColors.linkColor),
-            ),
-          ),
-          TextButton.icon(
-            onPressed: () {
-              if (chatPreviewController.selectedMessageIds.isEmpty) {
-                showErrorMessageEnhanced(
-                    context, AppLocale.noMessageSelected.getString(context));
-                return;
-              }
-
-              openConfirmDialog(
-                context,
-                AppLocale.confirmDelete.getString(context),
-                () {
-                  final ids = chatPreviewController.selectedMessageIds.toList();
-                  if (ids.isNotEmpty) {
-                    context
-                        .read<ChatMessageBloc>()
-                        .add(ChatMessageDeleteEvent(ids));
-
-                    showErrorMessageEnhanced(
-                        context, AppLocale.operateSuccess.getString(context));
-
-                    chatPreviewController.exitSelectMode();
-                  }
-                },
-                danger: true,
-              );
-            },
-            icon: Icon(Icons.delete, color: customColors.linkColor),
-            label: Text(
-              AppLocale.delete.getString(context),
-              style: TextStyle(color: customColors.linkColor),
-            ),
-          ),
-        ],
-      ),
-    ),
   );
 }
 
