@@ -93,7 +93,7 @@ class _NewHomePageState extends State<NewHomePage> {
 
     Cache().intGet(key: 'last_chat_id').then((value) {
       chatId = value;
-      reloadPage();
+      reloadPage(loadAll: true);
     });
 
     reloadModels();
@@ -101,21 +101,23 @@ class _NewHomePageState extends State<NewHomePage> {
   }
 
   /// 重新加载页面
-  void reloadPage() {
+  void reloadPage({bool loadAll = false}) {
     // 加载当前用户信息
     context.read<AccountBloc>().add(AccountLoadEvent());
 
-    // 加载当前聊天室信息
-    context.read<RoomBloc>().add(RoomLoadEvent(
-          chatAnywhereRoomId,
-          chatHistoryId: chatId,
-          cascading: true,
-        ));
+    if (loadAll) {
+      // 加载当前聊天室信息
+      context.read<RoomBloc>().add(RoomLoadEvent(
+            chatAnywhereRoomId,
+            chatHistoryId: chatId,
+            cascading: true,
+          ));
 
-    // 查询最近聊天记录
-    context
-        .read<ChatMessageBloc>()
-        .add(ChatMessageGetRecentEvent(chatHistoryId: chatId));
+      // 查询最近聊天记录
+      context
+          .read<ChatMessageBloc>()
+          .add(ChatMessageGetRecentEvent(chatHistoryId: chatId));
+    }
   }
 
   /// 加载模型列表，用于查询模型名称
@@ -133,13 +135,15 @@ class _NewHomePageState extends State<NewHomePage> {
           });
         }
 
-        if (selectedModel == null) {
+        if (selectedModel == null && supportModels.isNotEmpty) {
           setState(() {
             selectedModel = supportModels.first;
           });
         }
 
-        loadCurrentModel(selectedModel!.id);
+        if (selectedModel != null) {
+          loadCurrentModel(selectedModel!.id);
+        }
       });
     });
   }
@@ -177,7 +181,7 @@ class _NewHomePageState extends State<NewHomePage> {
       chatId = null;
     });
 
-    reloadPage();
+    reloadPage(loadAll: true);
   }
 
   /// 更新当前聊天
@@ -711,8 +715,6 @@ class _NewHomePageState extends State<NewHomePage> {
           ),
         );
 
-    // ignore: use_build_context_synchronously
-    context.read<NotifyBloc>().add(NotifyResetEvent());
     // ignore: use_build_context_synchronously
     context
         .read<RoomBloc>()

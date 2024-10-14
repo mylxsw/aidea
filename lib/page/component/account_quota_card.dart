@@ -2,7 +2,6 @@ import 'package:askaide/helper/ability.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/coin.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
-import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/user.dart';
 import 'package:flutter/material.dart';
@@ -25,47 +24,11 @@ class AccountQuotaCard extends StatelessWidget {
       margin: noBorder
           ? null
           : const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(noBorder ? 0 : 15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.white.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-        image: userInfo != null && userInfo!.control.userCardBg != null
-            ? DecorationImage(
-                // opacity: 0.83,
-                image: CachedNetworkImageProviderEnhanced(
-                    userInfo!.control.userCardBg!),
-                fit: BoxFit.cover,
-              )
-            : DecorationImage(
-                image: CachedNetworkImageProviderEnhanced(
-                  "https://ssl.aicode.cc/ai-server/assets/quota-card-bg.webp-thumb1000",
-                ),
-                fit: BoxFit.cover,
-              ),
-        gradient: userInfo == null || userInfo!.control.userCardBg == null
-            ? const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color.fromARGB(255, 90, 218, 196),
-                  // Color.fromARGB(255, 230, 153, 38),
-                  Color.fromARGB(255, 242, 7, 213),
-                ],
-                transform: GradientRotation(0.5),
-              )
-            : null,
-      ),
       height: 140,
       child: Container(
         padding: noBorder
             ? const EdgeInsets.only(
-                top: 35,
+                top: 5,
                 left: 20,
                 right: 20,
               )

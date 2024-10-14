@@ -282,7 +282,7 @@ SPEC CHECKSUMS:
   media_kit_video: 5da63f157170e5bf303bf85453b7ef6971218a2e
   package_info_plus: 58f0028419748fad15bf008b270aaa8e54380b1c
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
-  record_darwin: 1f6619f2abac4d1ca91d3eeab038c980d76f1517
+  record_darwin: df0a677188e5fed18472550298e675f19ddaffbe
   screen_brightness_ios: 715ca807df953bf676d339f11464e438143ee625
   SDWebImage: 066c47b573f408f18caa467d71deace7c0f8280d
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380

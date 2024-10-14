@@ -6,16 +6,11 @@ class EmptyPreview extends StatefulWidget {
   final List<ChatExample> examples;
   final Function(String message) onSubmit;
 
-  EmptyPreview({
+  const EmptyPreview({
     super.key,
     required this.examples,
     required this.onSubmit,
-  }) {
-    // 示例问题随机排序
-    if (examples.isNotEmpty) {
-      examples.shuffle();
-    }
-  }
+  });
 
   @override
   State<EmptyPreview> createState() => _EmptyPreviewState();
