@@ -68,7 +68,7 @@ class HttpClient {
               .toExtra()),
     );
     // print("=======================");
-    Logger.instance.d("request: $url [${resp.statusCode}]");
+    // Logger.instance.d("request: $url [${resp.statusCode}]");
     // print("response: ${resp.data}");
 
     return resp;

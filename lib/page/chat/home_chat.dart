@@ -615,6 +615,23 @@ class _HomeChatPageState extends State<HomeChatPage> {
               his: loadedState.chatHistory,
               alternativeAvatarUrl: currentModelV2?.avatarUrl,
             ),
+      senderNameBuilder: (message) {
+        if (message.senderName == null) {
+          return null;
+        }
+
+        return Container(
+          margin: const EdgeInsets.fromLTRB(0, 0, 10, 7),
+          padding: const EdgeInsets.symmetric(horizontal: 13),
+          child: Text(
+            message.senderName!,
+            style: TextStyle(
+              color: customColors.weakTextColor,
+              fontSize: 12,
+            ),
+          ),
+        );
+      },
       onDeleteMessage: (id) {
         handleDeleteMessage(context, id, chatHistoryId: chatId);
       },

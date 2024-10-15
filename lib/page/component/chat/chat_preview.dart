@@ -267,25 +267,35 @@ class _ChatPreviewState extends State<ChatPreview> {
                 ),
                 child: FileUploadPreview(images: message.images ?? []),
               ),
-            Row(
+            Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // 消息头像
-                buildAvatar(message),
+                Container(
+                  margin: const EdgeInsets.only(left: 10),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      buildAvatar(message),
+                      // 发送人名称
+                      if (message.role == Role.receiver &&
+                          widget.senderNameBuilder != null)
+                        widget.senderNameBuilder!(message) ?? const SizedBox(),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
                 // 消息内容部分
                 ConstrainedBox(
                   constraints: BoxConstraints(
-                    maxWidth: _chatBoxMaxWidth(context) - 80,
+                    maxWidth: _chatBoxMaxWidth(context) - 30,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 发送人名称
-                      if (message.role == Role.receiver &&
-                          widget.senderNameBuilder != null)
-                        widget.senderNameBuilder!(message) ?? const SizedBox(),
                       Wrap(
                         crossAxisAlignment: WrapCrossAlignment.end,
                         children: [

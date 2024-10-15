@@ -1,5 +1,6 @@
 import 'package:askaide/bloc/account_bloc.dart';
 import 'package:askaide/bloc/chat_chat_bloc.dart';
+import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/account_quota_card.dart';
 import 'package:askaide/page/component/icon_box.dart';
@@ -34,7 +35,9 @@ class _LeftDrawerState extends State<LeftDrawer> {
                 child: Column(
                   children: [
                     DrawerHeader(
-                      padding: const EdgeInsets.all(0),
+                      padding: PlatformTool.isMacOS()
+                          ? const EdgeInsets.only(top: kToolbarHeight)
+                          : const EdgeInsets.all(0),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         image: DecorationImage(

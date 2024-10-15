@@ -300,6 +300,8 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       if (message.avatarURL != null && message.leftSide)
                         _buildAvatar(avatarUrl: message.avatarURL),
@@ -378,15 +380,34 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
               child: ConstrainedBox(
                 constraints:
                     BoxConstraints(maxWidth: _chatBoxMaxWidth(context)),
-                child: Row(
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (message.avatarURL != null && message.leftSide)
-                      _buildAvatar(avatarUrl: message.avatarURL),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        if (message.avatarURL != null && message.leftSide)
+                          _buildAvatar(avatarUrl: message.avatarURL),
+                        if (message.username != null && message.leftSide)
+                          Container(
+                            margin: const EdgeInsets.fromLTRB(0, 0, 10, 7),
+                            padding: const EdgeInsets.symmetric(horizontal: 13),
+                            child: Text(
+                              message.username!,
+                              style: TextStyle(
+                                color: customColors.weakTextColor,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
                     ConstrainedBox(
                       constraints: BoxConstraints(
-                        maxWidth: _chatBoxMaxWidth(context) - 80,
+                        maxWidth: _chatBoxMaxWidth(context) - 30,
                       ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -406,22 +427,9 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                                     images: message.images ?? []),
                               ),
                             ),
-                          if (message.username != null && message.leftSide)
-                            Container(
-                              margin: const EdgeInsets.fromLTRB(0, 0, 10, 7),
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 13),
-                              child: Text(
-                                message.username!,
-                                style: TextStyle(
-                                  color: customColors.weakTextColor,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
                           Container(
                             margin: message.leftSide
-                                ? const EdgeInsets.fromLTRB(10, 0, 0, 7)
+                                ? const EdgeInsets.fromLTRB(0, 0, 0, 7)
                                 : const EdgeInsets.fromLTRB(0, 0, 10, 7),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),

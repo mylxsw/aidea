@@ -10,6 +10,9 @@ class CustomScaffold extends StatefulWidget {
   final Widget body;
   final Widget? drawer;
   final Widget? appBarBackground;
+  final AppBar? backAppBar;
+  final bool showBackAppBar;
+
   const CustomScaffold({
     super.key,
     required this.settings,
@@ -18,6 +21,8 @@ class CustomScaffold extends StatefulWidget {
     required this.body,
     this.drawer,
     this.appBarBackground,
+    this.backAppBar,
+    this.showBackAppBar = false,
   });
 
   @override
@@ -31,30 +36,38 @@ class _CustomScaffoldState extends State<CustomScaffold> {
       setting: widget.settings,
       maxWidth: double.infinity,
       child: Scaffold(
-        appBar: AppBar(
-          title: widget.title,
-          centerTitle: true,
-          toolbarHeight: CustomSize.toolbarHeight,
-          elevation: 0,
-          actions: widget.actions,
-          flexibleSpace: SizedBox(
-            width: double.infinity,
-            child: ShaderMask(
-              shaderCallback: (rect) {
-                return const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.black, Colors.transparent],
-                ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
-              },
-              blendMode: BlendMode.dstIn,
-              child: widget.appBarBackground,
-            ),
-          ),
-        ),
+        appBar: buildAppBar(),
         backgroundColor: Colors.transparent,
         body: widget.body,
         drawer: widget.drawer,
+      ),
+    );
+  }
+
+  AppBar? buildAppBar() {
+    if (widget.showBackAppBar && widget.backAppBar != null) {
+      return widget.backAppBar;
+    }
+
+    return AppBar(
+      title: widget.title,
+      centerTitle: true,
+      toolbarHeight: CustomSize.toolbarHeight,
+      elevation: 0,
+      actions: widget.actions,
+      flexibleSpace: SizedBox(
+        width: double.infinity,
+        child: ShaderMask(
+          shaderCallback: (rect) {
+            return const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.black, Colors.transparent],
+            ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
+          },
+          blendMode: BlendMode.dstIn,
+          child: widget.appBarBackground,
+        ),
       ),
     );
   }

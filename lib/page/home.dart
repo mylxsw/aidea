@@ -231,6 +231,26 @@ class _NewHomePageState extends State<NewHomePage> {
         customColors.appBarBackgroundImage!,
         fit: BoxFit.cover,
       ),
+      showBackAppBar: chatPreviewController.selectMode,
+      backAppBar: AppBar(
+        title: Text(
+          AppLocale.select.getString(context),
+          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+        ),
+        centerTitle: true,
+        elevation: 0,
+        leadingWidth: 80,
+        leading: TextButton(
+          onPressed: () {
+            chatPreviewController.exitSelectMode();
+          },
+          child: Text(
+            AppLocale.cancel.getString(context),
+            style: TextStyle(color: customColors.linkColor),
+          ),
+        ),
+        toolbarHeight: CustomSize.toolbarHeight,
+      ),
       // 标题，点击后弹出模型选择对话框
       title: GestureDetector(
         onTap: () {
@@ -502,15 +522,17 @@ class _NewHomePageState extends State<NewHomePage> {
                       }
                     }
 
+                    enableImageUpload = selectedModel == null
+                        ? enableImageUpload
+                        : (selectedModel?.supportVision ?? false);
+
                     return ChatInput(
                       enableNotifier: enableInput,
                       onSubmit: (value) {
                         handleSubmit(value);
                         FocusManager.instance.primaryFocus?.unfocus();
                       },
-                      enableImageUpload: selectedModel == null
-                          ? enableImageUpload
-                          : (selectedModel?.supportVision ?? false),
+                      enableImageUpload: enableImageUpload,
                       onImageSelected: (files) {
                         setState(() {
                           selectedImageFiles = files;
@@ -618,6 +640,23 @@ class _NewHomePageState extends State<NewHomePage> {
               his: loadedState.chatHistory,
               alternativeAvatarUrl: currentModelV2?.avatarUrl,
             ),
+      senderNameBuilder: (message) {
+        if (message.senderName == null) {
+          return null;
+        }
+
+        return Container(
+          margin: const EdgeInsets.fromLTRB(0, 0, 10, 7),
+          padding: const EdgeInsets.symmetric(horizontal: 13),
+          child: Text(
+            message.senderName!,
+            style: TextStyle(
+              color: customColors.weakTextColor,
+              fontSize: 12,
+            ),
+          ),
+        );
+      },
       onDeleteMessage: (id) {
         handleDeleteMessage(context, id, chatHistoryId: chatId);
       },
