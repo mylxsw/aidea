@@ -2,7 +2,6 @@ import 'package:askaide/bloc/account_bloc.dart';
 import 'package:askaide/bloc/chat_chat_bloc.dart';
 import 'package:askaide/bloc/chat_message_bloc.dart';
 import 'package:askaide/bloc/free_count_bloc.dart';
-import 'package:askaide/bloc/notify_bloc.dart';
 import 'package:askaide/bloc/room_bloc.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/cache.dart';
@@ -96,7 +95,7 @@ class _NewHomePageState extends State<NewHomePage> {
       reloadPage(loadAll: true);
     });
 
-    reloadModels();
+    reloadModels(cache: false);
     initListeners();
   }
 
@@ -121,31 +120,30 @@ class _NewHomePageState extends State<NewHomePage> {
   }
 
   /// 加载模型列表，用于查询模型名称
-  void reloadModels() {
-    ModelAggregate.models().then((value) {
-      setState(() {
-        supportModels = value;
-      });
-
-      Cache().stringGet(key: 'last_selected_model').then((value) {
-        final selected = supportModels.where((e) => e.id == value).firstOrNull;
-        if (selected != null) {
-          setState(() {
-            selectedModel = selected;
-          });
-        }
-
-        if (selectedModel == null && supportModels.isNotEmpty) {
-          setState(() {
-            selectedModel = supportModels.first;
-          });
-        }
-
-        if (selectedModel != null) {
-          loadCurrentModel(selectedModel!.id);
-        }
-      });
+  Future<void> reloadModels({bool cache = true}) async {
+    var value = await ModelAggregate.models(cache: cache);
+    setState(() {
+      supportModels = value;
     });
+
+    var cacheValue = await Cache().stringGet(key: 'last_selected_model');
+
+    final selected = supportModels.where((e) => e.id == cacheValue).firstOrNull;
+    if (selected != null) {
+      setState(() {
+        selectedModel = selected;
+      });
+    }
+
+    if (selectedModel == null && supportModels.isNotEmpty) {
+      setState(() {
+        selectedModel = supportModels.first;
+      });
+    }
+
+    if (selectedModel != null) {
+      loadCurrentModel(selectedModel!.id);
+    }
   }
 
   void initListeners() {
@@ -253,8 +251,11 @@ class _NewHomePageState extends State<NewHomePage> {
       ),
       // 标题，点击后弹出模型选择对话框
       title: GestureDetector(
-        onTap: () {
+        onTap: () async {
+          await reloadModels(cache: false);
+
           ModelSwitcher.openActionDialog(
+            // ignore: use_build_context_synchronously
             context: context,
             onSelected: (selected) {
               setState(() {
@@ -741,7 +742,7 @@ class _NewHomePageState extends State<NewHomePage> {
               text,
               user: 'me',
               ts: DateTime.now(),
-              model: selectedModel!.id,
+              model: selectedModel?.id,
               type: messagetType,
               chatHistoryId: chatId,
               images: selectedImageFiles

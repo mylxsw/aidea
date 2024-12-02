@@ -496,9 +496,9 @@ class APIServer {
   }
 
   /// 获取模型列表
-  Future<List<Model>> models() async {
+  Future<List<Model>> models({bool cache = true}) async {
     return sendCachedGetRequest(
-      '/v1/models',
+      '/v2/models',
       (resp) {
         var models = <Model>[];
         for (var model in resp.data) {
@@ -508,6 +508,7 @@ class APIServer {
         return models;
       },
       subKey: _cacheSubKey(),
+      forceRefresh: !cache,
     );
   }
 

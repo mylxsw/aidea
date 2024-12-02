@@ -13,14 +13,14 @@ class ModelAggregate {
   }
 
   /// 支持的模型列表
-  static Future<List<mm.Model>> models() async {
+  static Future<List<mm.Model>> models({bool cache = true}) async {
     final List<mm.Model> models = [];
     final isAPIServerSet =
         settings.stringDefault(settingAPIServerToken, '') != '';
     final selfHostOpenAI = settings.boolDefault(settingOpenAISelfHosted, false);
 
     if (isAPIServerSet) {
-      models.addAll((await APIServer().models())
+      models.addAll((await APIServer().models(cache: cache))
           .map(
             (e) => mm.Model(
               e.id.split(':').last,
