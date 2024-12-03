@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:askaide/bloc/chat_chat_bloc.dart';
-import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/color.dart';
 import 'package:askaide/helper/global_store.dart';
@@ -91,8 +90,7 @@ class _HomePageState extends State<HomePage> {
       id: 'openai:gpt-4',
       supportVision: false,
       name: 'Chat-4',
-      avatarUrl:
-          'https://ssl.aicode.cc/ai-server/assets/avatar/gpt4-preview.png',
+      avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt4-preview.png',
     ),
   ];
 
@@ -110,8 +108,7 @@ class _HomePageState extends State<HomePage> {
   /// 用于监听键盘事件，实现回车发送消息，Shift+Enter换行
   late final FocusNode _focusNode = FocusNode(
     onKeyEvent: (node, event) {
-      if (!HardwareKeyboard.instance.isShiftPressed &&
-          event.logicalKey.keyLabel == 'Enter') {
+      if (!HardwareKeyboard.instance.isShiftPressed && event.logicalKey.keyLabel == 'Enter') {
         if (event is KeyDownEvent) {
           onSubmit(context, _textController.text.trim());
         }
@@ -144,13 +141,6 @@ class _HomePageState extends State<HomePage> {
         models = cap.homeModels;
 
         if (mounted) {
-          // 加载免费模型剩余使用次数
-          if (currentModel != null && currentModel!.model.modelId != null) {
-            context
-                .read<FreeCountBloc>()
-                .add(FreeCountReloadEvent(model: currentModel!.model.modelId!));
-          }
-
           setState(() {});
         }
       }
@@ -160,14 +150,12 @@ class _HomePageState extends State<HomePage> {
     Cache().boolGet(key: 'show_home_free_model_message').then((show) async {
       if (show) {
         final promotions = await APIServer().notificationPromotionEvents();
-        if (promotions['chat_page'] == null ||
-            promotions['chat_page']!.isEmpty) {
+        if (promotions['chat_page'] == null || promotions['chat_page']!.isEmpty) {
           return;
         }
 
         // 多个促销事件，则随机选择一个
-        promotionEvent = promotions['chat_page']![
-            Random().nextInt(promotions['chat_page']!.length)];
+        promotionEvent = promotions['chat_page']![Random().nextInt(promotions['chat_page']!.length)];
       }
 
       setState(() {
@@ -191,8 +179,7 @@ class _HomePageState extends State<HomePage> {
         showBeautyDialog(
           context,
           type: QuickAlertType.info,
-          text:
-              '恭喜您，账号创建成功！${(widget.reward != null && widget.reward! > 0) ? '\n\n为了庆祝这一时刻，我们向您的账户赠送了 ${widget.reward} 个智慧果。' : ''}',
+          text: '恭喜您，账号创建成功！${(widget.reward != null && widget.reward! > 0) ? '\n\n为了庆祝这一时刻，我们向您的账户赠送了 ${widget.reward} 个智慧果。' : ''}',
           confirmBtnText: '开始使用',
           onConfirmBtnTap: () {
             context.pop();
@@ -252,8 +239,7 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: BlocBuilder<ChatChatBloc, ChatChatState>(
-          buildWhen: (previous, current) =>
-              current is ChatChatRecentHistoriesLoaded,
+          buildWhen: (previous, current) => current is ChatChatRecentHistoriesLoaded,
           builder: (context, state) {
             if (state is ChatChatRecentHistoriesLoaded) {
               return SliverSingleComponent(
@@ -269,9 +255,7 @@ class _HomePageState extends State<HomePage> {
                     icon: const Icon(Icons.history),
                     onPressed: () {
                       context.push('/chat-chat/history').whenComplete(() {
-                        context
-                            .read<ChatChatBloc>()
-                            .add(ChatChatLoadRecentHistories());
+                        context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
                       });
                     },
                   ),
@@ -285,8 +269,7 @@ class _HomePageState extends State<HomePage> {
                     SliverStickyHeader(
                       header: SafeArea(
                         top: false,
-                        child:
-                            buildChatComponents(customColors, context, state),
+                        child: buildChatComponents(customColors, context, state),
                       ),
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
@@ -296,13 +279,11 @@ class _HomePageState extends State<HomePage> {
                                 top: false,
                                 bottom: false,
                                 child: Container(
-                                  margin:
-                                      const EdgeInsets.only(top: 10, left: 15),
+                                  margin: const EdgeInsets.only(top: 10, left: 15),
                                   child: Text(
                                     AppLocale.histories.getString(context),
                                     style: TextStyle(
-                                      color: customColors.weakTextColor
-                                          ?.withAlpha(100),
+                                      color: customColors.weakTextColor?.withAlpha(100),
                                       fontSize: 13,
                                     ),
                                   ),
@@ -316,41 +297,32 @@ class _HomePageState extends State<HomePage> {
                                 bottom: false,
                                 child: GestureDetector(
                                   onTap: () {
-                                    context
-                                        .push('/chat-chat/history')
-                                        .whenComplete(() {
-                                      context
-                                          .read<ChatChatBloc>()
-                                          .add(ChatChatLoadRecentHistories());
+                                    context.push('/chat-chat/history').whenComplete(() {
+                                      context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
                                     });
                                   },
                                   child: Container(
                                     alignment: Alignment.center,
-                                    margin: const EdgeInsets.only(
-                                        top: 5, bottom: 15),
+                                    margin: const EdgeInsets.only(top: 5, bottom: 15),
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         Icon(
                                           Icons.keyboard_double_arrow_left,
                                           size: 12,
-                                          color: customColors.weakTextColor!
-                                              .withAlpha(120),
+                                          color: customColors.weakTextColor!.withAlpha(120),
                                         ),
                                         Text(
                                           "查看更多",
                                           style: TextStyle(
                                             fontSize: 12,
-                                            color: customColors.weakTextColor!
-                                                .withAlpha(120),
+                                            color: customColors.weakTextColor!.withAlpha(120),
                                           ),
                                         ),
                                         Icon(
                                           Icons.keyboard_double_arrow_right,
                                           size: 12,
-                                          color: customColors.weakTextColor!
-                                              .withAlpha(120),
+                                          color: customColors.weakTextColor!.withAlpha(120),
                                         ),
                                       ],
                                     ),
@@ -370,19 +342,14 @@ class _HomePageState extends State<HomePage> {
                                       .push(
                                           '/chat-anywhere?chat_id=${state.histories[index - 1].id}&model=${state.histories[index - 1].model}&title=${state.histories[index - 1].title}')
                                       .whenComplete(() {
-                                    FocusScope.of(context)
-                                        .requestFocus(FocusNode());
-                                    context
-                                        .read<ChatChatBloc>()
-                                        .add(ChatChatLoadRecentHistories());
+                                    FocusScope.of(context).requestFocus(FocusNode());
+                                    context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
                                   });
                                 },
                               ),
                             );
                           },
-                          childCount: state.histories.isNotEmpty
-                              ? state.histories.length + 1
-                              : 0,
+                          childCount: state.histories.isNotEmpty ? state.histories.length + 1 : 0,
                         ),
                       ),
                     ),
@@ -441,16 +408,9 @@ class _HomePageState extends State<HomePage> {
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInToLinear,
               onValueChanged: (value) {
-                currentModel = indicators[value];
-
-                // 重新读取模型的免费使用次数
-                if (currentModel != null &&
-                    currentModel!.model.modelId != null) {
-                  context.read<FreeCountBloc>().add(FreeCountReloadEvent(
-                      model: currentModel!.model.modelId!));
-                }
-
-                setState(() {});
+                setState(() {
+                  currentModel = indicators[value];
+                });
               },
             ),
           ),
@@ -506,8 +466,7 @@ class _HomePageState extends State<HomePage> {
                             customColors: customColors,
                             maxLines: inputMaxLines,
                             minLines: 6,
-                            hintText:
-                                AppLocale.askMeAnyQuestion.getString(context),
+                            hintText: AppLocale.askMeAnyQuestion.getString(context),
                             maxLength: 150000,
                             showCounter: false,
                             hintColor: customColors.textfieldHintDeepColor,
@@ -524,9 +483,7 @@ class _HomePageState extends State<HomePage> {
                         customColors,
                       ),
                     ),
-                    if (selectedImageFiles.isNotEmpty &&
-                        currentModel != null &&
-                        currentModel!.model.supportVision)
+                    if (selectedImageFiles.isNotEmpty && currentModel != null && currentModel!.model.supportVision)
                       SizedBox(
                         height: 110,
                         child: ListView(
@@ -566,10 +523,8 @@ class _HomePageState extends State<HomePage> {
                                           child: Container(
                                             padding: const EdgeInsets.all(3),
                                             decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              color: customColors
-                                                  .chatRoomBackground,
+                                              borderRadius: BorderRadius.circular(10),
+                                              color: customColors.chatRoomBackground,
                                             ),
                                             child: Icon(
                                               Icons.close,
@@ -592,15 +547,12 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           // 问题示例
-          if (state.examples != null &&
-              state.examples!.isNotEmpty &&
-              state.histories.isEmpty)
+          if (state.examples != null && state.examples!.isNotEmpty && state.histories.isEmpty)
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
               ),
-              padding:
-                  const EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 3),
+              padding: const EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 3),
               margin: const EdgeInsets.all(10),
               height: 260,
               child: Column(
@@ -629,9 +581,7 @@ class _HomePageState extends State<HomePage> {
                   Expanded(
                     child: ListView.separated(
                       padding: const EdgeInsets.all(0),
-                      itemCount: state.examples!.length > 4
-                          ? 4
-                          : state.examples!.length,
+                      itemCount: state.examples!.length > 4 ? 4 : state.examples!.length,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         return ListTextItem(
@@ -647,8 +597,7 @@ class _HomePageState extends State<HomePage> {
                       },
                       separatorBuilder: (BuildContext context, int index) {
                         return Divider(
-                          color:
-                              customColors.chatExampleItemText?.withAlpha(20),
+                          color: customColors.chatExampleItemText?.withAlpha(20),
                         );
                       },
                     ),
@@ -657,8 +606,7 @@ class _HomePageState extends State<HomePage> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       style: ButtonStyle(
-                        overlayColor:
-                            WidgetStateProperty.all(Colors.transparent),
+                        overlayColor: WidgetStateProperty.all(Colors.transparent),
                       ),
                       onPressed: () {
                         setState(() {
@@ -732,23 +680,19 @@ class _HomePageState extends State<HomePage> {
               maxLines: 2,
             ),
           ),
-          if (promotionEvent!.clickButtonType !=
-                  PromotionEventClickButtonType.none &&
+          if (promotionEvent!.clickButtonType != PromotionEventClickButtonType.none &&
               promotionEvent!.clickValue != null &&
               promotionEvent!.clickValue!.isNotEmpty)
             InkWell(
               onTap: () {
                 switch (promotionEvent!.clickButtonType) {
                   case PromotionEventClickButtonType.url:
-                    if (promotionEvent!.clickValue != null &&
-                        promotionEvent!.clickValue!.isNotEmpty) {
-                      launchUrlString(promotionEvent!.clickValue!,
-                          mode: LaunchMode.externalApplication);
+                    if (promotionEvent!.clickValue != null && promotionEvent!.clickValue!.isNotEmpty) {
+                      launchUrlString(promotionEvent!.clickValue!, mode: LaunchMode.externalApplication);
                     }
                     break;
                   case PromotionEventClickButtonType.inAppRoute:
-                    if (promotionEvent!.clickValue != null &&
-                        promotionEvent!.clickValue!.isNotEmpty) {
+                    if (promotionEvent!.clickValue != null && promotionEvent!.clickValue!.isNotEmpty) {
                       context.push(promotionEvent!.clickValue!);
                     }
 
@@ -761,8 +705,7 @@ class _HomePageState extends State<HomePage> {
                   Text(
                     '详情',
                     style: TextStyle(
-                      color: stringToColor(
-                          promotionEvent!.clickButtonColor ?? 'FFFFFFFF'),
+                      color: stringToColor(promotionEvent!.clickButtonColor ?? 'FFFFFFFF'),
                       fontSize: 14,
                     ),
                   ),
@@ -770,8 +713,7 @@ class _HomePageState extends State<HomePage> {
                   Icon(
                     Icons.keyboard_double_arrow_right,
                     size: 16,
-                    color: stringToColor(
-                        promotionEvent!.clickButtonColor ?? 'FFFFFFFF'),
+                    color: stringToColor(promotionEvent!.clickButtonColor ?? 'FFFFFFFF'),
                   ),
                 ],
               ),
@@ -824,22 +766,19 @@ class _HomePageState extends State<HomePage> {
                   // 上传图片
                   HapticFeedbackHelper.mediumImpact();
                   if (selectedImageFiles.length >= 4) {
-                    showSuccessMessage('最多只能上传 4 张图片');
+                    showSuccessMessage(AppLocale.uploadImageLimit4.getString(context));
                     return;
                   }
 
-                  FilePickerResult? result =
-                      await FilePicker.platform.pickFiles(
+                  FilePickerResult? result = await FilePicker.platform.pickFiles(
                     type: FileType.image,
                     allowMultiple: true,
                   );
                   if (result != null && result.files.isNotEmpty) {
                     final files = selectedImageFiles;
-                    files.addAll(
-                        result.files.map((e) => FileUpload(file: e)).toList());
+                    files.addAll(result.files.map((e) => FileUpload(file: e)).toList());
                     setState(() {
-                      selectedImageFiles =
-                          files.sublist(0, files.length > 4 ? 4 : files.length);
+                      selectedImageFiles = files.sublist(0, files.length > 4 ? 4 : files.length);
                     });
                   }
                 },
@@ -851,28 +790,7 @@ class _HomePageState extends State<HomePage> {
               ),
           ],
         ),
-        BlocBuilder<FreeCountBloc, FreeCountState>(
-          buildWhen: (previous, current) => current is FreeCountLoadedState,
-          builder: (context, state) {
-            if (state is FreeCountLoadedState) {
-              if (currentModel != null && currentModel!.model.modelId != null) {
-                final matched = state.model(currentModel!.model.modelId!);
-                if (matched != null &&
-                    matched.leftCount > 0 &&
-                    matched.maxCount > 0) {
-                  return Text(
-                    '今日还可免费${matched.leftCount}次',
-                    style: TextStyle(
-                      color: customColors.weakTextColor?.withAlpha(120),
-                      fontSize: 11,
-                    ),
-                  );
-                }
-              }
-            }
-            return const SizedBox();
-          },
-        ),
+        const SizedBox(),
         InkWell(
           onTap: () {
             onSubmit(context, _textController.text.trim());
@@ -880,8 +798,7 @@ class _HomePageState extends State<HomePage> {
           child: Icon(
             Icons.send,
             color: _textController.text.trim().isNotEmpty
-                ? customColors.linkColor ??
-                    const Color.fromARGB(255, 70, 165, 73)
+                ? customColors.linkColor ?? const Color.fromARGB(255, 70, 165, 73)
                 : customColors.chatInputPanelText,
             size: 26,
           ),
@@ -953,9 +870,7 @@ class ChatHistoryItem extends StatelessWidget {
                   context,
                   AppLocale.confirmDelete.getString(context),
                   () {
-                    context
-                        .read<ChatChatBloc>()
-                        .add(ChatChatDeleteHistory(history.id!));
+                    context.read<ChatChatBloc>().add(ChatChatDeleteHistory(history.id!));
                   },
                   danger: true,
                 );
@@ -970,11 +885,9 @@ class ChatHistoryItem extends StatelessWidget {
           ),
           child: InkWell(
             child: ListTile(
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(customColors.borderRadius ?? 8),
+                borderRadius: BorderRadius.circular(customColors.borderRadius ?? 8),
               ),
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

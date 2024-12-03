@@ -90,9 +90,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
       setState(() {
         models = value;
       });
-      context
-          .read<GroupChatBloc>()
-          .add(GroupChatLoadEvent(widget.groupId, forceUpdate: true));
+      context.read<GroupChatBloc>().add(GroupChatLoadEvent(widget.groupId, forceUpdate: true));
     });
   }
 
@@ -120,21 +118,17 @@ class _GroupEditPageState extends State<GroupEditPage> {
         setting: widget.setting,
         enabled: false,
         child: BlocListener<RoomBloc, RoomState>(
-          listenWhen: (previous, current) =>
-              current is GroupRoomUpdateResultState,
+          listenWhen: (previous, current) => current is GroupRoomUpdateResultState,
           listener: (context, state) {
             if (state is GroupRoomUpdateResultState) {
               globalLoadingCancel?.call();
               if (state.success) {
                 showSuccessMessage(AppLocale.operateSuccess.getString(context));
               } else {
-                showErrorMessageEnhanced(context,
-                    state.error ?? AppLocale.operateFailed.getString(context));
+                showErrorMessageEnhanced(context, state.error ?? AppLocale.operateFailed.getString(context));
               }
 
-              context
-                  .read<GroupChatBloc>()
-                  .add(GroupChatLoadEvent(widget.groupId, forceUpdate: true));
+              context.read<GroupChatBloc>().add(GroupChatLoadEvent(widget.groupId, forceUpdate: true));
             }
           },
           child: BlocConsumer<GroupChatBloc, GroupChatState>(
@@ -146,9 +140,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
                 selectedModels = state.group.members
                     .where((e) => e.status != 2)
                     .map((e) {
-                      final mod = models
-                          .where((em) => e.modelId == em.realModelId)
-                          .firstOrNull;
+                      final mod = models.where((em) => e.modelId == em.realModelId).firstOrNull;
                       if (mod == null) {
                         return null;
                       }
@@ -159,13 +151,9 @@ class _GroupEditPageState extends State<GroupEditPage> {
                     .map((e) => e!)
                     .toList();
 
-                final selectedModelIds =
-                    selectedModels.map((e) => e.model.realModelId).toList();
+                final selectedModelIds = selectedModels.map((e) => e.model.realModelId).toList();
 
-                models = models
-                    .where((e) =>
-                        !e.disabled || selectedModelIds.contains(e.realModelId))
-                    .toList();
+                models = models.where((e) => !e.disabled || selectedModelIds.contains(e.realModelId)).toList();
               }
             },
             builder: (context, state) {
@@ -184,7 +172,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
                           maxLength: 50,
                           maxLines: 1,
                           showCounter: false,
-                          labelText: '名称',
+                          labelText: AppLocale.roomName.getString(context),
                           labelPosition: LabelPosition.left,
                           hintText: AppLocale.required.getString(context),
                           textDirection: TextDirection.rtl,
@@ -192,7 +180,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
                         EnhancedInput(
                           padding: const EdgeInsets.only(top: 10, bottom: 5),
                           title: Text(
-                            '头像',
+                            AppLocale.avatar.getString(context),
                             style: TextStyle(
                               color: customColors.textfieldLabelColor,
                               fontSize: 16,
@@ -211,10 +199,8 @@ class _GroupEditPageState extends State<GroupEditPage> {
                                       ? null
                                       : DecorationImage(
                                           image: (_avatarUrl!.startsWith('http')
-                                              ? CachedNetworkImageProviderEnhanced(
-                                                  _avatarUrl!)
-                                              : FileImage(File(
-                                                  _avatarUrl!))) as ImageProvider,
+                                              ? CachedNetworkImageProviderEnhanced(_avatarUrl!)
+                                              : FileImage(File(_avatarUrl!))) as ImageProvider,
                                           fit: BoxFit.cover,
                                         ),
                                 ),
@@ -259,7 +245,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
                         EnhancedInput(
                           padding: const EdgeInsets.only(top: 10, bottom: 5),
                           title: Text(
-                            '成员',
+                            AppLocale.members.getString(context),
                             style: TextStyle(
                               color: customColors.textfieldLabelColor,
                               fontSize: 16,
@@ -272,8 +258,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
                               Stack(
                                 children: [
                                   Container(
-                                    width: resolveSelectedModelsPreviewWidth(
-                                        context),
+                                    width: resolveSelectedModelsPreviewWidth(context),
                                     height: 45,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8),
@@ -290,8 +275,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
                                         padding: const EdgeInsets.all(3),
                                         decoration: BoxDecoration(
                                           color: customColors.tagsBackground,
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: Text(
                                           'x${selectedModels.length}',
@@ -316,12 +300,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
                                   },
                                   items: models
                                       .map((e) => ModelWithMemberId(
-                                          e,
-                                          selectedModels
-                                              .where(
-                                                  (se) => se.model.id == e.id)
-                                              .firstOrNull
-                                              ?.memberId))
+                                          e, selectedModels.where((se) => se.model.id == e.id).firstOrNull?.memberId))
                                       .toList(),
                                   onChanged: (selected) {
                                     setState(() {
@@ -349,11 +328,8 @@ class _GroupEditPageState extends State<GroupEditPage> {
                         Expanded(
                           child: EnhancedButton(
                             title: AppLocale.save.getString(context),
-                            color:
-                                canSubmit() ? null : customColors.weakTextColor,
-                            backgroundColor: canSubmit()
-                                ? null
-                                : customColors.weakTextColor!.withAlpha(20),
+                            color: canSubmit() ? null : customColors.weakTextColor,
+                            backgroundColor: canSubmit() ? null : customColors.weakTextColor!.withAlpha(20),
                             onPressed: () async {
                               if (!canSubmit()) {
                                 return;
@@ -362,8 +338,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
                               globalLoadingCancel = BotToast.showCustomLoading(
                                 toastBuilder: (cancel) {
                                   return LoadingIndicator(
-                                    message: AppLocale.processingWait
-                                        .getString(context),
+                                    message: AppLocale.processingWait.getString(context),
                                   );
                                 },
                                 allowClick: false,
@@ -379,23 +354,20 @@ class _GroupEditPageState extends State<GroupEditPage> {
 
                               try {
                                 if (_avatarUrl != null) {
-                                  if (!(_avatarUrl!.startsWith('http://') ||
-                                      _avatarUrl!.startsWith('https://'))) {
+                                  if (!(_avatarUrl!.startsWith('http://') || _avatarUrl!.startsWith('https://'))) {
                                     // 上传文件，获取 URL
                                     final cancel = BotToast.showCustomLoading(
                                       toastBuilder: (cancel) {
-                                        return const LoadingIndicator(
-                                          message: "正在上传图片，请稍后...",
+                                        return LoadingIndicator(
+                                          message: AppLocale.imageUploading.getString(context),
                                         );
                                       },
                                       allowClick: false,
                                     );
 
-                                    final uploadRes =
-                                        await ImageUploader(widget.setting)
-                                            .upload(_avatarUrl!,
-                                                usage: 'avatar')
-                                            .whenComplete(() => cancel());
+                                    final uploadRes = await ImageUploader(widget.setting)
+                                        .upload(_avatarUrl!, usage: 'avatar')
+                                        .whenComplete(() => cancel());
                                     _avatarUrl = uploadRes.url;
                                   }
                                 }

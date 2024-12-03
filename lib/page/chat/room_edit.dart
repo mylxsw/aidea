@@ -71,8 +71,7 @@ class _RoomEditPageState extends State<RoomEditPage> {
   void initState() {
     super.initState();
 
-    BlocProvider.of<RoomBloc>(context)
-        .add(RoomLoadEvent(widget.roomId, cascading: false));
+    BlocProvider.of<RoomBloc>(context).add(RoomLoadEvent(widget.roomId, cascading: false));
 
     // 获取预设头像
     if (Ability().isUserLogon()) {
@@ -129,8 +128,7 @@ class _RoomEditPageState extends State<RoomEditPage> {
                   _originalAvatarUrl = state.room.avatarUrl;
                   _originalAvatarId = null;
                 });
-              } else if (state.room.avatarId != null &&
-                  state.room.avatarId != 0) {
+              } else if (state.room.avatarId != null && state.room.avatarId != 0) {
                 setState(() {
                   _avatarId = state.room.avatarId;
                   _avatarUrl = null;
@@ -175,8 +173,7 @@ class _RoomEditPageState extends State<RoomEditPage> {
                             ),
                             if (Ability().isUserLogon())
                               EnhancedInput(
-                                padding:
-                                    const EdgeInsets.only(top: 10, bottom: 5),
+                                padding: const EdgeInsets.only(top: 10, bottom: 5),
                                 title: Text(
                                   '头像',
                                   style: TextStyle(
@@ -196,18 +193,13 @@ class _RoomEditPageState extends State<RoomEditPage> {
                                         image: _avatarUrl == null
                                             ? null
                                             : DecorationImage(
-                                                image: (_avatarUrl!
-                                                            .startsWith('http')
-                                                        ? CachedNetworkImageProviderEnhanced(
-                                                            _avatarUrl!)
-                                                        : FileImage(
-                                                            File(_avatarUrl!)))
-                                                    as ImageProvider,
+                                                image: (_avatarUrl!.startsWith('http')
+                                                    ? CachedNetworkImageProviderEnhanced(_avatarUrl!)
+                                                    : FileImage(File(_avatarUrl!))) as ImageProvider,
                                                 fit: BoxFit.cover,
                                               ),
                                       ),
-                                      child: _avatarUrl == null &&
-                                              _avatarId == null
+                                      child: _avatarUrl == null && _avatarId == null
                                           ? const Center(
                                               child: Icon(
                                                 Icons.interests,
@@ -238,17 +230,10 @@ class _RoomEditPageState extends State<RoomEditPage> {
                                         usage: AvatarUsage.room,
                                         defaultAvatarId: _avatarId,
                                         defaultAvatarUrl: _avatarUrl,
-                                        externalAvatarIds:
-                                            _originalAvatarId == null
-                                                ? []
-                                                : [_originalAvatarId!],
-                                        externalAvatarUrls:
-                                            _originalAvatarUrl == null
-                                                ? [...avatarPresets]
-                                                : [
-                                                    _originalAvatarUrl!,
-                                                    ...avatarPresets
-                                                  ],
+                                        externalAvatarIds: _originalAvatarId == null ? [] : [_originalAvatarId!],
+                                        externalAvatarUrls: _originalAvatarUrl == null
+                                            ? [...avatarPresets]
+                                            : [_originalAvatarUrl!, ...avatarPresets],
                                       );
                                     },
                                     heightFactor: 0.8,
@@ -274,19 +259,13 @@ class _RoomEditPageState extends State<RoomEditPage> {
                                   });
                                 },
                                 initValue: _selectedModel?.uid(),
-                                reservedModels: reservedModel != null
-                                    ? [reservedModel!]
-                                    : [],
+                                reservedModels: reservedModel != null ? [reservedModel!] : [],
                               );
                             },
-                            value: _selectedModel != null
-                                ? _selectedModel!.name
-                                : AppLocale.select.getString(context),
+                            value: _selectedModel != null ? _selectedModel!.name : AppLocale.select.getString(context),
                           ),
                           // 提示语
-                          if ((_selectedModel != null &&
-                                  _selectedModel!.isChatModel) ||
-                              _promptController.text != '')
+                          if ((_selectedModel != null && _selectedModel!.isChatModel) || _promptController.text != '')
                             EnhancedTextField(
                               customColors: customColors,
                               controller: _promptController,
@@ -298,15 +277,13 @@ class _RoomEditPageState extends State<RoomEditPage> {
                                   Icon(
                                     Icons.tips_and_updates_outlined,
                                     size: 13,
-                                    color:
-                                        customColors.linkColor?.withAlpha(150),
+                                    color: customColors.linkColor?.withAlpha(150),
                                   ),
                                   const SizedBox(width: 5),
                                   Text(
                                     '示例',
                                     style: TextStyle(
-                                      color: customColors.linkColor
-                                          ?.withAlpha(150),
+                                      color: customColors.linkColor?.withAlpha(150),
                                       fontSize: 13,
                                     ),
                                   ),
@@ -328,34 +305,28 @@ class _RoomEditPageState extends State<RoomEditPage> {
                       if (showAdvancedOptions)
                         ColumnBlock(
                           innerPanding: 10,
-                          padding: const EdgeInsets.only(
-                              top: 15, left: 15, right: 15, bottom: 5),
+                          padding: const EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 5),
                           children: [
                             EnhancedTextField(
                               customColors: customColors,
                               controller: _initMessageController,
-                              labelText: '引导语',
+                              labelText: AppLocale.welcomeMessage.getString(context),
                               labelPosition: LabelPosition.top,
-                              hintText: '每次开始新对话时，系统将会以 AI 的身份自动发送引导语。',
+                              hintText: AppLocale.welcomeMessageTips.getString(context),
                               maxLines: 3,
                               showCounter: false,
                               maxLength: 1000,
                             ),
                             EnhancedInput(
                               title: Text(
-                                '记忆深度',
+                                AppLocale.memoryDepth.getString(context),
                                 style: TextStyle(
                                   color: customColors.textfieldLabelColor,
                                   fontSize: 16,
                                 ),
                               ),
                               value: Text(
-                                validMemories
-                                        .where((element) =>
-                                            element.number == maxContext)
-                                        .firstOrNull
-                                        ?.name ??
-                                    '',
+                                validMemories.where((element) => element.number == maxContext).firstOrNull?.name ?? '',
                               ),
                               onPressed: () {
                                 openListSelectDialog(
@@ -374,8 +345,7 @@ class _RoomEditPageState extends State<RoomEditPage> {
                                                 e.description ?? '',
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
-                                                  color: customColors
-                                                      .weakTextColor,
+                                                  color: customColors.weakTextColor,
                                                   fontSize: 12,
                                                 ),
                                               ),
@@ -392,10 +362,7 @@ class _RoomEditPageState extends State<RoomEditPage> {
                                     return true;
                                   },
                                   heightFactor: 0.5,
-                                  value: validMemories
-                                      .where((element) =>
-                                          element.number == maxContext)
-                                      .firstOrNull,
+                                  value: validMemories.where((element) => element.number == maxContext).firstOrNull,
                                 );
                               },
                             ),
@@ -405,15 +372,15 @@ class _RoomEditPageState extends State<RoomEditPage> {
                       Row(
                         children: [
                           EnhancedButton(
-                            title: showAdvancedOptions ? '收起选项' : '高级选项',
+                            title: showAdvancedOptions
+                                ? AppLocale.collapseOptions.getString(context)
+                                : AppLocale.advanced.getString(context),
                             width: 100,
                             backgroundColor: Colors.transparent,
                             color: customColors.weakLinkColor,
                             fontSize: 15,
                             icon: Icon(
-                              showAdvancedOptions
-                                  ? Icons.unfold_less
-                                  : Icons.unfold_more,
+                              showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
                               color: customColors.weakLinkColor,
                               size: 15,
                             ),
@@ -429,42 +396,35 @@ class _RoomEditPageState extends State<RoomEditPage> {
                               title: AppLocale.save.getString(context),
                               onPressed: () async {
                                 if (_nameController.text == '') {
-                                  showErrorMessage(AppLocale.nameRequiredMessage
-                                      .getString(context));
+                                  showErrorMessage(AppLocale.nameRequiredMessage.getString(context));
                                   return;
                                 }
 
                                 if (_selectedModel == null) {
-                                  showErrorMessage(AppLocale
-                                      .modelRequiredMessage
-                                      .getString(context));
+                                  showErrorMessage(AppLocale.modelRequiredMessage.getString(context));
                                   return;
                                 }
 
                                 if (_promptController.text.length > 1000) {
-                                  showErrorMessage(AppLocale.promptFormatError
-                                      .getString(context));
+                                  showErrorMessage(AppLocale.promptFormatError.getString(context));
                                   return;
                                 }
 
                                 if (_avatarUrl != null) {
-                                  if (!(_avatarUrl!.startsWith('http://') ||
-                                      _avatarUrl!.startsWith('https://'))) {
+                                  if (!(_avatarUrl!.startsWith('http://') || _avatarUrl!.startsWith('https://'))) {
                                     // 上传文件，获取 URL
                                     final cancel = BotToast.showCustomLoading(
                                       toastBuilder: (cancel) {
-                                        return const LoadingIndicator(
-                                          message: "正在上传图片，请稍后...",
+                                        return LoadingIndicator(
+                                          message: AppLocale.imageUploading.getString(context),
                                         );
                                       },
                                       allowClick: false,
                                     );
 
-                                    final uploadRes =
-                                        await ImageUploader(widget.setting)
-                                            .upload(_avatarUrl!,
-                                                usage: 'avatar')
-                                            .whenComplete(() => cancel());
+                                    final uploadRes = await ImageUploader(widget.setting)
+                                        .upload(_avatarUrl!, usage: 'avatar')
+                                        .whenComplete(() => cancel());
                                     _avatarUrl = uploadRes.url;
                                   }
                                 }
@@ -479,13 +439,11 @@ class _RoomEditPageState extends State<RoomEditPage> {
                                           avatarUrl: _avatarUrl,
                                           avatarId: _avatarId,
                                           maxContext: maxContext,
-                                          initMessage:
-                                              _initMessageController.text,
+                                          initMessage: _initMessageController.text,
                                         ),
                                       );
 
-                                  showSuccessMessage(AppLocale.operateSuccess
-                                      .getString(context));
+                                  showSuccessMessage(AppLocale.operateSuccess.getString(context));
                                 }
                               },
                             ),

@@ -27,8 +27,7 @@ class DestroyAccountScreen extends StatefulWidget {
 
 class _DestroyAccountScreenState extends State<DestroyAccountScreen> {
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _verificationCodeController =
-      TextEditingController();
+  final TextEditingController _verificationCodeController = TextEditingController();
 
   String verifyCodeId = '';
 
@@ -46,9 +45,9 @@ class _DestroyAccountScreenState extends State<DestroyAccountScreen> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
-        title: const Text(
-          '注销账号',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+        title: Text(
+          AppLocale.deleteAccount.getString(context),
+          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
       ),
@@ -67,9 +66,10 @@ class _DestroyAccountScreenState extends State<DestroyAccountScreen> {
               ),
               const SizedBox(height: 15),
               ColumnBlock(
+                backgroundColor: Colors.transparent,
                 children: [
                   VerifyCodeInput(
-                    inColumnBlock: true,
+                    inColumnBlock: false,
                     controller: _verificationCodeController,
                     onVerifyCodeSent: (id) {
                       verifyCodeId = id;
@@ -93,9 +93,9 @@ class _DestroyAccountScreenState extends State<DestroyAccountScreen> {
                 ),
                 child: TextButton(
                   onPressed: onDestroySubmit,
-                  child: const Text(
-                    '确认注销账号',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  child: Text(
+                    AppLocale.confirmDeleteAccount.getString(context),
+                    style: const TextStyle(color: Colors.white, fontSize: 18),
                   ),
                 ),
               ),

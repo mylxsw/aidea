@@ -19,8 +19,7 @@ class HomeChatHistoryPage extends StatefulWidget {
   final SettingRepository setting;
   final ChatMessageRepository chatMessageRepo;
 
-  const HomeChatHistoryPage(
-      {super.key, required this.setting, required this.chatMessageRepo});
+  const HomeChatHistoryPage({super.key, required this.setting, required this.chatMessageRepo});
 
   @override
   State<HomeChatHistoryPage> createState() => _HomeChatHistoryPageState();
@@ -28,6 +27,8 @@ class HomeChatHistoryPage extends StatefulWidget {
 
 class _HomeChatHistoryPageState extends State<HomeChatHistoryPage> {
   late final ChatHistoryDatasource datasource;
+
+  String? keyword;
 
   @override
   void initState() {
@@ -57,79 +58,101 @@ class _HomeChatHistoryPageState extends State<HomeChatHistoryPage> {
           top: false,
           left: false,
           right: false,
-          child: RefreshIndicator(
-            color: customColors.linkColor,
-            onRefresh: () async {
-              await datasource.refresh();
-            },
-            child: BlocListener<ChatChatBloc, ChatChatState>(
-              listenWhen: (previous, current) =>
-                  current is ChatChatRecentHistoriesLoaded,
-              listener: (context, state) {
-                if (state is ChatChatRecentHistoriesLoaded) {
-                  datasource.refresh();
-                }
-              },
-              child: RefreshIndicator(
-                color: customColors.linkColor,
-                displacement: 20,
-                onRefresh: () {
-                  return datasource.refresh();
-                },
-                child: LoadingMoreList(
-                  ListConfig<ChatHistory>(
-                    itemBuilder: (context, item, index) {
-                      return ChatHistoryItem(
-                        history: item,
-                        customColors: customColors,
-                        onTap: () {
-                          context
-                              .push(
-                                  '/chat-anywhere?chat_id=${item.id}&model=${item.model}&title=${item.title}')
-                              .whenComplete(() {
-                            FocusScope.of(context).requestFocus(FocusNode());
-                            context
-                                .read<ChatChatBloc>()
-                                .add(ChatChatLoadRecentHistories());
-                          });
-                        },
-                      );
-                    },
-                    sourceList: datasource,
-                    indicatorBuilder: (context, status) {
-                      String msg = '';
-                      switch (status) {
-                        case IndicatorStatus.noMoreLoad:
-                          msg = '~ 没有更多了 ~';
-                          break;
-                        case IndicatorStatus.loadingMoreBusying:
-                          msg = '加载中...';
-                          break;
-                        case IndicatorStatus.error:
-                          msg = '加载失败，请稍后再试';
-                          break;
-                        case IndicatorStatus.empty:
-                          msg = '暂无数据';
-                          break;
-                        default:
-                          return const Center(child: LoadingIndicator());
-                      }
-                      return Container(
-                        padding: const EdgeInsets.all(15),
-                        alignment: Alignment.center,
-                        child: Text(
-                          msg,
-                          style: TextStyle(
-                            color: customColors.weakTextColor,
-                            fontSize: 14,
-                          ),
-                        ),
-                      );
-                    },
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                child: TextField(
+                  textAlignVertical: TextAlignVertical.center,
+                  style: TextStyle(color: customColors.dialogDefaultTextColor),
+                  decoration: InputDecoration(
+                    hintText: AppLocale.search.getString(context),
+                    hintStyle: TextStyle(
+                      color: customColors.dialogDefaultTextColor,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: customColors.dialogDefaultTextColor,
+                    ),
+                    isDense: true,
+                    border: InputBorder.none,
                   ),
+                  onChanged: (value) {
+                    setState(() {
+                      keyword = value;
+                    });
+
+                    datasource.refresh(false, keyword);
+                  },
                 ),
               ),
-            ),
+              Expanded(
+                child: BlocListener<ChatChatBloc, ChatChatState>(
+                  listenWhen: (previous, current) => current is ChatChatRecentHistoriesLoaded,
+                  listener: (context, state) {
+                    if (state is ChatChatRecentHistoriesLoaded) {
+                      datasource.refresh(false, keyword);
+                    }
+                  },
+                  child: RefreshIndicator(
+                    color: customColors.linkColor,
+                    displacement: 20,
+                    onRefresh: () {
+                      return datasource.refresh(false, keyword);
+                    },
+                    child: LoadingMoreList(
+                      ListConfig<ChatHistory>(
+                        itemBuilder: (context, item, index) {
+                          return ChatHistoryItem(
+                            history: item,
+                            customColors: customColors,
+                            onTap: () {
+                              context
+                                  .push('/chat-anywhere?chat_id=${item.id}&model=${item.model}&title=${item.title}')
+                                  .whenComplete(() {
+                                FocusScope.of(context).requestFocus(FocusNode());
+                                context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
+                              });
+                            },
+                          );
+                        },
+                        sourceList: datasource,
+                        indicatorBuilder: (context, status) {
+                          String msg = '';
+                          switch (status) {
+                            case IndicatorStatus.noMoreLoad:
+                              msg = '~ No more left ~';
+                              break;
+                            case IndicatorStatus.loadingMoreBusying:
+                              msg = 'Loading...';
+                              break;
+                            case IndicatorStatus.error:
+                              msg = 'Failed to load, please try again later';
+                              break;
+                            case IndicatorStatus.empty:
+                              msg = 'No data';
+                              break;
+                            default:
+                              return const Center(child: LoadingIndicator());
+                          }
+                          return Container(
+                            padding: const EdgeInsets.all(15),
+                            alignment: Alignment.center,
+                            child: Text(
+                              msg,
+                              style: TextStyle(
+                                color: customColors.weakTextColor,
+                                fontSize: 14,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
           ),
         ),
       ),

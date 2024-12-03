@@ -52,9 +52,7 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
           return;
         }
 
-        _weChatResponse = weChatResponseEventHandler
-            .distinct((a, b) => a == b)
-            .listen((event) {
+        _weChatResponse = weChatResponseEventHandler.distinct((a, b) => a == b).listen((event) {
           if (event is WeChatAuthResponse) {
             if (event.errCode != 0) {
               showErrorMessage(event.errStr!);
@@ -68,7 +66,7 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
 
             APIServer().bindWechat(code: event.code!).then((_) {
               context.read<AccountBloc>().add(AccountLoadEvent());
-              showSuccessMessage('绑定成功');
+              showSuccessMessage(AppLocale.operateSuccess.getString(context));
             }).onError((error, stackTrace) {
               showErrorMessageEnhanced(context, error!);
             });
@@ -89,16 +87,16 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: CustomSize.toolbarHeight,
-          title: const Text(
-            '账号设置',
-            style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+          title: Text(
+            AppLocale.accountSettings.getString(context),
+            style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
           ),
           centerTitle: true,
           actions: [
             EnhancedPopupMenu(
               items: [
                 EnhancedPopupMenuItem(
-                  title: '注销账号',
+                  title: AppLocale.deleteAccount.getString(context),
                   icon: Icons.delete_forever,
                   iconColor: Colors.red,
                   onTap: (ctx) {
@@ -127,20 +125,18 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
                   context,
                   [
                     SettingsSection(
-                      title: const Text('基础信息'),
+                      title: Text(AppLocale.basicInfo.getString(context)),
                       tiles: [
                         SettingsTile(
-                          title: const Text('昵称'),
+                          title: Text(AppLocale.nickname.getString(context)),
                           trailing: Row(
                             children: [
                               Text(
-                                state.user!.user.name == null ||
-                                        state.user!.user.name == ''
-                                    ? '未设置'
+                                state.user!.user.name == null || state.user!.user.name == ''
+                                    ? AppLocale.unset.getString(context)
                                     : state.user!.user.name!,
                                 style: TextStyle(
-                                  color: customColors.weakTextColor
-                                      ?.withAlpha(200),
+                                  color: customColors.weakTextColor?.withAlpha(200),
                                   fontSize: 13,
                                 ),
                               ),
@@ -154,40 +150,34 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
                           onPressed: (context) {
                             openTextFieldDialog(
                               context,
-                              title: '设置昵称',
-                              hint: '请输入你的昵称',
+                              title: AppLocale.setNickname.getString(context),
+                              hint: AppLocale.inputYourNickname.getString(context),
                               maxLine: 1,
                               maxLength: 30,
                               defaultValue: state.user?.user.name,
                               onSubmit: (value) {
-                                context
-                                    .read<AccountBloc>()
-                                    .add(AccountUpdateEvent(realname: value));
+                                context.read<AccountBloc>().add(AccountUpdateEvent(realname: value));
                                 return true;
                               },
                             );
                           },
                         ),
                         SettingsTile(
-                          title: const Text('手机号'),
+                          title: Text(AppLocale.phone.getString(context)),
                           trailing: Row(
                             children: [
                               Text(
-                                state.user!.user.phone == null ||
-                                        state.user!.user.phone == ''
-                                    ? '绑定'
+                                state.user!.user.phone == null || state.user!.user.phone == ''
+                                    ? AppLocale.bindPhone.getString(context)
                                     : state.user!.user.phone!,
                                 style: TextStyle(
-                                  color: customColors.weakTextColor
-                                      ?.withAlpha(200),
+                                  color: customColors.weakTextColor?.withAlpha(200),
                                   fontSize: 13,
                                 ),
                               ),
-                              if (state.user!.user.phone == null ||
-                                  state.user!.user.phone == '')
+                              if (state.user!.user.phone == null || state.user!.user.phone == '')
                                 const SizedBox(width: 5),
-                              if (state.user!.user.phone == null ||
-                                  state.user!.user.phone == '')
+                              if (state.user!.user.phone == null || state.user!.user.phone == '')
                                 const Icon(
                                   CupertinoIcons.chevron_forward,
                                   size: 18,
@@ -196,35 +186,28 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
                             ],
                           ),
                           onPressed: (context) {
-                            if (state.user!.user.phone == null ||
-                                state.user!.user.phone == '') {
-                              context
-                                  .push('/bind-phone?is_signin=false')
-                                  .then((value) => Logger.instance.d(value));
+                            if (state.user!.user.phone == null || state.user!.user.phone == '') {
+                              context.push('/bind-phone?is_signin=false').then((value) => Logger.instance.d(value));
                             }
                           },
                         ),
                         if (Ability().enableWechatSignin && wechatInstalled)
                           SettingsTile(
-                            title: const Text('微信账号'),
+                            title: Text(AppLocale.wechatAccount.getString(context)),
                             trailing: Row(
                               children: [
                                 Text(
-                                  state.user!.user.unionId == null ||
-                                          state.user!.user.unionId == ''
-                                      ? '绑定'
-                                      : '已绑定',
+                                  state.user!.user.unionId == null || state.user!.user.unionId == ''
+                                      ? AppLocale.bind.getString(context)
+                                      : AppLocale.bound.getString(context),
                                   style: TextStyle(
-                                    color: customColors.weakTextColor
-                                        ?.withAlpha(200),
+                                    color: customColors.weakTextColor?.withAlpha(200),
                                     fontSize: 13,
                                   ),
                                 ),
-                                if (state.user!.user.unionId == null ||
-                                    state.user!.user.unionId == '')
+                                if (state.user!.user.unionId == null || state.user!.user.unionId == '')
                                   const SizedBox(width: 5),
-                                if (state.user!.user.unionId == null ||
-                                    state.user!.user.unionId == '')
+                                if (state.user!.user.unionId == null || state.user!.user.unionId == '')
                                   const Icon(
                                     CupertinoIcons.chevron_forward,
                                     size: 18,
@@ -233,21 +216,19 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
                               ],
                             ),
                             onPressed: (context) async {
-                              if (state.user!.user.unionId == null ||
-                                  state.user!.user.unionId == '') {
-                                final ok = await sendWeChatAuth(
-                                    scope: "snsapi_userinfo",
-                                    state: "wechat_sdk_demo_test");
+                              if (state.user!.user.unionId == null || state.user!.user.unionId == '') {
+                                final ok =
+                                    await sendWeChatAuth(scope: "snsapi_userinfo", state: "wechat_sdk_demo_test");
                                 if (!ok) {
-                                  showErrorMessage('请先安装微信后再使用该功能');
+                                  showErrorMessage(AppLocale.installWeChat.getString(context));
                                 }
                               }
                             },
                           ),
                         SettingsTile(
                           title: Text(state.user!.control.isSetPassword
-                              ? '修改密码'
-                              : '设置密码'),
+                              ? AppLocale.modifyPassword.getString(context)
+                              : AppLocale.setPassword.getString(context)),
                           trailing: const Icon(
                             CupertinoIcons.chevron_forward,
                             size: 18,
@@ -273,9 +254,7 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
                               context,
                               AppLocale.confirmSignOut.getString(context),
                               () {
-                                context
-                                    .read<AccountBloc>()
-                                    .add(AccountSignOutEvent());
+                                context.read<AccountBloc>().add(AccountSignOutEvent());
                                 context.go('/login');
                               },
                               danger: true,
@@ -302,25 +281,28 @@ Widget buildSettingsList(
   List<AbstractSettingsSection> sections,
 ) {
   final customColors = Theme.of(context).extension<CustomColors>()!;
-  return RefreshIndicator(
-    color: customColors.linkColor,
-    displacement: 20,
-    onRefresh: () async {
-      context.read<AccountBloc>().add(AccountLoadEvent());
-    },
-    child: SettingsList(
-      platform: DevicePlatform.iOS,
-      lightTheme: const SettingsThemeData(
-        settingsListBackground: Colors.transparent,
-        settingsSectionBackground: Color.fromARGB(255, 255, 255, 255),
+  return SafeArea(
+    top: false,
+    child: RefreshIndicator(
+      color: customColors.linkColor,
+      displacement: 20,
+      onRefresh: () async {
+        context.read<AccountBloc>().add(AccountLoadEvent());
+      },
+      child: SettingsList(
+        platform: DevicePlatform.iOS,
+        lightTheme: const SettingsThemeData(
+          settingsListBackground: Colors.transparent,
+          settingsSectionBackground: Color.fromARGB(255, 255, 255, 255),
+        ),
+        darkTheme: const SettingsThemeData(
+          settingsListBackground: Colors.transparent,
+          settingsSectionBackground: Color.fromARGB(255, 27, 27, 27),
+          titleTextColor: Color.fromARGB(255, 239, 239, 239),
+        ),
+        sections: sections,
+        contentPadding: const EdgeInsets.all(0),
       ),
-      darkTheme: const SettingsThemeData(
-        settingsListBackground: Colors.transparent,
-        settingsSectionBackground: Color.fromARGB(255, 27, 27, 27),
-        titleTextColor: Color.fromARGB(255, 239, 239, 239),
-      ),
-      sections: sections,
-      contentPadding: const EdgeInsets.all(0),
     ),
   );
 }

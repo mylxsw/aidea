@@ -130,8 +130,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
                 },
                 displacement: 20,
                 child: BlocConsumer<ModelBloc, ModelState>(
-                  listenWhen: (previous, current) =>
-                      current is ModelOperationResult,
+                  listenWhen: (previous, current) => current is ModelOperationResult,
                   listener: (context, state) {
                     if (state is ModelOperationResult) {
                       if (state.success) {
@@ -148,15 +147,9 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
                       final models = state.models
                           .where((e) =>
                               keyword == '' ||
-                              e.name
-                                  .toLowerCase()
-                                  .contains(keyword.toLowerCase()) ||
-                              e.modelId
-                                  .toLowerCase()
-                                  .contains(keyword.toLowerCase()) ||
-                              (e.description ?? '')
-                                  .toLowerCase()
-                                  .contains(keyword.toLowerCase()))
+                              e.name.toLowerCase().contains(keyword.toLowerCase()) ||
+                              e.modelId.toLowerCase().contains(keyword.toLowerCase()) ||
+                              (e.description ?? '').toLowerCase().contains(keyword.toLowerCase()))
                           .toList();
                       return SafeArea(
                         top: false,
@@ -217,9 +210,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
                 openConfirmDialog(
                   context,
                   AppLocale.confirmToDeleteRoom.getString(context),
-                  () => context
-                      .read<ModelBloc>()
-                      .add(ModelDeleteEvent(mod.modelId)),
+                  () => context.read<ModelBloc>().add(ModelDeleteEvent(mod.modelId)),
                   danger: true,
                 );
               },
@@ -227,17 +218,12 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
           ],
         ),
         child: Material(
-          borderRadius:
-              BorderRadius.all(Radius.circular(customColors.borderRadius ?? 8)),
+          borderRadius: BorderRadius.all(Radius.circular(customColors.borderRadius ?? 8)),
           color: customColors.columnBlockBackgroundColor,
           child: InkWell(
-            borderRadius: BorderRadius.all(
-                Radius.circular(customColors.borderRadius ?? 8)),
+            borderRadius: BorderRadius.all(Radius.circular(customColors.borderRadius ?? 8)),
             onTap: () {
-              context
-                  .push(
-                      '/admin/models/edit/${Uri.encodeComponent(mod.modelId)}')
-                  .then((value) {
+              context.push('/admin/models/edit/${Uri.encodeComponent(mod.modelId)}').then((value) {
                 context.read<ModelBloc>().add(ModelsLoadEvent());
               });
             },
@@ -262,18 +248,18 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
                                 padding: const EdgeInsets.all(3),
                                 width: 80,
                                 color: Colors.black.withAlpha(30),
-                                child: const Row(
+                                child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.remove_red_eye_outlined,
                                       color: Colors.white,
                                       size: 12,
                                     ),
-                                    SizedBox(width: 3),
+                                    const SizedBox(width: 3),
                                     Text(
-                                      '视觉',
-                                      style: TextStyle(
+                                      AppLocale.visionTag.getString(context),
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 12,
                                       ),
@@ -324,9 +310,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          mod.providers
-                              .map((e) => searchChannel(e).display)
-                              .join('|'),
+                          mod.providers.map((e) => searchChannel(e).display).join('|'),
                           style: TextStyle(
                             fontSize: 10,
                             overflow: TextOverflow.ellipsis,

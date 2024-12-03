@@ -15,6 +15,7 @@ class ModelItem extends StatefulWidget {
   final Function(Model? selected) onSelected;
   final String? initValue;
   final bool enableClear;
+  final bool showUsing;
 
   const ModelItem({
     super.key,
@@ -22,6 +23,7 @@ class ModelItem extends StatefulWidget {
     required this.onSelected,
     this.initValue,
     this.enableClear = false,
+    this.showUsing = false,
   });
 
   @override
@@ -35,13 +37,11 @@ class _ModelItemState extends State<ModelItem> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    if (widget.enableClear && widget.initValue != null) {
+    if (widget.enableClear && widget.initValue != null && widget.showUsing) {
       // 将当前选中的模型放在第一位
-      var index = widget.models.indexWhere(
-          (e) => e.uid() == widget.initValue || e.id == widget.initValue);
+      var index = widget.models.indexWhere((e) => e.uid() == widget.initValue || e.id == widget.initValue);
       if (index != -1) {
-        widget.models
-            .insert(0, widget.models[index].copyWith(category: '正在使用'));
+        widget.models.insert(0, widget.models[index].copyWith(category: AppLocale.using.getString(context)));
       }
     }
 
@@ -65,8 +65,7 @@ class _ModelItemState extends State<ModelItem> {
                     isDense: true,
                     border: InputBorder.none,
                   ),
-                  onChanged: (value) =>
-                      setState(() => keyword = value.toLowerCase()),
+                  onChanged: (value) => setState(() => keyword = value.toLowerCase()),
                 ),
               ),
               Expanded(
@@ -74,11 +73,8 @@ class _ModelItemState extends State<ModelItem> {
                   final models = keyword.isEmpty
                       ? widget.models
                       : widget.models.where((e) {
-                          var matchText = e.name +
-                              (e.description ?? '') +
-                              (e.shortName ?? '') +
-                              (e.tag ?? '') +
-                              (e.category);
+                          var matchText =
+                              e.name + (e.description ?? '') + (e.shortName ?? '') + (e.tag ?? '') + (e.category);
                           if (e.supportVision) {
                             matchText += 'vision视觉看图';
                           }
@@ -126,15 +122,11 @@ class _ModelItemState extends State<ModelItem> {
 
                       List<Widget> separators = [];
                       if (i == 0 && models[i].category != '') {
-                        separators
-                            .add(buildCategory(customColors, item.category));
-                      } else if (i > 0 &&
-                          models[i].category != models[i - 1].category) {
+                        separators.add(buildCategory(customColors, item.category));
+                      } else if (i > 0 && models[i].category != models[i - 1].category) {
                         separators.add(buildCategory(
                           customColors,
-                          item.category == ''
-                              ? AppLocale.others.getString(context)
-                              : item.category,
+                          item.category == '' ? AppLocale.others.getString(context) : item.category,
                         ));
                       }
 
@@ -146,70 +138,54 @@ class _ModelItemState extends State<ModelItem> {
                             title: Container(
                               alignment: Alignment.center,
                               padding: const EdgeInsets.symmetric(vertical: 5),
+                              decoration: BoxDecoration(
+                                color: widget.initValue == item.uid() ? customColors.dialogBackgroundColor : null,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   if (item.avatarUrl != null) ...[
-                                    _buildAvatar(
-                                        avatarUrl: item.avatarUrl, size: 50),
+                                    _buildAvatar(avatarUrl: item.avatarUrl, size: 50),
                                     const SizedBox(width: 10),
                                   ],
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Row(
                                           children: [
                                             Expanded(
                                               child: Container(
                                                 alignment:
-                                                    item.avatarUrl != null
-                                                        ? Alignment.centerLeft
-                                                        : Alignment.center,
+                                                    item.avatarUrl != null ? Alignment.centerLeft : Alignment.center,
                                                 child: Text(
                                                   item.name,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: const TextStyle(
-                                                      fontSize: 15),
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: const TextStyle(fontSize: 15),
                                                 ),
                                               ),
                                             ),
                                             ...tags,
                                             if (item.avatarUrl != null) ...[
-                                              if (widget.enableClear && i == 0)
+                                              if (widget.enableClear && i == 0 && widget.showUsing)
                                                 SizedBox(
-                                                  width: 50,
-                                                  child: widget.initValue ==
-                                                          item.uid()
+                                                  width: 60,
+                                                  child: widget.initValue == item.uid()
                                                       ? WeakTextButton(
-                                                          title: '取消',
+                                                          title: AppLocale.cancel.getString(context),
                                                           fontSize: 10,
                                                           onPressed: () {
-                                                            widget.onSelected(
-                                                                null);
+                                                            widget.onSelected(null);
                                                           },
                                                         )
                                                       : const SizedBox(),
-                                                )
-                                              else if (widget.initValue ==
-                                                  item.uid())
-                                                SizedBox(
-                                                  width: 20,
-                                                  child: Icon(
-                                                    Icons.check,
-                                                    color:
-                                                        customColors.linkColor,
-                                                  ),
                                                 ),
                                             ],
                                           ],
                                         ),
-                                        if (item.description != null &&
-                                            item.description != '')
+                                        if (item.description != null && item.description != '')
                                           Text(
                                             item.description!,
                                             maxLines: 2,
@@ -292,9 +268,7 @@ class _ModelItemState extends State<ModelItem> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: tagBgColor != null
-            ? stringToColor(tagBgColor)
-            : customColors.tagsBackgroundHover,
+        color: tagBgColor != null ? stringToColor(tagBgColor) : customColors.tagsBackgroundHover,
         borderRadius: BorderRadius.circular(8),
       ),
       margin: const EdgeInsets.only(left: 5),
@@ -306,9 +280,7 @@ class _ModelItemState extends State<ModelItem> {
         tag,
         style: TextStyle(
           fontSize: 8,
-          color: tagTextColor != null
-              ? stringToColor(tagTextColor)
-              : customColors.tagsText,
+          color: tagTextColor != null ? stringToColor(tagTextColor) : customColors.tagsText,
         ),
       ),
     );

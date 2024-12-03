@@ -10,6 +10,8 @@ class ChatHistoryDatasource extends LoadingMoreBase<ChatHistory> {
   bool _hasMore = true;
   bool forceRefresh = false;
 
+  String? keyword;
+
   final ChatMessageRepository repo;
   ChatHistoryDatasource(this.repo);
 
@@ -22,6 +24,7 @@ class ChatHistoryDatasource extends LoadingMoreBase<ChatHistory> {
       final histories = await repo.recentChatHistories(
         chatAnywhereRoomId,
         30,
+        keyword: keyword,
         offset: 30 * (pageindex - 1),
         userId: APIServer().localUserID(),
       );
@@ -47,7 +50,8 @@ class ChatHistoryDatasource extends LoadingMoreBase<ChatHistory> {
   }
 
   @override
-  Future<bool> refresh([bool notifyStateChanged = false]) async {
+  Future<bool> refresh([bool notifyStateChanged = false, String? keyword]) async {
+    this.keyword = keyword;
     _hasMore = true;
     pageindex = 1;
     //force to refresh list when you don't want clear list before request

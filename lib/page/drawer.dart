@@ -35,9 +35,8 @@ class _LeftDrawerState extends State<LeftDrawer> {
                 child: Column(
                   children: [
                     DrawerHeader(
-                      padding: PlatformTool.isMacOS()
-                          ? const EdgeInsets.only(top: kToolbarHeight)
-                          : const EdgeInsets.all(0),
+                      padding:
+                          PlatformTool.isMacOS() ? const EdgeInsets.only(top: kToolbarHeight) : const EdgeInsets.all(0),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         image: DecorationImage(
@@ -59,9 +58,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
                             noBorder: true,
                             onPaymentReturn: () {
                               if (userInfo != null) {
-                                context
-                                    .read<AccountBloc>()
-                                    .add(AccountLoadEvent(cache: false));
+                                context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
                               }
                             },
                           );
@@ -88,8 +85,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
                         ),
                         IconBox(
                           icon: const Icon(Icons.palette_outlined),
-                          title:
-                              Text(AppLocale.creativeIsland.getString(context)),
+                          title: Text(AppLocale.creativeIsland.getString(context)),
                           onTap: () {
                             context.push('/creative-draw');
                           },
@@ -102,15 +98,13 @@ class _LeftDrawerState extends State<LeftDrawer> {
                       title: Text(AppLocale.histories.getString(context)),
                       onTap: () {
                         context.push('/chat-chat/history').whenComplete(() {
-                          context
-                              .read<ChatChatBloc>()
-                              .add(ChatChatLoadRecentHistories());
+                          context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
                         });
                       },
                     ),
                     ListTile(
                       leading: const Icon(Icons.settings_outlined),
-                      title: const Text('设置'),
+                      title: Text(AppLocale.settings.getString(context)),
                       onTap: () {
                         context.push('/setting');
                       },
@@ -133,7 +127,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('关注我们：'),
+                        Text(AppLocale.socialMedia.getString(context)),
                         const SizedBox(width: 10),
                         Image.asset('assets/weibo.png', width: 25),
                       ],
@@ -149,7 +143,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('本项目开源，欢迎贡献：'),
+                        Text(AppLocale.opensource.getString(context)),
                         const SizedBox(width: 10),
                         Image.asset('assets/github.png', width: 25),
                       ],

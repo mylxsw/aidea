@@ -49,8 +49,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<bool> _inputEnabled = ValueNotifier(true);
   final ChatPreviewController _chatPreviewController = ChatPreviewController();
-  final AudioPlayerController _audioPlayerController =
-      AudioPlayerController(useRemoteAPI: true);
+  final AudioPlayerController _audioPlayerController = AudioPlayerController(useRemoteAPI: true);
   bool showAudioPlayer = false;
   bool audioLoadding = false;
 
@@ -114,18 +113,15 @@ class _GroupChatPageState extends State<GroupChatPage> {
 
   Widget _buildChatComponents(CustomColors customColors) {
     return BlocConsumer<GroupChatBloc, GroupChatState>(
-      listenWhen: (previous, current) =>
-          current is GroupChatLoaded || current is GroupDefaultMemberSelected,
+      listenWhen: (previous, current) => current is GroupChatLoaded || current is GroupDefaultMemberSelected,
       listener: (context, state) {
         if (state is GroupChatLoaded) {
           // 加载聊天记录列表
-          context.read<GroupChatBloc>().add(
-              GroupChatMessagesLoadEvent(widget.groupId, isInitRequest: true));
+          context.read<GroupChatBloc>().add(GroupChatMessagesLoadEvent(widget.groupId, isInitRequest: true));
 
           // 选中默认的聊天成员
-          selectedMembers = state.group.members
-              .where((e) => state.defaultChatMembers?.contains(e.id) ?? false)
-              .toList();
+          selectedMembers =
+              state.group.members.where((e) => state.defaultChatMembers?.contains(e.id) ?? false).toList();
 
           setState(() {
             group = state.group;
@@ -135,9 +131,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
         if (state is GroupDefaultMemberSelected) {
           // 选中默认的聊天成员
           if (group != null) {
-            selectedMembers = group?.members
-                .where((e) => state.members.contains(e.id))
-                .toList();
+            selectedMembers = group?.members.where((e) => state.members.contains(e.id)).toList();
           }
         }
       },
@@ -149,8 +143,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
             bottom: false,
             child: Column(
               children: [
-                if (Ability().showGlobalAlert)
-                  const GlobalAlert(pageKey: 'chat'),
+                if (Ability().showGlobalAlert) const GlobalAlert(pageKey: 'chat'),
                 // 语音输出中提示
                 if (showAudioPlayer)
                   EnhancedAudioPlayer(
@@ -190,7 +183,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
                               FocusManager.instance.primaryFocus?.unfocus();
                             },
                             onNewChat: () => handleResetContext(context),
-                            hintText: '有问题尽管问我',
+                            hintText: AppLocale.askMeAnyQuestion.getString(context),
                             onVoiceRecordTappedEvent: () {
                               _audioPlayerController.stop();
                             },
@@ -212,23 +205,19 @@ class _GroupChatPageState extends State<GroupChatPage> {
                                         },
                                         child: Icon(
                                           Icons.alternate_email,
-                                          color: selectedMembers != null &&
-                                                  selectedMembers!.isNotEmpty
+                                          color: selectedMembers != null && selectedMembers!.isNotEmpty
                                               ? customColors.linkColor
                                               : customColors.chatInputPanelText,
                                         ),
                                       ),
                                     ),
-                                    if (selectedMembers != null &&
-                                        selectedMembers!.isNotEmpty)
+                                    if (selectedMembers != null && selectedMembers!.isNotEmpty)
                                       Positioned(
                                         right: 2,
                                         top: 0,
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 3, vertical: 3),
-                                          child: Text(
-                                              'x${selectedMembers!.length}',
+                                          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
+                                          child: Text('x${selectedMembers!.length}',
                                               style: TextStyle(
                                                 fontSize: 7,
                                                 color: customColors.linkColor,
@@ -266,7 +255,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
             Container(
               padding: const EdgeInsets.only(top: 15, left: 20),
               child: Text(
-                '选择本次对话成员',
+                AppLocale.selectMember.getString(context),
                 style: TextStyle(
                   fontSize: 14,
                   color: customColors.weakLinkColor,
@@ -278,9 +267,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
                 itemBuilder: (item) {
                   return Text(item.modelName);
                 },
-                items: groupState.group.members
-                    .where((e) => e.status != 2)
-                    .toList(),
+                items: groupState.group.members.where((e) => e.status != 2).toList(),
                 onChanged: (selected) {
                   setState(() {
                     selectedMembers = selected;
@@ -341,9 +328,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
 
           // 启动定时器，定时刷新聊天记录
           timer ??= Timer.periodic(const Duration(seconds: 3), (timer) {
-            context
-                .read<GroupChatBloc>()
-                .add(GroupChatUpdateMessageStatusEvent(widget.groupId));
+            context.read<GroupChatBloc>().add(GroupChatUpdateMessageStatusEvent(widget.groupId));
           });
         }
       },
@@ -358,8 +343,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
           }
 
           final loadedMessages = state.messages.map((e) {
-            var member =
-                e.memberId != null ? group.group.findMember(e.memberId!) : null;
+            var member = e.memberId != null ? group.group.findMember(e.memberId!) : null;
 
             return Message(
               id: e.id,
@@ -378,9 +362,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
           final messages = loadedMessages.map((e) {
             return MessageWithState(
               e,
-              group.states[
-                      widget.stateManager.getKey(e.roomId ?? 0, e.id ?? 0)] ??
-                  MessageState(),
+              group.states[widget.stateManager.getKey(e.roomId ?? 0, e.id ?? 0)] ?? MessageState(),
             );
           }).toList();
 
@@ -432,9 +414,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
               _audioPlayerController.playAudio(message.text);
             },
             onResentEvent: (message, index) {
-              _scrollController.animateTo(0,
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.easeOut);
+              _scrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
               _handleSubmit(message.text, index: index, isResent: true);
             },
             helpWidgets: state.hasWaitTasks || loadedMessages.isEmpty
@@ -544,9 +524,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
       context,
       AppLocale.confirmDelete.getString(context),
       () {
-        context
-            .read<GroupChatBloc>()
-            .add(GroupChatDeleteEvent(widget.groupId, id));
+        context.read<GroupChatBloc>().add(GroupChatDeleteEvent(widget.groupId, id));
         HapticFeedbackHelper.mediumImpact();
       },
       danger: true,
@@ -569,9 +547,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
       context,
       AppLocale.confirmClearMessages.getString(context),
       () {
-        context
-            .read<GroupChatBloc>()
-            .add(GroupChatDeleteAllEvent(widget.groupId));
+        context.read<GroupChatBloc>().add(GroupChatDeleteAllEvent(widget.groupId));
         HapticFeedbackHelper.mediumImpact();
       },
       danger: true,
@@ -600,8 +576,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
             onPressed: () {
               var messages = chatPreviewController.selectedMessages();
               if (messages.isEmpty) {
-                showErrorMessageEnhanced(
-                    context, AppLocale.noMessageSelected.getString(context));
+                showErrorMessageEnhanced(context, AppLocale.noMessageSelected.getString(context));
                 return;
               }
 
@@ -646,8 +621,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
             onPressed: () {
               chatPreviewController.selectAllMessage();
             },
-            icon:
-                Icon(Icons.select_all_outlined, color: customColors.linkColor),
+            icon: Icon(Icons.select_all_outlined, color: customColors.linkColor),
             label: Text(
               AppLocale.selectAll.getString(context),
               style: TextStyle(color: customColors.linkColor),
@@ -656,8 +630,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
           TextButton.icon(
             onPressed: () {
               if (chatPreviewController.selectedMessageIds.isEmpty) {
-                showErrorMessageEnhanced(
-                    context, AppLocale.noMessageSelected.getString(context));
+                showErrorMessageEnhanced(context, AppLocale.noMessageSelected.getString(context));
                 return;
               }
 
@@ -671,8 +644,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
                     //     .read<ChatMessageBloc>()
                     //     .add(ChatMessageDeleteEvent(ids));
 
-                    showErrorMessageEnhanced(
-                        context, AppLocale.operateSuccess.getString(context));
+                    showErrorMessageEnhanced(context, AppLocale.operateSuccess.getString(context));
 
                     chatPreviewController.exitSelectMode();
                   }
@@ -725,9 +697,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
             iconColor: customColors.linkColor,
             onTap: (_) {
               context.push('/group-chat/$chatRoomId/edit').whenComplete(() {
-                context
-                    .read<GroupChatBloc>()
-                    .add(GroupChatLoadEvent(widget.groupId, forceUpdate: true));
+                context.read<GroupChatBloc>().add(GroupChatLoadEvent(widget.groupId, forceUpdate: true));
               });
             },
           ),

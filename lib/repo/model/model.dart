@@ -15,6 +15,8 @@ class Model {
   bool isNew = false;
   String category;
 
+  bool isDefault;
+
   Model(
     this.id,
     this.name,
@@ -30,6 +32,7 @@ class Model {
     this.tagTextColor,
     this.tagBgColor,
     this.isNew = false,
+    this.isDefault = false,
   });
 
   String uid() {
@@ -51,6 +54,7 @@ class Model {
     String? tagBgColor,
     bool? isNew,
     String? category,
+    bool? isDefault,
   }) {
     return Model(
       id ?? this.id,
@@ -67,6 +71,7 @@ class Model {
       tagBgColor: tagBgColor ?? this.tagBgColor,
       isNew: isNew ?? this.isNew,
       category: category ?? this.category,
+      isDefault: isDefault ?? false,
     );
   }
 }

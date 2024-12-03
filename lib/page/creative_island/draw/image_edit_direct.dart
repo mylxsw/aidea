@@ -458,8 +458,8 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
 
         final cancel = BotToast.showCustomLoading(
           toastBuilder: (cancel) {
-            return const LoadingIndicator(
-              message: '正在上传图片，请稍后...',
+            return LoadingIndicator(
+              message: AppLocale.imageUploading.getString(context),
             );
           },
           allowClick: false,

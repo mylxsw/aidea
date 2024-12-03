@@ -1,5 +1,6 @@
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
+import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
@@ -8,6 +9,7 @@ import 'package:askaide/page/data/notification_datasource.dart';
 import 'package:askaide/repo/api/notification.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loading_more_list/loading_more_list.dart';
@@ -35,9 +37,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          '消息',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+        title: Text(
+          AppLocale.notification.getString(context),
+          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         toolbarHeight: CustomSize.toolbarHeight,
         centerTitle: true,
@@ -63,9 +65,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     message: item,
                     customColors: customColors,
                     onTap: () {
-                      context.push(Uri(path: '/article', queryParameters: {
-                        'id': item.articleId.toString()
-                      }).toString());
+                      context
+                          .push(Uri(path: '/article', queryParameters: {'id': item.articleId.toString()}).toString());
                     },
                   );
                 },
@@ -74,16 +75,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   String msg = '';
                   switch (status) {
                     case IndicatorStatus.noMoreLoad:
-                      msg = '~ 没有更多了 ~';
+                      msg = '~ No more left ~';
                       break;
                     case IndicatorStatus.loadingMoreBusying:
-                      msg = '加载中...';
+                      msg = 'Loading...';
                       break;
                     case IndicatorStatus.error:
-                      msg = '加载失败，请稍后再试';
+                      msg = 'Failed to load, please try again later.';
                       break;
                     case IndicatorStatus.empty:
-                      msg = '暂无数据';
+                      msg = 'No data';
                       break;
                     default:
                       return const Center(child: LoadingIndicator());
@@ -137,7 +138,7 @@ class NotifyMessageItem extends StatelessWidget {
           children: [
             const SizedBox(width: 10),
             SlidableAction(
-              label: '详情',
+              label: 'Details',
               borderRadius: BorderRadius.circular(10),
               backgroundColor: Colors.green,
               icon: Icons.info_outline,
@@ -155,11 +156,9 @@ class NotifyMessageItem extends StatelessWidget {
           ),
           child: InkWell(
             child: ListTile(
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(customColors.borderRadius ?? 8),
+                borderRadius: BorderRadius.circular(customColors.borderRadius ?? 8),
               ),
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

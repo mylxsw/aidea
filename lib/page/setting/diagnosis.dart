@@ -84,11 +84,9 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
               onPressed: () {
                 openConfirmDialog(
                   context,
-                  '该操作将会清空所有设置和数据，是否继续？',
+                  'This action will erase all settings and data, do you want to proceed?',
                   () async {
-                    final databasePath =
-                        (await databaseFactory.getDatabasesPath())
-                            .replaceAll('\\', '/');
+                    final databasePath = (await databaseFactory.getDatabasesPath()).replaceAll('\\', '/');
 
                     Logger.instance.d('databasePath: $databasePath');
 
@@ -103,15 +101,15 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                         AppLocale.operateSuccess.getString(context),
                       );
 
-                      SystemChannels.platform
-                          .invokeMethod('SystemNavigator.pop');
+                      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
                     } catch (e) {
                       Logger.instance.e(e);
                       showBeautyDialog(
                         // ignore: use_build_context_synchronously
                         context,
                         type: QuickAlertType.error,
-                        text: '数据文件删除失败，请先关闭应用后，手动删除目录 $databasePath 之后再重启应用',
+                        text:
+                            'Data file deletion failed. Please close the application first, manually delete the directory $databasePath, and then restart the application.',
                       );
                     }
                   },
@@ -121,9 +119,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
               child: Text(
                 '重置系统',
                 style: TextStyle(
-                  color: isUploaded
-                      ? customColors.weakTextColor?.withAlpha(100)
-                      : customColors.weakLinkColor,
+                  color: isUploaded ? customColors.weakTextColor?.withAlpha(100) : customColors.weakLinkColor,
                   fontSize: 12,
                 ),
               ),
@@ -136,9 +132,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                     return;
                   }
 
-                  APIServer()
-                      .diagnosisUpload(data: diagnosisInfo)
-                      .then((value) {
+                  APIServer().diagnosisUpload(data: diagnosisInfo).then((value) {
                     showSuccessMessage('上报成功');
                     setState(() {
                       isUploaded = true;
@@ -150,9 +144,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                 child: Text(
                   AppLocale.report.getString(context),
                   style: TextStyle(
-                    color: isUploaded
-                        ? customColors.weakTextColor?.withAlpha(100)
-                        : customColors.weakLinkColor,
+                    color: isUploaded ? customColors.weakTextColor?.withAlpha(100) : customColors.weakLinkColor,
                     fontSize: 12,
                   ),
                 ),
@@ -170,31 +162,31 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                   padding: const EdgeInsets.all(10),
                   children: [
                     Text(
-                      '服务器: ${APIServer().url}',
+                      'Server: ${APIServer().url}',
                       style: const TextStyle(
                         fontSize: 10,
                       ),
                     ),
                     Text(
-                      '当前用户 ID: ${APIServer().localUserID()}',
+                      'User ID: ${APIServer().localUserID()}',
                       style: const TextStyle(
                         fontSize: 10,
                       ),
                     ),
                     const Text(
-                      '客户端版本: $clientVersion',
+                      'Client Version: $clientVersion',
                       style: TextStyle(
                         fontSize: 10,
                       ),
                     ),
                     Text(
-                      '操作系统: ${PlatformTool.operatingSystem()} | ${PlatformTool.operatingSystemVersion()}',
+                      'OS: ${PlatformTool.operatingSystem()} | ${PlatformTool.operatingSystemVersion()}',
                       style: const TextStyle(
                         fontSize: 10,
                       ),
                     ),
                     Text(
-                      'OpenAI 自定义: ${Ability().enableLocalOpenAI}',
+                      'OpenAI Custom: ${Ability().enableLocalOpenAI}',
                       style: const TextStyle(
                         fontSize: 10,
                       ),
@@ -203,7 +195,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                       future: databaseFactory.getDatabasesPath(),
                       builder: (context, snapshot) {
                         return Text(
-                          '本地数据库: ${snapshot.data?.replaceAll('\\', '/')}',
+                          'Local Database: ${snapshot.data?.replaceAll('\\', '/')}',
                           style: const TextStyle(
                             fontSize: 10,
                           ),
@@ -211,19 +203,19 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                       },
                     ),
                     Text(
-                      '日志文件: ${PathHelper().getLogfilePath}',
+                      'Log File: ${PathHelper().getLogfilePath}',
                       style: const TextStyle(
                         fontSize: 10,
                       ),
                     ),
                     Text(
-                      '缓存目录: ${PathHelper().getCachePath}',
+                      'Cache Directory: ${PathHelper().getCachePath}',
                       style: const TextStyle(
                         fontSize: 10,
                       ),
                     ),
                     Text(
-                      '主目录: ${PathHelper().getHomePath}',
+                      'Main Directory: ${PathHelper().getHomePath}',
                       style: const TextStyle(
                         fontSize: 10,
                       ),

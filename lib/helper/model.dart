@@ -15,8 +15,7 @@ class ModelAggregate {
   /// 支持的模型列表
   static Future<List<mm.Model>> models({bool cache = true}) async {
     final List<mm.Model> models = [];
-    final isAPIServerSet =
-        settings.stringDefault(settingAPIServerToken, '') != '';
+    final isAPIServerSet = settings.stringDefault(settingAPIServerToken, '') != '';
     final selfHostOpenAI = settings.boolDefault(settingOpenAISelfHosted, false);
 
     if (isAPIServerSet) {
@@ -37,6 +36,7 @@ class ModelAggregate {
               tagTextColor: e.tagTextColor,
               tagBgColor: e.tagBgColor,
               isNew: e.isNew,
+              isDefault: e.isDefault,
             ),
           )
           .toList());
@@ -45,9 +45,7 @@ class ModelAggregate {
     if (selfHostOpenAI) {
       return <mm.Model>[
         ...OpenAIRepository.supportModels(),
-        ...models
-            .where((element) => element.category != modelTypeOpenAI)
-            .toList()
+        ...models.where((element) => element.category != modelTypeOpenAI).toList()
       ];
     }
 
@@ -72,8 +70,7 @@ class ModelAggregate {
     final supportModels = await models();
     return supportModels.firstWhere(
       (element) => element.uid() == uid || element.id == uid,
-      orElse: () => mm.Model(defaultChatModel, defaultChatModel, 'openai',
-          category: modelTypeOpenAI),
+      orElse: () => mm.Model(defaultChatModel, defaultChatModel, 'openai', category: modelTypeOpenAI),
     );
   }
 }

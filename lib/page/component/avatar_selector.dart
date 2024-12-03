@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:askaide/helper/haptic_feedback.dart';
+import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 enum AvatarType {
   localFile,
@@ -115,16 +117,14 @@ class _AvatarSelectorState extends State<AvatarSelector> {
                   ),
                 ],
               ),
-            if (_avatarId != null)
-              RandomAvatar(id: _avatarId ?? 0, size: 80, usage: widget.usage),
+            if (_avatarId != null) RandomAvatar(id: _avatarId ?? 0, size: 80, usage: widget.usage),
             Material(
               borderRadius: BorderRadius.circular(8),
               child: InkWell(
                 borderRadius: BorderRadius.circular(8),
                 onTap: () async {
                   HapticFeedbackHelper.mediumImpact();
-                  FilePickerResult? result =
-                      await FilePicker.platform.pickFiles(type: FileType.image);
+                  FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.image);
                   if (result != null && result.files.isNotEmpty) {
                     setState(() {
                       _avatarUrl = result.files.first.path;
@@ -132,9 +132,7 @@ class _AvatarSelectorState extends State<AvatarSelector> {
                     });
 
                     widget.onSelected(Avatar(
-                      type: _avatarUrl!.startsWith('http')
-                          ? AvatarType.network
-                          : AvatarType.localFile,
+                      type: _avatarUrl!.startsWith('http') ? AvatarType.network : AvatarType.localFile,
                       url: _avatarUrl,
                     ));
                   }
@@ -158,12 +156,11 @@ class _AvatarSelectorState extends State<AvatarSelector> {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              '自定义',
+                              AppLocale.custom.getString(context),
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                color: customColors.chatInputPanelText
-                                    ?.withOpacity(0.8),
+                                color: customColors.chatInputPanelText?.withOpacity(0.8),
                               ),
                             ),
                           ],
@@ -225,8 +222,7 @@ class _AvatarSelectorState extends State<AvatarSelector> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(11),
         border: Border.all(
-          color: (_avatarUrl != null && _avatarUrl == avatar.url) ||
-                  (_avatarId != null && _avatarId == avatar.id)
+          color: (_avatarUrl != null && _avatarUrl == avatar.url) || (_avatarId != null && _avatarId == avatar.id)
               ? customColors.linkColor ?? Colors.green
               : Colors.transparent,
           width: 4,

@@ -103,10 +103,8 @@ class ChatMessageRepository {
   }
 
   /// 获取 room 中最后一条消息
-  Future<Message?> getLastMessage(int roomId,
-      {int? userId, int? chatHistoryId}) async {
-    return await _chatMsgDataProvider.getLastMessage(roomId,
-        userId: userId, chatHistoryId: chatHistoryId);
+  Future<Message?> getLastMessage(int roomId, {int? userId, int? chatHistoryId}) async {
+    return await _chatMsgDataProvider.getLastMessage(roomId, userId: userId, chatHistoryId: chatHistoryId);
   }
 
   /// 获取 room
@@ -148,12 +146,14 @@ class ChatMessageRepository {
   Future<List<ChatHistory>> recentChatHistories(
     int roomId,
     int count, {
+    String? keyword,
     int? userId,
     int? offset,
   }) async {
     return await _chatHistoryProvider.getChatHistories(
       roomId,
       count,
+      keyword: keyword,
       userId: userId,
       offset: offset,
     );

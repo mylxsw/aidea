@@ -21,8 +21,7 @@ class BackgroundSelectorScreen extends StatefulWidget {
   const BackgroundSelectorScreen({super.key, required this.setting});
 
   @override
-  State<BackgroundSelectorScreen> createState() =>
-      _BackgroundSelectorScreenState();
+  State<BackgroundSelectorScreen> createState() => _BackgroundSelectorScreenState();
 }
 
 class _BackgroundSelectorScreenState extends State<BackgroundSelectorScreen> {
@@ -66,8 +65,7 @@ class _BackgroundSelectorScreenState extends State<BackgroundSelectorScreen> {
                 const Text('图片选择'),
                 const SizedBox(height: 10),
                 BlocBuilder<BackgroundImageBloc, BackgroundImageState>(
-                  buildWhen: (previous, current) =>
-                      current is BackgroundImageLoaded,
+                  buildWhen: (previous, current) => current is BackgroundImageLoaded,
                   builder: (context, state) {
                     if (state is BackgroundImageLoaded) {
                       return GridView.count(
@@ -88,8 +86,7 @@ class _BackgroundSelectorScreenState extends State<BackgroundSelectorScreen> {
                               children: [
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
-                                  child:
-                                      Image.asset('assets/light-dark-auto.png'),
+                                  child: Image.asset('assets/light-dark-auto.png'),
                                 ),
                                 Positioned(
                                   child: Container(
@@ -99,8 +96,7 @@ class _BackgroundSelectorScreenState extends State<BackgroundSelectorScreen> {
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500,
-                                        color:
-                                            Color.fromARGB(255, 146, 146, 146),
+                                        color: Color.fromARGB(255, 146, 146, 146),
                                       ),
                                     ),
                                   ),
@@ -117,8 +113,7 @@ class _BackgroundSelectorScreenState extends State<BackgroundSelectorScreen> {
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
-                                child: CachedNetworkImageEnhanced(
-                                    imageUrl: img.preview),
+                                child: CachedNetworkImageEnhanced(imageUrl: img.preview),
                               ),
                             ),
                           Material(
@@ -130,11 +125,9 @@ class _BackgroundSelectorScreenState extends State<BackgroundSelectorScreen> {
 
                                 selectDialogOpened = true;
                                 HapticFeedbackHelper.mediumImpact();
-                                FilePickerResult? result = await FilePicker
-                                    .platform
+                                FilePickerResult? result = await FilePicker.platform
                                     .pickFiles(type: FileType.image)
-                                    .whenComplete(
-                                        () => selectDialogOpened = false);
+                                    .whenComplete(() => selectDialogOpened = false);
                                 if (result != null && result.files.isNotEmpty) {
                                   setState(() {
                                     _controller.text = result.files.first.path!;
@@ -160,12 +153,11 @@ class _BackgroundSelectorScreenState extends State<BackgroundSelectorScreen> {
                                       color: customColors.chatInputPanelText,
                                     ),
                                     Text(
-                                      '自定义',
+                                      AppLocale.custom.getString(context),
                                       style: TextStyle(
                                         fontSize: 10,
                                         fontWeight: FontWeight.w500,
-                                        color: customColors.chatInputPanelText
-                                            ?.withOpacity(0.8),
+                                        color: customColors.chatInputPanelText?.withOpacity(0.8),
                                       ),
                                     ),
                                   ],
@@ -219,8 +211,7 @@ class _BackgroundSelectorScreenState extends State<BackgroundSelectorScreen> {
                           sigmaX: showOriginalImage ? 0 : blur,
                           sigmaY: showOriginalImage ? 0 : blur,
                         ),
-                        child:
-                            const SizedBox(width: double.infinity, height: 200),
+                        child: const SizedBox(width: double.infinity, height: 200),
                       ),
                     ),
                   ),
@@ -249,30 +240,24 @@ class _BackgroundSelectorScreenState extends State<BackgroundSelectorScreen> {
                 const SizedBox(height: 10),
                 EnhancedButton(
                   onPressed: () {
-                    widget.setting
-                        .set(settingBackgroundImageBlur, blur.toString());
+                    widget.setting.set(settingBackgroundImageBlur, blur.toString());
 
-                    final originalFilepath =
-                        widget.setting.get(settingBackgroundImage);
+                    final originalFilepath = widget.setting.get(settingBackgroundImage);
 
                     if (originalFilepath != _controller.text) {
                       // 移除原图
-                      if (originalFilepath != null &&
-                          originalFilepath != '' &&
-                          !originalFilepath.startsWith('http')) {
+                      if (originalFilepath != null && originalFilepath != '' && !originalFilepath.startsWith('http')) {
                         removeExternalFile(originalFilepath);
                       }
 
                       // 复制新图
                       if (_controller.text != '') {
                         if (!_controller.text.startsWith('http')) {
-                          copyExternalFileToAppDocs(_controller.text)
-                              .then((value) {
+                          copyExternalFileToAppDocs(_controller.text).then((value) {
                             widget.setting.set(settingBackgroundImage, value);
                           });
                         } else {
-                          widget.setting
-                              .set(settingBackgroundImage, _controller.text);
+                          widget.setting.set(settingBackgroundImage, _controller.text);
                         }
                       } else {
                         // 恢复为原图
@@ -280,8 +265,7 @@ class _BackgroundSelectorScreenState extends State<BackgroundSelectorScreen> {
                       }
                     }
 
-                    showSuccessMessage(
-                        AppLocale.operateSuccess.getString(context));
+                    showSuccessMessage(AppLocale.operateSuccess.getString(context));
                     // Navigator.pop(context);
                   },
                   title: AppLocale.save.getString(context),

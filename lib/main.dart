@@ -340,7 +340,6 @@ class MyApp extends StatefulWidget {
                       BlocProvider.value(value: galleryBloc),
                       BlocProvider.value(value: accountBloc),
                       BlocProvider.value(value: versionBloc),
-                      BlocProvider.value(value: freeCountBloc),
                     ],
                     child: NewHomePage(
                       settings: settingRepo,
@@ -409,7 +408,6 @@ class MyApp extends StatefulWidget {
                   providers: [
                     BlocProvider(
                         create: (context) => ChatChatBloc(chatMsgRepo)),
-                    BlocProvider.value(value: freeCountBloc),
                   ],
                   child: HomePage(
                     setting: settingRepo,
@@ -497,7 +495,6 @@ class MyApp extends StatefulWidget {
                     ),
                     BlocProvider.value(value: chatRoomBloc),
                     BlocProvider(create: (context) => NotifyBloc()),
-                    BlocProvider.value(value: freeCountBloc),
                   ],
                   child: HomeChatPage(
                     stateManager: messageStateManager,
@@ -568,7 +565,6 @@ class MyApp extends StatefulWidget {
                       ),
                       BlocProvider.value(value: chatRoomBloc),
                       BlocProvider(create: (context) => NotifyBloc()),
-                      BlocProvider.value(value: freeCountBloc),
                     ],
                     child: RoomChatPage(
                       roomId: roomId,

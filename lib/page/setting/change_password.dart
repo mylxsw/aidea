@@ -26,8 +26,7 @@ class ChangePasswordScreen extends StatefulWidget {
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _verificationCodeController =
-      TextEditingController();
+  final TextEditingController _verificationCodeController = TextEditingController();
 
   String verifyCodeId = '';
 
@@ -45,9 +44,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
-        title: const Text(
-          '修改密码',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+        title: Text(
+          AppLocale.modifyPassword.getString(context),
+          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
       ),
@@ -60,15 +59,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           child: Column(
             children: [
               ColumnBlock(
+                innerPanding: 15,
+                backgroundColor: Colors.transparent,
+                showDivider: false,
                 children: [
                   PasswordField(
                     controller: _passwordController,
                     labelText: AppLocale.newPassword.getString(context),
                     hintText: AppLocale.passwordInputTips.getString(context),
-                    inColumnBlock: true,
+                    inColumnBlock: false,
                   ),
                   VerifyCodeInput(
-                    inColumnBlock: true,
+                    inColumnBlock: false,
                     controller: _verificationCodeController,
                     onVerifyCodeSent: (id) {
                       verifyCodeId = id;
@@ -82,7 +84,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 15),
               Container(
                 height: 45,
                 width: double.infinity,

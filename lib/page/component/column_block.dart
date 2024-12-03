@@ -34,15 +34,15 @@ class ColumnBlock extends StatelessWidget {
     var items = <Widget>[];
     for (var i = 0; i < children.length; i++) {
       items.add(children[i]);
-      if (i < children.length - 1 && showDivider) {
-        items.add(Container(
-          padding: EdgeInsets.symmetric(vertical: innerPanding ?? 0),
-          child: Divider(
-            color: customColors.columnBlockDividerColor,
-            height: 1,
-          ),
-        ));
-      }
+      items.add(Container(
+        padding: EdgeInsets.symmetric(vertical: innerPanding ?? 0),
+        child: (i < children.length - 1 && showDivider)
+            ? Divider(
+                color: customColors.columnBlockDividerColor,
+                height: 1,
+              )
+            : Container(),
+      ));
     }
 
     return Container(
@@ -50,8 +50,7 @@ class ColumnBlock extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor ?? customColors.columnBlockBackgroundColor,
         border: border,
-        borderRadius:
-            BorderRadius.circular(borderRadius ?? customColors.borderRadius!),
+        borderRadius: BorderRadius.circular(borderRadius ?? customColors.borderRadius!),
         boxShadow: [
           BoxShadow(
             color: customColors.boxShadowColor!,
@@ -65,8 +64,7 @@ class ColumnBlock extends StatelessWidget {
           ),
         ],
       ),
-      padding:
-          padding ?? const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+      padding: padding ?? const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
       margin: margin ?? const EdgeInsets.only(bottom: 10, left: 5, right: 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
