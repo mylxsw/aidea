@@ -163,7 +163,12 @@ class _ModelItemState extends State<ModelItem> {
                                                 child: Text(
                                                   item.name,
                                                   overflow: TextOverflow.ellipsis,
-                                                  style: const TextStyle(fontSize: 15),
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    color:
+                                                        widget.initValue == item.uid() ? customColors.linkColor : null,
+                                                    fontWeight: widget.initValue == item.uid() ? FontWeight.bold : null,
+                                                  ),
                                                 ),
                                               ),
                                             ),
@@ -192,7 +197,9 @@ class _ModelItemState extends State<ModelItem> {
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                               fontSize: 12,
-                                              color: customColors.weakTextColor,
+                                              color: widget.initValue == item.uid()
+                                                  ? customColors.linkColor
+                                                  : customColors.weakTextColor,
                                             ),
                                           ),
                                       ],
