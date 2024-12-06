@@ -67,9 +67,7 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
 
     if (widget.note != null) {
       if (widget.apiEndpoint == 'image-to-video') {
-        Cache()
-            .boolGet(key: 'creative:tutorials:${widget.apiEndpoint}:dialog')
-            .then((show) {
+        Cache().boolGet(key: 'creative:tutorials:${widget.apiEndpoint}:dialog').then((show) {
           if (!show) {
             return;
           }
@@ -83,9 +81,7 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
           });
         });
       } else {
-        Cache()
-            .boolGet(key: 'creative:tutorials:${widget.apiEndpoint}:dialog')
-            .then((show) {
+        Cache().boolGet(key: 'creative:tutorials:${widget.apiEndpoint}:dialog').then((show) {
           if (!show) {
             return;
           }
@@ -156,7 +152,7 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
           icon: const Icon(Icons.arrow_back_ios),
         ),
         toolbarHeight: CustomSize.toolbarHeight,
-        backgroundColor: customColors.backgroundContainerColor,
+        backgroundColor: customColors.backgroundColor,
         actions: [
           if (widget.note != null && widget.apiEndpoint == 'image-to-video')
             IconButton(
@@ -174,19 +170,17 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
             ),
         ],
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
-        enabled: true,
+        enabled: false,
         maxWidth: CustomSize.smallWindowSize,
         child: Column(
           children: [
-            if (Ability().showGlobalAlert)
-              const GlobalAlert(pageKey: 'creative_create'),
+            if (Ability().showGlobalAlert) const GlobalAlert(pageKey: 'creative_create'),
             Expanded(
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 height: double.infinity,
                 child: SingleChildScrollView(
                   child: buildEditPanel(context, customColors),
@@ -251,8 +245,7 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
                               type: QuickAlertType.info,
                               text:
                                   'How strongly the video sticks to the original image. \nUse lower values to allow the model more freedom to make changes and higher values to correct motion distortions',
-                              confirmBtnText:
-                                  AppLocale.gotIt.getString(context),
+                              confirmBtnText: AppLocale.gotIt.getString(context),
                               showCancelBtn: false,
                             );
                           },
@@ -311,8 +304,7 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
                               type: QuickAlertType.info,
                               text:
                                   'Lower values generally result in less motion in the output video, \nwhile higher values generally result in more motion',
-                              confirmBtnText:
-                                  AppLocale.gotIt.getString(context),
+                              confirmBtnText: AppLocale.gotIt.getString(context),
                               showCancelBtn: false,
                             );
                           },
@@ -396,8 +388,7 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
                     });
                   },
                 ),
-              if (widget.apiEndpoint == 'image-to-video')
-                const SizedBox(width: 10),
+              if (widget.apiEndpoint == 'image-to-video') const SizedBox(width: 10),
               Expanded(
                 flex: 1,
                 child: EnhancedButton(
@@ -466,21 +457,17 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
         );
 
         if (selectedImagePath != null &&
-            (selectedImagePath!.startsWith('http://') ||
-                selectedImagePath!.startsWith('https://'))) {
+            (selectedImagePath!.startsWith('http://') || selectedImagePath!.startsWith('https://'))) {
           params['image'] = selectedImagePath;
           cancel();
         } else {
           if (selectedImagePath != null && selectedImagePath!.isNotEmpty) {
-            final uploadRes = await ImageUploader(widget.setting)
-                .upload(selectedImagePath!)
-                .whenComplete(() => cancel());
+            final uploadRes =
+                await ImageUploader(widget.setting).upload(selectedImagePath!).whenComplete(() => cancel());
             params['image'] = uploadRes.url;
-          } else if (selectedImageData != null &&
-              selectedImageData!.isNotEmpty) {
-            final uploadRes = await ImageUploader(widget.setting)
-                .uploadData(selectedImageData!)
-                .whenComplete(() => cancel());
+          } else if (selectedImageData != null && selectedImageData!.isNotEmpty) {
+            final uploadRes =
+                await ImageUploader(widget.setting).uploadData(selectedImageData!).whenComplete(() => cancel());
             params['image'] = uploadRes.url;
           }
         }
@@ -541,9 +528,7 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
     final resp = await APIServer().asyncTaskStatus(taskId);
     switch (resp.status) {
       case 'success':
-        if (params != null &&
-            resp.originImage != null &&
-            resp.originImage != '') {
+        if (params != null && resp.originImage != null && resp.originImage != '') {
           params['image'] = resp.originImage;
         }
         if (params != null && resp.width != null) {

@@ -68,7 +68,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.chatInputPanelBackground,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -116,12 +116,10 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                   listener: (context, state) {
                     if (state is UserOperationResult) {
                       if (state.success) {
-                        showSuccessMessage(state.message ??
-                            AppLocale.operateSuccess.getString(context));
+                        showSuccessMessage(state.message ?? AppLocale.operateSuccess.getString(context));
                         context.read<UserBloc>().add(UserListLoadEvent());
                       } else {
-                        showErrorMessage(state.message ??
-                            AppLocale.operateFailed.getString(context));
+                        showErrorMessage(state.message ?? AppLocale.operateFailed.getString(context));
                       }
                     }
 
@@ -152,8 +150,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                                 },
                               ),
                             ),
-                            if (state.users.lastPage != null &&
-                                state.users.lastPage! > 1)
+                            if (state.users.lastPage != null && state.users.lastPage! > 1)
                               Container(
                                 padding: const EdgeInsets.all(10),
                                 child: Pagination(
@@ -161,9 +158,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                                   selectedPage: page,
                                   pagesVisible: 5,
                                   onPageChanged: (selected) {
-                                    context
-                                        .read<UserBloc>()
-                                        .add(UserListLoadEvent(
+                                    context.read<UserBloc>().add(UserListLoadEvent(
                                           perPage: perPage,
                                           page: selected,
                                           keyword: keywordController.text,
@@ -199,9 +194,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
         horizontal: 10,
         vertical: 5,
       ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(customColors.borderRadius ?? 8),
-      ),
+      decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
       child: Slidable(
         endActionPane: ActionPane(
           motion: const ScrollMotion(),
@@ -209,11 +202,11 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
             const SizedBox(width: 10),
             SlidableAction(
               label: '数字人列表',
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(customColors.borderRadius ?? 8),
-                bottomLeft: Radius.circular(customColors.borderRadius ?? 8),
-                topRight: Radius.circular(customColors.borderRadius ?? 8),
-                bottomRight: Radius.circular(customColors.borderRadius ?? 8),
+              borderRadius: const BorderRadius.only(
+                topLeft: CustomSize.radius,
+                bottomLeft: CustomSize.radius,
+                topRight: CustomSize.radius,
+                bottomRight: CustomSize.radius,
               ),
               backgroundColor: customColors.linkColor ?? Colors.green,
               icon: Icons.people,
@@ -225,12 +218,10 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
           ],
         ),
         child: Material(
-          borderRadius:
-              BorderRadius.all(Radius.circular(customColors.borderRadius ?? 8)),
+          borderRadius: CustomSize.borderRadius,
           color: customColors.columnBlockBackgroundColor,
           child: InkWell(
-            borderRadius: BorderRadius.all(
-                Radius.circular(customColors.borderRadius ?? 8)),
+            borderRadius: CustomSize.borderRadiusAll,
             onTap: () {
               context.push('/admin/users/${user.id}');
             },
@@ -247,9 +238,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                           bottom: 0,
                           width: 70,
                           child: ClipRRect(
-                            borderRadius: const BorderRadius.only(
-                              bottomLeft: Radius.circular(8),
-                            ),
+                            borderRadius: const BorderRadius.only(bottomLeft: CustomSize.radius),
                             child: Container(
                               color: Colors.black.withAlpha(100),
                               padding: const EdgeInsets.symmetric(vertical: 2),
@@ -322,9 +311,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          user.createdAt != null
-                              ? humanTime(user.createdAt)
-                              : '',
+                          user.createdAt != null ? humanTime(user.createdAt) : '',
                           style: TextStyle(
                             fontSize: 10,
                             overflow: TextOverflow.ellipsis,
@@ -346,10 +333,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
 
 Widget buildUserAvatar(
   AdminUser user, {
-  BorderRadius radius = const BorderRadius.only(
-    topLeft: Radius.circular(8),
-    bottomLeft: Radius.circular(8),
-  ),
+  BorderRadius radius = const BorderRadius.only(topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
 }) {
   if (user.avatar != null && user.avatar!.startsWith('http')) {
     return SizedBox(
@@ -373,8 +357,7 @@ Widget buildUserAvatar(
   );
 }
 
-Widget buildTags(
-    BuildContext context, CustomColors customColors, AdminUser user) {
+Widget buildTags(BuildContext context, CustomColors customColors, AdminUser user) {
   final tags = <Widget>[];
 
   if (user.email != null && user.email!.isNotEmpty) {
@@ -408,7 +391,7 @@ Widget buildTag(BuildContext context, CustomColors customColors, String s) {
     ),
     decoration: BoxDecoration(
       color: customColors.tagsBackground,
-      borderRadius: BorderRadius.circular(5),
+      borderRadius: CustomSize.borderRadius,
     ),
     child: Text(
       s,

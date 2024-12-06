@@ -1,3 +1,4 @@
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -50,7 +51,7 @@ class ColumnBlock extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor ?? customColors.columnBlockBackgroundColor,
         border: border,
-        borderRadius: BorderRadius.circular(borderRadius ?? customColors.borderRadius!),
+        borderRadius: BorderRadius.circular(borderRadius ?? CustomSize.radiusValue),
         boxShadow: [
           BoxShadow(
             color: customColors.boxShadowColor!,

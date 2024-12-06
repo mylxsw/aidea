@@ -52,8 +52,7 @@ class _ChannelEditPageState extends State<ChannelEditPage> {
   bool openaiAzure = false;
 
   /// OpenAI Azure API 版本
-  final TextEditingController azureAPIVersionController =
-      TextEditingController();
+  final TextEditingController azureAPIVersionController = TextEditingController();
 
   /// 是否锁定编辑
   bool editLocked = true;
@@ -99,20 +98,17 @@ class _ChannelEditPageState extends State<ChannelEditPage> {
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.chatInputPanelBackground,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
         child: BlocListener<ChannelBloc, ChannelState>(
-          listenWhen: (previous, current) =>
-              current is ChannelOperationResult || current is ChannelLoaded,
+          listenWhen: (previous, current) => current is ChannelOperationResult || current is ChannelLoaded,
           listener: (context, state) {
             if (state is ChannelOperationResult) {
               if (state.success) {
                 showSuccessMessage(state.message);
-                context
-                    .read<ChannelBloc>()
-                    .add(ChannelLoadEvent(widget.channelId));
+                context.read<ChannelBloc>().add(ChannelLoadEvent(widget.channelId));
               } else {
                 showErrorMessage(state.message);
               }
@@ -123,8 +119,7 @@ class _ChannelEditPageState extends State<ChannelEditPage> {
               secretController.text = state.channel.secret ?? '';
               usingProxy = state.channel.meta?.usingProxy ?? false;
               openaiAzure = state.channel.meta?.openaiAzure ?? false;
-              azureAPIVersionController.text =
-                  state.channel.meta?.openaiAzureAPIVersion ?? '';
+              azureAPIVersionController.text = state.channel.meta?.openaiAzureAPIVersion ?? '';
 
               setState(() {
                 editLocked = false;
@@ -164,9 +159,7 @@ class _ChannelEditPageState extends State<ChannelEditPage> {
                       onPressed: () {
                         openListSelectDialog(
                           context,
-                          channelTypes
-                              .map((e) => SelectorItem(Text(e.text), e.name))
-                              .toList(),
+                          channelTypes.map((e) => SelectorItem(Text(e.text), e.name)).toList(),
                           (value) {
                             setState(() {
                               selectedChannelType = value.value;
@@ -263,9 +256,7 @@ class _ChannelEditPageState extends State<ChannelEditPage> {
                       color: customColors.weakLinkColor,
                       fontSize: 15,
                       icon: Icon(
-                        showAdvancedOptions
-                            ? Icons.unfold_less
-                            : Icons.unfold_more,
+                        showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
                         color: customColors.weakLinkColor,
                         size: 15,
                       ),
@@ -282,10 +273,8 @@ class _ChannelEditPageState extends State<ChannelEditPage> {
                         title: AppLocale.save.getString(context),
                         onPressed: onSubmit,
                         icon: editLocked
-                            ? const Icon(Icons.lock,
-                                color: Colors.white, size: 16)
-                            : const Icon(Icons.lock_open,
-                                color: Colors.white, size: 16),
+                            ? const Icon(Icons.lock, color: Colors.white, size: 16)
+                            : const Icon(Icons.lock_open, color: Colors.white, size: 16),
                       ),
                     ),
                   ],
@@ -319,8 +308,7 @@ class _ChannelEditPageState extends State<ChannelEditPage> {
       return;
     }
 
-    if (!serverController.text.startsWith('http://') &&
-        !serverController.text.startsWith('https://')) {
+    if (!serverController.text.startsWith('http://') && !serverController.text.startsWith('https://')) {
       showErrorMessage('服务器地址格式不正确');
       return;
     }
@@ -346,8 +334,6 @@ class _ChannelEditPageState extends State<ChannelEditPage> {
       return '请选择';
     }
 
-    return channelTypes
-        .firstWhere((element) => element.name == selectedChannelType)
-        .text;
+    return channelTypes.firstWhere((element) => element.name == selectedChannelType).text;
   }
 }

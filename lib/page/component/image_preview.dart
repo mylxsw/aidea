@@ -53,48 +53,36 @@ class _NetworkImagePreviewerState extends State<NetworkImagePreviewer> {
 
     if (widget.hidePreviewButton) {
       return ClipRRect(
-        borderRadius: widget.borderRadius ?? BorderRadius.circular(8),
+        borderRadius: widget.borderRadius ?? CustomSize.borderRadius,
         child: widget.original == null
             ? _buildImage(widget.borderRadius)
             : BeforeAfter(
-                beforeImage: Image(
-                    image: CachedNetworkImageProviderEnhanced(
-                        imageURL(widget.original!, qiniuImageTypeThumb))),
+                beforeImage:
+                    Image(image: CachedNetworkImageProviderEnhanced(imageURL(widget.original!, qiniuImageTypeThumb))),
                 afterImage: Image(
-                    image: CachedNetworkImageProviderEnhanced(imageURL(
-                        widget.preview ?? widget.url, qiniuImageTypeThumb))),
+                    image: CachedNetworkImageProviderEnhanced(
+                        imageURL(widget.preview ?? widget.url, qiniuImageTypeThumb))),
                 thumbWidth: 1.0,
               ),
       );
     }
 
     return Container(
-      decoration: BoxDecoration(
-        color: customColors.columnBlockBackgroundColor,
-        borderRadius: BorderRadius.circular(8),
-      ),
+      decoration: BoxDecoration(color: customColors.columnBlockBackgroundColor, borderRadius: CustomSize.borderRadius),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           widget.original == null
-              ? _buildImage(const BorderRadius.only(
-                  topLeft: Radius.circular(8),
-                  topRight: Radius.circular(8),
-                ))
+              ? _buildImage(const BorderRadius.only(topLeft: CustomSize.radius, topRight: CustomSize.radius))
               : ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(8),
-                    topRight: Radius.circular(8),
-                  ),
+                  borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, topRight: CustomSize.radius),
                   child: BeforeAfter(
                     imageCornerRadius: 0,
                     beforeImage: Image(
-                        image: CachedNetworkImageProviderEnhanced(
-                            imageURL(widget.original!, qiniuImageTypeThumb))),
+                        image: CachedNetworkImageProviderEnhanced(imageURL(widget.original!, qiniuImageTypeThumb))),
                     afterImage: Image(
-                        image: CachedNetworkImageProviderEnhanced(imageURL(
-                            widget.preview ?? widget.url,
-                            qiniuImageTypeThumb))),
+                        image: CachedNetworkImageProviderEnhanced(
+                            imageURL(widget.preview ?? widget.url, qiniuImageTypeThumb))),
                     thumbWidth: 0.5,
                     thumbRadius: 3,
                   ),
@@ -195,8 +183,7 @@ class _NetworkImagePreviewerState extends State<NetworkImagePreviewer> {
                       openImagePreviewDialog(
                         context,
                         customColors,
-                        imageProvider:
-                            CachedNetworkImageProviderEnhanced(widget.url),
+                        imageProvider: CachedNetworkImageProviderEnhanced(widget.url),
                         imageUrl: widget.url,
                       );
                     } catch (e) {
@@ -278,9 +265,9 @@ class ImageFilePreviewer extends StatelessWidget {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return ClipRRect(
-      borderRadius: borderRadius ?? BorderRadius.circular(8),
+      borderRadius: borderRadius ?? CustomSize.borderRadius,
       child: InkWell(
-        borderRadius: borderRadius ?? BorderRadius.circular(8),
+        borderRadius: borderRadius ?? CustomSize.borderRadiusAll,
         child: Image(image: imageProvider, fit: BoxFit.cover),
         onTap: () {
           openImagePreviewDialog(
@@ -353,8 +340,7 @@ void openImagePreviewDialog(
                   );
 
                   try {
-                    final saveFile =
-                        await DefaultCacheManager().getSingleFile(downloadUrl);
+                    final saveFile = await DefaultCacheManager().getSingleFile(downloadUrl);
 
                     if (PlatformTool.isIOS() || PlatformTool.isAndroid()) {
                       await ImageGallerySaver.saveImage(
@@ -383,7 +369,7 @@ void openImagePreviewDialog(
 
                       if (PlatformTool.isWindows()) {
                         FileSaver.instance
-                          .saveAs(
+                            .saveAs(
                           name: filenameWithoutExt(saveFile.path.split('/').last),
                           filePath: saveFile.path,
                           ext: '.$ext',
@@ -391,7 +377,7 @@ void openImagePreviewDialog(
                         )
                             .then((value) async {
                           if (value == null) {
-                            return ;
+                            return;
                           }
 
                           await File(value).writeAsBytes(await saveFile.readAsBytes());
@@ -401,7 +387,7 @@ void openImagePreviewDialog(
                         });
                       } else {
                         FileSaver.instance
-                          .saveFile(
+                            .saveFile(
                           name: filenameWithoutExt(saveFile.path.split('/').last),
                           filePath: saveFile.path,
                           ext: ext,
@@ -412,7 +398,6 @@ void openImagePreviewDialog(
                           showSuccessMessage('文件保存成功');
                         });
                       }
-                      
                     }
                   } catch (e) {
                     // ignore: use_build_context_synchronously
@@ -428,8 +413,7 @@ void openImagePreviewDialog(
                   color: customColors.weakLinkColor,
                 ),
               ),
-            if (downloadUrl == null &&
-                (PlatformTool.isIOS() || PlatformTool.isAndroid()))
+            if (downloadUrl == null && (PlatformTool.isIOS() || PlatformTool.isAndroid()))
               IconButton(
                 onPressed: () async {
                   final cancel = BotToast.showCustomLoading(
@@ -491,9 +475,9 @@ class ImageProviderPreviewer extends StatelessWidget {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return ClipRRect(
-      borderRadius: borderRadius ?? BorderRadius.circular(8),
+      borderRadius: borderRadius ?? CustomSize.borderRadius,
       child: InkWell(
-        borderRadius: borderRadius ?? BorderRadius.circular(8),
+        borderRadius: borderRadius ?? CustomSize.borderRadiusAll,
         child: Image(image: imageProvider, fit: BoxFit.cover),
         onTap: () {
           openImagePreviewDialog(

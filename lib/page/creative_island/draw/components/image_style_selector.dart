@@ -2,6 +2,7 @@ import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/enhanced_input.dart';
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/creative.dart';
 import 'package:flutter/material.dart';
@@ -40,9 +41,7 @@ class ImageStyleSelector extends StatelessWidget {
           // const SizedBox(width: 10),
           _buildImageStyleItemPreview(
             customColors,
-            selectedStyle == null
-                ? CreativeIslandImageFilter(id: 0, name: '', previewImage: '')
-                : selectedStyle!,
+            selectedStyle == null ? CreativeIslandImageFilter(id: 0, name: '', previewImage: '') : selectedStyle!,
             size: 50,
           ),
         ],
@@ -57,11 +56,7 @@ class ImageStyleSelector extends StatelessWidget {
               mainAxisSpacing: 20,
               padding: const EdgeInsets.only(top: 20, bottom: 20),
               children: [
-                for (var item in [
-                  CreativeIslandImageFilter(
-                      id: 0, name: '自动', previewImage: ''),
-                  ...styles
-                ])
+                for (var item in [CreativeIslandImageFilter(id: 0, name: '自动', previewImage: ''), ...styles])
                   InkWell(
                     onTap: () {
                       onSelected(item);
@@ -107,9 +102,8 @@ class ImageStyleSelector extends StatelessWidget {
         width: size,
         height: size,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          border: showSelected &&
-                  (selectedStyle != null && style.id == selectedStyle!.id)
+          borderRadius: CustomSize.borderRadius,
+          border: showSelected && (selectedStyle != null && style.id == selectedStyle!.id)
               ? Border.all(
                   color: customColors.linkColor ?? Colors.green,
                   width: 1,

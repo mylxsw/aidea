@@ -43,7 +43,7 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,

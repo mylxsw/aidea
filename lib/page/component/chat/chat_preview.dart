@@ -107,18 +107,15 @@ class _ChatPreviewState extends State<ChatPreview> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // 消息选择模式，显示选择框
-                  if (widget.controller.selectMode &&
-                      !message.message.isSystem())
+                  if (widget.controller.selectMode && !message.message.isSystem())
                     Checkbox(
-                      value: widget.controller
-                          .isMessageSelected(message.message.id!),
+                      value: widget.controller.isMessageSelected(message.message.id!),
                       activeColor: customColors.linkColor,
                       onChanged: (value) {
                         if (value != null && value) {
                           widget.controller.selectMessage(message.message.id!);
                         } else {
-                          widget.controller
-                              .unSelectMessage(message.message.id!);
+                          widget.controller.unSelectMessage(message.message.id!);
                         }
                       },
                     ),
@@ -128,14 +125,10 @@ class _ChatPreviewState extends State<ChatPreview> {
                     child: widget.supportBloc
                         ? BlocBuilder<ChatMessageBloc, ChatMessageState>(
                             buildWhen: (previous, current) =>
-                                (current is ChatMessageUpdated &&
-                                    current.message.id == message.message.id),
+                                (current is ChatMessageUpdated && current.message.id == message.message.id),
                             builder: (context, state) {
                               return Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 10,
-                                ),
+                                padding: const EdgeInsets.all(5),
                                 child: _buildMessageBox(
                                   context,
                                   customColors,
@@ -147,10 +140,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                             },
                           )
                         : Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 10,
-                            ),
+                            padding: const EdgeInsets.all(5),
                             child: _buildMessageBox(
                               context,
                               customColors,
@@ -163,9 +153,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                 ],
               ),
 
-            if (index == 0 &&
-                widget.helpWidgets != null &&
-                !message.message.isSystem())
+            if (index == 0 && widget.helpWidgets != null && !message.message.isSystem())
               for (var widget in widget.helpWidgets!) widget,
           ],
         );
@@ -199,26 +187,21 @@ class _ChatPreviewState extends State<ChatPreview> {
             vertical: 5,
           ),
           child: Text(
-            message.isTimeline()
-                ? message.friendlyTime()
-                : message.text.getString(context),
+            message.isTimeline() ? message.friendlyTime() : message.text.getString(context),
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ),
       );
     }
 
-    final showTranslate = state.showTranslate &&
-        state.translateText != null &&
-        state.translateText != '';
+    final showTranslate = state.showTranslate && state.translateText != null && state.translateText != '';
 
     final extra = index == 0 ? message.decodeExtra() : null;
     final extraInfo = extra != null ? extra['info'] ?? '' : '';
 
     // 普通消息
     return Align(
-      alignment:
-          message.role == Role.sender ? Alignment.topRight : Alignment.topLeft,
+      alignment: message.role == Role.sender ? Alignment.topRight : Alignment.topLeft,
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: _chatBoxMaxWidth(context)),
         child: Column(
@@ -280,8 +263,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                     children: [
                       buildAvatar(message),
                       // 发送人名称
-                      if (message.role == Role.receiver &&
-                          widget.senderNameBuilder != null)
+                      if (message.role == Role.receiver && widget.senderNameBuilder != null)
                         widget.senderNameBuilder!(message) ?? const SizedBox(),
                     ],
                   ),
@@ -300,8 +282,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                         crossAxisAlignment: WrapCrossAlignment.end,
                         children: [
                           // 错误指示器
-                          if (message.role == Role.sender &&
-                              message.statusIsFailed())
+                          if (message.role == Role.sender && message.statusIsFailed())
                             buildErrorIndicator(message, state, context, index),
                           // 消息主体
                           GestureDetector(
@@ -309,8 +290,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                             // 非选择模式下，单击隐藏键盘
                             onTap: () {
                               if (widget.controller.selectMode) {
-                                widget.controller
-                                    .toggleMessageSelected(message.id!);
+                                widget.controller.toggleMessageSelected(message.id!);
                               }
                               FocusScope.of(context).requestFocus(FocusNode());
                             },
@@ -349,7 +329,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                                       ? const EdgeInsets.fromLTRB(0, 0, 10, 7)
                                       : const EdgeInsets.fromLTRB(10, 0, 0, 7),
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: CustomSize.borderRadius,
                                     color: message.role == Role.receiver
                                         ? customColors.chatRoomReplyBackground
                                         : customColors.chatRoomSenderBackground,
@@ -360,9 +340,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                                   ),
                                   child: Builder(
                                     builder: (context) {
-                                      if ((message.statusPending() ||
-                                              !message.isReady) &&
-                                          message.text.isEmpty) {
+                                      if ((message.statusPending() || !message.isReady) && message.text.isEmpty) {
                                         return LoadingAnimationWidget.waveDots(
                                           color: customColors.weakLinkColor!,
                                           size: 25,
@@ -375,37 +353,30 @@ class _ChatPreviewState extends State<ChatPreview> {
                                       }
                                       return Column(
                                         mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           state.showMarkdown
                                               ? Markdown(
                                                   data: text.trim(),
-                                                  onUrlTap: (value) =>
-                                                      onMarkdownUrlTap(value),
+                                                  onUrlTap: (value) => onMarkdownUrlTap(value),
                                                 )
                                               : SelectableText(
                                                   text,
                                                   style: TextStyle(
-                                                    color: customColors
-                                                        .chatRoomSenderText,
+                                                    color: customColors.chatRoomSenderText,
                                                   ),
                                                 ),
-                                          if (message.quotaConsumed != null &&
-                                              message.quotaConsumed! > 0)
+                                          if (message.quotaConsumed != null && message.quotaConsumed! > 0)
                                             Row(
                                               children: [
-                                                const Icon(Icons.check_circle,
-                                                    size: 12,
-                                                    color: Colors.green),
+                                                const Icon(Icons.check_circle, size: 12, color: Colors.green),
                                                 const SizedBox(width: 5),
                                                 Expanded(
                                                   child: Text(
                                                     '共 ${message.tokenConsumed} 个 Token， 消耗 ${message.quotaConsumed} 个智慧果',
                                                     style: TextStyle(
                                                       fontSize: 14,
-                                                      color: customColors
-                                                          .weakTextColor,
+                                                      color: customColors.weakTextColor,
                                                     ),
                                                   ),
                                                 ),
@@ -425,11 +396,9 @@ class _ChatPreviewState extends State<ChatPreview> {
                                         showCustomBeautyDialog(
                                           context,
                                           type: QuickAlertType.warning,
-                                          confirmBtnText: AppLocale.gotIt
-                                              .getString(context),
+                                          confirmBtnText: AppLocale.gotIt.getString(context),
                                           showCancelBtn: false,
-                                          title: AppLocale.goodTips
-                                              .getString(context),
+                                          title: AppLocale.goodTips.getString(context),
                                           child: Markdown(
                                             data: extraInfo,
                                             onUrlTap: (value) {
@@ -438,8 +407,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                                             },
                                             textStyle: TextStyle(
                                               fontSize: 14,
-                                              color: customColors
-                                                  .dialogDefaultTextColor,
+                                              color: customColors.dialogDefaultTextColor,
                                             ),
                                           ),
                                         );
@@ -447,8 +415,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                                       child: Icon(
                                         Icons.info_outline,
                                         size: 16,
-                                        color: customColors.weakLinkColor
-                                            ?.withAlpha(50),
+                                        color: customColors.weakLinkColor?.withAlpha(50),
                                       ),
                                     ),
                                   ),
@@ -463,14 +430,12 @@ class _ChatPreviewState extends State<ChatPreview> {
                               ? const EdgeInsets.fromLTRB(7, 10, 14, 7)
                               : const EdgeInsets.fromLTRB(10, 10, 0, 7),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: CustomSize.borderRadius,
                             color: message.role == Role.receiver
                                 ? customColors.chatRoomReplyBackgroundSecondary
-                                : customColors
-                                    .chatRoomSenderBackgroundSecondary,
+                                : customColors.chatRoomSenderBackgroundSecondary,
                           ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           child: Builder(
                             builder: (context) {
                               return Column(
@@ -481,8 +446,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                                       : SelectableText(
                                           state.translateText!,
                                           style: TextStyle(
-                                            color:
-                                                customColors.chatRoomSenderText,
+                                            color: customColors.chatRoomSenderText,
                                           ),
                                         ),
                                   Row(
@@ -495,12 +459,10 @@ class _ChatPreviewState extends State<ChatPreview> {
                                       ),
                                       const SizedBox(width: 5),
                                       Text(
-                                        AppLocale.translateFinished
-                                            .getString(context),
+                                        AppLocale.translateFinished.getString(context),
                                         style: const TextStyle(
                                           fontSize: 12,
-                                          color: Color.fromARGB(
-                                              255, 145, 145, 145),
+                                          color: Color.fromARGB(255, 145, 145, 145),
                                         ),
                                       ),
                                     ],
@@ -510,8 +472,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                             },
                           ),
                         ),
-                      if (widget.messageFooterBuilder != null)
-                        widget.messageFooterBuilder!(message),
+                      if (widget.messageFooterBuilder != null) widget.messageFooterBuilder!(message),
                     ],
                   ),
                 ),
@@ -588,24 +549,28 @@ class _ChatPreviewState extends State<ChatPreview> {
     }
   }
 
+  Widget avatarWrap(Widget avatar) {
+    return avatar;
+  }
+
   Widget buildAvatar(Message message) {
     if (widget.avatarBuilder != null) {
       final avatar = widget.avatarBuilder!(message);
       if (avatar != null) {
-        return avatar;
+        return avatarWrap(avatar);
       }
     }
 
     if (widget.robotAvatar != null) {
       if (message.role == Role.receiver && message.avatarUrl != null) {
-        return RemoteAvatar(
+        return avatarWrap(RemoteAvatar(
           avatarUrl: message.avatarUrl!,
           size: 30,
-        );
+        ));
       }
 
       if (message.role == Role.receiver) {
-        return widget.robotAvatar!;
+        return avatarWrap(widget.robotAvatar!);
       }
     }
 
@@ -626,9 +591,7 @@ class _ChatPreviewState extends State<ChatPreview> {
 
     HapticFeedbackHelper.mediumImpact();
 
-    final showTranslate = state.showTranslate &&
-        state.translateText != null &&
-        state.translateText != '';
+    final showTranslate = state.showTranslate && state.translateText != null && state.translateText != '';
 
     BotToast.showAttachedWidget(
       target: offset,
@@ -703,23 +666,18 @@ class _ChatPreviewState extends State<ChatPreview> {
 
                   if (showTranslate) {
                     widget.stateManager!
-                        .setState(message.roomId!, message.id!,
-                            state..showTranslate = false)
+                        .setState(message.roomId!, message.id!, state..showTranslate = false)
                         .then((value) {
                       setState(() {});
-                      context.read<RoomBloc>().add(
-                          RoomLoadEvent(message.roomId!, cascading: false));
+                      context.read<RoomBloc>().add(RoomLoadEvent(message.roomId!, cascading: false));
                     });
                   } else {
-                    if (state.translateText != null &&
-                        state.translateText != '') {
+                    if (state.translateText != null && state.translateText != '') {
                       widget.stateManager!
-                          .setState(message.roomId!, message.id!,
-                              state..showTranslate = true)
+                          .setState(message.roomId!, message.id!, state..showTranslate = true)
                           .then((value) {
                         setState(() {});
-                        context.read<RoomBloc>().add(
-                            RoomLoadEvent(message.roomId!, cascading: false));
+                        context.read<RoomBloc>().add(RoomLoadEvent(message.roomId!, cascading: false));
                       });
                       return;
                     }
@@ -735,8 +693,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                       )
                           .then((value) {
                         setState(() {});
-                        context.read<RoomBloc>().add(
-                            RoomLoadEvent(message.roomId!, cascading: false));
+                        context.read<RoomBloc>().add(RoomLoadEvent(message.roomId!, cascading: false));
                       });
                     }).onError((error, stackTrace) {
                       showErrorMessage(resolveError(context, error!));
@@ -753,9 +710,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                       size: 14,
                     ),
                     Text(
-                      showTranslate
-                          ? AppLocale.hide.getString(context)
-                          : AppLocale.translate.getString(context),
+                      showTranslate ? AppLocale.hide.getString(context) : AppLocale.translate.getString(context),
                       style: const TextStyle(fontSize: 12, color: Colors.white),
                     )
                   ],
@@ -766,9 +721,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                 var messages = <ChatShareMessage>[];
 
                 if (message.role == Role.receiver) {
-                  final questions = widget.messages
-                      .where((e) => e.message.id == message.refId)
-                      .toList();
+                  final questions = widget.messages.where((e) => e.message.id == message.refId).toList();
                   if (questions.isNotEmpty) {
                     var q = questions.first;
                     messages.add(ChatShareMessage(
@@ -788,9 +741,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                 ));
 
                 if (message.role == Role.sender) {
-                  final answers = widget.messages
-                      .where((e) => e.message.refId == message.id)
-                      .toList();
+                  final answers = widget.messages.where((e) => e.message.refId == message.id).toList();
                   if (answers.isNotEmpty) {
                     for (var a in answers) {
                       messages.add(ChatShareMessage(
@@ -968,9 +919,7 @@ class ChatPreviewController extends ChangeNotifier {
       return [];
     }
 
-    return _allMessages!
-        .where((element) => _selectedMessageIds.contains(element.message.id))
-        .toList();
+    return _allMessages!.where((element) => _selectedMessageIds.contains(element.message.id)).toList();
   }
 
   /// 设置所有消息

@@ -312,23 +312,23 @@ class _HomeChatPageState extends State<HomeChatPage> {
           return const SizedBox();
         },
       ),
-      flexibleSpace: SizedBox(
-        width: double.infinity,
-        child: ShaderMask(
-          shaderCallback: (rect) {
-            return const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Colors.black, Colors.transparent],
-            ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
-          },
-          blendMode: BlendMode.dstIn,
-          child: Image.asset(
-            customColors.appBarBackgroundImage!,
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
+      // flexibleSpace: SizedBox(
+      //   width: double.infinity,
+      //   child: ShaderMask(
+      //     shaderCallback: (rect) {
+      //       return const LinearGradient(
+      //         begin: Alignment.topCenter,
+      //         end: Alignment.bottomCenter,
+      //         colors: [Colors.black, Colors.transparent],
+      //       ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
+      //     },
+      //     blendMode: BlendMode.dstIn,
+      //     child: Image.asset(
+      //       customColors.appBarBackgroundImage!,
+      //       fit: BoxFit.cover,
+      //     ),
+      //   ),
+      // ),
     );
   }
 
@@ -426,10 +426,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
         if (!chatPreviewController.selectMode)
           Container(
             decoration: BoxDecoration(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
-              ),
+              borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, topRight: CustomSize.radius),
               color: customColors.chatInputPanelBackground,
             ),
             child: BlocBuilder<ChatMessageBloc, ChatMessageState>(
@@ -555,7 +552,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
 
         return Container(
           margin: const EdgeInsets.fromLTRB(0, 0, 10, 7),
-          padding: const EdgeInsets.symmetric(horizontal: 13),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Text(
             message.senderName!,
             style: TextStyle(

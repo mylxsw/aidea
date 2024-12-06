@@ -14,7 +14,7 @@ class InviteCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(15), // Maintain consistency with Settings Card
         boxShadow: [
           BoxShadow(
             color: Colors.white.withOpacity(0.1),
@@ -24,9 +24,8 @@ class InviteCard extends StatelessWidget {
         ],
         image: DecorationImage(
           // opacity: 0.83,
-          image: CachedNetworkImageProviderEnhanced(userInfo
-                  .control.inviteCardBg ??
-              'https://ssl.aicode.cc/ai-server/assets/invite-card-bg.webp-thumb1000'),
+          image: CachedNetworkImageProviderEnhanced(
+              userInfo.control.inviteCardBg ?? 'https://ssl.aicode.cc/ai-server/assets/invite-card-bg.webp-thumb1000'),
           fit: BoxFit.cover,
         ),
         // gradient: const LinearGradient(
@@ -88,8 +87,7 @@ class InviteCard extends StatelessWidget {
               onPressed: () {
                 shareTo(
                   context,
-                  content: userInfo.control.inviteMessage ??
-                      '邀请码 ${userInfo.user.inviteCode}',
+                  content: userInfo.control.inviteMessage ?? '邀请码 ${userInfo.user.inviteCode}',
                   title: '邀请码分享',
                 );
               },

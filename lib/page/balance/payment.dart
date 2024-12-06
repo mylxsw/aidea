@@ -31,8 +31,7 @@ import 'package:tobias/tobias.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
 
-import 'web/payment_element.dart'
-    if (dart.library.js) 'web/payment_element_web.dart';
+import 'web/payment_element.dart' if (dart.library.js) 'web/payment_element_web.dart';
 
 class PaymentScreen extends StatefulWidget {
   final SettingRepository setting;
@@ -97,10 +96,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
           await APIServer().updateApplePay(
             paymentId!,
             productId: purchaseDetails.productID,
-            localVerifyData:
-                purchaseDetails.verificationData.localVerificationData,
-            serverVerifyData:
-                purchaseDetails.verificationData.serverVerificationData,
+            localVerifyData: purchaseDetails.verificationData.localVerificationData,
+            serverVerifyData: purchaseDetails.verificationData.serverVerificationData,
             verifyDataSource: purchaseDetails.verificationData.source,
           );
 
@@ -125,10 +122,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
               productId: purchaseDetails.productID,
               purchaseId: purchaseDetails.purchaseID,
               transactionDate: purchaseDetails.transactionDate,
-              localVerifyData:
-                  purchaseDetails.verificationData.localVerificationData,
-              serverVerifyData:
-                  purchaseDetails.verificationData.serverVerificationData,
+              localVerifyData: purchaseDetails.verificationData.localVerificationData,
+              serverVerifyData: purchaseDetails.verificationData.serverVerificationData,
               verifyDataSource: purchaseDetails.verificationData.source,
               status: purchaseDetails.status.toString(),
             )
@@ -228,7 +223,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ),
         ],
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -244,21 +239,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     if (state.localProducts.isEmpty) {
                       showErrorMessage('暂无可购买的产品');
                     } else {
-                      final recommends = state.localProducts
-                          .where((e) => e.recommend)
-                          .toList();
+                      final recommends = state.localProducts.where((e) => e.recommend).toList();
                       if (recommends.isNotEmpty && !state.loading) {
                         setState(() {
-                          selectedProduct = state.products
-                              .firstWhere((e) => e.id == recommends.first.id);
+                          selectedProduct = state.products.firstWhere((e) => e.id == recommends.first.id);
                         });
                       }
                     }
                   }
                 }
               },
-              buildWhen: (previous, current) =>
-                  current is PaymentAppleProductsLoaded,
+              buildWhen: (previous, current) => current is PaymentAppleProductsLoaded,
               builder: (context, state) {
                 if (state is! PaymentAppleProductsLoaded) {
                   return const Center(child: LoadingIndicator());
@@ -288,8 +279,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               customColors: customColors,
                               detail: item,
                               selectedProduct: selectedProduct,
-                              product: state.localProducts
-                                  .firstWhere((e) => e.id == item.id),
+                              product: state.localProducts.firstWhere((e) => e.id == item.id),
                               loading: state.loading,
                             ),
                           ),
@@ -300,10 +290,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: Text(
-                          state.localProducts
-                              .where((e) => e.id == selectedProduct!.id)
-                              .first
-                              .description!,
+                          state.localProducts.where((e) => e.id == selectedProduct!.id).first.description!,
                           style: TextStyle(
                             fontSize: 12,
                             color: customColors.weakTextColor,
@@ -314,8 +301,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: EnhancedButton(
-                        title:
-                            '${AppLocale.toPay.getString(context)}   ${selectedProduct?.price ?? ''}',
+                        title: '${AppLocale.toPay.getString(context)}   ${selectedProduct?.price ?? ''}',
                         onPressed: () async {
                           if (state.loading) {
                             showErrorMessage('价格加载中，请稍后');
@@ -378,15 +364,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               '   购买说明：',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: customColors.paymentItemTitleColor
-                                    ?.withOpacity(0.5),
+                                color: customColors.paymentItemTitleColor?.withOpacity(0.5),
                               ),
                             ),
                             Markdown(
                               data: state.note!,
                               textStyle: TextStyle(
-                                color: customColors.paymentItemTitleColor
-                                    ?.withOpacity(0.5),
+                                color: customColors.paymentItemTitleColor?.withOpacity(0.5),
                                 fontSize: 12,
                               ),
                             ),
@@ -403,8 +387,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  void handlePaymentForWeb(PaymentAppleProductsLoaded state,
-      BuildContext context, CustomColors customColors) {
+  void handlePaymentForWeb(PaymentAppleProductsLoaded state, BuildContext context, CustomColors customColors) {
     // openConfirmDialog(
     //   context,
     //   '当前终端在线支付暂不可用，预计最晚 2023 年 10 月 15 日恢复，如需充值，请使用移动端 APP（支持 Android 手机、Apple 手机）。',
@@ -417,8 +400,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     //   confirmText: '前往下载移动端 APP',
     // )
 
-    final localProduct =
-        state.localProducts.firstWhere((e) => e.id == selectedProduct!.id);
+    final localProduct = state.localProducts.firstWhere((e) => e.id == selectedProduct!.id);
 
     final enableStripe = Ability().enableStripe && localProduct.supportStripe;
 
@@ -458,8 +440,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   Text(
                     '(${localProduct.retailPriceUSDText})',
                     style: TextStyle(
-                      color:
-                          customColors.paymentItemTitleColor?.withOpacity(0.5),
+                      color: customColors.paymentItemTitleColor?.withOpacity(0.5),
                       fontSize: 12,
                     ),
                   ),
@@ -477,8 +458,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         } else if (value.value == 'wechat-pay') {
           createWechatPayment(localProduct);
         } else {
-          createWebOrWapAlipay(source: value.value)
-              .onError((error, stackTrace) {
+          createWebOrWapAlipay(source: value.value).onError((error, stackTrace) {
             _closePaymentLoading();
             showErrorMessageEnhanced(context, error!);
           });
@@ -497,8 +477,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     BuildContext context,
     CustomColors customColors,
   ) async {
-    final localProduct =
-        state.localProducts.firstWhere((e) => e.id == selectedProduct!.id);
+    final localProduct = state.localProducts.firstWhere((e) => e.id == selectedProduct!.id);
     final enableStripe = Ability().enableStripe && localProduct.supportStripe;
     openListSelectDialog(
       context,
@@ -530,8 +509,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   Text(
                     '(${localProduct.retailPriceUSDText})',
                     style: TextStyle(
-                      color:
-                          customColors.paymentItemTitleColor?.withOpacity(0.5),
+                      color: customColors.paymentItemTitleColor?.withOpacity(0.5),
                       fontSize: 12,
                     ),
                   ),
@@ -568,8 +546,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     BuildContext context,
     CustomColors customColors,
   ) {
-    final localProduct =
-        state.localProducts.firstWhere((e) => e.id == selectedProduct!.id);
+    final localProduct = state.localProducts.firstWhere((e) => e.id == selectedProduct!.id);
     final enableStripe = Ability().enableStripe && localProduct.supportStripe;
     openListSelectDialog(
       context,
@@ -601,8 +578,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   Text(
                     '(${localProduct.retailPriceUSDText})',
                     style: TextStyle(
-                      color:
-                          customColors.paymentItemTitleColor?.withOpacity(0.5),
+                      color: customColors.paymentItemTitleColor?.withOpacity(0.5),
                       fontSize: 12,
                     ),
                   ),
@@ -661,8 +637,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         () async {
           _startPaymentLoading();
           try {
-            final resp =
-                await APIServer().queryPaymentStatus(created.paymentId);
+            final resp = await APIServer().queryPaymentStatus(created.paymentId);
             if (resp.success) {
               showSuccessMessage(resp.note ?? '支付成功');
               _closePaymentLoading();
@@ -670,8 +645,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               // 支付失败，延迟 5s 再次查询支付状态
               await Future.delayed(const Duration(seconds: 5), () async {
                 try {
-                  final value =
-                      await APIServer().queryPaymentStatus(created.paymentId);
+                  final value = await APIServer().queryPaymentStatus(created.paymentId);
 
                   if (value.success) {
                     showSuccessMessage(value.note ?? '支付成功');
@@ -740,7 +714,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               child: Column(
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: CustomSize.borderRadius,
                     child: QrImageView(
                       data: created.codeUrl!,
                       version: QrVersions.auto,
@@ -769,8 +743,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 // 支付失败，延迟 5s 再次查询支付状态
                 Future.delayed(const Duration(seconds: 5), () async {
                   try {
-                    final value =
-                        await APIServer().queryPaymentStatus(created.paymentId);
+                    final value = await APIServer().queryPaymentStatus(created.paymentId);
 
                     if (value.success) {
                       showSuccessMessage(value.note ?? '支付成功');
@@ -810,9 +783,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       );
       paymentId = created.paymentId;
 
-      if (PlatformTool.isWeb() ||
-          PlatformTool.isAndroid() ||
-          PlatformTool.isIOS()) {
+      if (PlatformTool.isWeb() || PlatformTool.isAndroid() || PlatformTool.isIOS()) {
         Stripe.publishableKey = created.publishableKey;
         Stripe.urlScheme = 'flutterstripe';
 
@@ -851,8 +822,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             final cancel = BotToast.showCustomLoading(
                               toastBuilder: (cancel) {
                                 return LoadingIndicator(
-                                  message: AppLocale.processingWait
-                                      .getString(context),
+                                  message: AppLocale.processingWait.getString(context),
                                 );
                               },
                               allowClick: false,
@@ -888,9 +858,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             customerEphemeralKeySecret: created.ephemeralKey,
             returnURL: 'flutterstripe://redirect',
             // ignore: use_build_context_synchronously
-            style: Ability().themeMode == 'dark'
-                ? ThemeMode.dark
-                : ThemeMode.light,
+            style: Ability().themeMode == 'dark' ? ThemeMode.dark : ThemeMode.light,
           ),
         );
 
@@ -918,8 +886,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             () async {
               _startPaymentLoading();
               try {
-                final resp =
-                    await APIServer().queryPaymentStatus(created.paymentId);
+                final resp = await APIServer().queryPaymentStatus(created.paymentId);
                 if (resp.success) {
                   showSuccessMessage(resp.note ?? '支付成功');
                   _closePaymentLoading();
@@ -927,8 +894,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   // 支付失败，延迟 5s 再次查询支付状态
                   await Future.delayed(const Duration(seconds: 5), () async {
                     try {
-                      final value = await APIServer()
-                          .queryPaymentStatus(created.paymentId);
+                      final value = await APIServer().queryPaymentStatus(created.paymentId);
 
                       if (value.success) {
                         showSuccessMessage(value.note ?? '支付成功');
@@ -1032,7 +998,7 @@ class PaymentMethodItem extends StatelessWidget {
       children: [
         if (image != null) ...[
           ClipRRect(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: CustomSize.borderRadius,
             child: Image.asset(
               image!,
               width: 20,

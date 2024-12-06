@@ -179,7 +179,8 @@ class _HomePageState extends State<HomePage> {
         showBeautyDialog(
           context,
           type: QuickAlertType.info,
-          text: '恭喜您，账号创建成功！${(widget.reward != null && widget.reward! > 0) ? '\n\n为了庆祝这一时刻，我们向您的账户赠送了 ${widget.reward} 个智慧果。' : ''}',
+          text:
+              '恭喜您，账号创建成功！${(widget.reward != null && widget.reward! > 0) ? '\n\n为了庆祝这一时刻，我们向您的账户赠送了 ${widget.reward} 个智慧果。' : ''}',
           confirmBtnText: '开始使用',
           onConfirmBtnTap: () {
             context.pop();
@@ -399,11 +400,11 @@ class _HomePageState extends State<HomePage> {
               innerPadding: const EdgeInsets.all(0),
               decoration: BoxDecoration(
                 color: customColors.columnBlockBackgroundColor?.withAlpha(150),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: CustomSize.borderRadius,
               ),
               thumbDecoration: BoxDecoration(
                 color: currentModel?.iconAndColor.color,
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: CustomSize.borderRadius,
               ),
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInToLinear,
@@ -496,7 +497,7 @@ class _HomePageState extends State<HomePage> {
                                   child: Stack(
                                     children: [
                                       ClipRRect(
-                                        borderRadius: BorderRadius.circular(5),
+                                        borderRadius: CustomSize.borderRadius,
                                         child: e.file.bytes != null
                                             ? Image.memory(
                                                 e.file.bytes!,
@@ -523,7 +524,7 @@ class _HomePageState extends State<HomePage> {
                                           child: Container(
                                             padding: const EdgeInsets.all(3),
                                             decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(10),
+                                              borderRadius: CustomSize.borderRadius,
                                               color: customColors.chatRoomBackground,
                                             ),
                                             child: Icon(
@@ -549,9 +550,7 @@ class _HomePageState extends State<HomePage> {
           // 问题示例
           if (state.examples != null && state.examples!.isNotEmpty && state.histories.isEmpty)
             Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-              ),
+              decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
               padding: const EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 3),
               margin: const EdgeInsets.all(10),
               height: 260,
@@ -852,9 +851,7 @@ class ChatHistoryItem extends StatelessWidget {
         horizontal: 15,
         vertical: 5,
       ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-      ),
+      decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
       child: Slidable(
         endActionPane: ActionPane(
           motion: const ScrollMotion(),
@@ -862,7 +859,7 @@ class ChatHistoryItem extends StatelessWidget {
             const SizedBox(width: 10),
             SlidableAction(
               label: AppLocale.delete.getString(context),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: CustomSize.borderRadiusAll,
               backgroundColor: Colors.red,
               icon: Icons.delete,
               onPressed: (_) {
@@ -879,16 +876,12 @@ class ChatHistoryItem extends StatelessWidget {
           ],
         ),
         child: Material(
-          color: customColors.backgroundColor?.withAlpha(200),
-          borderRadius: BorderRadius.all(
-            Radius.circular(customColors.borderRadius ?? 8),
-          ),
+          color: customColors.backgroundContainerColor,
+          borderRadius: CustomSize.borderRadius,
           child: InkWell(
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(customColors.borderRadius ?? 8),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: CustomSize.borderRadius),
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

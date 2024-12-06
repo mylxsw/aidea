@@ -59,7 +59,7 @@ class _SettingScreenState extends State<SettingScreen> {
     return BackgroundContainer(
       setting: widget.settings,
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: customColors.backgroundColor,
         body: SliverComponent(
           title: Text(
             AppLocale.settings.getString(context),

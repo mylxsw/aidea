@@ -44,7 +44,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         toolbarHeight: CustomSize.toolbarHeight,
         centerTitle: true,
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -129,9 +129,7 @@ class NotifyMessageItem extends StatelessWidget {
         horizontal: 15,
         vertical: 5,
       ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-      ),
+      decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
       child: Slidable(
         endActionPane: ActionPane(
           motion: const ScrollMotion(),
@@ -139,7 +137,7 @@ class NotifyMessageItem extends StatelessWidget {
             const SizedBox(width: 10),
             SlidableAction(
               label: 'Details',
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: CustomSize.borderRadiusAll,
               backgroundColor: Colors.green,
               icon: Icons.info_outline,
               onPressed: (_) {
@@ -150,16 +148,12 @@ class NotifyMessageItem extends StatelessWidget {
           ],
         ),
         child: Material(
-          color: customColors.backgroundColor?.withAlpha(200),
-          borderRadius: BorderRadius.all(
-            Radius.circular(customColors.borderRadius ?? 8),
-          ),
+          color: customColors.backgroundContainerColor,
+          borderRadius: CustomSize.borderRadius,
           child: InkWell(
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(customColors.borderRadius ?? 8),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: CustomSize.borderRadius),
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

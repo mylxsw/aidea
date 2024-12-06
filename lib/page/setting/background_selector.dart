@@ -8,6 +8,7 @@ import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:file_picker/file_picker.dart';
@@ -85,7 +86,7 @@ class _BackgroundSelectorScreenState extends State<BackgroundSelectorScreen> {
                             child: Stack(
                               children: [
                                 ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: CustomSize.borderRadius,
                                   child: Image.asset('assets/light-dark-auto.png'),
                                 ),
                                 Positioned(
@@ -112,14 +113,14 @@ class _BackgroundSelectorScreenState extends State<BackgroundSelectorScreen> {
                                 });
                               },
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: CustomSize.borderRadius,
                                 child: CachedNetworkImageEnhanced(imageUrl: img.preview),
                               ),
                             ),
                           Material(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: CustomSize.borderRadius,
                             child: InkWell(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: CustomSize.borderRadiusAll,
                               onTap: () async {
                                 if (selectDialogOpened) return;
 
@@ -141,7 +142,7 @@ class _BackgroundSelectorScreenState extends State<BackgroundSelectorScreen> {
                                     color: customColors.textFieldBorderColor!,
                                     style: BorderStyle.solid,
                                   ),
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: CustomSize.borderRadius,
                                 ),
                                 padding: const EdgeInsets.all(10),
                                 child: Column(
@@ -179,7 +180,7 @@ class _BackgroundSelectorScreenState extends State<BackgroundSelectorScreen> {
                 const Text('图片预览'),
                 const SizedBox(height: 10),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: CustomSize.borderRadius,
                   child: GestureDetector(
                     onLongPressStart: (details) {
                       setState(() {
@@ -200,7 +201,7 @@ class _BackgroundSelectorScreenState extends State<BackgroundSelectorScreen> {
                               )
                             : null,
                         color: customColors.backgroundContainerColor,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: CustomSize.borderRadius,
                         border: Border.all(
                           color: customColors.textFieldBorderColor!,
                           style: BorderStyle.solid,

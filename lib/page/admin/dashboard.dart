@@ -1,6 +1,7 @@
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,7 +20,7 @@ class AdminDashboardPage extends StatefulWidget {
 class _AdminDashboardPageState extends State<AdminDashboardPage> {
   @override
   Widget build(BuildContext context) {
-    // final customColors = Theme.of(context).extension<CustomColors>()!;
+    final customColors = Theme.of(context).extension<CustomColors>()!;
 
     return BackgroundContainer(
       setting: widget.setting,
@@ -32,7 +33,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           ),
           centerTitle: true,
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: customColors.backgroundColor,
         body: Column(
           children: [
             Expanded(
@@ -44,7 +45,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 ),
                 darkTheme: const SettingsThemeData(
                   settingsListBackground: Colors.transparent,
-                  settingsSectionBackground: Color.fromARGB(255, 27, 27, 27),
+                  settingsSectionBackground: Color.fromARGB(255, 44, 44, 46),
                   titleTextColor: Color.fromARGB(255, 239, 239, 239),
                 ),
                 sections: [

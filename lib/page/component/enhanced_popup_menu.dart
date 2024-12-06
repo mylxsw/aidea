@@ -1,3 +1,4 @@
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:flutter/material.dart';
 
 class EnhancedPopupMenuItem {
@@ -34,9 +35,7 @@ class EnhancedPopupMenu extends StatelessWidget {
       tooltip: tooltip,
       splashRadius: 20,
       elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: CustomSize.borderRadius),
       position: PopupMenuPosition.under,
       onSelected: (value) {
         if (value.onTap != null) {
@@ -53,8 +52,7 @@ class EnhancedPopupMenu extends StatelessWidget {
               value: item,
               child: Row(
                 children: [
-                  if (item.icon != null)
-                    Icon(item.icon!, size: 15, color: item.iconColor),
+                  if (item.icon != null) Icon(item.icon!, size: 15, color: item.iconColor),
                   if (item.icon != null) const SizedBox(width: 10),
                   Text(
                     item.title,

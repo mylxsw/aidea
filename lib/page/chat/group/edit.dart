@@ -113,7 +113,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
         elevation: 0,
         toolbarHeight: CustomSize.toolbarHeight,
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -194,7 +194,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
                                 width: 45,
                                 height: 45,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: CustomSize.borderRadius,
                                   image: _avatarUrl == null
                                       ? null
                                       : DecorationImage(
@@ -260,9 +260,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
                                   Container(
                                     width: resolveSelectedModelsPreviewWidth(context),
                                     height: 45,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
+                                    decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
                                     alignment: Alignment.center,
                                     clipBehavior: Clip.hardEdge,
                                     child: buildSelectedModelsPreview(),
@@ -275,7 +273,7 @@ class _GroupEditPageState extends State<GroupEditPage> {
                                         padding: const EdgeInsets.all(3),
                                         decoration: BoxDecoration(
                                           color: customColors.tagsBackground,
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: CustomSize.borderRadius,
                                         ),
                                         child: Text(
                                           'x${selectedModels.length}',

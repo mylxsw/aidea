@@ -1,3 +1,4 @@
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:flutter/material.dart';
 
 class MessageBox extends StatelessWidget {
@@ -10,7 +11,7 @@ class MessageBox extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: type.backgroundColor,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: CustomSize.borderRadius,
         border: Border.all(
           color: type.borderColor,
           width: 1,

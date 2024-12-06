@@ -2,6 +2,7 @@ import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/image.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/image.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/weak_text_button.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
@@ -58,7 +59,7 @@ class RoomCard extends StatelessWidget {
       onTap: () {
         onItemSelected(item);
       },
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: CustomSize.borderRadiusAll,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -66,7 +67,7 @@ class RoomCard extends StatelessWidget {
         children: [
           Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(11),
+              borderRadius: CustomSize.borderRadius,
               border: selected
                   ? Border.all(
                       width: 2,
@@ -77,7 +78,7 @@ class RoomCard extends StatelessWidget {
             child: Stack(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: CustomSize.borderRadius,
                   child: CachedNetworkImageEnhanced(
                     imageUrl: imageURL(item.avatarUrl, qiniuImageTypeAvatar),
                     fit: BoxFit.cover,
@@ -91,10 +92,8 @@ class RoomCard extends StatelessWidget {
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
                         color: customColors.linkColor ?? Colors.green,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(8),
-                          bottomRight: Radius.circular(8),
-                        ),
+                        borderRadius:
+                            const BorderRadius.only(topLeft: CustomSize.radius, bottomRight: CustomSize.radius),
                       ),
                       child: const Icon(
                         Icons.check,
@@ -125,8 +124,7 @@ class GalleryRoomCard extends StatelessWidget {
   final RoomGallery item;
   final Function()? onConfirm;
   final bool selected;
-  const GalleryRoomCard(
-      {super.key, required this.item, this.onConfirm, this.selected = false});
+  const GalleryRoomCard({super.key, required this.item, this.onConfirm, this.selected = false});
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +144,7 @@ class GalleryRoomCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: CustomSize.borderRadius,
                     child: CachedNetworkImageEnhanced(
                       imageUrl: item.avatarUrl,
                       fit: BoxFit.cover,

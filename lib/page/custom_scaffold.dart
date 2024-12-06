@@ -69,6 +69,14 @@ class _CustomScaffoldState extends State<CustomScaffold> {
           child: widget.appBarBackground,
         ),
       ),
+      leading: widget.drawer != null
+          ? Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.sort),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
+            )
+          : null,
     );
   }
 }

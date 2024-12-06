@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 class CustomColors extends ThemeExtension<CustomColors> {
   const CustomColors({
-    this.borderRadius,
     this.appBarBackgroundImage,
     this.appBarBackgroundImageForRoom,
     this.appBarBackgroundImageForCreativeIsland,
@@ -59,8 +58,6 @@ class CustomColors extends ThemeExtension<CustomColors> {
     this.paymentItemDateColor,
     this.paymentItemDescriptionColor,
   });
-
-  final double? borderRadius;
 
   final String? appBarBackgroundImage;
   final String? appBarBackgroundImageForRoom;
@@ -138,146 +135,100 @@ class CustomColors extends ThemeExtension<CustomColors> {
     }
 
     return CustomColors(
-      borderRadius: lerpDouble(borderRadius, other.borderRadius, t),
       appBarBackgroundImage: appBarBackgroundImage,
       appBarBackgroundImageForRoom: appBarBackgroundImageForRoom,
-      appBarBackgroundImageForCreativeIsland:
-          appBarBackgroundImageForCreativeIsland,
+      appBarBackgroundImageForCreativeIsland: appBarBackgroundImageForCreativeIsland,
       appBarBackgroundImageDiscovery: appBarBackgroundImageDiscovery,
-      chatRoomBackground:
-          Color.lerp(chatRoomBackground, other.chatRoomBackground, t),
-      chatRoomReplyBackground:
-          Color.lerp(chatRoomReplyBackground, other.chatRoomReplyBackground, t),
-      chatRoomReplyBackgroundSecondary: Color.lerp(
-          chatRoomReplyBackgroundSecondary,
-          other.chatRoomReplyBackgroundSecondary,
-          t),
-      chatRoomReplyText:
-          Color.lerp(chatRoomReplyText, other.chatRoomReplyText, t),
-      chatRoomSenderBackground: Color.lerp(
-          chatRoomSenderBackground, other.chatRoomSenderBackground, t),
-      chatRoomSenderBackgroundSecondary: Color.lerp(
-          chatRoomSenderBackgroundSecondary,
-          other.chatRoomSenderBackgroundSecondary,
-          t),
-      chatRoomSenderBackgroundWarning: Color.lerp(
-          chatRoomSenderBackgroundWarning,
-          other.chatRoomSenderBackgroundWarning,
-          t),
-      chatRoomSenderText:
-          Color.lerp(chatRoomSenderText, other.chatRoomSenderText, t),
+      chatRoomBackground: Color.lerp(chatRoomBackground, other.chatRoomBackground, t),
+      chatRoomReplyBackground: Color.lerp(chatRoomReplyBackground, other.chatRoomReplyBackground, t),
+      chatRoomReplyBackgroundSecondary:
+          Color.lerp(chatRoomReplyBackgroundSecondary, other.chatRoomReplyBackgroundSecondary, t),
+      chatRoomReplyText: Color.lerp(chatRoomReplyText, other.chatRoomReplyText, t),
+      chatRoomSenderBackground: Color.lerp(chatRoomSenderBackground, other.chatRoomSenderBackground, t),
+      chatRoomSenderBackgroundSecondary:
+          Color.lerp(chatRoomSenderBackgroundSecondary, other.chatRoomSenderBackgroundSecondary, t),
+      chatRoomSenderBackgroundWarning:
+          Color.lerp(chatRoomSenderBackgroundWarning, other.chatRoomSenderBackgroundWarning, t),
+      chatRoomSenderText: Color.lerp(chatRoomSenderText, other.chatRoomSenderText, t),
       tagsBackground: Color.lerp(tagsBackground, other.tagsBackground, t),
-      tagsBackgroundHover:
-          Color.lerp(tagsBackgroundHover, other.tagsBackgroundHover, t),
+      tagsBackgroundHover: Color.lerp(tagsBackgroundHover, other.tagsBackgroundHover, t),
       tagsText: Color.lerp(tagsText, other.tagsText, t),
-      chatInputPanelBackground: Color.lerp(
-          chatInputPanelBackground, other.chatInputPanelBackground, t),
-      chatInputPanelText:
-          Color.lerp(chatInputPanelText, other.chatInputPanelText, t),
-      chatInputAreaBackground:
-          Color.lerp(chatInputAreaBackground, other.chatInputAreaBackground, t),
-      chatExampleItemBackground: Color.lerp(
-          chatExampleItemBackground, other.chatExampleItemBackground, t),
-      chatExampleItemBackgroundHover: Color.lerp(chatExampleItemBackgroundHover,
-          other.chatExampleItemBackgroundHover, t),
-      chatExampleItemText:
-          Color.lerp(chatExampleItemText, other.chatExampleItemText, t),
-      chatExampleTitleText:
-          Color.lerp(chatExampleTitleText, other.chatExampleTitleText, t),
-      markdownLinkColor:
-          Color.lerp(markdownLinkColor, other.markdownLinkColor, t),
+      chatInputPanelBackground: Color.lerp(chatInputPanelBackground, other.chatInputPanelBackground, t),
+      chatInputPanelText: Color.lerp(chatInputPanelText, other.chatInputPanelText, t),
+      chatInputAreaBackground: Color.lerp(chatInputAreaBackground, other.chatInputAreaBackground, t),
+      chatExampleItemBackground: Color.lerp(chatExampleItemBackground, other.chatExampleItemBackground, t),
+      chatExampleItemBackgroundHover:
+          Color.lerp(chatExampleItemBackgroundHover, other.chatExampleItemBackgroundHover, t),
+      chatExampleItemText: Color.lerp(chatExampleItemText, other.chatExampleItemText, t),
+      chatExampleTitleText: Color.lerp(chatExampleTitleText, other.chatExampleTitleText, t),
+      markdownLinkColor: Color.lerp(markdownLinkColor, other.markdownLinkColor, t),
       markdownPreColor: Color.lerp(markdownPreColor, other.markdownPreColor, t),
-      markdownCodeColor:
-          Color.lerp(markdownCodeColor, other.markdownCodeColor, t),
+      markdownCodeColor: Color.lerp(markdownCodeColor, other.markdownCodeColor, t),
       boxShadowColor: Color.lerp(boxShadowColor, other.boxShadowColor, t),
       backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t),
-      backgroundInvertedColor:
-          Color.lerp(backgroundInvertedColor, other.backgroundInvertedColor, t),
-      backgroundContainerColor: Color.lerp(
-          backgroundContainerColor, other.backgroundContainerColor, t),
-      textFieldBorderColor:
-          Color.lerp(textFieldBorderColor, other.textFieldBorderColor, t),
+      backgroundInvertedColor: Color.lerp(backgroundInvertedColor, other.backgroundInvertedColor, t),
+      backgroundContainerColor: Color.lerp(backgroundContainerColor, other.backgroundContainerColor, t),
+      textFieldBorderColor: Color.lerp(textFieldBorderColor, other.textFieldBorderColor, t),
       iconButtonColor: Color.lerp(iconButtonColor, other.iconButtonColor, t),
       weakLinkColor: Color.lerp(weakLinkColor, other.weakLinkColor, t),
       weakTextColor: Color.lerp(weakTextColor, other.weakTextColor, t),
-      weakTextColorPlus:
-          Color.lerp(weakTextColorPlus, other.weakTextColorPlus, t),
-      weakTextColorPlusPlus:
-          Color.lerp(weakTextColorPlusPlus, other.weakTextColorPlusPlus, t),
-      dialogDefaultTextColor:
-          Color.lerp(dialogDefaultTextColor, other.dialogDefaultTextColor, t),
-      dialogBackgroundColor:
-          Color.lerp(dialogBackgroundColor, other.dialogBackgroundColor, t),
-      columnBlockBorderColor:
-          Color.lerp(columnBlockBorderColor, other.columnBlockBorderColor, t),
-      columnBlockBackgroundColor: Color.lerp(
-          columnBlockBackgroundColor, other.columnBlockBackgroundColor, t),
-      columnBlockDividerColor:
-          Color.lerp(columnBlockDividerColor, other.columnBlockDividerColor, t),
-      textfieldHintColor:
-          Color.lerp(textfieldHintColor, other.textfieldHintColor, t),
-      textfieldHintDeepColor:
-          Color.lerp(textfieldHintDeepColor, other.textfieldHintDeepColor, t),
-      textfieldLabelColor:
-          Color.lerp(textfieldLabelColor, other.textfieldLabelColor, t),
-      textfieldValueColor:
-          Color.lerp(textfieldValueColor, other.textfieldValueColor, t),
-      textfieldBackgroundColor: Color.lerp(
-          textfieldBackgroundColor, other.textfieldBackgroundColor, t),
-      textfieldSelectorColor:
-          Color.lerp(textfieldSelectorColor, other.textfieldSelectorColor, t),
-      paymentItemBorderColor:
-          Color.lerp(paymentItemBorderColor, other.paymentItemBorderColor, t),
-      paymentItemBackgroundColor: Color.lerp(
-          paymentItemBackgroundColor, other.paymentItemBackgroundColor, t),
-      paymentItemTitleColor:
-          Color.lerp(paymentItemTitleColor, other.paymentItemTitleColor, t),
-      paymentItemPriceColor:
-          Color.lerp(paymentItemPriceColor, other.paymentItemPriceColor, t),
-      paymentItemDateColor:
-          Color.lerp(paymentItemDateColor, other.paymentItemDateColor, t),
-      paymentItemDescriptionColor: Color.lerp(
-          paymentItemDescriptionColor, other.paymentItemDescriptionColor, t),
+      weakTextColorPlus: Color.lerp(weakTextColorPlus, other.weakTextColorPlus, t),
+      weakTextColorPlusPlus: Color.lerp(weakTextColorPlusPlus, other.weakTextColorPlusPlus, t),
+      dialogDefaultTextColor: Color.lerp(dialogDefaultTextColor, other.dialogDefaultTextColor, t),
+      dialogBackgroundColor: Color.lerp(dialogBackgroundColor, other.dialogBackgroundColor, t),
+      columnBlockBorderColor: Color.lerp(columnBlockBorderColor, other.columnBlockBorderColor, t),
+      columnBlockBackgroundColor: Color.lerp(columnBlockBackgroundColor, other.columnBlockBackgroundColor, t),
+      columnBlockDividerColor: Color.lerp(columnBlockDividerColor, other.columnBlockDividerColor, t),
+      textfieldHintColor: Color.lerp(textfieldHintColor, other.textfieldHintColor, t),
+      textfieldHintDeepColor: Color.lerp(textfieldHintDeepColor, other.textfieldHintDeepColor, t),
+      textfieldLabelColor: Color.lerp(textfieldLabelColor, other.textfieldLabelColor, t),
+      textfieldValueColor: Color.lerp(textfieldValueColor, other.textfieldValueColor, t),
+      textfieldBackgroundColor: Color.lerp(textfieldBackgroundColor, other.textfieldBackgroundColor, t),
+      textfieldSelectorColor: Color.lerp(textfieldSelectorColor, other.textfieldSelectorColor, t),
+      paymentItemBorderColor: Color.lerp(paymentItemBorderColor, other.paymentItemBorderColor, t),
+      paymentItemBackgroundColor: Color.lerp(paymentItemBackgroundColor, other.paymentItemBackgroundColor, t),
+      paymentItemTitleColor: Color.lerp(paymentItemTitleColor, other.paymentItemTitleColor, t),
+      paymentItemPriceColor: Color.lerp(paymentItemPriceColor, other.paymentItemPriceColor, t),
+      paymentItemDateColor: Color.lerp(paymentItemDateColor, other.paymentItemDateColor, t),
+      paymentItemDescriptionColor: Color.lerp(paymentItemDescriptionColor, other.paymentItemDescriptionColor, t),
     );
   }
 
   static const light = CustomColors(
-    borderRadius: 8,
     appBarBackgroundImage: 'assets/background.jpg',
     appBarBackgroundImageForRoom: 'assets/background-team.jpg',
-    appBarBackgroundImageForCreativeIsland:
-        'assets/background-creative-island.jpg',
+    appBarBackgroundImageForCreativeIsland: 'assets/background-creative-island.jpg',
     appBarBackgroundImageDiscovery: 'assets/background-light-s1.jpg',
     chatRoomBackground: Color.fromARGB(255, 239, 239, 239),
-    chatRoomReplyBackground: Colors.white,
+    chatRoomReplyBackground: Colors.transparent,
     chatRoomReplyBackgroundSecondary: Color.fromARGB(200, 255, 255, 255),
     chatRoomReplyText: Color(0xFF000000),
-    chatRoomSenderBackground: Color.fromARGB(255, 133, 238, 94),
+    chatRoomSenderBackground: Color.fromARGB(255, 242, 242, 242),
     chatRoomSenderBackgroundSecondary: Color.fromARGB(255, 133, 238, 94),
     chatRoomSenderBackgroundWarning: Color.fromARGB(255, 255, 176, 131),
     chatRoomSenderText: Color(0xFF000000),
     tagsBackground: Color.fromARGB(255, 238, 238, 238),
     tagsBackgroundHover: Color.fromARGB(255, 237, 237, 237),
     tagsText: Colors.black,
-    chatInputPanelBackground: Color.fromARGB(255, 250, 250, 250),
-    chatInputPanelText: Color.fromARGB(255, 151, 151, 151),
-    chatInputAreaBackground: Color.fromARGB(255, 244, 244, 244),
+    chatInputPanelBackground: Colors.transparent,
+    chatInputPanelText: Color.fromARGB(255, 0, 0, 0),
+    chatInputAreaBackground: Color.fromARGB(255, 245, 245, 245),
     chatExampleItemBackground: Color.fromARGB(194, 221, 221, 221),
     chatExampleItemBackgroundHover: Color.fromARGB(255, 223, 223, 223),
     chatExampleItemText: Color.fromARGB(255, 66, 66, 66),
     chatExampleTitleText: Color.fromARGB(255, 66, 66, 66),
     markdownLinkColor: Colors.blue,
     markdownPreColor: Color.fromARGB(255, 247, 247, 247),
-    markdownCodeColor: Color.fromARGB(255, 136, 0, 0),
+    markdownCodeColor: Color.fromARGB(255, 167, 100, 153),
     boxShadowColor: Color.fromARGB(149, 232, 232, 232),
-    backgroundColor: Colors.white,
+    backgroundColor: Color.fromARGB(255, 242, 242, 246),
     backgroundInvertedColor: Color.fromARGB(255, 72, 72, 72),
-    backgroundContainerColor: Color.fromARGB(255, 234, 234, 234),
+    backgroundContainerColor: Color.fromARGB(255, 255, 255, 255),
     textFieldBorderColor: Color.fromARGB(255, 228, 228, 228),
     iconButtonColor: Color.fromARGB(255, 117, 117, 117),
     linkColor: Color.fromARGB(255, 9, 185, 85),
-    weakLinkColor: Color.fromARGB(255, 117, 117, 117),
-    weakTextColor: Color.fromARGB(255, 117, 117, 117),
+    weakLinkColor: Color.fromARGB(255, 75, 75, 75),
+    weakTextColor: Color.fromARGB(255, 75, 75, 75),
     weakTextColorPlus: Color.fromARGB(255, 146, 146, 146),
     weakTextColorPlusPlus: Color.fromARGB(255, 29, 29, 29),
     dialogDefaultTextColor: Color.fromARGB(195, 0, 0, 0),
@@ -300,36 +251,35 @@ class CustomColors extends ThemeExtension<CustomColors> {
   );
 
   static const dark = CustomColors(
-    borderRadius: 8,
     appBarBackgroundImage: 'assets/background-dark.jpg',
     appBarBackgroundImageForRoom: 'assets/background-discovery-dark.jpg',
     appBarBackgroundImageForCreativeIsland: 'assets/background-dark-s3.jpg',
     appBarBackgroundImageDiscovery: 'assets/background-dark-s1.jpg',
-    chatRoomBackground: Color.fromARGB(255, 53, 53, 53),
-    chatRoomReplyBackground: Color.fromARGB(255, 22, 22, 22),
+    chatRoomBackground: Color.fromARGB(255, 0, 0, 0),
+    chatRoomReplyBackground: Colors.transparent,
     chatRoomReplyBackgroundSecondary: Color.fromARGB(200, 39, 39, 39),
     chatRoomReplyText: Color(0xFFECEFF1),
-    chatRoomSenderBackground: Color.fromARGB(255, 36, 172, 86),
+    chatRoomSenderBackground: Color.fromARGB(255, 33, 33, 33),
     chatRoomSenderBackgroundSecondary: Color.fromARGB(181, 36, 172, 86),
     chatRoomSenderBackgroundWarning: Color.fromARGB(255, 255, 176, 131),
     chatRoomSenderText: Color(0xFFECEFF1),
     tagsBackground: Color.fromARGB(255, 69, 69, 69),
     tagsBackgroundHover: Color.fromARGB(255, 106, 106, 106),
     tagsText: Color.fromARGB(255, 218, 218, 218),
-    chatInputPanelBackground: Color.fromARGB(255, 48, 48, 48),
-    chatInputPanelText: Color.fromARGB(255, 187, 187, 187),
-    chatInputAreaBackground: Color.fromARGB(255, 88, 88, 88),
+    chatInputPanelBackground: Color.fromARGB(255, 0, 0, 0),
+    chatInputPanelText: Color.fromARGB(255, 255, 255, 255),
+    chatInputAreaBackground: Color.fromARGB(255, 32, 32, 32),
     chatExampleItemBackground: Color.fromARGB(255, 80, 80, 80),
     chatExampleItemBackgroundHover: Color.fromARGB(255, 69, 69, 69),
     chatExampleItemText: Color.fromARGB(255, 218, 218, 218),
     chatExampleTitleText: Color.fromARGB(255, 150, 150, 150),
     markdownLinkColor: Color.fromARGB(255, 0, 122, 255),
-    markdownPreColor: Color.fromARGB(255, 69, 69, 69),
-    markdownCodeColor: Color.fromARGB(255, 244, 54, 111),
+    markdownPreColor: Color.fromARGB(255, 16, 16, 16),
+    markdownCodeColor: Color.fromARGB(255, 179, 148, 173),
     boxShadowColor: Color.fromARGB(70, 37, 37, 37),
-    backgroundColor: Color.fromARGB(255, 48, 48, 48),
+    backgroundColor: Color.fromARGB(255, 30, 30, 30),
     backgroundInvertedColor: Color.fromARGB(255, 233, 233, 233),
-    backgroundContainerColor: Color.fromARGB(255, 41, 41, 41),
+    backgroundContainerColor: Color.fromARGB(255, 0, 0, 0),
     textFieldBorderColor: Color.fromARGB(106, 107, 107, 107),
     iconButtonColor: Color.fromARGB(255, 218, 218, 218),
     linkColor: Color.fromARGB(255, 9, 185, 85),
@@ -340,7 +290,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     dialogDefaultTextColor: Color.fromARGB(195, 255, 255, 255),
     dialogBackgroundColor: Color.fromARGB(255, 48, 48, 48),
     columnBlockBorderColor: Color.fromARGB(255, 72, 72, 72),
-    columnBlockBackgroundColor: Color.fromARGB(255, 52, 52, 52),
+    columnBlockBackgroundColor: Color.fromARGB(255, 44, 44, 46),
     columnBlockDividerColor: Color.fromARGB(160, 60, 60, 60),
     textfieldHintColor: Color.fromARGB(255, 105, 105, 105),
     textfieldHintDeepColor: Color.fromARGB(255, 170, 170, 170),
@@ -358,7 +308,6 @@ class CustomColors extends ThemeExtension<CustomColors> {
 
   @override
   ThemeExtension<CustomColors> copyWith({
-    double? borderRadius,
     String? appBarBackgroundImage,
     String? appBarBackgroundImageForRoom,
     String? appBarBackgroundImageForCreativeIsland,
@@ -414,41 +363,27 @@ class CustomColors extends ThemeExtension<CustomColors> {
     Color? paymentItemDescriptionColor,
   }) {
     return CustomColors(
-      borderRadius: borderRadius ?? this.borderRadius,
-      appBarBackgroundImage:
-          appBarBackgroundImage ?? this.appBarBackgroundImage,
-      appBarBackgroundImageForRoom:
-          appBarBackgroundImageForRoom ?? this.appBarBackgroundImageForRoom,
+      appBarBackgroundImage: appBarBackgroundImage ?? this.appBarBackgroundImage,
+      appBarBackgroundImageForRoom: appBarBackgroundImageForRoom ?? this.appBarBackgroundImageForRoom,
       appBarBackgroundImageForCreativeIsland:
-          appBarBackgroundImageForCreativeIsland ??
-              this.appBarBackgroundImageForCreativeIsland,
-      appBarBackgroundImageDiscovery:
-          appBarBackgroundImageDiscovery ?? this.appBarBackgroundImageDiscovery,
+          appBarBackgroundImageForCreativeIsland ?? this.appBarBackgroundImageForCreativeIsland,
+      appBarBackgroundImageDiscovery: appBarBackgroundImageDiscovery ?? this.appBarBackgroundImageDiscovery,
       chatRoomBackground: chatRoomBackground ?? this.chatRoomBackground,
-      chatRoomReplyBackground:
-          chatRoomReplyBackground ?? this.chatRoomReplyBackground,
-      chatRoomReplyBackgroundSecondary: chatRoomReplyBackgroundSecondary ??
-          this.chatRoomReplyBackgroundSecondary,
+      chatRoomReplyBackground: chatRoomReplyBackground ?? this.chatRoomReplyBackground,
+      chatRoomReplyBackgroundSecondary: chatRoomReplyBackgroundSecondary ?? this.chatRoomReplyBackgroundSecondary,
       chatRoomReplyText: chatRoomReplyText ?? this.chatRoomReplyText,
-      chatRoomSenderBackground:
-          chatRoomSenderBackground ?? this.chatRoomSenderBackground,
-      chatRoomSenderBackgroundSecondary: chatRoomSenderBackgroundSecondary ??
-          this.chatRoomSenderBackgroundSecondary,
-      chatRoomSenderBackgroundWarning: chatRoomSenderBackgroundWarning ??
-          this.chatRoomSenderBackgroundWarning,
+      chatRoomSenderBackground: chatRoomSenderBackground ?? this.chatRoomSenderBackground,
+      chatRoomSenderBackgroundSecondary: chatRoomSenderBackgroundSecondary ?? this.chatRoomSenderBackgroundSecondary,
+      chatRoomSenderBackgroundWarning: chatRoomSenderBackgroundWarning ?? this.chatRoomSenderBackgroundWarning,
       chatRoomSenderText: chatRoomSenderText ?? this.chatRoomSenderText,
       tagsBackground: tagsBackground ?? this.tagsBackground,
       tagsBackgroundHover: tagsBackgroundHover ?? this.tagsBackgroundHover,
       tagsText: tagsText ?? this.tagsText,
-      chatInputPanelBackground:
-          chatInputPanelBackground ?? this.chatInputPanelBackground,
+      chatInputPanelBackground: chatInputPanelBackground ?? this.chatInputPanelBackground,
       chatInputPanelText: chatInputPanelText ?? this.chatInputPanelText,
-      chatInputAreaBackground:
-          chatInputAreaBackground ?? this.chatInputAreaBackground,
-      chatExampleItemBackground:
-          chatExampleItemBackground ?? this.chatExampleItemBackground,
-      chatExampleItemBackgroundHover:
-          chatExampleItemBackgroundHover ?? this.chatExampleItemBackgroundHover,
+      chatInputAreaBackground: chatInputAreaBackground ?? this.chatInputAreaBackground,
+      chatExampleItemBackground: chatExampleItemBackground ?? this.chatExampleItemBackground,
+      chatExampleItemBackgroundHover: chatExampleItemBackgroundHover ?? this.chatExampleItemBackgroundHover,
       chatExampleItemText: chatExampleItemText ?? this.chatExampleItemText,
       chatExampleTitleText: chatExampleTitleText ?? this.chatExampleTitleText,
       markdownLinkColor: markdownLinkColor ?? this.markdownLinkColor,
@@ -456,48 +391,32 @@ class CustomColors extends ThemeExtension<CustomColors> {
       markdownCodeColor: markdownCodeColor ?? this.markdownCodeColor,
       boxShadowColor: boxShadowColor ?? this.boxShadowColor,
       backgroundColor: backgroundColor ?? this.backgroundColor,
-      backgroundInvertedColor:
-          backgroundInvertedColor ?? this.backgroundInvertedColor,
-      backgroundContainerColor:
-          backgroundContainerColor ?? this.backgroundContainerColor,
+      backgroundInvertedColor: backgroundInvertedColor ?? this.backgroundInvertedColor,
+      backgroundContainerColor: backgroundContainerColor ?? this.backgroundContainerColor,
       textFieldBorderColor: textFieldBorderColor ?? this.textFieldBorderColor,
       iconButtonColor: iconButtonColor ?? this.iconButtonColor,
       linkColor: linkColor ?? this.linkColor,
       weakLinkColor: weakLinkColor ?? this.weakLinkColor,
       weakTextColor: weakTextColor ?? this.weakTextColor,
       weakTextColorPlus: weakTextColorPlus ?? this.weakTextColorPlus,
-      weakTextColorPlusPlus:
-          weakTextColorPlusPlus ?? this.weakTextColorPlusPlus,
-      dialogDefaultTextColor:
-          dialogDefaultTextColor ?? this.dialogDefaultTextColor,
-      dialogBackgroundColor:
-          dialogBackgroundColor ?? this.dialogBackgroundColor,
-      columnBlockBorderColor:
-          columnBlockBorderColor ?? this.columnBlockBorderColor,
-      columnBlockBackgroundColor:
-          columnBlockBackgroundColor ?? this.columnBlockBackgroundColor,
-      columnBlockDividerColor:
-          columnBlockDividerColor ?? this.columnBlockDividerColor,
+      weakTextColorPlusPlus: weakTextColorPlusPlus ?? this.weakTextColorPlusPlus,
+      dialogDefaultTextColor: dialogDefaultTextColor ?? this.dialogDefaultTextColor,
+      dialogBackgroundColor: dialogBackgroundColor ?? this.dialogBackgroundColor,
+      columnBlockBorderColor: columnBlockBorderColor ?? this.columnBlockBorderColor,
+      columnBlockBackgroundColor: columnBlockBackgroundColor ?? this.columnBlockBackgroundColor,
+      columnBlockDividerColor: columnBlockDividerColor ?? this.columnBlockDividerColor,
       textfieldHintColor: textfieldHintColor ?? this.textfieldHintColor,
-      textfieldHintDeepColor:
-          textfieldHintDeepColor ?? this.textfieldHintDeepColor,
+      textfieldHintDeepColor: textfieldHintDeepColor ?? this.textfieldHintDeepColor,
       textfieldLabelColor: textfieldLabelColor ?? this.textfieldLabelColor,
       textfieldValueColor: textfieldValueColor ?? this.textfieldValueColor,
-      textfieldBackgroundColor:
-          textfieldBackgroundColor ?? this.textfieldBackgroundColor,
-      textfieldSelectorColor:
-          textfieldSelectorColor ?? this.textfieldSelectorColor,
-      paymentItemBorderColor:
-          paymentItemBorderColor ?? this.paymentItemBorderColor,
-      paymentItemBackgroundColor:
-          paymentItemBackgroundColor ?? this.paymentItemBackgroundColor,
-      paymentItemTitleColor:
-          paymentItemTitleColor ?? this.paymentItemTitleColor,
-      paymentItemPriceColor:
-          paymentItemPriceColor ?? this.paymentItemPriceColor,
+      textfieldBackgroundColor: textfieldBackgroundColor ?? this.textfieldBackgroundColor,
+      textfieldSelectorColor: textfieldSelectorColor ?? this.textfieldSelectorColor,
+      paymentItemBorderColor: paymentItemBorderColor ?? this.paymentItemBorderColor,
+      paymentItemBackgroundColor: paymentItemBackgroundColor ?? this.paymentItemBackgroundColor,
+      paymentItemTitleColor: paymentItemTitleColor ?? this.paymentItemTitleColor,
+      paymentItemPriceColor: paymentItemPriceColor ?? this.paymentItemPriceColor,
       paymentItemDateColor: paymentItemDateColor ?? this.paymentItemDateColor,
-      paymentItemDescriptionColor:
-          paymentItemDescriptionColor ?? this.paymentItemDescriptionColor,
+      paymentItemDescriptionColor: paymentItemDescriptionColor ?? this.paymentItemDescriptionColor,
     );
   }
 }

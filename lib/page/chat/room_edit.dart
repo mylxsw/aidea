@@ -189,7 +189,7 @@ class _RoomEditPageState extends State<RoomEditPage> {
                                       width: 45,
                                       height: 45,
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius: CustomSize.borderRadius,
                                         image: _avatarUrl == null
                                             ? null
                                             : DecorationImage(

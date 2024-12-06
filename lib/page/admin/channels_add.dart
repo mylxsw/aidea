@@ -51,8 +51,7 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
   bool openaiAzure = false;
 
   /// OpenAI Azure API 版本
-  final TextEditingController azureAPIVersionController =
-      TextEditingController();
+  final TextEditingController azureAPIVersionController = TextEditingController();
 
   @override
   void dispose() {
@@ -92,7 +91,7 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.chatInputPanelBackground,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -141,9 +140,7 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
                       onPressed: () {
                         openListSelectDialog(
                           context,
-                          channelTypes
-                              .map((e) => SelectorItem(Text(e.text), e.name))
-                              .toList(),
+                          channelTypes.map((e) => SelectorItem(Text(e.text), e.name)).toList(),
                           (value) {
                             setState(() {
                               selectedChannelType = value.value;
@@ -240,9 +237,7 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
                       color: customColors.weakLinkColor,
                       fontSize: 15,
                       icon: Icon(
-                        showAdvancedOptions
-                            ? Icons.unfold_less
-                            : Icons.unfold_more,
+                        showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
                         color: customColors.weakLinkColor,
                         size: 15,
                       ),
@@ -287,8 +282,7 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
       return;
     }
 
-    if (!serverController.text.startsWith('http://') &&
-        !serverController.text.startsWith('https://')) {
+    if (!serverController.text.startsWith('http://') && !serverController.text.startsWith('https://')) {
       showErrorMessage('服务器地址格式不正确');
       return;
     }
@@ -314,8 +308,6 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
       return '请选择';
     }
 
-    return channelTypes
-        .firstWhere((element) => element.name == selectedChannelType)
-        .text;
+    return channelTypes.firstWhere((element) => element.name == selectedChannelType).text;
   }
 }

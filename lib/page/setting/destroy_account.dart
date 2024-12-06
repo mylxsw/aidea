@@ -51,7 +51,7 @@ class _DestroyAccountScreenState extends State<DestroyAccountScreen> {
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -66,7 +66,7 @@ class _DestroyAccountScreenState extends State<DestroyAccountScreen> {
               ),
               const SizedBox(height: 15),
               ColumnBlock(
-                backgroundColor: Colors.transparent,
+                padding: const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 20),
                 children: [
                   VerifyCodeInput(
                     inColumnBlock: false,
@@ -87,10 +87,7 @@ class _DestroyAccountScreenState extends State<DestroyAccountScreen> {
               Container(
                 height: 45,
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(8),
-                ),
+                decoration: BoxDecoration(color: Colors.red, borderRadius: CustomSize.borderRadius),
                 child: TextButton(
                   onPressed: onDestroySubmit,
                   child: Text(

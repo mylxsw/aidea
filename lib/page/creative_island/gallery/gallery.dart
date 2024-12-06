@@ -40,7 +40,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
     return BackgroundContainer(
       setting: widget.setting,
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: customColors.backgroundColor,
         body: _buildIslandItems(customColors),
       ),
     );
@@ -85,14 +85,12 @@ class _GalleryScreenState extends State<GalleryScreen> {
                       username: item.username,
                       userId: item.userId,
                       hotValue: item.hotValue,
-                      onTap: () =>
-                          context.push('/creative-draw/gallery/${item.id}'),
+                      onTap: () => context.push('/creative-draw/gallery/${item.id}'),
                     );
                   },
                   sourceList: datasource,
                   padding: const EdgeInsets.all(10),
-                  extendedListDelegate:
-                      SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                  extendedListDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
                     crossAxisCount: _calCrossAxisCount(context),
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,

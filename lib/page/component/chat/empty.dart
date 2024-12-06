@@ -1,4 +1,5 @@
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/model/misc.dart';
 import 'package:flutter/material.dart';
@@ -34,8 +35,8 @@ class _EmptyPreviewState extends State<EmptyPreview> {
           // 示例内容区域
           Container(
             decoration: BoxDecoration(
-              color: customColors.backgroundColor?.withAlpha(200),
-              borderRadius: BorderRadius.circular(10),
+              // color: customColors.backgroundColor?.withAlpha(200),
+              borderRadius: CustomSize.borderRadius,
             ),
             padding: const EdgeInsets.only(top: 20, left: 15, right: 10, bottom: 3),
             height: _resolveTipHeight(context),

@@ -4,6 +4,7 @@ import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/image.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -53,14 +54,13 @@ class ImageSelector extends StatelessWidget {
           ),
         if (title != null) const SizedBox(height: 10),
         Material(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: CustomSize.borderRadius,
           color: customColors.backgroundColor,
           child: InkWell(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: CustomSize.borderRadiusAll,
             onTap: () async {
               HapticFeedbackHelper.mediumImpact();
-              FilePickerResult? result =
-                  await FilePicker.platform.pickFiles(type: FileType.image);
+              FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.image);
               if (result != null && result.files.isNotEmpty) {
                 if (PlatformTool.isWeb()) {
                   onImageSelected(data: result.files.first.bytes!);
@@ -70,30 +70,23 @@ class ImageSelector extends StatelessWidget {
               }
             },
             child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+                decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: CustomSize.borderRadius,
                   child: Stack(
                     children: [
                       Container(
-                        decoration: (selectedImagePath != null &&
-                                    selectedImagePath!.isNotEmpty) ||
-                                (selectedImageData != null &&
-                                    selectedImageData!.isNotEmpty)
+                        decoration: (selectedImagePath != null && selectedImagePath!.isNotEmpty) ||
+                                (selectedImageData != null && selectedImageData!.isNotEmpty)
                             ? BoxDecoration(
                                 image: DecorationImage(
                                   image: (selectedImagePath != null
                                       ? resolveImageProvider(selectedImagePath!)
-                                      : (selectedImageData != null
-                                          ? MemoryImage(selectedImageData!)
-                                          : null))!,
+                                      : (selectedImageData != null ? MemoryImage(selectedImageData!) : null))!,
                                   fit: BoxFit.cover,
                                 ),
-                                color: customColors.backgroundContainerColor
-                                    ?.withAlpha(100),
-                                borderRadius: BorderRadius.circular(8),
+                                color: customColors.backgroundContainerColor?.withAlpha(100),
+                                borderRadius: CustomSize.borderRadius,
                               )
                             : null,
                         child: SizedBox(
@@ -118,8 +111,7 @@ class ImageSelector extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
-                                      color: customColors.chatInputPanelText
-                                          ?.withOpacity(0.8),
+                                      color: customColors.chatInputPanelText?.withOpacity(0.8),
                                     ),
                                   ),
                                 ],
@@ -146,8 +138,7 @@ class ImageSelector extends StatelessWidget {
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w500,
-                                        color:
-                                            Color.fromARGB(147, 255, 255, 255),
+                                        color: Color.fromARGB(147, 255, 255, 255),
                                       ),
                                     ),
                                   ],

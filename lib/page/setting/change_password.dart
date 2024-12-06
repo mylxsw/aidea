@@ -50,7 +50,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -60,7 +60,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             children: [
               ColumnBlock(
                 innerPanding: 15,
-                backgroundColor: Colors.transparent,
+                padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
                 showDivider: false,
                 children: [
                   PasswordField(
@@ -89,7 +89,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: customColors.linkColor,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: CustomSize.borderRadius,
                 ),
                 child: TextButton(
                   onPressed: onResetSubmit,

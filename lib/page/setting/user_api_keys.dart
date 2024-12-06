@@ -74,7 +74,8 @@ class _UserAPIKeysScreenState extends State<UserAPIKeysScreen> {
           child: Column(
             children: [
               const MessageBox(
-                message: '你可以在其它应用中使用 API Key 访问你的数据，接口协议全面兼容 OpenAI 官方 API。',
+                message:
+                    'You can use API Key to access your data in other applications, and the protocol is fully compatible with OpenAI\'s official API.',
                 type: MessageBoxType.info,
               ),
               const SizedBox(height: 10),
@@ -86,10 +87,10 @@ class _UserAPIKeysScreenState extends State<UserAPIKeysScreen> {
                       type: QuickAlertType.success,
                       title: 'API Key',
                       text: state.key.token,
-                      confirmBtnText: '复制到剪切板',
+                      confirmBtnText: 'Copy to clipboard',
                       onConfirmBtnTap: () {
                         FlutterClipboard.copy(state.key.token).then((value) {
-                          showSuccessMessage('已复制到剪贴板');
+                          showSuccessMessage('Copied to clipboard');
                           context.pop();
                         });
 
@@ -110,7 +111,7 @@ class _UserAPIKeysScreenState extends State<UserAPIKeysScreen> {
                         alignment: Alignment.center,
                         child: Center(
                           child: Text(
-                            '你还没有创建任何 API Key',
+                            'You haven\'t created any API Key yet.',
                             style: TextStyle(
                               fontSize: 14,
                               color: customColors.weakTextColor,
@@ -127,9 +128,7 @@ class _UserAPIKeysScreenState extends State<UserAPIKeysScreen> {
                         final item = state.keys[index];
                         return Container(
                           margin: const EdgeInsets.symmetric(vertical: 5),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                          decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
                           child: Slidable(
                             endActionPane: ActionPane(
                               motion: const ScrollMotion(),
@@ -137,18 +136,15 @@ class _UserAPIKeysScreenState extends State<UserAPIKeysScreen> {
                                 const SizedBox(width: 10),
                                 SlidableAction(
                                   label: AppLocale.delete.getString(context),
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius: CustomSize.borderRadiusAll,
                                   backgroundColor: Colors.red,
                                   icon: Icons.delete,
                                   onPressed: (_) {
                                     openConfirmDialog(
                                       context,
-                                      AppLocale.confirmDelete
-                                          .getString(context),
+                                      AppLocale.confirmDelete.getString(context),
                                       () {
-                                        context
-                                            .read<UserApiKeysBloc>()
-                                            .add(UserApiKeyDelete(item.id));
+                                        context.read<UserApiKeysBloc>().add(UserApiKeyDelete(item.id));
                                       },
                                       danger: true,
                                     );
@@ -157,22 +153,14 @@ class _UserAPIKeysScreenState extends State<UserAPIKeysScreen> {
                               ],
                             ),
                             child: Material(
-                              color:
-                                  customColors.backgroundColor?.withAlpha(200),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(customColors.borderRadius ?? 8),
-                              ),
+                              color: customColors.backgroundColor?.withAlpha(200),
+                              borderRadius: const BorderRadius.all(CustomSize.radius),
                               child: InkWell(
                                 child: ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 5),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        customColors.borderRadius ?? 8),
-                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                  shape: RoundedRectangleBorder(borderRadius: CustomSize.borderRadius),
                                   title: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Expanded(
                                         child: Text(
@@ -188,8 +176,7 @@ class _UserAPIKeysScreenState extends State<UserAPIKeysScreen> {
                                       Text(
                                         humanTime(DateTime.now()),
                                         style: TextStyle(
-                                          color: customColors.weakTextColor
-                                              ?.withAlpha(65),
+                                          color: customColors.weakTextColor?.withAlpha(65),
                                           fontSize: 12,
                                         ),
                                       ),
@@ -202,8 +189,7 @@ class _UserAPIKeysScreenState extends State<UserAPIKeysScreen> {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
-                                        color: customColors.weakTextColor
-                                            ?.withAlpha(150),
+                                        color: customColors.weakTextColor?.withAlpha(150),
                                         fontSize: 12,
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -214,8 +200,7 @@ class _UserAPIKeysScreenState extends State<UserAPIKeysScreen> {
                                     cancelDialog = BotToast.showCustomLoading(
                                       toastBuilder: (cancel) {
                                         return LoadingIndicator(
-                                          message: AppLocale.imageUploading
-                                              .getString(context),
+                                          message: AppLocale.imageUploading.getString(context),
                                         );
                                       },
                                       allowClick: false,

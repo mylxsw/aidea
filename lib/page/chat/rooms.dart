@@ -45,8 +45,9 @@ class _RoomsPageState extends State<RoomsPage> {
     var customColors = Theme.of(context).extension<CustomColors>()!;
     return BackgroundContainer(
       setting: widget.setting,
+      enabled: false,
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: customColors.backgroundColor,
         body: BlocConsumer<RoomBloc, RoomState>(
           listener: (context, state) {
             if (state is RoomsLoaded) {
@@ -266,18 +267,16 @@ class _RoomsPageState extends State<RoomsPage> {
                   context.read<RoomBloc>().add(RoomsLoadEvent());
                 });
               },
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: CustomSize.borderRadiusAll,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                    decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: CustomSize.borderRadius,
                       child: Stack(
                         alignment: Alignment.center,
                         children: [

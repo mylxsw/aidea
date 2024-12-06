@@ -222,10 +222,10 @@ class _NewHomePageState extends State<NewHomePage> {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return CustomScaffold(
       settings: widget.settings,
-      appBarBackground: Image.asset(
-        customColors.appBarBackgroundImage!,
-        fit: BoxFit.cover,
-      ),
+      // appBarBackground: Image.asset(
+      //   customColors.appBarBackgroundImage!,
+      //   fit: BoxFit.cover,
+      // ),
       showBackAppBar: chatPreviewController.selectMode,
       backAppBar: AppBar(
         title: Text(
@@ -274,55 +274,57 @@ class _NewHomePageState extends State<NewHomePage> {
           width: MediaQuery.of(context).size.width / 2,
           child: Column(
             children: [
-              BlocBuilder<ChatMessageBloc, ChatMessageState>(
-                buildWhen: (previous, current) => current is ChatMessagesLoaded,
-                builder: (context, state) {
-                  if (state is ChatMessagesLoaded) {
-                    return Text(
-                      state.chatHistory == null || state.chatHistory!.title == null
-                          ? AppLocale.chatAnywhere.getString(context)
-                          : state.chatHistory!.title!,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: const TextStyle(
-                        fontSize: CustomSize.appBarTitleSize,
-                      ),
-                    );
-                  }
+              // BlocBuilder<ChatMessageBloc, ChatMessageState>(
+              //   buildWhen: (previous, current) => current is ChatMessagesLoaded,
+              //   builder: (context, state) {
+              //     if (state is ChatMessagesLoaded) {
+              //       return Text(
+              //         state.chatHistory == null || state.chatHistory!.title == null
+              //             ? AppLocale.chatAnywhere.getString(context)
+              //             : state.chatHistory!.title!,
+              //         overflow: TextOverflow.ellipsis,
+              //         maxLines: 1,
+              //         style: const TextStyle(
+              //           fontSize: CustomSize.appBarTitleSize,
+              //         ),
+              //       );
+              //     }
 
-                  return Text(
-                    AppLocale.chatAnywhere.getString(context),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
-                  );
-                },
-              ),
-              if (selectedModel != null)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      selectedModel!.name,
-                      style: TextStyle(
-                        fontSize: CustomSize.appBarTitleSize * 0.6,
-                        color: customColors.backgroundInvertedColor,
-                      ),
-                    ),
-                    Icon(
-                      Icons.unfold_more,
+              //     return Text(
+              //       AppLocale.chatAnywhere.getString(context),
+              //       overflow: TextOverflow.ellipsis,
+              //       maxLines: 1,
+              //       style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+              //     );
+              //   },
+              // ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    selectedModel != null ? selectedModel!.name : AppLocale.selectModel.getString(context),
+                    style: TextStyle(
+                      fontSize: CustomSize.appBarTitleSize,
                       color: customColors.backgroundInvertedColor,
-                      size: CustomSize.appBarTitleSize * 0.6,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 3),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: customColors.backgroundInvertedColor!.withAlpha(150),
+                    size: CustomSize.appBarTitleSize * 0.8,
+                  ),
+                ],
+              ),
             ],
           ),
         ),
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.post_add),
+          icon: const Icon(Icons.maps_ugc_outlined),
           onPressed: createNewChat,
         ),
       ],
@@ -458,8 +460,8 @@ class _NewHomePageState extends State<NewHomePage> {
           Container(
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
+                topLeft: CustomSize.radius,
+                topRight: CustomSize.radius,
               ),
               color: customColors.chatInputPanelBackground,
             ),
@@ -519,15 +521,6 @@ class _NewHomePageState extends State<NewHomePage> {
     bool selectMode,
   ) {
     final loadedMessages = loadedState.messages as List<Message>;
-    if (room.room.initMessage != null && room.room.initMessage != '' && loadedMessages.isEmpty) {
-      loadedMessages.add(
-        Message(
-          Role.receiver,
-          room.room.initMessage!,
-          type: MessageType.initMessage,
-        ),
-      );
-    }
 
     // 聊天内容为空时，显示示例页面
     if (loadedMessages.isEmpty) {

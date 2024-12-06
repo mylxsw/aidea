@@ -64,9 +64,10 @@ class _ArticleScreenState extends State<ArticleScreen> {
           },
         ),
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.settings,
+        enabled: false,
         child: SafeArea(
           top: false,
           child: Container(

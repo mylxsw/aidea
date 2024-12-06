@@ -45,9 +45,7 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
       });
     });
 
-    context
-        .read<CreativeIslandBloc>()
-        .add(CreativeIslandGalleryLoadEvent(mode: "all"));
+    context.read<CreativeIslandBloc>().add(CreativeIslandGalleryLoadEvent(mode: "all"));
     super.initState();
   }
 
@@ -67,7 +65,7 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.chatInputPanelBackground,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -104,15 +102,13 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                                 Stack(
                                   children: [
                                     Container(
-                                      padding: const EdgeInsets.only(
-                                          top: 25, bottom: 10),
+                                      padding: const EdgeInsets.only(top: 25, bottom: 10),
                                       alignment: Alignment.center,
                                       child: Text(
                                         e.modelName,
                                         textAlign: TextAlign.center,
                                         style: const TextStyle(fontSize: 14),
-                                        textWidthBasis:
-                                            TextWidthBasis.longestLine,
+                                        textWidthBasis: TextWidthBasis.longestLine,
                                       ),
                                     ),
                                     Positioned(
@@ -124,8 +120,7 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                                           vertical: 3,
                                         ),
                                         decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
+                                          borderRadius: CustomSize.borderRadius,
                                           color: modelTypeTagColors[e.vendor],
                                         ),
                                         child: Text(
@@ -141,9 +136,7 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                                 ),
                                 e.id,
                                 search: (keywrod) {
-                                  return e.modelName
-                                          .toLowerCase()
-                                          .contains(keywrod.toLowerCase()) ||
+                                  return e.modelName.toLowerCase().contains(keywrod.toLowerCase()) ||
                                       e.vendor.contains(keywrod.toLowerCase());
                                 },
                               ),
@@ -155,30 +148,22 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                           if (value.value == null) {
                             selectedModel = null;
                             selectedFilter = null;
-                            context.read<CreativeIslandBloc>().add(
-                                CreativeIslandGalleryLoadEvent(mode: "all"));
+                            context.read<CreativeIslandBloc>().add(CreativeIslandGalleryLoadEvent(mode: "all"));
                             return;
                           }
 
-                          selectedModel = imageModels
-                              .firstWhere((e) => e.id == value.value);
+                          selectedModel = imageModels.firstWhere((e) => e.id == value.value);
 
                           if (selectedModel != null) {
-                            final matchedFilters = imageModelFilters
-                                .where(
-                                    (e) => e.modelId == selectedModel!.modelId)
-                                .toList();
-                            selectedFilter = matchedFilters.isNotEmpty
-                                ? matchedFilters.first
-                                : null;
-                            context.read<CreativeIslandBloc>().add(
-                                CreativeIslandGalleryLoadEvent(
-                                    mode: "all",
-                                    model: selectedModel!.realModel));
+                            final matchedFilters =
+                                imageModelFilters.where((e) => e.modelId == selectedModel!.modelId).toList();
+                            selectedFilter = matchedFilters.isNotEmpty ? matchedFilters.first : null;
+                            context
+                                .read<CreativeIslandBloc>()
+                                .add(CreativeIslandGalleryLoadEvent(mode: "all", model: selectedModel!.realModel));
                           } else {
                             selectedFilter = null;
-                            context.read<CreativeIslandBloc>().add(
-                                CreativeIslandGalleryLoadEvent(mode: "all"));
+                            context.read<CreativeIslandBloc>().add(CreativeIslandGalleryLoadEvent(mode: "all"));
                           }
                         });
                         return true;
@@ -196,8 +181,7 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                 if (selectedFilter != null)
                   Row(
                     children: [
-                      if (selectedFilter!.previewImage != null &&
-                          selectedFilter!.previewImage!.isNotEmpty)
+                      if (selectedFilter!.previewImage != null && selectedFilter!.previewImage!.isNotEmpty)
                         SizedBox(
                           width: 70,
                           height: 70,
@@ -216,19 +200,15 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
               child: RefreshIndicator(
                 color: customColors.linkColor,
                 onRefresh: () async {
-                  context
-                      .read<CreativeIslandBloc>()
-                      .add(CreativeIslandGalleryLoadEvent(
+                  context.read<CreativeIslandBloc>().add(CreativeIslandGalleryLoadEvent(
                         forceRefresh: true,
                         mode: "all",
                         model: selectedModel?.realModel,
                       ));
                 },
                 child: BlocConsumer<CreativeIslandBloc, CreativeIslandState>(
-                  listenWhen: (previous, current) =>
-                      current is CreativeIslandGalleryLoaded,
-                  buildWhen: (previous, current) =>
-                      current is CreativeIslandGalleryLoaded,
+                  listenWhen: (previous, current) => current is CreativeIslandGalleryLoaded,
+                  buildWhen: (previous, current) => current is CreativeIslandGalleryLoaded,
                   listener: (context, state) {
                     if (state is CreativeIslandHistoriesAllLoaded) {
                       if (state.error != null) {
@@ -247,26 +227,19 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                           (e) {
                             return GestureDetector(
                               onTap: () {
-                                context.push(
-                                    '/creative-island/${e.islandId}/history/${e.id}?show_error=true');
+                                context.push('/creative-island/${e.islandId}/history/${e.id}?show_error=true');
                               },
                               child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+                                decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
                                 child: Stack(
                                   children: [
-                                    if (e.firstImagePreview
-                                            .startsWith('http://') ||
-                                        e.firstImagePreview
-                                            .startsWith('https://'))
+                                    if (e.firstImagePreview.startsWith('http://') ||
+                                        e.firstImagePreview.startsWith('https://'))
                                       ClipRRect(
-                                        borderRadius: BorderRadius.circular(10),
-                                        child: e.firstImagePreview
-                                                .endsWith('.mp4')
+                                        borderRadius: CustomSize.borderRadius,
+                                        child: e.firstImagePreview.endsWith('.mp4')
                                             ? CachedNetworkImageEnhanced(
-                                                imageUrl: e.params['image'] ??
-                                                    e.firstImagePreview,
+                                                imageUrl: e.params['image'] ?? e.firstImagePreview,
                                                 fit: BoxFit.cover,
                                                 height: double.infinity,
                                               )
@@ -279,10 +252,8 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                                       Container(
                                         padding: const EdgeInsets.all(5),
                                         decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          color: const Color.fromARGB(
-                                              255, 148, 124, 245),
+                                          borderRadius: CustomSize.borderRadius,
+                                          color: const Color.fromARGB(255, 148, 124, 245),
                                         ),
                                         child: const Center(
                                           child: Text(
@@ -301,8 +272,7 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                                       Container(
                                         padding: const EdgeInsets.all(5),
                                         decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                                          borderRadius: CustomSize.borderRadius,
                                           color: Colors.amber,
                                         ),
                                         child: Center(
@@ -327,10 +297,8 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                                           vertical: 3,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: customColors.backgroundColor
-                                              ?.withAlpha(200),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                                          color: customColors.backgroundColor?.withAlpha(200),
+                                          borderRadius: CustomSize.borderRadius,
                                         ),
                                         child: Text(
                                           '${DateFormat('HH:mm').format(e.createdAt!.toLocal())}@${e.userId}#${e.id}',
@@ -351,10 +319,9 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                                             vertical: 5,
                                           ),
                                           decoration: BoxDecoration(
-                                            borderRadius:
-                                                const BorderRadius.only(
-                                              topLeft: Radius.circular(5),
-                                              bottomRight: Radius.circular(5),
+                                            borderRadius: const BorderRadius.only(
+                                              topLeft: CustomSize.radius,
+                                              bottomRight: CustomSize.radius,
                                             ),
                                             color: customColors.linkColor,
                                           ),

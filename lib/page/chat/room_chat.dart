@@ -194,10 +194,7 @@ class _RoomChatPageState extends State<RoomChatPage> {
                 // 聊天输入窗口
                 Container(
                   decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                    ),
+                    borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, topRight: CustomSize.radius),
                     color: customColors.chatInputPanelBackground,
                   ),
                   child: _chatPreviewController.selectMode
@@ -674,7 +671,7 @@ void handleOpenExampleQuestion(
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: CustomSize.borderRadius,
                           color: customColors.chatExampleItemBackground,
                         ),
                         child: Column(

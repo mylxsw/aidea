@@ -96,7 +96,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
           ),
         ],
       ),
-      backgroundColor: customColors.chatInputPanelBackground,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -188,9 +188,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
         horizontal: 10,
         vertical: 5,
       ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(customColors.borderRadius ?? 8),
-      ),
+      decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
       child: Slidable(
         endActionPane: ActionPane(
           motion: const ScrollMotion(),
@@ -198,11 +196,11 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
             const SizedBox(width: 10),
             SlidableAction(
               label: AppLocale.delete.getString(context),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(customColors.borderRadius ?? 8),
-                bottomLeft: Radius.circular(customColors.borderRadius ?? 8),
-                topRight: Radius.circular(customColors.borderRadius ?? 8),
-                bottomRight: Radius.circular(customColors.borderRadius ?? 8),
+              borderRadius: const BorderRadius.only(
+                topLeft: CustomSize.radius,
+                bottomLeft: CustomSize.radius,
+                topRight: CustomSize.radius,
+                bottomRight: CustomSize.radius,
               ),
               backgroundColor: Colors.red,
               icon: Icons.delete,
@@ -218,10 +216,10 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
           ],
         ),
         child: Material(
-          borderRadius: BorderRadius.all(Radius.circular(customColors.borderRadius ?? 8)),
+          borderRadius: CustomSize.borderRadius,
           color: customColors.columnBlockBackgroundColor,
           child: InkWell(
-            borderRadius: BorderRadius.all(Radius.circular(customColors.borderRadius ?? 8)),
+            borderRadius: CustomSize.borderRadiusAll,
             onTap: () {
               context.push('/admin/models/edit/${Uri.encodeComponent(mod.modelId)}').then((value) {
                 context.read<ModelBloc>().add(ModelsLoadEvent());
@@ -241,9 +239,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
                             left: 0,
                             bottom: 0,
                             child: ClipRRect(
-                              borderRadius: const BorderRadius.only(
-                                bottomLeft: Radius.circular(8),
-                              ),
+                              borderRadius: const BorderRadius.only(bottomLeft: CustomSize.radius),
                               child: Container(
                                 padding: const EdgeInsets.all(3),
                                 width: 80,
@@ -335,10 +331,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
         width: 80,
         height: 80,
         child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(8),
-            bottomLeft: Radius.circular(8),
-          ),
+          borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
           child: CachedNetworkImage(
             imageUrl: imageURL(mod.avatarUrl!, qiniuImageTypeAvatar),
             fit: BoxFit.fill,
@@ -351,10 +344,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
       text: mod.name.split('、').join(' '),
       size: 80,
       backgroundColor: Colors.grey.withAlpha(100),
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(8),
-        bottomLeft: Radius.circular(8),
-      ),
+      borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
     );
   }
 

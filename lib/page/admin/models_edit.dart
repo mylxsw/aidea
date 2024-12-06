@@ -140,14 +140,13 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.chatInputPanelBackground,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
         child: SingleChildScrollView(
           child: BlocListener<ModelBloc, ModelState>(
-            listenWhen: (previous, current) =>
-                current is ModelOperationResult || current is ModelLoaded,
+            listenWhen: (previous, current) => current is ModelOperationResult || current is ModelLoaded,
             listener: (context, state) {
               if (state is ModelOperationResult) {
                 if (state.success) {
@@ -159,12 +158,10 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
               }
 
               if (state is ModelLoaded) {
-                modelIdController.value =
-                    TextEditingValue(text: state.model.modelId);
+                modelIdController.value = TextEditingValue(text: state.model.modelId);
                 nameController.value = TextEditingValue(text: state.model.name);
                 if (state.model.description != null) {
-                  descriptionController.value =
-                      TextEditingValue(text: state.model.description!);
+                  descriptionController.value = TextEditingValue(text: state.model.description!);
                 }
 
                 if (state.model.avatarUrl != null) {
@@ -179,31 +176,25 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
 
                 if (state.model.meta != null) {
                   if (state.model.meta!.maxContext != null) {
-                    maxContextController.value = TextEditingValue(
-                        text: state.model.meta!.maxContext.toString());
+                    maxContextController.value = TextEditingValue(text: state.model.meta!.maxContext.toString());
                   }
 
                   if (state.model.meta!.inputPrice != null) {
-                    inputPriceController.value = TextEditingValue(
-                        text: state.model.meta!.inputPrice.toString());
+                    inputPriceController.value = TextEditingValue(text: state.model.meta!.inputPrice.toString());
                   }
 
                   if (state.model.meta!.outputPrice != null) {
-                    outputPriceController.value = TextEditingValue(
-                        text: state.model.meta!.outputPrice.toString());
+                    outputPriceController.value = TextEditingValue(text: state.model.meta!.outputPrice.toString());
                   }
 
-                  promptController.value =
-                      TextEditingValue(text: state.model.meta!.prompt ?? '');
+                  promptController.value = TextEditingValue(text: state.model.meta!.prompt ?? '');
                   supportVision = state.model.meta!.vision ?? false;
                   restricted = state.model.meta!.restricted ?? false;
-                  tagController.value =
-                      TextEditingValue(text: state.model.meta!.tag ?? '');
+                  tagController.value = TextEditingValue(text: state.model.meta!.tag ?? '');
                   tagTextColor = state.model.meta!.tagTextColor;
                   tagBgColor = state.model.meta!.tagBgColor;
                   isNew = state.model.meta!.isNew ?? false;
-                  categoryController.value =
-                      TextEditingValue(text: state.model.meta!.category ?? '');
+                  categoryController.value = TextEditingValue(text: state.model.meta!.category ?? '');
                 }
               }
 
@@ -212,8 +203,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
               });
             },
             child: Container(
-              padding: const EdgeInsets.only(
-                  left: 10, right: 10, top: 10, bottom: 20),
+              padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 20),
               child: Column(
                 children: [
                   ColumnBlock(
@@ -263,15 +253,13 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                               width: 45,
                               height: 45,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: CustomSize.borderRadius,
                                 image: avatarUrl == null
                                     ? null
                                     : DecorationImage(
                                         image: (avatarUrl!.startsWith('http')
-                                            ? CachedNetworkImageProviderEnhanced(
-                                                avatarUrl!)
-                                            : FileImage(File(
-                                                avatarUrl!))) as ImageProvider,
+                                            ? CachedNetworkImageProviderEnhanced(avatarUrl!)
+                                            : FileImage(File(avatarUrl!))) as ImageProvider,
                                         fit: BoxFit.cover,
                                       ),
                               ),
@@ -330,18 +318,14 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                         hintText: '可选',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
                             '智慧果/1K Token',
-                            style: TextStyle(
-                                color: customColors.weakTextColor,
-                                fontSize: 12),
+                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
                           ),
                         ),
                       ),
@@ -353,18 +337,14 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                         hintText: '可选',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
                             '智慧果/1K Token',
-                            style: TextStyle(
-                                color: customColors.weakTextColor,
-                                fontSize: 12),
+                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
                           ),
                         ),
                       ),
@@ -376,18 +356,14 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                         hintText: '最大上下文减掉预期的输出长度',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 50,
                           alignment: Alignment.center,
                           child: Text(
                             'Token',
-                            style: TextStyle(
-                                color: customColors.weakTextColor,
-                                fontSize: 12),
+                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
                           ),
                         ),
                       ),
@@ -395,8 +371,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                   ),
                   for (var i = 0; i < providers.length; i++)
                     Container(
-                      margin:
-                          const EdgeInsets.only(bottom: 10, left: 5, right: 5),
+                      margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
                       child: Slidable(
                         endActionPane: ActionPane(
                           motion: const ScrollMotion(),
@@ -404,8 +379,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                             const SizedBox(width: 10),
                             SlidableAction(
                               label: AppLocale.delete.getString(context),
-                              borderRadius: BorderRadius.circular(
-                                  customColors.borderRadius ?? 8),
+                              borderRadius: CustomSize.borderRadiusAll,
                               backgroundColor: Colors.red,
                               icon: Icons.delete,
                               onPressed: (_) {
@@ -416,8 +390,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
 
                                 openConfirmDialog(
                                   context,
-                                  AppLocale.confirmToDeleteRoom
-                                      .getString(context),
+                                  AppLocale.confirmToDeleteRoom.getString(context),
                                   () {
                                     setState(() {
                                       providers.removeAt(i);
@@ -454,8 +427,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                                     ...modelChannels
                                         .map(
                                           (e) => SelectorItem(
-                                            Text(
-                                                '${e.id == null ? '【系统】' : ''}${e.name}'),
+                                            Text('${e.id == null ? '【系统】' : ''}${e.name}'),
                                             e,
                                           ),
                                         )
@@ -494,18 +466,15 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                                   showBeautyDialog(
                                     context,
                                     type: QuickAlertType.info,
-                                    text:
-                                        '渠道对应的模型标识和这里的 ID 不一致时，调用渠道接口时将会自动将模型替换为这里配置的值。',
-                                    confirmBtnText:
-                                        AppLocale.gotIt.getString(context),
+                                    text: '渠道对应的模型标识和这里的 ID 不一致时，调用渠道接口时将会自动将模型替换为这里配置的值。',
+                                    confirmBtnText: AppLocale.gotIt.getString(context),
                                     showCancelBtn: false,
                                   );
                                 },
                                 child: Icon(
                                   Icons.help_outline,
                                   size: 16,
-                                  color: customColors.weakLinkColor
-                                      ?.withAlpha(150),
+                                  color: customColors.weakLinkColor?.withAlpha(150),
                                 ),
                               ),
                             ),
@@ -562,16 +531,14 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                                       context,
                                       type: QuickAlertType.info,
                                       text: '当前模型是否支持视觉能力。',
-                                      confirmBtnText:
-                                          AppLocale.gotIt.getString(context),
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
                                     );
                                   },
                                   child: Icon(
                                     Icons.help_outline,
                                     size: 16,
-                                    color: customColors.weakLinkColor
-                                        ?.withAlpha(150),
+                                    color: customColors.weakLinkColor?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -603,16 +570,14 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                                       context,
                                       type: QuickAlertType.info,
                                       text: '是否在模型旁边展示“新”标识，告知用户这是一个新模型。',
-                                      confirmBtnText:
-                                          AppLocale.gotIt.getString(context),
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
                                     );
                                   },
                                   child: Icon(
                                     Icons.help_outline,
                                     size: 16,
-                                    color: customColors.weakLinkColor
-                                        ?.withAlpha(150),
+                                    color: customColors.weakLinkColor?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -644,16 +609,14 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                                       context,
                                       type: QuickAlertType.info,
                                       text: '受限模型是指因政策因素，不能在中国大陆地区使用的模型。',
-                                      confirmBtnText:
-                                          AppLocale.gotIt.getString(context),
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
                                     );
                                   },
                                   child: Icon(
                                     Icons.help_outline,
                                     size: 16,
-                                    color: customColors.weakLinkColor
-                                        ?.withAlpha(150),
+                                    color: customColors.weakLinkColor?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -711,9 +674,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                         color: customColors.weakLinkColor,
                         fontSize: 15,
                         icon: Icon(
-                          showAdvancedOptions
-                              ? Icons.unfold_less
-                              : Icons.unfold_more,
+                          showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
                           color: customColors.weakLinkColor,
                           size: 15,
                         ),
@@ -730,10 +691,8 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                           title: AppLocale.save.getString(context),
                           onPressed: onSubmit,
                           icon: editLocked
-                              ? const Icon(Icons.lock,
-                                  color: Colors.white, size: 16)
-                              : const Icon(Icons.lock_open,
-                                  color: Colors.white, size: 16),
+                              ? const Icon(Icons.lock, color: Colors.white, size: 16)
+                              : const Icon(Icons.lock_open, color: Colors.white, size: 16),
                         ),
                       ),
                     ],
@@ -764,9 +723,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
       return;
     }
 
-    if (avatarUrl != null &&
-        (!avatarUrl!.startsWith('http://') &&
-            !avatarUrl!.startsWith('https://'))) {
+    if (avatarUrl != null && (!avatarUrl!.startsWith('http://') && !avatarUrl!.startsWith('https://'))) {
       final cancel = BotToast.showCustomLoading(
         toastBuilder: (cancel) {
           return const LoadingIndicator(
@@ -777,8 +734,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
       );
 
       try {
-        final res = await ImageUploader(widget.setting)
-            .upload(avatarUrl!, usage: 'avatar');
+        final res = await ImageUploader(widget.setting).upload(avatarUrl!, usage: 'avatar');
         avatarUrl = res.url;
       } catch (e) {
         showErrorMessage('上传头像失败');

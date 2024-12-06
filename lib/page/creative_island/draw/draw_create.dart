@@ -211,7 +211,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
           icon: const Icon(Icons.arrow_back_ios),
         ),
         toolbarHeight: CustomSize.toolbarHeight,
-        backgroundColor: customColors.backgroundContainerColor,
+        backgroundColor: customColors.backgroundColor,
         actions: [
           if (widget.note != null)
             IconButton(
@@ -222,10 +222,10 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
             )
         ],
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
-        enabled: true,
+        enabled: false,
         maxWidth: CustomSize.smallWindowSize,
         child: Column(
           children: [
@@ -542,7 +542,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                                                 vertical: 3,
                                               ),
                                               decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(5),
+                                                borderRadius: CustomSize.borderRadius,
                                                 color: modelTypeTagColors[e.vendor!],
                                               ),
                                               child: Text(

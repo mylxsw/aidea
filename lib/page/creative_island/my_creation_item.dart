@@ -31,8 +31,7 @@ class MyCreationItemPage extends StatefulWidget {
   State<MyCreationItemPage> createState() => _MyCreationItemPageState();
 }
 
-class _MyCreationItemPageState extends State<MyCreationItemPage>
-    with SingleTickerProviderStateMixin {
+class _MyCreationItemPageState extends State<MyCreationItemPage> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
   @override
@@ -42,9 +41,7 @@ class _MyCreationItemPageState extends State<MyCreationItemPage>
     _tabController = TabController(length: 2, vsync: this);
     _tabController.animateTo(1);
 
-    context
-        .read<CreativeIslandBloc>()
-        .add(CreativeIslandHistoryItemLoadEvent(widget.itemId));
+    context.read<CreativeIslandBloc>().add(CreativeIslandHistoryItemLoadEvent(widget.itemId));
   }
 
   @override
@@ -59,8 +56,7 @@ class _MyCreationItemPageState extends State<MyCreationItemPage>
 
     return BlocBuilder<CreativeIslandBloc, CreativeIslandState>(
       buildWhen: (previous, current) =>
-          current is CreativeIslandHistoryItemLoaded ||
-          current is CreativeIslandHistoryItemLoading,
+          current is CreativeIslandHistoryItemLoaded || current is CreativeIslandHistoryItemLoading,
       builder: (context, state) {
         if (state is CreativeIslandHistoryItemLoaded) {
           return Scaffold(
@@ -78,7 +74,7 @@ class _MyCreationItemPageState extends State<MyCreationItemPage>
               ),
               actions: buildActions(state, context, customColors),
             ),
-            backgroundColor: customColors.backgroundContainerColor,
+            backgroundColor: customColors.backgroundColor,
             body: BackgroundContainer(
               setting: widget.setting,
               enabled: false,
@@ -108,8 +104,7 @@ class _MyCreationItemPageState extends State<MyCreationItemPage>
                           horizontal: 10,
                         ),
                         children: [
-                          if (state.item!.prompt != null &&
-                              state.item!.prompt != '')
+                          if (state.item!.prompt != null && state.item!.prompt != '')
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -157,20 +152,15 @@ class _MyCreationItemPageState extends State<MyCreationItemPage>
     BuildContext context,
     CustomColors customColors,
   ) {
-    if (state.item!.userId != APIServer().localUserID() &&
-        state.item!.isSuccessful) {
+    if (state.item!.userId != APIServer().localUserID() && state.item!.isSuccessful) {
       return [
         TextButton(
           onPressed: () {
             openConfirmDialog(context, '确定封禁该项目？', () {
-              APIServer()
-                  .forbidCreativeHistoryItem(historyId: state.item!.id)
-                  .then((value) {
+              APIServer().forbidCreativeHistoryItem(historyId: state.item!.id).then((value) {
                 showSuccessMessage(AppLocale.operateSuccess.getString(context));
 
-                context
-                    .read<CreativeIslandBloc>()
-                    .add(CreativeIslandHistoryItemLoadEvent(
+                context.read<CreativeIslandBloc>().add(CreativeIslandHistoryItemLoadEvent(
                       widget.itemId,
                       forceRefresh: true,
                     ));
@@ -203,28 +193,19 @@ class _MyCreationItemPageState extends State<MyCreationItemPage>
         TextButton(
           onPressed: () {
             if (state.item!.isShared) {
-              APIServer()
-                  .cancelShareCreativeHistoryToGallery(
-                      historyId: state.item!.id)
-                  .then((value) {
+              APIServer().cancelShareCreativeHistoryToGallery(historyId: state.item!.id).then((value) {
                 showSuccessMessage(AppLocale.operateSuccess.getString(context));
 
-                context
-                    .read<CreativeIslandBloc>()
-                    .add(CreativeIslandHistoryItemLoadEvent(
+                context.read<CreativeIslandBloc>().add(CreativeIslandHistoryItemLoadEvent(
                       widget.itemId,
                       forceRefresh: true,
                     ));
               });
             } else {
-              APIServer()
-                  .shareCreativeHistoryToGallery(historyId: state.item!.id)
-                  .then((value) {
+              APIServer().shareCreativeHistoryToGallery(historyId: state.item!.id).then((value) {
                 showSuccessMessage(AppLocale.operateSuccess.getString(context));
 
-                context
-                    .read<CreativeIslandBloc>()
-                    .add(CreativeIslandHistoryItemLoadEvent(
+                context.read<CreativeIslandBloc>().add(CreativeIslandHistoryItemLoadEvent(
                       widget.itemId,
                       forceRefresh: true,
                     ));
@@ -264,9 +245,7 @@ class _MyCreationItemPageState extends State<MyCreationItemPage>
             ),
             const SizedBox(height: 10),
             SelectableText(
-              widget.showErrorMessage
-                  ? '${state.item!.answer}'
-                  : '错误代码：${state.item!.errorCode}',
+              widget.showErrorMessage ? '${state.item!.answer}' : '错误代码：${state.item!.errorCode}',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 10,
@@ -300,8 +279,7 @@ class _MyCreationItemPageState extends State<MyCreationItemPage>
     );
   }
 
-  List<Widget> _buildItemArguments(
-      CreativeItemArguments arg, CustomColors customColors) {
+  List<Widget> _buildItemArguments(CreativeItemArguments arg, CustomColors customColors) {
     final children = <Widget>[];
 
     if (arg.negativePrompt != null && arg.negativePrompt != '') {

@@ -4,6 +4,7 @@ import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/image.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/random_avatar.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/page/component/weak_text_button.dart';
 import 'package:askaide/repo/model/model.dart';
@@ -140,7 +141,7 @@ class _ModelItemState extends State<ModelItem> {
                               padding: const EdgeInsets.symmetric(vertical: 5),
                               decoration: BoxDecoration(
                                 color: widget.initValue == item.uid() ? customColors.dialogBackgroundColor : null,
-                                borderRadius: BorderRadius.circular(5),
+                                borderRadius: CustomSize.borderRadius,
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -276,7 +277,7 @@ class _ModelItemState extends State<ModelItem> {
     return Container(
       decoration: BoxDecoration(
         color: tagBgColor != null ? stringToColor(tagBgColor) : customColors.tagsBackgroundHover,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: CustomSize.borderRadius,
       ),
       margin: const EdgeInsets.only(left: 5),
       padding: const EdgeInsets.symmetric(

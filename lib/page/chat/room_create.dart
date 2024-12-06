@@ -102,12 +102,14 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
           AppLocale.createRoom.getString(context),
           style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
-        backgroundColor: customColors.backgroundContainerColor,
+        backgroundColor: customColors.backgroundColor,
         centerTitle: true,
         toolbarHeight: CustomSize.toolbarHeight,
       ),
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
+        enabled: false,
         maxWidth: 0,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -295,7 +297,7 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                         width: 45,
                         height: 45,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: CustomSize.borderRadius,
                           image: _avatarUrl == null
                               ? null
                               : DecorationImage(
@@ -566,6 +568,7 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
               ),
             ],
           ),
+          const SizedBox(height: 15),
         ],
       ),
     );

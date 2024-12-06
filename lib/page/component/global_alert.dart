@@ -1,5 +1,6 @@
 import 'package:askaide/helper/event.dart';
 import 'package:askaide/page/component/chat/markdown.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -69,9 +70,7 @@ class _GlobalAlertState extends State<GlobalAlert> {
 
   @override
   Widget build(BuildContext context) {
-    if (alertEvent.id == '' ||
-        alertEvent.message == null ||
-        alertEvent.message == '') {
+    if (alertEvent.id == '' || alertEvent.message == null || alertEvent.message == '') {
       return const SizedBox();
     }
 
@@ -79,10 +78,7 @@ class _GlobalAlertState extends State<GlobalAlert> {
       margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
       padding: const EdgeInsets.symmetric(horizontal: 10),
       width: double.infinity,
-      decoration: BoxDecoration(
-        color: resolveBackgroundColor(),
-        borderRadius: BorderRadius.circular(5),
-      ),
+      decoration: BoxDecoration(color: resolveBackgroundColor(), borderRadius: CustomSize.borderRadius),
       child: Markdown(
         data: alertEvent.message!,
         textStyle: const TextStyle(

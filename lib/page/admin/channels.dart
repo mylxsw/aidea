@@ -68,7 +68,7 @@ class _ChannelsPageState extends State<ChannelsPage> {
           ),
         ],
       ),
-      backgroundColor: customColors.chatInputPanelBackground,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -79,8 +79,7 @@ class _ChannelsPageState extends State<ChannelsPage> {
           },
           displacement: 20,
           child: BlocConsumer<ChannelBloc, ChannelState>(
-            listenWhen: (previous, current) =>
-                current is ChannelOperationResult,
+            listenWhen: (previous, current) => current is ChannelOperationResult,
             listener: (context, state) {
               if (state is ChannelOperationResult) {
                 if (state.success) {
@@ -128,9 +127,7 @@ class _ChannelsPageState extends State<ChannelsPage> {
         horizontal: 10,
         vertical: 5,
       ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(customColors.borderRadius ?? 8),
-      ),
+      decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
       child: Slidable(
         endActionPane: ActionPane(
           motion: const ScrollMotion(),
@@ -138,11 +135,11 @@ class _ChannelsPageState extends State<ChannelsPage> {
             const SizedBox(width: 10),
             SlidableAction(
               label: AppLocale.delete.getString(context),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(customColors.borderRadius ?? 8),
-                bottomLeft: Radius.circular(customColors.borderRadius ?? 8),
-                topRight: Radius.circular(customColors.borderRadius ?? 8),
-                bottomRight: Radius.circular(customColors.borderRadius ?? 8),
+              borderRadius: const BorderRadius.only(
+                topLeft: CustomSize.radius,
+                bottomLeft: CustomSize.radius,
+                topRight: CustomSize.radius,
+                bottomRight: CustomSize.radius,
               ),
               backgroundColor: Colors.red,
               icon: Icons.delete,
@@ -150,9 +147,7 @@ class _ChannelsPageState extends State<ChannelsPage> {
                 openConfirmDialog(
                   context,
                   AppLocale.confirmToDeleteRoom.getString(context),
-                  () => context
-                      .read<ChannelBloc>()
-                      .add(ChannelDeleteEvent(channel.id!)),
+                  () => context.read<ChannelBloc>().add(ChannelDeleteEvent(channel.id!)),
                   danger: true,
                 );
               },
@@ -160,12 +155,10 @@ class _ChannelsPageState extends State<ChannelsPage> {
           ],
         ),
         child: Material(
-          borderRadius:
-              BorderRadius.all(Radius.circular(customColors.borderRadius ?? 8)),
+          borderRadius: CustomSize.borderRadius,
           color: customColors.columnBlockBackgroundColor,
           child: InkWell(
-            borderRadius: BorderRadius.all(
-                Radius.circular(customColors.borderRadius ?? 8)),
+            borderRadius: const BorderRadius.all(CustomSize.radius),
             onTap: () {
               context.push('/admin/channels/edit/${channel.id}').then((value) {
                 context.read<ChannelBloc>().add(ChannelsLoadEvent());
@@ -181,10 +174,7 @@ class _ChannelsPageState extends State<ChannelsPage> {
                       text: channel.name.split('、').join(' '),
                       size: 50,
                       backgroundColor: Colors.grey.withAlpha(100),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(8),
-                        bottomLeft: Radius.circular(8),
-                      ),
+                      borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
                     ),
                     // 渠道名称
                     Expanded(
@@ -214,9 +204,7 @@ class _ChannelsPageState extends State<ChannelsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          channelTypes
-                              .firstWhere((e) => e.name == channel.type)
-                              .text,
+                          channelTypes.firstWhere((e) => e.name == channel.type).text,
                           style: TextStyle(
                             fontSize: 10,
                             overflow: TextOverflow.ellipsis,

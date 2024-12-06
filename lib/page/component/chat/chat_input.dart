@@ -69,8 +69,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
   /// 用于监听键盘事件，实现回车发送消息，Shift+Enter换行
   late final FocusNode _focusNode = FocusNode(
     onKeyEvent: (node, event) {
-      if (!HardwareKeyboard.instance.isShiftPressed &&
-          event.logicalKey.keyLabel == 'Enter') {
+      if (!HardwareKeyboard.instance.isShiftPressed && event.logicalKey.keyLabel == 'Enter') {
         if (event is KeyDownEvent && widget.enableNotifier.value) {
           _handleSubmited(_textController.text.trim());
         }
@@ -119,29 +118,24 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
       Ability().supportWebSocket;
 
   // Whether the user can upload files
-  bool get canUploadFile =>
-      widget.enableFileUpload && Ability().supportWebSocket;
+  bool get canUploadFile => widget.enableFileUpload && Ability().supportWebSocket;
 
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      decoration: BoxDecoration(
-        color: customColors.backgroundColor,
-      ),
+      decoration: BoxDecoration(color: customColors.chatInputPanelBackground),
       child: Builder(builder: (context) {
         final setting = context.read<SettingRepository>();
         return SafeArea(
           child: Column(
             children: [
               // 选中的图片预览
-              if (widget.selectedImageFiles != null &&
-                  widget.selectedImageFiles!.isNotEmpty)
+              if (widget.selectedImageFiles != null && widget.selectedImageFiles!.isNotEmpty)
                 buildSelectedImagePreview(customColors),
               // 选中文件预览
-              if (widget.selectedFile != null)
-                buildSelectedFilePreview(customColors),
+              if (widget.selectedFile != null) buildSelectedFilePreview(customColors),
               // 工具栏
               if (widget.toolbar != null) widget.toolbar!,
               // if (widget.toolbar != null)
@@ -158,8 +152,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                               autoClose: true,
                               label: AppLocale.newChat.getString(context),
                               backgroundColor: Colors.blue,
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(20)),
+                              borderRadius: CustomSize.borderRadiusAll,
                               onPressed: (_) {
                                 widget.onNewChat!();
                               },
@@ -173,10 +166,8 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                       // 聊天功能按钮
                       Row(
                         children: [
-                          if (widget.leftSideToolsBuilder != null)
-                            ...widget.leftSideToolsBuilder!(),
-                          if (widget.enableNotifier.value &&
-                              (canUploadImage || canUploadFile))
+                          if (widget.leftSideToolsBuilder != null) ...widget.leftSideToolsBuilder!(),
+                          if (widget.enableNotifier.value && (canUploadImage || canUploadFile))
                             buildUploadButtons(context, setting, customColors),
                         ],
                       ),
@@ -184,9 +175,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: customColors.chatInputAreaBackground,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
+                              color: customColors.chatInputAreaBackground, borderRadius: CustomSize.borderRadius),
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Row(
                             children: [
@@ -214,8 +203,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                                     decoration: InputDecoration(
                                       hintText: widget.hintText,
                                       hintStyle: const TextStyle(
-                                        fontSize:
-                                            CustomSize.defaultHintTextSize,
+                                        fontSize: CustomSize.defaultHintTextSize,
                                       ),
                                       border: InputBorder.none,
                                       counterText: '',
@@ -274,7 +262,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                       child: Container(
                         padding: const EdgeInsets.all(3),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: CustomSize.borderRadius,
                           color: customColors.chatRoomBackground,
                         ),
                         child: Icon(
@@ -306,7 +294,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                 child: Stack(
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
+                      borderRadius: CustomSize.borderRadius,
                       child: e.file.bytes != null
                           ? Image.memory(
                               e.file.bytes!,
@@ -329,14 +317,13 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                           onTap: () {
                             setState(() {
                               widget.selectedImageFiles!.remove(e);
-                              widget.onImageSelected
-                                  ?.call(widget.selectedImageFiles!);
+                              widget.onImageSelected?.call(widget.selectedImageFiles!);
                             });
                           },
                           child: Container(
                             padding: const EdgeInsets.all(3),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: CustomSize.borderRadius,
                               color: customColors.chatRoomBackground,
                             ),
                             child: Icon(
@@ -406,7 +393,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
               );
             },
             child: Icon(
-              Icons.mic,
+              Icons.mic_none,
               color: customColors.chatInputPanelText,
             ),
           )
@@ -414,9 +401,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
             onPressed: () => _handleSubmited(_textController.text.trim()),
             icon: Icon(
               Icons.send,
-              color: _textController.text.trim().isNotEmpty
-                  ? const Color.fromARGB(255, 70, 165, 73)
-                  : null,
+              color: _textController.text.trim().isNotEmpty ? const Color.fromARGB(255, 70, 165, 73) : null,
             ),
             splashRadius: 20,
             tooltip: AppLocale.send.getString(context),
@@ -427,8 +412,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
   // Image upload button event
   void onImageUploadButtonPressed() async {
     HapticFeedbackHelper.mediumImpact();
-    if (widget.selectedImageFiles != null &&
-        widget.selectedImageFiles!.length >= 4) {
+    if (widget.selectedImageFiles != null && widget.selectedImageFiles!.length >= 4) {
       showSuccessMessage(AppLocale.uploadImageLimit4.getString(context));
       return;
     }
@@ -441,8 +425,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
     if (result != null && result.files.isNotEmpty) {
       final files = widget.selectedImageFiles ?? [];
       files.addAll(result.files.map((e) => FileUpload(file: e)).toList());
-      widget.onImageSelected
-          ?.call(files.sublist(0, files.length > 4 ? 4 : files.length));
+      widget.onImageSelected?.call(files.sublist(0, files.length > 4 ? 4 : files.length));
     }
   }
 

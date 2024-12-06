@@ -41,8 +41,7 @@ class SigninOrSignupScreen extends StatefulWidget {
 
 class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
   final TextEditingController _inviteCodeController = TextEditingController();
-  final TextEditingController _verificationCodeController =
-      TextEditingController();
+  final TextEditingController _verificationCodeController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   String verifyCodeId = '';
@@ -84,7 +83,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
           },
         ),
       ),
-      backgroundColor: customColors.backgroundColor,
+      backgroundColor: customColors.backgroundContainerColor,
       body: BackgroundContainer(
         setting: widget.settings,
         enabled: false,
@@ -93,9 +92,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 400),
             child: SingleChildScrollView(
-                child: widget.isSignup ||
-                        signInMethod == 'sms_code' ||
-                        signInMethod == 'email_code'
+                child: widget.isSignup || signInMethod == 'sms_code' || signInMethod == 'email_code'
                     ? signInOrSignUpWithSMSOrEmailCode(customColors, context)
                     : signInWithPassword(customColors, context)),
           ),
@@ -125,8 +122,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
         const SizedBox(height: 10),
         // 密码
         Padding(
-          padding: const EdgeInsets.only(
-              left: 15.0, right: 15.0, top: 15, bottom: 0),
+          padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
           child: PasswordField(
             controller: _passwordController,
             labelText: AppLocale.password.getString(context),
@@ -140,10 +136,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
           height: 45,
           width: double.infinity,
           margin: const EdgeInsets.symmetric(horizontal: 15),
-          decoration: BoxDecoration(
-            color: customColors.linkColor,
-            borderRadius: BorderRadius.circular(8),
-          ),
+          decoration: BoxDecoration(color: customColors.linkColor, borderRadius: CustomSize.borderRadius),
           child: TextButton(
             onPressed: () {
               FocusScope.of(context).requestFocus(FocusNode());
@@ -155,8 +148,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
               }
 
               if (password.length < 8 || password.length > 20) {
-                showErrorMessage(
-                    AppLocale.passwordFormatError.getString(context));
+                showErrorMessage(AppLocale.passwordFormatError.getString(context));
                 return;
               }
 
@@ -193,10 +185,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
               TextButton(
                 onPressed: () {
                   setState(() {
-                    signInMethod =
-                        phoneNumberValidator.hasMatch(widget.username)
-                            ? 'sms_code'
-                            : 'email_code';
+                    signInMethod = phoneNumberValidator.hasMatch(widget.username) ? 'sms_code' : 'email_code';
                   });
                 },
                 child: Text(
@@ -209,8 +198,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
               ),
               TextButton(
                 onPressed: () {
-                  context
-                      .push('/retrieve-password?username=${widget.username}');
+                  context.push('/retrieve-password?username=${widget.username}');
                 },
                 child: Text(
                   AppLocale.forgotPassword.getString(context),
@@ -248,8 +236,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
         const SizedBox(height: 10),
         // 验证码
         Padding(
-          padding:
-              const EdgeInsets.only(left: 15.0, right: 5.0, top: 15, bottom: 0),
+          padding: const EdgeInsets.only(left: 15.0, right: 5.0, top: 15, bottom: 0),
           child: VerifyCodeInput(
             controller: _verificationCodeController,
             onVerifyCodeSent: (id) {
@@ -258,9 +245,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
             sendVerifyCode: () {
               return APIServer().sendSigninOrSignupVerifyCode(
                 widget.username,
-                verifyType: phoneNumberValidator.hasMatch(widget.username)
-                    ? 'sms'
-                    : 'email',
+                verifyType: phoneNumberValidator.hasMatch(widget.username) ? 'sms' : 'email',
                 isSignup: widget.isSignup,
               );
             },
@@ -273,25 +258,19 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
         // 邀请码
         if (widget.isSignup)
           Padding(
-            padding: const EdgeInsets.only(
-                left: 15.0, right: 15.0, top: 15, bottom: 0),
+            padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
             child: TextFormField(
               controller: _inviteCodeController,
-              inputFormatters: [
-                FilteringTextInputFormatter.singleLineFormatter
-              ],
+              inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 enabledBorder: const OutlineInputBorder(
-                  borderSide:
-                      BorderSide(color: Color.fromARGB(200, 192, 192, 192)),
+                  borderSide: BorderSide(color: Color.fromARGB(200, 192, 192, 192)),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      BorderSide(color: customColors.linkColor ?? Colors.green),
+                  borderSide: BorderSide(color: customColors.linkColor ?? Colors.green),
                 ),
-                floatingLabelStyle:
-                    TextStyle(color: customColors.linkColor ?? Colors.green),
+                floatingLabelStyle: TextStyle(color: customColors.linkColor ?? Colors.green),
                 isDense: true,
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 labelText: AppLocale.inviteCode.getString(context),
@@ -311,16 +290,11 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
           height: 45,
           width: double.infinity,
           margin: const EdgeInsets.symmetric(horizontal: 15),
-          decoration: BoxDecoration(
-            color: customColors.linkColor,
-            borderRadius: BorderRadius.circular(8),
-          ),
+          decoration: BoxDecoration(color: customColors.linkColor, borderRadius: CustomSize.borderRadius),
           child: TextButton(
             onPressed: onCreateSubmit,
             child: Text(
-              widget.isSignup
-                  ? AppLocale.createAccount.getString(context)
-                  : AppLocale.signIn.getString(context),
+              widget.isSignup ? AppLocale.createAccount.getString(context) : AppLocale.signIn.getString(context),
               style: const TextStyle(color: Colors.white, fontSize: 18),
             ),
           ),

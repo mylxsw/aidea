@@ -11,6 +11,7 @@ import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/password_field.dart';
 import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
@@ -36,13 +37,11 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _inviteCodeController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _verificationCodeController =
-      TextEditingController();
+  final TextEditingController _verificationCodeController = TextEditingController();
 
   String verifyCodeId = '';
 
-  final emailValidator = RegExp(
-      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+  final emailValidator = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
   final phoneNumberValidator = RegExp(r"^1[3456789]\d{9}$");
 
   var agreeProtocol = false;
@@ -143,25 +142,19 @@ class _SignupScreenState extends State<SignupScreen> {
                   const SizedBox(height: 30),
                   // 用户名
                   Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15, bottom: 0),
+                    padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
                     child: TextFormField(
                       controller: _usernameController,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.singleLineFormatter
-                      ],
+                      inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Color.fromARGB(255, 192, 192, 192)),
+                          borderSide: BorderSide(color: Color.fromARGB(255, 192, 192, 192)),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: customColors.linkColor!),
+                          borderSide: BorderSide(color: customColors.linkColor!),
                         ),
-                        floatingLabelStyle:
-                            TextStyle(color: customColors.linkColor!),
+                        floatingLabelStyle: TextStyle(color: customColors.linkColor!),
                         isDense: true,
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         labelText: AppLocale.account.getString(context),
@@ -175,8 +168,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   // 密码
                   Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15, bottom: 0),
+                    padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
                     child: PasswordField(
                       controller: _passwordController,
                       labelText: AppLocale.password.getString(context),
@@ -185,30 +177,23 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   // 邀请码
                   Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15, bottom: 0),
+                    padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
                     child: TextFormField(
                       controller: _inviteCodeController,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.singleLineFormatter
-                      ],
+                      inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Color.fromARGB(255, 192, 192, 192)),
+                          borderSide: BorderSide(color: Color.fromARGB(255, 192, 192, 192)),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: customColors.linkColor!),
+                          borderSide: BorderSide(color: customColors.linkColor!),
                         ),
-                        floatingLabelStyle:
-                            TextStyle(color: customColors.linkColor!),
+                        floatingLabelStyle: TextStyle(color: customColors.linkColor!),
                         isDense: true,
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         labelText: AppLocale.inviteCode.getString(context),
-                        hintText:
-                            AppLocale.inviteCodeInputTips.getString(context),
+                        hintText: AppLocale.inviteCodeInputTips.getString(context),
                         hintStyle: TextStyle(
                           color: customColors.textfieldHintColor,
                           fontSize: 15,
@@ -218,8 +203,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   // 验证码
                   Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15, bottom: 0),
+                    padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
                     child: Row(children: [
                       Expanded(
                         child: TextFormField(
@@ -234,20 +218,16 @@ class _SignupScreenState extends State<SignupScreen> {
                             counterText: '',
                             border: const OutlineInputBorder(),
                             enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Color.fromARGB(255, 192, 192, 192)),
+                              borderSide: BorderSide(color: Color.fromARGB(255, 192, 192, 192)),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: customColors.linkColor!),
+                              borderSide: BorderSide(color: customColors.linkColor!),
                             ),
-                            floatingLabelStyle:
-                                TextStyle(color: customColors.linkColor!),
+                            floatingLabelStyle: TextStyle(color: customColors.linkColor!),
                             isDense: true,
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             labelText: AppLocale.verifyCode.getString(context),
-                            hintText: AppLocale.verifyCodeInputTips
-                                .getString(context),
+                            hintText: AppLocale.verifyCodeInputTips.getString(context),
                             hintStyle: TextStyle(
                               color: customColors.textfieldHintColor,
                               fontSize: 15,
@@ -271,25 +251,19 @@ class _SignupScreenState extends State<SignupScreen> {
                               )
                             : TextButton(
                                 onPressed: () {
-                                  final username =
-                                      _usernameController.text.trim();
+                                  final username = _usernameController.text.trim();
 
-                                  final isEmail =
-                                      emailValidator.hasMatch(username);
+                                  final isEmail = emailValidator.hasMatch(username);
 
-                                  final isPhoneNumber =
-                                      phoneNumberValidator.hasMatch(username);
+                                  final isPhoneNumber = phoneNumberValidator.hasMatch(username);
 
                                   if (_usernameController.text.trim() == '') {
-                                    showErrorMessage(AppLocale.accountRequired
-                                        .getString(context));
+                                    showErrorMessage(AppLocale.accountRequired.getString(context));
                                     return;
                                   }
 
                                   if (!isEmail && !isPhoneNumber) {
-                                    showErrorMessage(AppLocale
-                                        .accountFormatError
-                                        .getString(context));
+                                    showErrorMessage(AppLocale.accountFormatError.getString(context));
                                     return;
                                   }
 
@@ -309,8 +283,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                       timer = null;
                                     }
 
-                                    timer = Timer.periodic(
-                                        const Duration(seconds: 1), (timer) {
+                                    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
                                       if (verifyCodeWaitSeconds <= 0) {
                                         timer.cancel();
                                         return;
@@ -329,8 +302,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                       timer?.cancel();
                                     });
 
-                                    showErrorMessage(
-                                        resolveError(context, error!));
+                                    showErrorMessage(resolveError(context, error!));
                                   });
                                 },
                                 child: Text(
@@ -350,16 +322,12 @@ class _SignupScreenState extends State<SignupScreen> {
                     height: 50,
                     width: double.infinity,
                     margin: const EdgeInsets.symmetric(horizontal: 15),
-                    decoration: BoxDecoration(
-                      color: customColors.linkColor,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    decoration: BoxDecoration(color: customColors.linkColor, borderRadius: CustomSize.borderRadius),
                     child: TextButton(
                       onPressed: onCreateSubmit,
                       child: Text(
                         AppLocale.createAccount.getString(context),
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 20),
+                        style: const TextStyle(color: Colors.white, fontSize: 20),
                       ),
                     ),
                   ),
@@ -375,8 +343,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               if (context.canPop()) {
                                 context.pop(_usernameController.text.trim());
                               } else {
-                                context.go(
-                                    '/login?username=${_usernameController.text.trim()}');
+                                context.go('/login?username=${_usernameController.text.trim()}');
                               }
                             },
                             child: Text(
@@ -402,8 +369,7 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Row _buildUserTermsAndPrivicy(
-      CustomColors customColors, BuildContext context) {
+  Row _buildUserTermsAndPrivicy(CustomColors customColors, BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -448,8 +414,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
-                    launchUrl(
-                        Uri.parse('$apiServerURL/public/info/terms-of-user'));
+                    launchUrl(Uri.parse('$apiServerURL/public/info/terms-of-user'));
                   },
               ),
               TextSpan(
@@ -461,12 +426,10 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               TextSpan(
                 text: '《${AppLocale.privacyPolicy.getString(context)}》',
-                style:
-                    TextStyle(color: customColors.weakLinkColor, fontSize: 13),
+                style: TextStyle(color: customColors.weakLinkColor, fontSize: 13),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
-                    launchUrl(
-                        Uri.parse('$apiServerURL/public/info/privacy-policy'));
+                    launchUrl(Uri.parse('$apiServerURL/public/info/privacy-policy'));
                   },
               ),
             ],
@@ -485,8 +448,7 @@ class _SignupScreenState extends State<SignupScreen> {
       return;
     }
 
-    if (!emailValidator.hasMatch(username) &&
-        !phoneNumberValidator.hasMatch(username)) {
+    if (!emailValidator.hasMatch(username) && !phoneNumberValidator.hasMatch(username)) {
       showErrorMessage(AppLocale.accountFormatError.getString(context));
       return;
     }

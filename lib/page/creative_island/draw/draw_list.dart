@@ -28,9 +28,7 @@ class _DrawListScreenState extends State<DrawListScreen> {
       userSignedIn = true;
     }
 
-    context
-        .read<CreativeIslandBloc>()
-        .add(CreativeIslandItemsV2LoadEvent(forceRefresh: false));
+    context.read<CreativeIslandBloc>().add(CreativeIslandItemsV2LoadEvent(forceRefresh: false));
 
     super.initState();
   }
@@ -47,8 +45,9 @@ class _DrawListScreenState extends State<DrawListScreen> {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return BackgroundContainer(
       setting: widget.setting,
+      enabled: false,
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: customColors.backgroundColor,
         body: _buildIslandItems(customColors),
       ),
     );
@@ -83,8 +82,7 @@ class _DrawListScreenState extends State<DrawListScreen> {
         fit: BoxFit.cover,
       ),
       child: BlocBuilder<CreativeIslandBloc, CreativeIslandState>(
-        buildWhen: (previous, current) =>
-            current is CreativeIslandItemsV2Loaded,
+        buildWhen: (previous, current) => current is CreativeIslandItemsV2Loaded,
         builder: (context, state) {
           if (state is CreativeIslandItemsV2Loaded) {
             final items = state.items
@@ -109,15 +107,11 @@ class _DrawListScreenState extends State<DrawListScreen> {
                 .toList();
             final largeItems = items.where((e) => e.size == 'large').toList();
             final mediumItems = items.where((e) => e.size == 'medium').toList();
-            final otherItems = items
-                .where((e) => e.size != 'large' && e.size != 'medium')
-                .toList();
+            final otherItems = items.where((e) => e.size != 'large' && e.size != 'medium').toList();
 
             return RefreshIndicator(
               onRefresh: () async {
-                context
-                    .read<CreativeIslandBloc>()
-                    .add(CreativeIslandItemsV2LoadEvent(forceRefresh: true));
+                context.read<CreativeIslandBloc>().add(CreativeIslandItemsV2LoadEvent(forceRefresh: true));
               },
               color: customColors.linkColor,
               displacement: 20,
@@ -126,45 +120,39 @@ class _DrawListScreenState extends State<DrawListScreen> {
                   children: [
                     GridView.count(
                       physics: const NeverScrollableScrollPhysics(),
-                      padding:
-                          const EdgeInsets.only(top: 0, left: 10, right: 10),
+                      padding: const EdgeInsets.only(top: 0, left: 10, right: 10),
                       crossAxisCount: _calCrossAxisCount(context),
                       childAspectRatio: 2,
                       shrinkWrap: true,
                       children: largeItems
                           .map((e) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 5, vertical: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                                 child: e,
                               ))
                           .toList(),
                     ),
                     GridView.count(
                       physics: const NeverScrollableScrollPhysics(),
-                      padding:
-                          const EdgeInsets.only(top: 5, left: 10, right: 10),
+                      padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
                       crossAxisCount: _calCrossAxisCount(context) * 2,
                       childAspectRatio: 1,
                       shrinkWrap: true,
                       children: mediumItems
                           .map((e) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 5, vertical: 5),
+                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                                 child: e,
                               ))
                           .toList(),
                     ),
                     GridView.count(
                       physics: const NeverScrollableScrollPhysics(),
-                      padding:
-                          const EdgeInsets.only(top: 5, left: 10, right: 10),
+                      padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
                       crossAxisCount: _calCrossAxisCount(context) * 2,
                       childAspectRatio: 2,
                       shrinkWrap: true,
                       children: otherItems
                           .map((e) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 5, vertical: 5),
+                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                                 child: e,
                               ))
                           .toList(),

@@ -7,6 +7,12 @@ class CustomSize {
   static const double maxWindowSize = 1000;
   static const double smallWindowSize = 500;
 
+  static const double radiusValue = 8.0;
+
+  static BorderRadiusGeometry borderRadius = BorderRadius.circular(radiusValue);
+  static const Radius radius = Radius.circular(radiusValue);
+  static const BorderRadius borderRadiusAll = BorderRadius.all(radius);
+
   static double get toolbarHeight {
     if (PlatformTool.isMacOS()) {
       return kToolbarHeight + 30;
@@ -17,8 +23,6 @@ class CustomSize {
 
   static double adaptiveMaxWindowWidth(BuildContext context) {
     final windowSize = MediaQuery.of(context).size.width;
-    return windowSize > CustomSize.maxWindowSize
-        ? CustomSize.maxWindowSize
-        : windowSize;
+    return windowSize > CustomSize.maxWindowSize ? CustomSize.maxWindowSize : windowSize;
   }
 }

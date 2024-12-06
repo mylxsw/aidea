@@ -3,8 +3,8 @@ import 'package:askaide/bloc/chat_chat_bloc.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/account_quota_card.dart';
-import 'package:askaide/page/component/icon_box.dart';
 import 'package:askaide/page/component/image.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,10 +22,12 @@ class LeftDrawer extends StatefulWidget {
 class _LeftDrawerState extends State<LeftDrawer> {
   @override
   Widget build(BuildContext context) {
+    final customColors = Theme.of(context).extension<CustomColors>()!;
     return Drawer(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.zero,
       ),
+      backgroundColor: customColors.backgroundColor,
       child: SafeArea(
         top: false,
         child: Column(
@@ -66,33 +68,6 @@ class _LeftDrawerState extends State<LeftDrawer> {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        IconBox(
-                          icon: const Icon(Icons.group_outlined),
-                          title: Text(AppLocale.homeTitle.getString(context)),
-                          onTap: () {
-                            context.push('/characters');
-                          },
-                        ),
-                        IconBox(
-                          icon: const Icon(Icons.auto_awesome_outlined),
-                          title: Text(AppLocale.discover.getString(context)),
-                          onTap: () {
-                            context.push('/creative-gallery');
-                          },
-                        ),
-                        IconBox(
-                          icon: const Icon(Icons.palette_outlined),
-                          title: Text(AppLocale.creativeIsland.getString(context)),
-                          onTap: () {
-                            context.push('/creative-draw');
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
                     ListTile(
                       leading: const Icon(Icons.history),
                       title: Text(AppLocale.histories.getString(context)),
@@ -101,6 +76,39 @@ class _LeftDrawerState extends State<LeftDrawer> {
                           context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
                         });
                       },
+                    ),
+                    Divider(
+                      color: customColors.weakTextColor?.withAlpha(50),
+                      height: 10,
+                      indent: 10,
+                      endIndent: 10,
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.group_outlined),
+                      title: Text(AppLocale.homeTitle.getString(context)),
+                      onTap: () {
+                        context.push('/characters');
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.auto_awesome_outlined),
+                      title: Text(AppLocale.discover.getString(context)),
+                      onTap: () {
+                        context.push('/creative-gallery');
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.palette_outlined),
+                      title: Text(AppLocale.creativeIsland.getString(context)),
+                      onTap: () {
+                        context.push('/creative-draw');
+                      },
+                    ),
+                    Divider(
+                      color: customColors.weakTextColor?.withAlpha(50),
+                      height: 10,
+                      indent: 10,
+                      endIndent: 10,
                     ),
                     ListTile(
                       leading: const Icon(Icons.settings_outlined),
@@ -113,42 +121,81 @@ class _LeftDrawerState extends State<LeftDrawer> {
                 ),
               ),
             ),
-            SizedBox(
-              height: 70,
+            Container(
+              height: 90,
+              padding: const EdgeInsets.only(left: 20, right: 20),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      launchUrlString(
-                        'https://weibo.com/code404',
-                        mode: LaunchMode.externalApplication,
-                      );
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(AppLocale.socialMedia.getString(context)),
-                        const SizedBox(width: 10),
-                        Image.asset('assets/weibo.png', width: 25),
-                      ],
+                  Text(
+                    "${AppLocale.socialMedia.getString(context)} :",
+                    style: TextStyle(
+                      color: customColors.weakTextColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      launchUrlString(
-                        'https://ai.aicode.cc/social/github',
-                        mode: LaunchMode.externalApplication,
-                      );
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(AppLocale.opensource.getString(context)),
-                        const SizedBox(width: 10),
-                        Image.asset('assets/github.png', width: 25),
-                      ],
-                    ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          launchUrlString(
+                            'https://ai.aicode.cc/social/home',
+                            mode: LaunchMode.externalApplication,
+                          );
+                        },
+                        child: Image.asset('assets/app-256-transparent.png', width: 25),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          launchUrlString(
+                            'https://weibo.com/code404',
+                            mode: LaunchMode.externalApplication,
+                          );
+                        },
+                        child: Image.asset('assets/weibo.png', width: 25),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          launchUrlString(
+                            'https://ai.aicode.cc/social/github',
+                            mode: LaunchMode.externalApplication,
+                          );
+                        },
+                        child: Image.asset('assets/github.png', width: 25),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          launchUrlString(
+                            'https://ai.aicode.cc/social/wechat-platform',
+                            mode: LaunchMode.externalApplication,
+                          );
+                        },
+                        child: Image.asset('assets/wechat.png', width: 25),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          launchUrlString(
+                            'https://ai.aicode.cc/social/x',
+                            mode: LaunchMode.externalApplication,
+                          );
+                        },
+                        child: Image.asset('assets/x.png', width: 25),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          launchUrlString(
+                            'https://ai.aicode.cc/social/xiaohongshu',
+                            mode: LaunchMode.externalApplication,
+                          );
+                        },
+                        child: Image.asset('assets/xiaohongshu.png', width: 25),
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 15),
                 ],
               ),
             ),

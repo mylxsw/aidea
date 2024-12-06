@@ -1,4 +1,5 @@
 import 'package:askaide/helper/helper.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -33,7 +34,7 @@ class EnhancedErrorWidget extends StatelessWidget {
             onTap: () {
               context.go('/login');
             },
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: CustomSize.borderRadiusAll,
             child: const Padding(
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               child: Text(

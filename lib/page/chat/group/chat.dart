@@ -162,10 +162,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
                 // 聊天输入窗口
                 Container(
                   decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                    ),
+                    borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, topRight: CustomSize.radius),
                     color: customColors.chatInputPanelBackground,
                   ),
                   child: SafeArea(
@@ -563,10 +560,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(10),
-          topRight: Radius.circular(10),
-        ),
+        borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, topRight: CustomSize.radius),
         color: customColors.backgroundColor,
       ),
       child: Row(

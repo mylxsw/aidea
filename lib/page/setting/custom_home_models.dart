@@ -161,7 +161,7 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: iconAndColors[i].color,
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: CustomSize.borderRadius,
                             ),
                             child: ModelIndicator(
                               model: models[i],

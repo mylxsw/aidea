@@ -42,14 +42,11 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
   @override
   void initState() {
     super.initState();
-    _apiKeyController.text =
-        widget.settings.stringDefault(settingOpenAIAPIToken, '');
-    _organizationController.text =
-        widget.settings.stringDefault(settingOpenAIOrganization, '');
+    _apiKeyController.text = widget.settings.stringDefault(settingOpenAIAPIToken, '');
+    _organizationController.text = widget.settings.stringDefault(settingOpenAIOrganization, '');
     _urlController.text = widget.settings.stringDefault(settingOpenAIURL, '');
     if (widget.source == 'setting') {
-      enableOpenAISelfHosted =
-          widget.settings.boolDefault(settingOpenAISelfHosted, false);
+      enableOpenAISelfHosted = widget.settings.boolDefault(settingOpenAISelfHosted, false);
     }
   }
 
@@ -68,7 +65,7 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          'OpenAI 设置',
+          'OpenAI Setting',
           style: TextStyle(
             fontSize: CustomSize.appBarTitleSize,
           ),
@@ -82,7 +79,7 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
                 context.go(Ability().homeRoute);
               },
               child: Text(
-                '暂不设置',
+                'Do not set',
                 style: TextStyle(
                   color: customColors.weakLinkColor,
                   fontSize: 13,
@@ -91,9 +88,10 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
             ),
         ],
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.settings,
+        enabled: false,
         child: SizedBox(
           height: double.infinity,
           child: SingleChildScrollView(
@@ -168,9 +166,7 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
                 ),
                 const SizedBox(height: 10),
                 EnhancedButton(
-                  title: widget.source == 'setting'
-                      ? AppLocale.save.getString(context)
-                      : '启用',
+                  title: widget.source == 'setting' ? AppLocale.save.getString(context) : 'Enable',
                   onPressed: () {
                     var url = _urlController.text;
                     var apiKey = _apiKeyController.text;
@@ -180,10 +176,8 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
                       url = 'https://api.openai.com';
                     }
 
-                    if (!url.startsWith('http://') &&
-                        !url.startsWith('https://')) {
-                      showErrorMessageEnhanced(
-                          context, 'URL 必须以 http:// 或 https:// 开头');
+                    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                      showErrorMessageEnhanced(context, 'The URL must begin with http:// or https://.');
                       return;
                     }
 
@@ -193,7 +187,7 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
                     }
 
                     if (enableOpenAISelfHosted && apiKey == '') {
-                      showErrorMessageEnhanced(context, 'API Key 不能为空');
+                      showErrorMessageEnhanced(context, 'API Key cannot be empty');
                       return;
                     }
 
@@ -212,8 +206,7 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
     );
   }
 
-  void onSaveAndEnter(String apiKey, String organization, String url,
-      BuildContext context) async {
+  void onSaveAndEnter(String apiKey, String organization, String url, BuildContext context) async {
     await widget.settings.set(settingOpenAIAPIToken, apiKey);
     await widget.settings.set(settingOpenAIOrganization, organization);
     await widget.settings.set(settingOpenAIURL, url);
@@ -243,11 +236,11 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
     }
 
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      return Future.error('URL 必须以 http:// 或 https:// 开头');
+      return Future.error('The URL must begin with http:// or https://.');
     }
 
     if (apiKey == '') {
-      return Future.error('API Key 不能为空');
+      return Future.error('API Key cannot be empty');
     }
 
     final headers = <String, dynamic>{
@@ -289,7 +282,7 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
         setState(() {
           verifySuccess = false;
         });
-        return Future.error('验证失败，请检查 API Key：${resp.data}');
+        return Future.error('Verification failed, please check the API Key: ${resp.data}');
       }
 
       cancelLoading();
@@ -305,12 +298,12 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
       if (e is DioException) {
         if (e.response != null && e.response!.data != null) {
           return Future.error(
-              '验证失败，请检查网络 或 API Key：${e.response!.data["error"]["message"]}');
+              'Verification failed, please check the network or API Key: ${e.response!.data["error"]["message"]}');
         } else {
-          return Future.error('验证失败，请检查网络 或 API Key：${e.error}');
+          return Future.error('Verification failed, please check the network or API Key: ${e.error}');
         }
       } else {
-        return Future.error('验证失败，请检查网络 或 API Key：${e.toString()}');
+        return Future.error('Verification failed, please check the network or API Key: ${e.toString()}');
       }
     }
   }

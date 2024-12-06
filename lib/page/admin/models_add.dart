@@ -131,7 +131,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.chatInputPanelBackground,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -149,8 +149,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
               }
             },
             child: Container(
-              padding: const EdgeInsets.only(
-                  left: 10, right: 10, top: 10, bottom: 20),
+              padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 20),
               child: Column(
                 children: [
                   ColumnBlock(
@@ -199,15 +198,13 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                               width: 45,
                               height: 45,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: CustomSize.borderRadius,
                                 image: avatarUrl == null
                                     ? null
                                     : DecorationImage(
                                         image: (avatarUrl!.startsWith('http')
-                                            ? CachedNetworkImageProviderEnhanced(
-                                                avatarUrl!)
-                                            : FileImage(File(
-                                                avatarUrl!))) as ImageProvider,
+                                            ? CachedNetworkImageProviderEnhanced(avatarUrl!)
+                                            : FileImage(File(avatarUrl!))) as ImageProvider,
                                         fit: BoxFit.cover,
                                       ),
                               ),
@@ -266,18 +263,14 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         hintText: '可选',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
                             '智慧果/1K Token',
-                            style: TextStyle(
-                                color: customColors.weakTextColor,
-                                fontSize: 12),
+                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
                           ),
                         ),
                       ),
@@ -289,18 +282,14 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         hintText: '可选',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
                             '智慧果/1K Token',
-                            style: TextStyle(
-                                color: customColors.weakTextColor,
-                                fontSize: 12),
+                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
                           ),
                         ),
                       ),
@@ -312,18 +301,14 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         hintText: '最大上下文减掉预期的输出长度',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 50,
                           alignment: Alignment.center,
                           child: Text(
                             'Token',
-                            style: TextStyle(
-                                color: customColors.weakTextColor,
-                                fontSize: 12),
+                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
                           ),
                         ),
                       ),
@@ -331,8 +316,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                   ),
                   ...providers.map((e) {
                     return Container(
-                      margin:
-                          const EdgeInsets.only(bottom: 10, left: 5, right: 5),
+                      margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
                       child: Slidable(
                         endActionPane: ActionPane(
                           motion: const ScrollMotion(),
@@ -340,8 +324,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                             const SizedBox(width: 10),
                             SlidableAction(
                               label: AppLocale.delete.getString(context),
-                              borderRadius: BorderRadius.circular(
-                                  customColors.borderRadius ?? 8),
+                              borderRadius: CustomSize.borderRadiusAll,
                               backgroundColor: Colors.red,
                               icon: Icons.delete,
                               onPressed: (_) {
@@ -352,12 +335,10 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
 
                                 openConfirmDialog(
                                   context,
-                                  AppLocale.confirmToDeleteRoom
-                                      .getString(context),
+                                  AppLocale.confirmToDeleteRoom.getString(context),
                                   () {
                                     setState(() {
-                                      providers
-                                          .removeWhere((item) => item == e);
+                                      providers.removeWhere((item) => item == e);
                                     });
                                   },
                                   danger: true,
@@ -391,8 +372,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                     ...modelChannels
                                         .map(
                                           (e) => SelectorItem(
-                                            Text(
-                                                '${e.id == null ? '【系统】' : ''}${e.name}'),
+                                            Text('${e.id == null ? '【系统】' : ''}${e.name}'),
                                             e,
                                           ),
                                         )
@@ -478,16 +458,14 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                       context,
                                       type: QuickAlertType.info,
                                       text: '当前模型是否支持视觉能力。',
-                                      confirmBtnText:
-                                          AppLocale.gotIt.getString(context),
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
                                     );
                                   },
                                   child: Icon(
                                     Icons.help_outline,
                                     size: 16,
-                                    color: customColors.weakLinkColor
-                                        ?.withAlpha(150),
+                                    color: customColors.weakLinkColor?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -519,16 +497,14 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                       context,
                                       type: QuickAlertType.info,
                                       text: '是否在模型旁边展示“新”标识，告知用户这是一个新模型。',
-                                      confirmBtnText:
-                                          AppLocale.gotIt.getString(context),
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
                                     );
                                   },
                                   child: Icon(
                                     Icons.help_outline,
                                     size: 16,
-                                    color: customColors.weakLinkColor
-                                        ?.withAlpha(150),
+                                    color: customColors.weakLinkColor?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -560,16 +536,14 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                       context,
                                       type: QuickAlertType.info,
                                       text: '受限模型是指因政策因素，不能在中国大陆地区使用的模型。',
-                                      confirmBtnText:
-                                          AppLocale.gotIt.getString(context),
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
                                     );
                                   },
                                   child: Icon(
                                     Icons.help_outline,
                                     size: 16,
-                                    color: customColors.weakLinkColor
-                                        ?.withAlpha(150),
+                                    color: customColors.weakLinkColor?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -627,9 +601,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         color: customColors.weakLinkColor,
                         fontSize: 15,
                         icon: Icon(
-                          showAdvancedOptions
-                              ? Icons.unfold_less
-                              : Icons.unfold_more,
+                          showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
                           color: customColors.weakLinkColor,
                           size: 15,
                         ),
@@ -676,9 +648,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
       return;
     }
 
-    if (avatarUrl != null &&
-        (!avatarUrl!.startsWith('http://') &&
-            !avatarUrl!.startsWith('https://'))) {
+    if (avatarUrl != null && (!avatarUrl!.startsWith('http://') && !avatarUrl!.startsWith('https://'))) {
       final cancel = BotToast.showCustomLoading(
         toastBuilder: (cancel) {
           return const LoadingIndicator(
@@ -689,8 +659,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
       );
 
       try {
-        final res = await ImageUploader(widget.setting)
-            .upload(avatarUrl!, usage: 'avatar');
+        final res = await ImageUploader(widget.setting).upload(avatarUrl!, usage: 'avatar');
         avatarUrl = res.url;
       } catch (e) {
         showErrorMessage('上传头像失败');

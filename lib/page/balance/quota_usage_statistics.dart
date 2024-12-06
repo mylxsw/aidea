@@ -14,12 +14,10 @@ class QuotaUsageStatisticsScreen extends StatefulWidget {
   const QuotaUsageStatisticsScreen({super.key, required this.setting});
 
   @override
-  State<QuotaUsageStatisticsScreen> createState() =>
-      _QuotaUsageStatisticsScreenState();
+  State<QuotaUsageStatisticsScreen> createState() => _QuotaUsageStatisticsScreenState();
 }
 
-class _QuotaUsageStatisticsScreenState
-    extends State<QuotaUsageStatisticsScreen> {
+class _QuotaUsageStatisticsScreenState extends State<QuotaUsageStatisticsScreen> {
   List<QuotaUsageInDay> usages = [];
   bool loaded = false;
 
@@ -49,7 +47,7 @@ class _QuotaUsageStatisticsScreenState
         centerTitle: true,
         elevation: 0,
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -112,13 +110,12 @@ class _QuotaUsageStatisticsScreenState
                   margin: const EdgeInsets.symmetric(vertical: 6),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: customColors.paymentItemBackgroundColor,
-                    borderRadius: BorderRadius.circular(10),
+                    color: customColors.backgroundContainerColor,
+                    borderRadius: CustomSize.borderRadius,
                   ),
                   child: InkWell(
                     onTap: () {
-                      context
-                          .push('/quota-usage-daily-details?date=${item.date}');
+                      context.push('/quota-usage-daily-details?date=${item.date}');
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -129,10 +126,7 @@ class _QuotaUsageStatisticsScreenState
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        if (item.used == -1)
-                          const Text('未出账')
-                        else
-                          Text('${item.used > 0 ? "-" : ""}${item.used}'),
+                        if (item.used == -1) const Text('未出账') else Text('${item.used > 0 ? "-" : ""}${item.used}'),
                       ],
                     ),
                   ),

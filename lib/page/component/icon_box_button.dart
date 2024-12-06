@@ -1,3 +1,4 @@
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:flutter/material.dart';
 
 class IconBoxButton extends StatelessWidget {
@@ -19,7 +20,7 @@ class IconBoxButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: CustomSize.borderRadiusAll,
       onTap: () => onTap?.call(),
       child: Container(
         height: 75,
@@ -30,7 +31,7 @@ class IconBoxButton extends StatelessWidget {
           border: Border.all(
             color: Colors.grey.withAlpha(50),
           ),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: CustomSize.borderRadius,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

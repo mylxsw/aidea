@@ -50,7 +50,7 @@ class _HomeChatHistoryPageState extends State<HomeChatHistoryPage> {
         toolbarHeight: CustomSize.toolbarHeight,
         centerTitle: true,
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,

@@ -4,6 +4,7 @@ import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/random_avatar.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -79,7 +80,7 @@ class _AvatarSelectorState extends State<AvatarSelector> {
                     width: 100,
                     height: 100,
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: CustomSize.borderRadius,
                       child: _avatarUrl!.startsWith('http')
                           ? CachedNetworkImageEnhanced(
                               imageUrl: _avatarUrl!,
@@ -104,7 +105,7 @@ class _AvatarSelectorState extends State<AvatarSelector> {
                       child: Container(
                         padding: const EdgeInsets.all(3),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: CustomSize.borderRadius,
                           color: customColors.chatRoomBackground,
                         ),
                         child: Icon(
@@ -119,9 +120,9 @@ class _AvatarSelectorState extends State<AvatarSelector> {
               ),
             if (_avatarId != null) RandomAvatar(id: _avatarId ?? 0, size: 80, usage: widget.usage),
             Material(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: CustomSize.borderRadius,
               child: InkWell(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: CustomSize.borderRadiusAll,
                 onTap: () async {
                   HapticFeedbackHelper.mediumImpact();
                   FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.image);
@@ -139,10 +140,10 @@ class _AvatarSelectorState extends State<AvatarSelector> {
                 },
                 child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: CustomSize.borderRadius,
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: CustomSize.borderRadius,
                       child: SizedBox(
                         height: 100,
                         width: 160,
@@ -220,7 +221,7 @@ class _AvatarSelectorState extends State<AvatarSelector> {
   Widget _buildAvatarButton(CustomColors customColors, Avatar avatar) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(11),
+        borderRadius: CustomSize.borderRadius,
         border: Border.all(
           color: (_avatarUrl != null && _avatarUrl == avatar.url) || (_avatarId != null && _avatarId == avatar.id)
               ? customColors.linkColor ?? Colors.green
@@ -240,7 +241,7 @@ class _AvatarSelectorState extends State<AvatarSelector> {
         child: avatar.type == AvatarType.random
             ? RandomAvatar(id: avatar.id ?? 0, size: 80, usage: widget.usage)
             : ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: CustomSize.borderRadius,
                 child: CachedNetworkImageEnhanced(
                   imageUrl: avatar.url!,
                   fit: BoxFit.fill,

@@ -5,6 +5,7 @@ import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/loading.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:file_saver/file_saver.dart';
@@ -20,12 +21,7 @@ class VideoPlayer extends StatefulWidget {
   final int? width;
   final int? height;
 
-  const VideoPlayer(
-      {super.key,
-      required this.url,
-      this.width,
-      this.height,
-      this.aspectRatio});
+  const VideoPlayer({super.key, required this.url, this.width, this.height, this.aspectRatio});
 
   @override
   State<VideoPlayer> createState() => _VideoPlayerState();
@@ -55,23 +51,18 @@ class _VideoPlayerState extends State<VideoPlayer> {
     return Container(
       decoration: BoxDecoration(
         color: customColors.columnBlockBackgroundColor,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: CustomSize.borderRadius,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(8),
-              topRight: Radius.circular(8),
-            ),
+            borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, topRight: CustomSize.radius),
             child: Center(
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: widget.width != null && widget.height != null
-                    ? MediaQuery.of(context).size.width *
-                        widget.height! /
-                        widget.width!
+                    ? MediaQuery.of(context).size.width * widget.height! / widget.width!
                     : MediaQuery.of(context).size.width,
                 child: Video(
                   controller: controller,
@@ -121,8 +112,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
                     );
 
                     try {
-                      final saveFile =
-                          await DefaultCacheManager().getSingleFile(widget.url);
+                      final saveFile = await DefaultCacheManager().getSingleFile(widget.url);
 
                       if (PlatformTool.isIOS() || PlatformTool.isAndroid()) {
                         await ImageGallerySaver.saveFile(saveFile.path);
@@ -133,7 +123,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
 
                         if (PlatformTool.isWindows()) {
                           FileSaver.instance
-                            .saveAs(
+                              .saveAs(
                             name: filenameWithoutExt(saveFile.path.split('/').last),
                             filePath: saveFile.path,
                             ext: '.$ext',
@@ -141,7 +131,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
                           )
                               .then((value) async {
                             if (value == null) {
-                              return ;
+                              return;
                             }
 
                             await File(value).writeAsBytes(await saveFile.readAsBytes());
@@ -152,8 +142,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
                         } else {
                           FileSaver.instance
                               .saveFile(
-                            name:
-                                filenameWithoutExt(saveFile.path.split('/').last),
+                            name: filenameWithoutExt(saveFile.path.split('/').last),
                             filePath: saveFile.path,
                             ext: ext,
                             mimeType: MimeType.mpeg,
@@ -161,7 +150,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
                               .then((value) {
                             showSuccessMessage('文件保存成功');
                           });
-                      }
+                        }
                       }
                     } catch (e) {
                       // ignore: use_build_context_synchronously

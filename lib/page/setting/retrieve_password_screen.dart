@@ -18,8 +18,7 @@ import 'package:go_router/go_router.dart';
 class RetrievePasswordScreen extends StatefulWidget {
   final String? username;
   final SettingRepository setting;
-  const RetrievePasswordScreen(
-      {super.key, this.username, required this.setting});
+  const RetrievePasswordScreen({super.key, this.username, required this.setting});
 
   @override
   State<RetrievePasswordScreen> createState() => _RetrievePasswordScreenState();
@@ -28,14 +27,12 @@ class RetrievePasswordScreen extends StatefulWidget {
 class _RetrievePasswordScreenState extends State<RetrievePasswordScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _verificationCodeController =
-      TextEditingController();
+  final TextEditingController _verificationCodeController = TextEditingController();
 
   String verifyCodeId = '';
 
   final phoneNumberValidator = RegExp(r"^1[3456789]\d{9}$");
-  final emailValidator = RegExp(
-      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+  final emailValidator = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 
   @override
   void initState() {
@@ -68,26 +65,22 @@ class _RetrievePasswordScreenState extends State<RetrievePasswordScreen> {
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.backgroundColor,
+      backgroundColor: customColors.backgroundContainerColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15, bottom: 0),
+              padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
               child: TextFormField(
                 controller: _usernameController,
-                inputFormatters: [
-                  FilteringTextInputFormatter.singleLineFormatter
-                ],
+                inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
                   enabledBorder: const OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Color.fromARGB(200, 192, 192, 192)),
+                    borderSide: BorderSide(color: Color.fromARGB(200, 192, 192, 192)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: customColors.linkColor!),
@@ -105,8 +98,7 @@ class _RetrievePasswordScreenState extends State<RetrievePasswordScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15, bottom: 0),
+              padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
               child: PasswordField(
                 controller: _passwordController,
                 labelText: AppLocale.newPassword.getString(context),
@@ -114,8 +106,7 @@ class _RetrievePasswordScreenState extends State<RetrievePasswordScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(
-                  left: 15.0, right: 10.0, top: 15, bottom: 0),
+              padding: const EdgeInsets.only(left: 15.0, right: 10.0, top: 15, bottom: 0),
               child: VerifyCodeInput(
                 controller: _verificationCodeController,
                 onVerifyCodeSent: (id) {
@@ -124,10 +115,7 @@ class _RetrievePasswordScreenState extends State<RetrievePasswordScreen> {
                 sendVerifyCode: () {
                   return APIServer().sendResetPasswordCode(
                     _usernameController.text.trim(),
-                    verifyType:
-                        phoneNumberValidator.hasMatch(_usernameController.text)
-                            ? 'sms'
-                            : 'email',
+                    verifyType: phoneNumberValidator.hasMatch(_usernameController.text) ? 'sms' : 'email',
                   );
                 },
                 sendCheck: () {
@@ -136,14 +124,12 @@ class _RetrievePasswordScreenState extends State<RetrievePasswordScreen> {
                   final isEmail = emailValidator.hasMatch(username);
 
                   if (username == '') {
-                    showErrorMessage(
-                        AppLocale.accountRequired.getString(context));
+                    showErrorMessage(AppLocale.accountRequired.getString(context));
                     return false;
                   }
 
                   if (!isPhoneNumber && !isEmail) {
-                    showErrorMessage(
-                        AppLocale.accountFormatError.getString(context));
+                    showErrorMessage(AppLocale.accountFormatError.getString(context));
                     return false;
                   }
 
@@ -158,7 +144,7 @@ class _RetrievePasswordScreenState extends State<RetrievePasswordScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 15),
               decoration: BoxDecoration(
                 color: customColors.linkColor,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: CustomSize.borderRadius,
               ),
               child: TextButton(
                 onPressed: onResetSubmit,
@@ -181,8 +167,7 @@ class _RetrievePasswordScreenState extends State<RetrievePasswordScreen> {
       return;
     }
 
-    if (!phoneNumberValidator.hasMatch(username) &&
-        !emailValidator.hasMatch(username)) {
+    if (!phoneNumberValidator.hasMatch(username) && !emailValidator.hasMatch(username)) {
       showErrorMessage(AppLocale.accountFormatError.getString(context));
       return;
     }

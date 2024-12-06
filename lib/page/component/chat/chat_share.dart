@@ -99,13 +99,11 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
               },
               child: Row(
                 children: [
-                  Icon(Icons.share,
-                      size: 14, color: customColors.weakLinkColor),
+                  Icon(Icons.share, size: 14, color: customColors.weakLinkColor),
                   const SizedBox(width: 5),
                   Text(
                     '分享',
-                    style: TextStyle(
-                        color: customColors.weakLinkColor, fontSize: 14),
+                    style: TextStyle(color: customColors.weakLinkColor, fontSize: 14),
                   ),
                 ],
               ),
@@ -229,8 +227,7 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
     );
   }
 
-  Widget buildShareWindow(CustomColors customColors, BuildContext context,
-      AsyncSnapshot<ShareInfo> snapshot) {
+  Widget buildShareWindow(CustomColors customColors, BuildContext context, AsyncSnapshot<ShareInfo> snapshot) {
     return WidgetsToImage(
       controller: controller,
       child: Container(
@@ -239,9 +236,7 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            usingChatStyle
-                ? buildChatPreview(context, customColors)
-                : buildListPreview(context, customColors),
+            usingChatStyle ? buildChatPreview(context, customColors) : buildListPreview(context, customColors),
             if (showQRCode) buildQRCodePanel(customColors, snapshot),
           ],
         ),
@@ -249,8 +244,7 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
     );
   }
 
-  Widget buildQRCodePanel(
-      CustomColors customColors, AsyncSnapshot<ShareInfo> snapshot) {
+  Widget buildQRCodePanel(CustomColors customColors, AsyncSnapshot<ShareInfo> snapshot) {
     return Container(
       color: customColors.backgroundColor,
       child: Padding(
@@ -261,7 +255,7 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
         child: Row(
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: CustomSize.borderRadius,
               child: CachedNetworkImageEnhanced(
                 imageUrl: snapshot.data!.qrCode,
                 width: 100,
@@ -303,8 +297,7 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      if (message.avatarURL != null && message.leftSide)
-                        _buildAvatar(avatarUrl: message.avatarURL),
+                      if (message.avatarURL != null && message.leftSide) _buildAvatar(avatarUrl: message.avatarURL),
                       if (message.username != null && message.leftSide)
                         Container(
                           margin: const EdgeInsets.fromLTRB(0, 0, 10, 7),
@@ -323,9 +316,8 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                     Container(
                       margin: const EdgeInsets.fromLTRB(0, 10, 10, 0),
                       child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                            maxWidth: _chatBoxImagePreviewWidth(
-                                context, (message.images ?? []).length)),
+                        constraints:
+                            BoxConstraints(maxWidth: _chatBoxImagePreviewWidth(context, (message.images ?? []).length)),
                         child: FileUploadPreview(images: message.images ?? []),
                       ),
                     ),
@@ -336,7 +328,7 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                     child: Container(
                       margin: const EdgeInsets.fromLTRB(0, 10, 10, 7),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: CustomSize.borderRadius,
                         color: message.leftSide
                             ? customColors.chatRoomReplyBackground
                             : customColors.chatRoomSenderBackground,
@@ -375,11 +367,9 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
               vertical: 10,
             ),
             child: Align(
-              alignment:
-                  message.leftSide ? Alignment.topLeft : Alignment.topRight,
+              alignment: message.leftSide ? Alignment.topLeft : Alignment.topRight,
               child: ConstrainedBox(
-                constraints:
-                    BoxConstraints(maxWidth: _chatBoxMaxWidth(context)),
+                constraints: BoxConstraints(maxWidth: _chatBoxMaxWidth(context)),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -388,8 +378,7 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        if (message.avatarURL != null && message.leftSide)
-                          _buildAvatar(avatarUrl: message.avatarURL),
+                        if (message.avatarURL != null && message.leftSide) _buildAvatar(avatarUrl: message.avatarURL),
                         if (message.username != null && message.leftSide)
                           Container(
                             margin: const EdgeInsets.fromLTRB(0, 0, 10, 7),
@@ -411,20 +400,15 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                       ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: message.leftSide
-                            ? CrossAxisAlignment.start
-                            : CrossAxisAlignment.end,
+                        crossAxisAlignment: message.leftSide ? CrossAxisAlignment.start : CrossAxisAlignment.end,
                         children: [
-                          if (message.images != null &&
-                              message.images!.isNotEmpty)
+                          if (message.images != null && message.images!.isNotEmpty)
                             Container(
                               margin: const EdgeInsets.fromLTRB(0, 0, 10, 7),
                               child: ConstrainedBox(
                                 constraints: BoxConstraints(
-                                    maxWidth: _chatBoxImagePreviewWidth(context,
-                                        (message.images ?? []).length)),
-                                child: FileUploadPreview(
-                                    images: message.images ?? []),
+                                    maxWidth: _chatBoxImagePreviewWidth(context, (message.images ?? []).length)),
+                                child: FileUploadPreview(images: message.images ?? []),
                               ),
                             ),
                           Container(
@@ -432,7 +416,7 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                                 ? const EdgeInsets.fromLTRB(0, 0, 0, 7)
                                 : const EdgeInsets.fromLTRB(0, 0, 10, 7),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: CustomSize.borderRadius,
                               color: message.leftSide
                                   ? customColors.chatRoomReplyBackground
                                   : customColors.chatRoomSenderBackground,

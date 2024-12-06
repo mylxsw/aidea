@@ -34,7 +34,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
         centerTitle: true,
         elevation: 0,
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -69,8 +69,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                 );
               }
 
-              return _buildQuotaDetailPage(
-                  context, snapshot.data!, customColors);
+              return _buildQuotaDetailPage(context, snapshot.data!, customColors);
             },
           ),
         ),
@@ -78,8 +77,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     );
   }
 
-  Widget _buildQuotaDetailPage(
-      BuildContext context, QuotaResp quota, CustomColors customColors) {
+  Widget _buildQuotaDetailPage(BuildContext context, QuotaResp quota, CustomColors customColors) {
     return Column(
       children: [
         Expanded(
@@ -98,8 +96,8 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                         right: 16,
                       ),
                       decoration: BoxDecoration(
-                        color: customColors.paymentItemBackgroundColor,
-                        borderRadius: BorderRadius.circular(10),
+                        color: customColors.backgroundContainerColor,
+                        borderRadius: CustomSize.borderRadius,
                       ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -112,9 +110,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      (item.note == null || item.note == '')
-                                          ? '购买'
-                                          : item.note!,
+                                      (item.note == null || item.note == '') ? '购买' : item.note!,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     const SizedBox(height: 5),
@@ -179,10 +175,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
       child: Container(
         decoration: BoxDecoration(
           color: color,
-          borderRadius: const BorderRadius.only(
-            topRight: Radius.circular(9),
-            bottomLeft: Radius.circular(9),
-          ),
+          borderRadius: const BorderRadius.only(topRight: CustomSize.radius, bottomLeft: CustomSize.radius),
         ),
         padding: const EdgeInsets.symmetric(
           horizontal: 5,

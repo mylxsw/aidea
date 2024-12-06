@@ -1,4 +1,5 @@
 import 'package:askaide/page/component/coin.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/payment.dart';
 import 'package:flutter/material.dart';
@@ -30,14 +31,13 @@ class PriceBlock extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: customColors.paymentItemBackgroundColor,
+            color: customColors.backgroundContainerColor,
             border: Border.all(
-              color:
-                  (selectedProduct != null && selectedProduct!.id == detail.id)
-                      ? customColors.linkColor ?? Colors.green
-                      : customColors.paymentItemBackgroundColor!,
+              color: (selectedProduct != null && selectedProduct!.id == detail.id)
+                  ? customColors.linkColor ?? Colors.green
+                  : customColors.paymentItemBackgroundColor!,
             ),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: CustomSize.borderRadius,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -90,10 +90,7 @@ class PriceBlock extends StatelessWidget {
             child: Container(
               decoration: const BoxDecoration(
                 color: Color.fromARGB(255, 224, 68, 7),
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(8),
-                  bottomLeft: Radius.circular(8),
-                ),
+                borderRadius: BorderRadius.only(topRight: CustomSize.radius, bottomLeft: CustomSize.radius),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
               child: const Text(

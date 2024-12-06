@@ -107,7 +107,7 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
             )
           ],
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: customColors.backgroundColor,
         body: SafeArea(
           child: BlocConsumer<AccountBloc, AccountState>(
             listenWhen: (previous, current) => current is AccountLoaded,
@@ -297,7 +297,7 @@ Widget buildSettingsList(
         ),
         darkTheme: const SettingsThemeData(
           settingsListBackground: Colors.transparent,
-          settingsSectionBackground: Color.fromARGB(255, 27, 27, 27),
+          settingsSectionBackground: Color.fromARGB(255, 44, 44, 46),
           titleTextColor: Color.fromARGB(255, 239, 239, 239),
         ),
         sections: sections,
