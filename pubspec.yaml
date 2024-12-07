@@ -102,7 +102,6 @@ dependencies:
     git:
       url: https://github.com/mylxsw/before_after.git
   flutter_native_splash: ^2.2.19
-  flutter_local_notifications: ^14.1.1
   flutter_drawing_board: ^0.4.4+2
   loading_more_list: ^5.0.3
   tobias: ^2.4.2
