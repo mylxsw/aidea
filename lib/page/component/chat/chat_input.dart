@@ -7,10 +7,12 @@ import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/voice_record.dart';
 import 'package:askaide/page/component/dialog.dart';
-import 'package:askaide/page/component/enhanced_popup_menu.dart';
 import 'package:askaide/page/component/file_preview.dart';
+import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/repo/settings_repo.dart';
+import 'package:camera/camera.dart';
+import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +20,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:go_router/go_router.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ChatInput extends StatefulWidget {
@@ -85,10 +88,20 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
 
   /// Maximum height of the chat input box
   var maxLines = 5;
+  var minLines = 1;
+  var hasCamera = false;
 
   @override
   void initState() {
     super.initState();
+
+    if (!PlatformTool.isDesktop()) {
+      availableCameras().then((cameras) {
+        setState(() {
+          hasCamera = cameras.isNotEmpty;
+        });
+      });
+    }
 
     _textController.addListener(() {
       setState(() {});
@@ -185,8 +198,10 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                                     setState(() {
                                       if (hasFocus) {
                                         maxLines = 10;
+                                        minLines = 3;
                                       } else {
-                                        maxLines = 5;
+                                        maxLines = 3;
+                                        minLines = 1;
                                       }
                                     });
 
@@ -196,10 +211,11 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                                     keyboardType: TextInputType.multiline,
                                     textInputAction: TextInputAction.newline,
                                     maxLines: maxLines,
-                                    minLines: 1,
+                                    minLines: minLines,
                                     maxLength: maxLength,
                                     focusNode: _focusNode,
                                     controller: _textController,
+                                    style: const TextStyle(fontSize: CustomSize.defaultHintTextSize),
                                     decoration: InputDecoration(
                                       hintText: widget.hintText,
                                       hintStyle: const TextStyle(
@@ -451,46 +467,141 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
     SettingRepository setting,
     CustomColors customColors,
   ) {
-    if (canUploadImage && !canUploadFile) {
+    if (canUploadImage && !canUploadFile && !hasCamera) {
       return IconButton(
         onPressed: onImageUploadButtonPressed,
         icon: const Icon(Icons.camera_alt),
         color: customColors.chatInputPanelText,
         splashRadius: 20,
-        tooltip: AppLocale.uploadImage.getString(context),
+        tooltip: AppLocale.photoLibrary.getString(context),
       );
     }
 
-    if (!canUploadImage && canUploadFile) {
+    if (!canUploadImage && canUploadFile && !hasCamera) {
       return IconButton(
         onPressed: onFileUploadButtonPressed,
         icon: const Icon(Icons.upload_file),
         color: customColors.chatInputPanelText,
         splashRadius: 20,
-        tooltip: AppLocale.uploadDocument.getString(context),
+        tooltip: AppLocale.fileLibrary.getString(context),
       );
     }
 
-    return EnhancedPopupMenu(
-      icon: Icons.upload_file,
+    return IconButton(
+      icon: const Icon(Icons.add),
       color: customColors.chatInputPanelText,
-      tooltip: AppLocale.upload.getString(context),
-      items: [
-        EnhancedPopupMenuItem(
-          title: AppLocale.uploadImage.getString(context),
-          icon: Icons.camera_alt,
-          onTap: (ctx) async {
-            onImageUploadButtonPressed();
+      splashRadius: 20,
+      tooltip: 'Tools',
+      onPressed: () {
+        openListSelectDialog(
+          context,
+          <SelectorItem<String>>[
+            if (hasCamera)
+              SelectorItem(
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.camera_alt, size: 50),
+                    const SizedBox(height: 5),
+                    Text(
+                      AppLocale.takePhoto.getString(context),
+                      style: const TextStyle(fontSize: 12),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+                'take-photo',
+              ),
+            SelectorItem(
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.photo_library, size: 50),
+                  const SizedBox(height: 5),
+                  Text(
+                    AppLocale.photoLibrary.getString(context),
+                    style: const TextStyle(fontSize: 12),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+              'select-image',
+            ),
+            if (canUploadFile)
+              SelectorItem(
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.upload_file_sharp, size: 50),
+                    const SizedBox(height: 5),
+                    Text(
+                      AppLocale.fileLibrary.getString(context),
+                      style: const TextStyle(fontSize: 12),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+                'select-file',
+              ),
+          ],
+          (value) {
+            switch (value.value) {
+              case 'select-image':
+                onImageUploadButtonPressed();
+                break;
+              case 'select-file':
+                onFileUploadButtonPressed();
+                break;
+              case 'take-photo':
+                HapticFeedbackHelper.mediumImpact();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Scaffold(
+                      appBar: AppBar(
+                        title: Text(AppLocale.takePhoto.getString(context)),
+                        backgroundColor: customColors.backgroundColor,
+                      ),
+                      body: CameraAwesomeBuilder.awesome(
+                        saveConfig: SaveConfig.photo(),
+                        enablePhysicalButton: true,
+                        onMediaCaptureEvent: (mediaCapture) async {
+                          if (mediaCapture.status == MediaCaptureStatus.success) {
+                            final file = FileUpload(
+                                file: PlatformFile(
+                              path: mediaCapture.captureRequest.path!,
+                              name: mediaCapture.captureRequest.path!.split('/').last,
+                              size: await File(mediaCapture.captureRequest.path!).length(),
+                            ));
+
+                            final files = widget.selectedImageFiles ?? [];
+                            files.add(file);
+                            widget.onImageSelected?.call(files.sublist(0, files.length > 4 ? 4 : files.length));
+
+                            if (context.mounted) {
+                              context.pop();
+                            }
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ).whenComplete(() {
+                  context.pop();
+                });
+                return false;
+              default:
+            }
+            return true;
           },
-        ),
-        EnhancedPopupMenuItem(
-          title: AppLocale.uploadDocument.getString(context),
-          icon: Icons.attach_file,
-          onTap: (ctx) {
-            onFileUploadButtonPressed();
-          },
-        ),
-      ],
+          heightFactor: 0.3,
+          horizontal: true,
+          horizontalCount: canUploadFile ? 3 : 2,
+        );
+      },
     );
   }
 

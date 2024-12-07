@@ -389,8 +389,8 @@ class _ChatPreviewState extends State<ChatPreview> {
                                 ),
                                 if (extraInfo.isNotEmpty)
                                   Positioned(
-                                    top: 5,
-                                    right: 5,
+                                    top: 0,
+                                    right: 0,
                                     child: InkWell(
                                       onTap: () {
                                         showCustomBeautyDialog(

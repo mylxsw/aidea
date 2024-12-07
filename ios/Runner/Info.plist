@@ -51,6 +51,8 @@
 		<string>We need to access to the microphone to record audio file</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>Used to demonstrate image picker plugin</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>To enable GPS location access for Exif data</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UIFileSharingEnabled</key>

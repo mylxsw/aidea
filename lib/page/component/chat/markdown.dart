@@ -11,6 +11,7 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_markdown/flutter_markdown.dart' as md;
+import 'package:flutter_markdown_latex/flutter_markdown_latex.dart';
 import 'package:markdown/markdown.dart' as mm;
 import 'package:markdown_widget/config/all.dart';
 import 'package:markdown_widget/widget/all.dart';
@@ -83,15 +84,20 @@ class Markdown extends StatelessWidget {
         return ClipRRect(borderRadius: CustomSize.borderRadiusAll, child: Image.network(uri.toString()));
       },
       extensionSet: mm.ExtensionSet(
-        mm.ExtensionSet.gitHubFlavored.blockSyntaxes,
+        [
+          ...mm.ExtensionSet.gitHubFlavored.blockSyntaxes,
+          LatexBlockSyntax(),
+        ],
         <mm.InlineSyntax>[
           mm.EmojiSyntax(),
           ...mm.ExtensionSet.gitHubFlavored.inlineSyntaxes,
+          LatexInlineSyntax(),
         ],
       ),
       data: data,
       builders: {
         'code': CodeElementBuilder(),
+        'latex': LatexElementBuilder(),
       },
     );
   }

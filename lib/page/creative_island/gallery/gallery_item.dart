@@ -77,7 +77,7 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                     );
                   },
                   child: Text(
-                    '取消共享',
+                    AppLocale.cancelShare.getString(context),
                     style: TextStyle(
                       color: customColors.weakLinkColor,
                       fontSize: 12,
@@ -201,7 +201,7 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   EnhancedButton(
-                                    title: '分享',
+                                    title: AppLocale.share.getString(context),
                                     icon: const Icon(Icons.share, size: 14),
                                     width: 80,
                                     color: customColors.backgroundInvertedColor,
@@ -222,7 +222,7 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                                   ),
                                   const SizedBox(width: 10),
                                   EnhancedButton(
-                                    title: '动作',
+                                    title: AppLocale.shortcut.getString(context),
                                     icon: const Icon(Icons.webhook, size: 14),
                                     width: 80,
                                     color: customColors.backgroundInvertedColor,
@@ -261,7 +261,7 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                                           innerPadding: const EdgeInsets.symmetric(
                                             vertical: 10,
                                           ),
-                                          title: '选择要执行动作的图片',
+                                          title: AppLocale.selectImageToShortcut.getString(context),
                                         );
                                       } else {
                                         openImageWorkflowActionDialog(
@@ -275,7 +275,7 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: EnhancedButton(
-                                      title: '制作同款',
+                                      title: AppLocale.makeSameStyle.getString(context),
                                       onPressed: () {
                                         context.push(
                                             '/creative-draw/create?mode=text-to-image&id=${state.item.creativeId}&gallery_copy_id=${state.item.id}');

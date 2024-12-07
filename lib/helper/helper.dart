@@ -47,8 +47,7 @@ Future<Uint8List> readTempFile(String path) async {
   return await file.readAsBytes();
 }
 
-Future<void> writeStringFileToDocumentsDirectory(
-    String path, String content) async {
+Future<void> writeStringFileToDocumentsDirectory(String path, String content) async {
   try {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/$path');
@@ -126,14 +125,14 @@ String humanTime(DateTime? ts, {bool withTime = false}) {
   }
 
   if (diff.inHours > 0) {
-    return '${diff.inHours}小时前';
+    return '${diff.inHours} hours ago';
   }
 
   if (diff.inMinutes > 0) {
-    return '${diff.inMinutes}分钟前';
+    return '${diff.inMinutes} minutes ago';
   }
 
-  return '刚刚';
+  return 'Just now';
 }
 
 /// 解析错误信息

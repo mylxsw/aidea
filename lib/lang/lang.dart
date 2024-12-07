@@ -41,6 +41,7 @@ mixin AppLocale {
   static const String selectAll = 'select-all';
   static const String unselectAll = 'unselect-all';
   static const String share = 'share';
+  static const String cancelShare = 'cancel-share';
   static const String histories = 'histories';
   static const String enable = 'enable';
   static const String disable = 'disable';
@@ -50,8 +51,9 @@ mixin AppLocale {
   static const String examples = 'examples';
   static const String continueMessage = 'continue';
   static const String messageInputTips = 'message-input-tips';
-  static const String uploadImage = 'upload-image';
-  static const String uploadDocument = 'upload-document';
+  static const String takePhoto = 'take-photo';
+  static const String photoLibrary = 'photo-library';
+  static const String fileLibrary = 'file-library';
   static const String upload = 'upload';
   static const String longPressSpeak = 'long-press-speak';
   static const String send = 'send';
@@ -142,7 +144,9 @@ mixin AppLocale {
   static const String fastAndCostEffective = 'fast-and-cost-effective';
   static const String powerfulAndPrecise = 'powerful-and-precise';
   static const String imageToImage = 'image-to-image';
+  static const String imageToVideo = 'image-to-video';
   static const String textToImage = 'text-to-image';
+  static const String hdRestoration = 'hd-restoration';
   static const String yourIdeas = 'your-ideas';
   static const String smartOptimization = 'smart-optimization';
   static const String professionalMode = 'professional-mode';
@@ -211,6 +215,7 @@ mixin AppLocale {
 
   static const String me = 'me';
   static const String coinsUsage = 'coins-usage';
+  static const String coinUsageTips = 'coin-usage-tips';
   static const String updateCheck = 'update-check';
   static const String buy = 'buy';
   static const String paymentHistory = 'payment-history';
@@ -266,6 +271,29 @@ mixin AppLocale {
   static const String viewMore = 'view-more';
   static const String using = 'using';
 
+  static const String inviteCodeShare = 'invite-code-share';
+  static const String shareToWechatQ = 'share-to-wechat-q';
+  static const String shareToWechat = 'share-to-wechat';
+  static const String shareToOtherApps = 'share-to-other-apps';
+  static const String clickToShareWithExpire = 'click-to-share-with-expire';
+
+  static const String shortcut = 'shortcut';
+  static const String selectImageToShortcut = 'select-image-to-shortcut';
+  static const String selectShortcutAction = 'select-shortcut-action';
+  static const String makeSameStyle = 'make-same-style';
+  static const String saveToLocal = 'save-to-local';
+  static const String showInviteCode = 'show-invite-code';
+  static const String dontShowInviteCode = 'dont-show-invite-code';
+  static const String inviteNow = 'invite-now';
+  static const String inviteSlogan = 'invite-slogan';
+  static const String preview = 'preview';
+  static const String download = 'download';
+  static const String clickSwitchImage = 'click-switch-image';
+
+  static const String startNewChatTips = 'start-new-chat-tips';
+  static const String wantMoreContentTips = 'want-more-content-tips';
+  static const String unbilled = 'unbilled';
+
   static const Map<String, dynamic> zh = {
     required: '必填',
     systemInfo: '系统信息',
@@ -281,6 +309,7 @@ mixin AppLocale {
     selectAll: '全选',
     unselectAll: '取消全选',
     share: '分享',
+    cancelShare: '取消分享',
     histories: '最近的对话',
     enable: '启用',
     disable: '未启用',
@@ -289,8 +318,9 @@ mixin AppLocale {
     examples: '示例',
     continueMessage: '继续',
     messageInputTips: '有问题尽管问我',
-    uploadImage: '上传图片',
-    uploadDocument: '上传文档',
+    takePhoto: '拍照',
+    photoLibrary: '照片图库',
+    fileLibrary: '文档',
     upload: '上传',
     longPressSpeak: '长按说话',
     send: '发送',
@@ -403,7 +433,9 @@ mixin AppLocale {
     fastAndCostEffective: '速度快，成本低',
     powerfulAndPrecise: '能力强，更精准',
     imageToImage: '图生图',
+    imageToVideo: '图生视频',
     textToImage: '文生图',
+    hdRestoration: '高清修复',
     yourIdeas: '你的想法',
     smartOptimization: '智能优化',
     professionalMode: '专业模式',
@@ -469,6 +501,7 @@ mixin AppLocale {
     enableCustomOpenAI: '启用后将使用您自己配置的 OpenAI 服务',
     me: '我的',
     coinsUsage: '使用明细',
+    coinUsageTips: '使用明细将在次日更新，显示近 30 天的使用量。',
     updateCheck: '检测更新',
     buy: '购买',
     paymentHistory: '购买历史',
@@ -519,6 +552,26 @@ mixin AppLocale {
     pickYourRobot: '挑选你的专属伙伴',
     viewMore: '查看更多',
     using: '使用中',
+    inviteCodeShare: '邀请码分享',
+    shareToWechatQ: '分享到朋友圈',
+    shareToWechat: '分享到微信',
+    shareToOtherApps: '分享到其它应用',
+    clickToShareWithExpire: '点击图片可分享、保存；有效期至',
+    shortcut: '动作',
+    selectImageToShortcut: '选择要执行动作的图片',
+    selectShortcutAction: '选择要执行的操作',
+    makeSameStyle: '制作同款',
+    saveToLocal: '保存到本地',
+    showInviteCode: '显示邀请信息',
+    dontShowInviteCode: '不显示邀请信息',
+    inviteNow: '立即邀请',
+    inviteSlogan: '邀请好友注册，双方都可获得奖励',
+    preview: '预览',
+    download: '下载',
+    clickSwitchImage: '点击此处更换图片',
+    startNewChatTips: '想要开启新的聊天？试试',
+    wantMoreContentTips: '想要更多内容？试着对我说',
+    unbilled: '未出账',
   };
 
   static const Map<String, dynamic> en = {
@@ -536,6 +589,7 @@ mixin AppLocale {
     selectAll: 'Select all',
     unselectAll: 'Cancel',
     share: 'Share',
+    cancelShare: 'Cancel share',
     histories: 'Recents',
     enable: 'Enable',
     disable: 'Disable',
@@ -544,8 +598,9 @@ mixin AppLocale {
     examples: 'Examples',
     continueMessage: 'Continue',
     messageInputTips: 'Ask me something...',
-    uploadImage: 'Upload Image',
-    uploadDocument: 'Upload Document',
+    takePhoto: 'Take Photo',
+    photoLibrary: 'Attach Photos',
+    fileLibrary: 'Attach Files',
     upload: 'Upload',
     longPressSpeak: 'Long press to speak',
     send: 'Send',
@@ -609,7 +664,7 @@ mixin AppLocale {
     readByVoice: 'Voice',
     unknownFile: 'Unknown File',
     switchModel: 'Switch Model',
-    switchModelTitle: 'Select a model to switch',
+    switchModelTitle: 'Switch model',
     noMessageSelected: 'No message selected',
     modelUsage: 'The model is used to set the type of AI character used',
     promptUsage: 'Prompt is used to set the behavior of the AI character',
@@ -661,7 +716,9 @@ mixin AppLocale {
     fastAndCostEffective: 'Fast & Cost-Effective',
     powerfulAndPrecise: 'Powerful & Precise',
     imageToImage: 'Image to Image',
+    imageToVideo: 'Image to Video',
     textToImage: 'Text to Image',
+    hdRestoration: 'HD Restoration',
     yourIdeas: 'Your Ideas',
     smartOptimization: 'Smart Optimization',
     professionalMode: 'Pro Mode',
@@ -728,6 +785,7 @@ mixin AppLocale {
     enableCustomOpenAI: 'Your custom OpenAI service will be used once enabled',
     me: 'Me',
     coinsUsage: 'Usage',
+    coinUsageTips: 'Usage details will be updated the next day, showing usage in the last 30 days.',
     updateCheck: 'Check Update',
     buy: 'Buy',
     paymentHistory: 'Histories',
@@ -778,6 +836,26 @@ mixin AppLocale {
     pickYourRobot: 'Pick your robot',
     viewMore: 'More',
     using: 'Using',
+    inviteCodeShare: 'Invite Code Share',
+    shareToWechatQ: 'Share to WeChat Moments',
+    shareToWechat: 'Share to WeChat',
+    shareToOtherApps: 'Share to Other Apps',
+    clickToShareWithExpire: 'Click to share, valid until',
+    shortcut: 'Action',
+    selectImageToShortcut: 'Select image to perform action',
+    selectShortcutAction: 'Select the action to perform',
+    makeSameStyle: 'Make the Same',
+    saveToLocal: 'Save to Local',
+    showInviteCode: 'Show Invite Code',
+    dontShowInviteCode: 'Don\'t Show Invite Code',
+    inviteNow: 'Invite Now',
+    inviteSlogan: 'Invite friends to register, both parties will receive rewards',
+    preview: 'Preview',
+    download: 'Download',
+    clickSwitchImage: 'Click to switch image',
+    startNewChatTips: 'Want to start a new chat? Try',
+    wantMoreContentTips: 'Want more content? Try',
+    unbilled: 'Pending',
   };
 }
 

@@ -1,5 +1,6 @@
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/image.dart';
+import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/image_preview.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/page/component/video_player.dart';
@@ -61,7 +62,7 @@ class _CreativeIslandContentPreviewState extends State<CreativeIslandContentPrev
                       ),
                       const SizedBox(width: 5),
                       Text(
-                        '点击图片可分享、保存；有效期至 $expireTime',
+                        '${AppLocale.clickToShareWithExpire} $expireTime',
                         maxLines: 2,
                         style: TextStyle(
                           fontSize: 12,

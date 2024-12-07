@@ -18,13 +18,10 @@ class HelpTips extends StatelessWidget {
     List<Builder> children = [
       if (onNewChat != null && onSubmitMessage != null)
         Builder(
-          builder: (context) => _buildNewChatActionTip(
-              customColors, context, (text) => onSubmitMessage!(text)),
+          builder: (context) => _buildNewChatActionTip(customColors, context, (text) => onSubmitMessage!(text)),
         ),
       if (onSubmitMessage != null)
-        Builder(
-            builder: (context) => _buildContinueActionTip(
-                customColors, context, onSubmitMessage!))
+        Builder(builder: (context) => _buildContinueActionTip(customColors, context, onSubmitMessage!))
     ];
 
     // 随机取一个 builder
@@ -34,18 +31,18 @@ class HelpTips extends StatelessWidget {
     );
   }
 
-  RichText _buildNewChatActionTip(CustomColors customColors,
-      BuildContext context, Function(String text) onSubmit) {
+  RichText _buildNewChatActionTip(CustomColors customColors, BuildContext context, Function(String text) onSubmit) {
     return RichText(
         text: TextSpan(
       children: [
         TextSpan(
-          text: '想要开启新的聊天？试试 ',
+          text: AppLocale.startNewChatTips.getString(context),
           style: TextStyle(
             color: customColors.dialogDefaultTextColor,
             fontSize: 12,
           ),
         ),
+        const TextSpan(text: ' '),
         TextSpan(
             text: AppLocale.newChat.getString(context),
             style: TextStyle(
@@ -57,18 +54,18 @@ class HelpTips extends StatelessWidget {
     ));
   }
 
-  RichText _buildContinueActionTip(CustomColors customColors,
-      BuildContext context, Function(String text) onSubmit) {
+  RichText _buildContinueActionTip(CustomColors customColors, BuildContext context, Function(String text) onSubmit) {
     return RichText(
         text: TextSpan(
       children: [
         TextSpan(
-          text: '想要更多内容？试着对我说 ',
+          text: AppLocale.wantMoreContentTips.getString(context),
           style: TextStyle(
             color: customColors.dialogDefaultTextColor,
             fontSize: 12,
           ),
         ),
+        const TextSpan(text: ' '),
         TextSpan(
             text: AppLocale.continueMessage.getString(context),
             style: TextStyle(

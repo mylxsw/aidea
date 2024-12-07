@@ -19,10 +19,12 @@ Future<dynamic> openImageWorkflowActionDialog(
     (context) {
       return Column(
         children: [
-          Text('选择要执行的操作',
-              style: TextStyle(
-                color: customColors.weakTextColorPlus,
-              )),
+          Text(
+            AppLocale.selectShortcutAction.getString(context),
+            style: TextStyle(
+              color: customColors.weakTextColorPlus,
+            ),
+          ),
           Expanded(
             child: FutureBuilder(
               future: APIServer().creativeIslandItemsV2(),
@@ -33,12 +35,11 @@ Future<dynamic> openImageWorkflowActionDialog(
                     itemsMap[item.id] = item;
                   }
 
-                  return actionsBuilder(
-                      itemsMap, customColors, context, imageUrl);
+                  return actionsBuilder(itemsMap, customColors, context, imageUrl);
                 }
 
                 return const LoadingIndicator(
-                  message: '加载中，请稍候...',
+                  message: 'Loading, please wait...',
                 );
               },
             ),
@@ -67,7 +68,7 @@ Widget actionsBuilder(
           children: [
             if (itemsMap.containsKey('image-to-image'))
               Button(
-                title: '图生图',
+                title: AppLocale.imageToImage.getString(context),
                 icon: Icon(
                   Icons.collections_outlined,
                   size: 16,
@@ -90,11 +91,10 @@ Widget actionsBuilder(
                 color: customColors.weakLinkColor,
                 backgroundColor: const Color.fromARGB(34, 183, 183, 183),
               ),
-            if (itemsMap.containsKey('image-to-image'))
-              const SizedBox(height: 10),
+            if (itemsMap.containsKey('image-to-image')) const SizedBox(height: 10),
             if (itemsMap.containsKey('image-to-video'))
               Button(
-                title: '图生视频',
+                title: AppLocale.imageToVideo.getString(context),
                 icon: Icon(
                   Icons.video_camera_back_outlined,
                   size: 16,
@@ -115,11 +115,10 @@ Widget actionsBuilder(
                 color: customColors.weakLinkColor,
                 backgroundColor: const Color.fromARGB(34, 183, 183, 183),
               ),
-            if (itemsMap.containsKey('image-to-video'))
-              const SizedBox(height: 10),
+            if (itemsMap.containsKey('image-to-video')) const SizedBox(height: 10),
             if (itemsMap.containsKey('image-upscale'))
               Button(
-                title: '高清修复',
+                title: AppLocale.hdRestoration.getString(context),
                 icon: Icon(
                   Icons.hd_outlined,
                   size: 16,
@@ -140,11 +139,10 @@ Widget actionsBuilder(
                 color: customColors.weakLinkColor,
                 backgroundColor: const Color.fromARGB(34, 183, 183, 183),
               ),
-            if (itemsMap.containsKey('image-upscale'))
-              const SizedBox(height: 10),
+            if (itemsMap.containsKey('image-upscale')) const SizedBox(height: 10),
             if (itemsMap.containsKey('image-colorize'))
               Button(
-                title: '旧照片上色',
+                title: AppLocale.colorizeImage.getString(context),
                 icon: Icon(
                   Icons.palette_outlined,
                   size: 16,

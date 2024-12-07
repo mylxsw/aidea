@@ -124,18 +124,18 @@ class ImageSelector extends StatelessWidget {
                               child: Container(
                                 color: const Color.fromARGB(80, 255, 255, 255),
                                 height: 50,
-                                child: const Row(
+                                child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.camera_alt,
                                       size: 30,
                                       color: Color.fromARGB(147, 255, 255, 255),
                                     ),
-                                    SizedBox(width: 10),
+                                    const SizedBox(width: 10),
                                     Text(
-                                      '点击此处更换图片',
-                                      style: TextStyle(
+                                      AppLocale.clickSwitchImage.getString(context),
+                                      style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w500,
                                         color: Color.fromARGB(147, 255, 255, 255),

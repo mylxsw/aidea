@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/platform.dart';
+import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
@@ -11,6 +12,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -92,7 +94,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
                       ),
                       const SizedBox(width: 5),
                       Text(
-                        '下载',
+                        AppLocale.download.getString(context),
                         style: TextStyle(
                           fontSize: 12,
                           color: customColors.weakLinkColor,
@@ -104,7 +106,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
                     final cancel = BotToast.showCustomLoading(
                       toastBuilder: (cancel) {
                         return const LoadingIndicator(
-                          message: '下载中，请稍候...',
+                          message: 'Downloading, please wait...',
                         );
                       },
                       allowClick: false,
@@ -117,7 +119,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
                       if (PlatformTool.isIOS() || PlatformTool.isAndroid()) {
                         await ImageGallerySaver.saveFile(saveFile.path);
 
-                        showSuccessMessage('保存成功');
+                        showSuccessMessage(AppLocale.operateSuccess.getString(context));
                       } else {
                         var ext = saveFile.path.toLowerCase().split('.').last;
 
@@ -136,8 +138,8 @@ class _VideoPlayerState extends State<VideoPlayer> {
 
                             await File(value).writeAsBytes(await saveFile.readAsBytes());
 
-                            Logger.instance.d('文件保存成功: $value');
-                            showSuccessMessage('文件保存成功');
+                            Logger.instance.d('File saved successfully: $value');
+                            showSuccessMessage(AppLocale.operateSuccess.getString(context));
                           });
                         } else {
                           FileSaver.instance
@@ -148,14 +150,14 @@ class _VideoPlayerState extends State<VideoPlayer> {
                             mimeType: MimeType.mpeg,
                           )
                               .then((value) {
-                            showSuccessMessage('文件保存成功');
+                            showSuccessMessage(AppLocale.operateSuccess.getString(context));
                           });
                         }
                       }
                     } catch (e) {
                       // ignore: use_build_context_synchronously
-                      showErrorMessageEnhanced(context, '保存失败，请稍后再试');
-                      Logger.instance.e('下载失败', error: e);
+                      showErrorMessageEnhanced(context, 'Image save failed, please try again later');
+                      Logger.instance.e('Download failed', error: e);
                     } finally {
                       cancel();
                     }

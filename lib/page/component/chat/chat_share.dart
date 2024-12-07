@@ -102,7 +102,7 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                   Icon(Icons.share, size: 14, color: customColors.weakLinkColor),
                   const SizedBox(width: 5),
                   Text(
-                    '分享',
+                    AppLocale.share.getString(context),
                     style: TextStyle(color: customColors.weakLinkColor, fontSize: 14),
                   ),
                 ],
@@ -111,7 +111,7 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
           EnhancedPopupMenu(
             items: [
               EnhancedPopupMenuItem(
-                title: '保存到本地',
+                title: AppLocale.saveToLocal.getString(context),
                 icon: Icons.save,
                 onTap: (ctx) async {
                   final cancel = BotToast.showCustomLoading(
@@ -133,7 +133,7 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                       if (PlatformTool.isIOS() || PlatformTool.isAndroid()) {
                         await ImageGallerySaver.saveImage(data, quality: 100);
 
-                        showSuccessMessage('图片保存成功');
+                        showSuccessMessage(AppLocale.operateSuccess.getString(context));
                       } else {
                         if (PlatformTool.isWindows()) {
                           FileSaver.instance
@@ -150,8 +150,8 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
 
                             await File(value).writeAsBytes(data);
 
-                            Logger.instance.d('文件保存成功: $value');
-                            showSuccessMessage('文件保存成功');
+                            Logger.instance.d('File saved successfully: $value');
+                            showSuccessMessage(AppLocale.operateSuccess.getString(context));
                           });
                         } else {
                           FileSaver.instance
@@ -162,7 +162,7 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                             mimeType: MimeType.png,
                           )
                               .then((value) {
-                            showSuccessMessage('文件保存成功');
+                            showSuccessMessage(AppLocale.operateSuccess.getString(context));
                           });
                         }
                       }
@@ -173,7 +173,9 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                 },
               ),
               EnhancedPopupMenuItem(
-                title: showQRCode ? '不显示邀请信息' : '显示邀请信息',
+                title: showQRCode
+                    ? AppLocale.dontShowInviteCode.getString(context)
+                    : AppLocale.showInviteCode.getString(context),
                 icon: showQRCode ? Icons.visibility_off : Icons.visibility,
                 onTap: (ctx) {
                   setState(() {

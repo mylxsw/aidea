@@ -127,13 +127,25 @@ class _LeftDrawerState extends State<LeftDrawer> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "${AppLocale.socialMedia.getString(context)} :",
-                    style: TextStyle(
-                      color: customColors.weakTextColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        "${AppLocale.socialMedia.getString(context)} ",
+                        style: TextStyle(
+                          color: customColors.weakTextColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Transform.rotate(
+                        angle: 90 * 3.1415926535897932 / 180,
+                        child: Icon(
+                          Icons.turn_right,
+                          color: customColors.weakTextColor,
+                          size: 16,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   Row(

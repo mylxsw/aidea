@@ -106,7 +106,7 @@ class _NetworkImagePreviewerState extends State<NetworkImagePreviewer> {
                       ),
                       const SizedBox(width: 5),
                       Text(
-                        '分享',
+                        AppLocale.share.getString(context),
                         style: TextStyle(
                           fontSize: 12,
                           color: customColors.weakLinkColor,
@@ -140,7 +140,7 @@ class _NetworkImagePreviewerState extends State<NetworkImagePreviewer> {
                       ),
                       const SizedBox(width: 5),
                       Text(
-                        '动作',
+                        AppLocale.shortcut.getString(context),
                         style: TextStyle(
                           fontSize: 12,
                           color: customColors.weakLinkColor,
@@ -170,7 +170,7 @@ class _NetworkImagePreviewerState extends State<NetworkImagePreviewer> {
                       ),
                       const SizedBox(width: 5),
                       Text(
-                        '预览',
+                        AppLocale.preview.getString(context),
                         style: TextStyle(
                           fontSize: 12,
                           color: customColors.weakLinkColor,
@@ -187,7 +187,7 @@ class _NetworkImagePreviewerState extends State<NetworkImagePreviewer> {
                         imageUrl: widget.url,
                       );
                     } catch (e) {
-                      showErrorMessageEnhanced(context, '图片加载失败，请稍后再试');
+                      showErrorMessageEnhanced(context, 'Image loading failed, please try again later');
                     }
                   },
                 ),
@@ -332,7 +332,7 @@ void openImagePreviewDialog(
                   final cancel = BotToast.showCustomLoading(
                     toastBuilder: (cancel) {
                       return const LoadingIndicator(
-                        message: '下载中，请稍候...',
+                        message: 'Downloading, please wait...',
                       );
                     },
                     allowClick: false,
@@ -348,7 +348,7 @@ void openImagePreviewDialog(
                         quality: 100,
                       );
 
-                      showSuccessMessage('图片保存成功');
+                      showSuccessMessage(AppLocale.operateSuccess.getString(context));
                     } else {
                       var ext = saveFile.path.toLowerCase().split('.').last;
                       MimeType mimeType;
@@ -382,8 +382,8 @@ void openImagePreviewDialog(
 
                           await File(value).writeAsBytes(await saveFile.readAsBytes());
 
-                          Logger.instance.d('文件保存成功: $value');
-                          showSuccessMessage('文件保存成功');
+                          Logger.instance.d('File saved successfully: $value');
+                          showSuccessMessage(AppLocale.operateSuccess.getString(context));
                         });
                       } else {
                         FileSaver.instance
@@ -394,15 +394,15 @@ void openImagePreviewDialog(
                           mimeType: mimeType,
                         )
                             .then((value) {
-                          Logger.instance.d('文件保存成功: $value');
-                          showSuccessMessage('文件保存成功');
+                          Logger.instance.d('File saved successfully: $value');
+                          showSuccessMessage(AppLocale.operateSuccess.getString(context));
                         });
                       }
                     }
                   } catch (e) {
                     // ignore: use_build_context_synchronously
-                    showErrorMessageEnhanced(context, '图片保存失败，请稍后再试');
-                    Logger.instance.e('下载图片原图失败', error: e);
+                    showErrorMessageEnhanced(context, 'Image save failed, please try again later');
+                    Logger.instance.e('Failed to download the original image', error: e);
                   } finally {
                     cancel();
                   }
@@ -419,7 +419,7 @@ void openImagePreviewDialog(
                   final cancel = BotToast.showCustomLoading(
                     toastBuilder: (cancel) {
                       return const LoadingIndicator(
-                        message: '下载中，请稍候...',
+                        message: 'Downloading, please wait...',
                       );
                     },
                     allowClick: false,
@@ -432,11 +432,11 @@ void openImagePreviewDialog(
                       quality: 100,
                     );
 
-                    showSuccessMessage('图片保存成功');
+                    showSuccessMessage(AppLocale.operateSuccess.getString(context));
                   } catch (e) {
                     // ignore: use_build_context_synchronously
-                    showErrorMessageEnhanced(context, '图片保存失败，请稍后再试');
-                    Logger.instance.e('下载图片原图失败', error: e);
+                    showErrorMessageEnhanced(context, 'Image save failed, please try again later.');
+                    Logger.instance.e('Failed to download the original image', error: e);
                   } finally {
                     cancel();
                   }
