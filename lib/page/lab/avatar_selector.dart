@@ -1,5 +1,7 @@
+import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 class AvatarSelectorScreen extends StatefulWidget {
   final AvatarUsage usage;
@@ -14,7 +16,7 @@ class _AvatarSelectorScreenState extends State<AvatarSelectorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('选择头像'),
+        title: Text(AppLocale.avatar.getString(context)),
         centerTitle: true,
       ),
       body: GridView.count(

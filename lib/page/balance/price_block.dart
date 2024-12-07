@@ -1,8 +1,10 @@
+import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/coin.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/payment.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 class PriceBlock extends StatelessWidget {
@@ -59,7 +61,7 @@ class PriceBlock extends StatelessWidget {
                       ),
                       const SizedBox(width: 1),
                       Text(
-                        '${product.expirePolicyText}内有效',
+                        '${product.expirePolicyText} ${AppLocale.validDays.getString(context)}',
                         style: const TextStyle(
                           fontSize: 11,
                           color: Color.fromARGB(255, 224, 170, 7),

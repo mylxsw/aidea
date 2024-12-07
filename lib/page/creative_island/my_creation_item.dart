@@ -109,7 +109,7 @@ class _MyCreationItemPageState extends State<MyCreationItemPage> with SingleTick
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '想法',
+                                  AppLocale.ideaPrompt.getString(context),
                                   style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
@@ -156,7 +156,7 @@ class _MyCreationItemPageState extends State<MyCreationItemPage> with SingleTick
       return [
         TextButton(
           onPressed: () {
-            openConfirmDialog(context, '确定封禁该项目？', () {
+            openConfirmDialog(context, 'Are you sure to ban this project?', () {
               APIServer().forbidCreativeHistoryItem(historyId: state.item!.id).then((value) {
                 showSuccessMessage(AppLocale.operateSuccess.getString(context));
 
@@ -176,7 +176,7 @@ class _MyCreationItemPageState extends State<MyCreationItemPage> with SingleTick
               ),
               const SizedBox(width: 5),
               Text(
-                '封禁',
+                'Ban',
                 style: TextStyle(
                   color: customColors.weakLinkColor,
                   fontSize: 12,
@@ -213,7 +213,7 @@ class _MyCreationItemPageState extends State<MyCreationItemPage> with SingleTick
             }
           },
           child: Text(
-            state.item!.isShared ? '设为私有' : '设为公开',
+            state.item!.isShared ? 'Set Private' : 'Set Public',
             style: TextStyle(
               color: customColors.weakLinkColor,
               fontSize: 12,
@@ -238,14 +238,14 @@ class _MyCreationItemPageState extends State<MyCreationItemPage> with SingleTick
               color: Colors.red,
             ),
             const SizedBox(height: 10),
-            const Text(
-              '创作失败',
-              style: TextStyle(color: Colors.red),
+            Text(
+              AppLocale.generateFailed.getString(context),
+              style: const TextStyle(color: Colors.red),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
             SelectableText(
-              widget.showErrorMessage ? '${state.item!.answer}' : '错误代码：${state.item!.errorCode}',
+              widget.showErrorMessage ? '${state.item!.answer}' : 'Error Code：${state.item!.errorCode}',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 10,
@@ -269,7 +269,7 @@ class _MyCreationItemPageState extends State<MyCreationItemPage> with SingleTick
           ),
           const SizedBox(height: 10),
           Text(
-            '创作中，请稍后...',
+            AppLocale.generate.getString(context),
             style: TextStyle(
               color: customColors.backgroundInvertedColor,
             ),
@@ -338,7 +338,7 @@ class _MyCreationItemPageState extends State<MyCreationItemPage> with SingleTick
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '风格',
+              AppLocale.style.getString(context),
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,

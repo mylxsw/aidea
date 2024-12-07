@@ -60,7 +60,7 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          '模型 Gallery',
+          'Creation Island History',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
@@ -87,7 +87,7 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                     alignment: Alignment.centerRight,
                     width: MediaQuery.of(context).size.width - 200,
                     child: Text(
-                      selectedModel?.modelName ?? '自动',
+                      selectedModel?.modelName ?? 'Auto',
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -95,7 +95,7 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                     openListSelectDialog(
                       context,
                       [
-                        SelectorItem(const Text('自动'), null),
+                        SelectorItem(const Text('Auto'), null),
                         ...imageModels
                             .map(
                               (e) => SelectorItem(
@@ -257,7 +257,7 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
                                         ),
                                         child: const Center(
                                           child: Text(
-                                            '正在处理中...',
+                                            'Processing...',
                                             textAlign: TextAlign.center,
                                             maxLines: 4,
                                             style: TextStyle(

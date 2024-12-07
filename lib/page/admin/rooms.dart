@@ -145,7 +145,7 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
                                       ),
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                       child: Text(
-                                        '群聊',
+                                        AppLocale.groupChat.getString(context),
                                         style: TextStyle(
                                           color: customColors.weakTextColor,
                                           fontSize: 8,

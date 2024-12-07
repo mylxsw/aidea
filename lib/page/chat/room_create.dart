@@ -283,7 +283,7 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                 EnhancedInput(
                   padding: const EdgeInsets.only(top: 10, bottom: 5),
                   title: Text(
-                    '头像',
+                    AppLocale.avatar.getString(context),
                     style: TextStyle(
                       color: customColors.textfieldLabelColor,
                       fontSize: 16,
@@ -400,7 +400,7 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                       ),
                       const SizedBox(width: 5),
                       Text(
-                        '示例',
+                        AppLocale.examples.getString(context),
                         style: TextStyle(
                           color: customColors.linkColor?.withAlpha(150),
                           fontSize: 13,

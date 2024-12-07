@@ -466,7 +466,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
         return true;
       },
-      title: '请选择支付方式',
+      title: AppLocale.selectPaymentMethod.getString(context),
       heightFactor: 0.4,
     );
   }
@@ -536,7 +536,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
         return true;
       },
-      title: '请选择支付方式',
+      title: AppLocale.selectPaymentMethod.getString(context),
       heightFactor: 0.4,
     );
   }
@@ -605,7 +605,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
         return true;
       },
-      title: '请选择支付方式',
+      title: AppLocale.selectPaymentMethod.getString(context),
       heightFactor: 0.3,
     );
   }

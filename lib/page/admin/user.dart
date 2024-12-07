@@ -47,18 +47,18 @@ class _AdminUserPageState extends State<AdminUserPage> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          '用户详情',
+          'User Info',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.card_giftcard_outlined),
-            tooltip: '赠送智慧果',
+            tooltip: 'Give Coins',
             onPressed: () {
-              int sendCount = 1000;
+              int sendCount = 600;
               String? note;
-              int validDays = 365;
+              int validDays = 30;
 
               openDialog(
                 context,
@@ -67,12 +67,12 @@ class _AdminUserPageState extends State<AdminUserPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Text(
-                        '赠送智慧果',
+                        'Give Coins',
                         style: TextStyle(fontSize: 18),
                       ),
                       const SizedBox(height: 10),
                       EnhancedTextField(
-                        labelText: '数量',
+                        labelText: 'Quantity',
                         customColors: customColors,
                         textAlignVertical: TextAlignVertical.top,
                         showCounter: false,
@@ -82,7 +82,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
-                            '个智慧果',
+                            'Coins',
                             style: TextStyle(
                               color: customColors.weakTextColor,
                               fontSize: 12,
@@ -96,7 +96,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
                       ),
                       const SizedBox(height: 10),
                       EnhancedTextField(
-                        labelText: '有效期',
+                        labelText: 'Expiration',
                         customColors: customColors,
                         textAlignVertical: TextAlignVertical.top,
                         showCounter: false,
@@ -106,7 +106,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
-                            '天',
+                            'Days',
                             style: TextStyle(
                               color: customColors.weakTextColor,
                               fontSize: 12,
@@ -120,11 +120,11 @@ class _AdminUserPageState extends State<AdminUserPage> {
                       ),
                       const SizedBox(height: 10),
                       EnhancedTextField(
-                        labelText: '备注',
+                        labelText: 'Note',
                         customColors: customColors,
                         textAlignVertical: TextAlignVertical.top,
                         showCounter: false,
-                        hintText: '可选',
+                        hintText: 'Optional',
                         onChanged: (value) {
                           note = value;
                         },
@@ -135,12 +135,12 @@ class _AdminUserPageState extends State<AdminUserPage> {
                 }),
                 onSubmit: () {
                   if (sendCount <= 0) {
-                    showErrorMessage('数量必须大于 0');
+                    showErrorMessage('Quantity must be greater than 0');
                     return false;
                   }
 
                   if (validDays <= 0) {
-                    showErrorMessage('有效期必须大于 0');
+                    showErrorMessage('Expiration date must be greater than 0');
                     return false;
                   }
 
@@ -152,7 +152,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
                     note: note,
                   )
                       .then((value) {
-                    showSuccessMessage('赠送成功');
+                    showSuccessMessage('Gift sent successfully');
                     context.read<UserBloc>().add(UserQuotaLoadEvent(widget.userId));
                   }).onError(
                     (error, stackTrace) => showErrorMessageEnhanced(context, error!),
@@ -243,36 +243,36 @@ class _AdminUserPageState extends State<AdminUserPage> {
                               ],
                             ),
                             TextItem(
-                              title: '类型',
+                              title: 'Type',
                               value: state.user.userType ?? '-',
                             ),
                             if (state.user.phone != null && state.user.phone!.isNotEmpty)
                               TextItem(
-                                title: '手机号',
+                                title: 'Photo',
                                 value: state.user.phone!,
                               ),
                             if (state.user.email != null && state.user.email!.isNotEmpty)
                               TextItem(
-                                title: '邮箱',
+                                title: 'Email',
                                 value: state.user.email!,
                               ),
                             if (state.user.realname != null && state.user.realname!.isNotEmpty)
                               TextItem(
-                                title: '昵称',
+                                title: 'Nickname',
                                 value: state.user.realname!,
                               ),
                             if (state.user.invitedBy != null && state.user.invitedBy! > 0)
                               TextItem(
-                                title: '邀请人 ID',
+                                title: 'Inviter ID',
                                 value: '${state.user.invitedBy}',
                               ),
                             if (state.user.createdAt != null)
                               TextItem(
-                                title: '注册时间',
+                                title: 'Creation time',
                                 value: state.user.createdAt!.toLocal().toString(),
                               ),
                             TextItem(
-                              title: '状态',
+                              title: 'Status',
                               value: state.user.status ?? '-',
                             ),
                           ],
@@ -300,7 +300,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
                           ),
                           children: [
                             TextItem(
-                              title: '剩余智慧果',
+                              title: 'Remaining coins',
                               value: state.quota.total.toString(),
                             ),
                             buildPaymentDetails(customColors, state)
@@ -336,7 +336,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '充值历史',
+            'Recharge History',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
@@ -345,7 +345,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
           ),
           const SizedBox(height: 10),
           if (state.quota.details.isEmpty)
-            const Text('无充值记录')
+            const Text('No recharge record')
           else
             ListView(
               shrinkWrap: true,
@@ -377,7 +377,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        (item.note == null || item.note == '') ? '购买' : item.note!,
+                                        (item.note == null || item.note == '') ? 'Buy' : item.note!,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       const SizedBox(height: 5),
@@ -403,7 +403,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
                                       fontWeight: FontWeight.w500,
                                     ),
                                     Text(
-                                      '${DateFormat('yyyy/MM/dd').format(item.periodEndAt.toLocal())} 过期',
+                                      '${DateFormat('yyyy/MM/dd').format(item.periodEndAt.toLocal())} expired',
                                       textScaler: const TextScaler.linear(0.7),
                                     ),
                                   ],

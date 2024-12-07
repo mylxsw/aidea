@@ -60,7 +60,7 @@ class _PaymentHistoriesPageState extends State<PaymentHistoriesPage> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          '支付订单历史',
+          'Payment Order History',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
@@ -218,9 +218,17 @@ class _PaymentHistoriesPageState extends State<PaymentHistoriesPage> {
                             Row(
                               children: [
                                 Text(
-                                  '用户 ${his.userId} 充值 ${(his.retailPrice / 100).ceil()} 元',
+                                  '@${his.userId} Charge ',
                                   style: const TextStyle(
                                     overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Text(
+                                  '￥${(his.retailPrice / 100).ceil()}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red,
                                   ),
                                 ),
                                 const SizedBox(width: 5),

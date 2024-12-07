@@ -50,10 +50,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 ),
                 sections: [
                   SettingsSection(
-                    title: const Text('使用记录'),
+                    title: const Text('Usage'),
                     tiles: [
                       SettingsTile(
-                        title: const Text('创作岛历史记录'),
+                        title: const Text('Creation Island History'),
                         trailing: const Icon(
                           CupertinoIcons.chevron_forward,
                           size: 18,
@@ -64,7 +64,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         },
                       ),
                       SettingsTile(
-                        title: const Text('普通聊天历史记录'),
+                        title: const Text('Chat History'),
                         trailing: const Icon(
                           CupertinoIcons.chevron_forward,
                           size: 18,
@@ -77,10 +77,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     ],
                   ),
                   SettingsSection(
-                    title: const Text('用户 & 收入'),
+                    title: const Text('Users & Revenue'),
                     tiles: [
                       SettingsTile(
-                        title: const Text('用户管理'),
+                        title: const Text('User Management'),
                         trailing: const Icon(
                           CupertinoIcons.chevron_forward,
                           size: 18,
@@ -91,7 +91,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         },
                       ),
                       SettingsTile(
-                        title: const Text('支付订单历史'),
+                        title: const Text('Payment Order History'),
                         trailing: const Icon(
                           CupertinoIcons.chevron_forward,
                           size: 18,
@@ -104,10 +104,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     ],
                   ),
                   SettingsSection(
-                    title: const Text('模型管理'),
+                    title: const Text('Model management'),
                     tiles: [
                       SettingsTile(
-                        title: const Text('渠道'),
+                        title: const Text('Channel'),
                         trailing: const Icon(
                           CupertinoIcons.chevron_forward,
                           size: 18,
@@ -118,7 +118,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         },
                       ),
                       SettingsTile(
-                        title: const Text('大语言模型'),
+                        title: const Text('Large Language Model'),
                         trailing: const Icon(
                           CupertinoIcons.chevron_forward,
                           size: 18,
@@ -131,10 +131,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     ],
                   ),
                   SettingsSection(
-                    title: const Text('系统设置'),
+                    title: const Text('System settings'),
                     tiles: [
                       SettingsTile(
-                        title: const Text('更新配置缓存'),
+                        title: const Text('Refresh Config Cache'),
                         trailing: const Icon(
                           CupertinoIcons.chevron_forward,
                           size: 18,
@@ -143,10 +143,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         onPressed: (context) {
                           openConfirmDialog(
                             context,
-                            '该操作将重新加载全部系统配置，确定继续？',
+                            'Reload all system configurations.\n Are you sure you want to proceed?',
                             () {
                               APIServer().adminSettingsReload().then((value) {
-                                showSuccessMessage('更新成功');
+                                showSuccessMessage('Update successful');
                               }).onError((error, stackTrace) {
                                 showErrorMessageEnhanced(context, error!);
                               });

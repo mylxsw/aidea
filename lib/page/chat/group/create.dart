@@ -52,9 +52,9 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          '发起群聊',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+        title: Text(
+          AppLocale.createGroupChat.getString(context),
+          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
         elevation: 0,
@@ -99,7 +99,7 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
               Container(
                 padding: const EdgeInsets.only(top: 15, left: 20, bottom: 15),
                 child: Text(
-                  '选择参与群聊的成员',
+                  AppLocale.selectGroupMembers.getString(context),
                   style: TextStyle(
                     fontSize: 14,
                     color: customColors.weakLinkColor,

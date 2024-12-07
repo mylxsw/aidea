@@ -56,10 +56,10 @@ class _RoomEditPageState extends State<RoomEditPage> {
   int maxContext = 5;
 
   List<ChatMemory> validMemories = [
-    ChatMemory('无记忆', 1, description: '每次对话都是独立的，常用于一次性问答'),
-    ChatMemory('基础', 3, description: '记住最近的 3 次对话'),
-    ChatMemory('中等', 6, description: '记住最近的 6 次对话'),
-    ChatMemory('深度', 10, description: '记住最近的 10 次对话'),
+    ChatMemory('Ephemeral', 1, description: 'Each conversation is independent, often used for one-off Q&A'),
+    ChatMemory('Basic', 3, description: 'Remembers the last 3 conversations'),
+    ChatMemory('Medium', 6, description: 'Remembers the last 6 conversations'),
+    ChatMemory('Deep', 10, description: 'Remembers the last 10 conversations')
   ];
 
   bool showAdvancedOptions = false;
@@ -175,7 +175,7 @@ class _RoomEditPageState extends State<RoomEditPage> {
                               EnhancedInput(
                                 padding: const EdgeInsets.only(top: 10, bottom: 5),
                                 title: Text(
-                                  '头像',
+                                  AppLocale.avatar.getString(context),
                                   style: TextStyle(
                                     color: customColors.textfieldLabelColor,
                                     fontSize: 16,
@@ -281,7 +281,7 @@ class _RoomEditPageState extends State<RoomEditPage> {
                                   ),
                                   const SizedBox(width: 5),
                                   Text(
-                                    '示例',
+                                    AppLocale.examples.getString(context),
                                     style: TextStyle(
                                       color: customColors.linkColor?.withAlpha(150),
                                       fontSize: 13,

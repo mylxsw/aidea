@@ -81,7 +81,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          '大语言模型管理',
+          'Large Language Model',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
@@ -276,10 +276,14 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
                           children: [
                             Text(
                               mod.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 overflow: TextOverflow.ellipsis,
+                                fontWeight: mod.enabled ? FontWeight.bold : FontWeight.normal,
+                                color: mod.enabled ? null : customColors.weakLinkColor?.withAlpha(100),
+                                decoration: mod.enabled ? null : TextDecoration.lineThrough,
                               ),
                             ),
+                            const SizedBox(height: 5),
                             Text(
                               buildModelDescription(mod),
                               style: TextStyle(
@@ -353,9 +357,9 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
     if (mod.inputPrice > 0 || mod.outputPrice > 0) {
       desc += '💰 ';
       if (mod.inputPrice == mod.outputPrice) {
-        desc += '${mod.inputPrice} 智慧果/1K Token';
+        desc += '${mod.inputPrice} Coins/1K Token';
       } else {
-        desc += '${mod.inputPrice} / ${mod.outputPrice} 智慧果/1K Token';
+        desc += '${mod.inputPrice} / ${mod.outputPrice} Coins/1K Token';
       }
     }
 

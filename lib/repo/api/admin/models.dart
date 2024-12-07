@@ -12,6 +12,7 @@ class AdminModel {
   int get inputPrice => meta?.inputPrice ?? 0;
   int get outputPrice => meta?.outputPrice ?? 0;
   int get maxContext => meta?.maxContext ?? 0;
+  bool get enabled => status == 1;
 
   AdminModel({
     required this.modelId,
@@ -33,9 +34,7 @@ class AdminModel {
       avatarUrl: json['avatar_url'],
       status: json['status'],
       meta: json['meta'] != null ? AdminModelMeta.fromJson(json['meta']) : null,
-      providers: ((json['providers'] ?? []) as List)
-          .map((e) => AdminModelProvider.fromJson(e))
-          .toList(),
+      providers: ((json['providers'] ?? []) as List).map((e) => AdminModelProvider.fromJson(e)).toList(),
     );
   }
 

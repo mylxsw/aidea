@@ -77,7 +77,7 @@ mixin AppLocale {
   static const String switchModel = 'switch-model';
   static const String switchModelTitle = 'switch-model-title';
 
-  static const String room = "room";
+  static const String character = "character";
   static const String createRoom = "create-room";
   static const String model = "model";
   static const String selectModel = "select-model";
@@ -132,6 +132,8 @@ mixin AppLocale {
   static const String generateTimeout = 'generate-timeout';
   static const String creativeIslandNeedSignIn = 'creative-island-need-sign-in';
   static const String generateResult = 'generate-result';
+  static const String generateFailed = 'generate-failed';
+  static const String generating = 'generating';
   static const String generateExitConfirm = 'generate-exit-confirm';
   static const String tooManyRequests = 'too-many-requests';
   static const String tooManyRequestsOrPaymentRequired = 'too-many-requests-or-payment-required';
@@ -293,6 +295,14 @@ mixin AppLocale {
   static const String startNewChatTips = 'start-new-chat-tips';
   static const String wantMoreContentTips = 'want-more-content-tips';
   static const String unbilled = 'unbilled';
+  static const String signinNow = 'signin-now';
+  static const String needSigninToUse = 'need-signin-to-use';
+  static const String reSignIn = 're-sign-in';
+  static const String ideaPrompt = 'idea-prompt';
+  static const String groupChat = 'group-chat';
+  static const String selectGroupMembers = 'select-group-members';
+  static const String selectPaymentMethod = 'select-payment-method';
+  static const String validDays = 'valid-days';
 
   static const Map<String, dynamic> zh = {
     required: '必填',
@@ -358,7 +368,7 @@ mixin AppLocale {
     account: '账号',
     usedUp: '已用完',
     expired: '已过期',
-    room: '数字人',
+    character: '数字人',
     createRoom: '创建数字人',
     model: 'AI 模型',
     selectModel: '选择模型',
@@ -421,6 +431,8 @@ mixin AppLocale {
     generateTimeout: '创作超时，请稍后再试',
     creativeIslandNeedSignIn: '登录后解锁更多玩法～',
     generateResult: '创作结果',
+    generateFailed: '创作失败',
+    generating: '创作中...',
     generateExitConfirm: '创作中...\n退出后，可在历史记录中查看结果',
     tooManyRequests: '操作过于频繁，请稍后再试',
     tooManyRequestsOrPaymentRequired: '操作过于频繁（如果您使用了自定义的 OpenAI Keys，请登录 https://platform.openai.com 检查账户余额是否充足）',
@@ -572,6 +584,14 @@ mixin AppLocale {
     startNewChatTips: '想要开启新的聊天？试试',
     wantMoreContentTips: '想要更多内容？试着对我说',
     unbilled: '未出账',
+    signinNow: '立即登录',
+    needSigninToUse: '该功能需要登录账号后使用',
+    reSignIn: '重新登录',
+    ideaPrompt: '想法',
+    groupChat: '群聊',
+    selectGroupMembers: '选择参与群聊的成员',
+    selectPaymentMethod: '请选择支付方式',
+    validDays: '内有效',
   };
 
   static const Map<String, dynamic> en = {
@@ -638,7 +658,7 @@ mixin AppLocale {
     account: 'Account',
     usedUp: 'Used Up',
     expired: 'Expired',
-    room: 'Character',
+    character: 'Character',
     createRoom: 'Create Character',
     model: 'AI Model',
     selectModel: 'Select Model',
@@ -702,6 +722,8 @@ mixin AppLocale {
     generateTimeout: 'Generate timeout, please try again later',
     creativeIslandNeedSignIn: 'Unlock more features after login',
     generateResult: 'Generate result',
+    generateFailed: 'Creation failed',
+    generating: 'Generating...',
     generateExitConfirm: 'Generating...\nYou can view the result in the history',
     tooManyRequests: 'Too many requests, please try again later',
     tooManyRequestsOrPaymentRequired:
@@ -791,7 +813,7 @@ mixin AppLocale {
     paymentHistory: 'Histories',
     buyCoins: 'Buy coins',
     coinUnit: '',
-    toPay: 'To pay',
+    toPay: 'Create Order',
     discover: 'Discover',
     customHomeModels: 'Favorite Models',
     userApiKeys: 'API Keys',
@@ -856,6 +878,14 @@ mixin AppLocale {
     startNewChatTips: 'Want to start a new chat? Try',
     wantMoreContentTips: 'Want more content? Try',
     unbilled: 'Pending',
+    signinNow: 'Sign in now',
+    needSigninToUse: 'Please login first',
+    reSignIn: 'Re-login',
+    ideaPrompt: 'Prompt',
+    groupChat: 'Group',
+    selectGroupMembers: 'Select group members',
+    selectPaymentMethod: 'Select payment method',
+    validDays: 'expiration',
   };
 }
 

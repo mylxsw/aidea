@@ -53,7 +53,7 @@ class _ChannelsPageState extends State<ChannelsPage> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          '渠道管理',
+          'Channel',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,

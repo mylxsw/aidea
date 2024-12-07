@@ -63,7 +63,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          '用户管理',
+          'User Management',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
@@ -201,7 +201,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
           children: [
             const SizedBox(width: 10),
             SlidableAction(
-              label: '数字人列表',
+              label: AppLocale.character.getString(context),
               borderRadius: const BorderRadius.only(
                 topLeft: CustomSize.radius,
                 bottomLeft: CustomSize.radius,
@@ -361,15 +361,15 @@ Widget buildTags(BuildContext context, CustomColors customColors, AdminUser user
   final tags = <Widget>[];
 
   if (user.email != null && user.email!.isNotEmpty) {
-    tags.add(buildTag(context, customColors, '邮箱'));
+    tags.add(buildTag(context, customColors, 'Email'));
   }
 
   if (user.phone != null && user.phone!.isNotEmpty) {
-    tags.add(buildTag(context, customColors, '手机'));
+    tags.add(buildTag(context, customColors, 'Phone'));
   }
 
   if (user.unionId != null && user.unionId!.isNotEmpty) {
-    tags.add(buildTag(context, customColors, '微信'));
+    tags.add(buildTag(context, customColors, 'WeChat'));
   }
 
   if (user.appleUid != null && user.appleUid!.isNotEmpty) {

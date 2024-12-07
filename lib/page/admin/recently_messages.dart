@@ -56,7 +56,7 @@ class _AdminRecentlyMessagesPageState extends State<AdminRecentlyMessagesPage> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          '最近聊天历史记录',
+          'Chat History',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
@@ -144,7 +144,7 @@ class _AdminRecentlyMessagesPageState extends State<AdminRecentlyMessagesPage> {
                                     child: Slidable(
                                       startActionPane: ActionPane(motion: const ScrollMotion(), children: [
                                         SlidableAction(
-                                          label: '数字人',
+                                          label: AppLocale.character.getString(context),
                                           borderRadius: const BorderRadius.only(
                                             topLeft: CustomSize.radius,
                                             bottomLeft: CustomSize.radius,
@@ -164,7 +164,7 @@ class _AdminRecentlyMessagesPageState extends State<AdminRecentlyMessagesPage> {
                                         children: [
                                           const SizedBox(width: 10),
                                           SlidableAction(
-                                            label: '用户',
+                                            label: 'User',
                                             borderRadius: const BorderRadius.only(
                                               topLeft: CustomSize.radius,
                                               bottomLeft: CustomSize.radius,

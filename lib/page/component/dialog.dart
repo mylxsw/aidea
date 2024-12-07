@@ -29,7 +29,7 @@ showErrorMessageEnhanced(
           context,
           type: QuickAlertType.warning,
           text: message.message.getString(context),
-          confirmBtnText: '立即购买',
+          confirmBtnText: AppLocale.buy.getString(context),
           showCancelBtn: true,
           onConfirmBtnTap: () {
             context.pop();
@@ -43,7 +43,7 @@ showErrorMessageEnhanced(
           context,
           type: QuickAlertType.warning,
           text: message.message.getString(context),
-          confirmBtnText: '重新登录',
+          confirmBtnText: AppLocale.reSignIn.getString(context),
           showCancelBtn: true,
           onConfirmBtnTap: () {
             context.pop();
@@ -56,13 +56,13 @@ showErrorMessageEnhanced(
         showBeautyDialog(
           context,
           type: QuickAlertType.warning,
-          text: '该功能需要登录账号后使用',
+          text: AppLocale.needSigninToUse.getString(context),
           onConfirmBtnTap: () {
             context.pop();
             context.push('/login');
           },
           showCancelBtn: true,
-          confirmBtnText: '立即登录',
+          confirmBtnText: AppLocale.signinNow.getString(context),
         );
         return;
     }
@@ -78,7 +78,7 @@ showCustomBeautyDialog(
   BuildContext context, {
   required QuickAlertType type,
   required Widget child,
-  String confirmBtnText = '确定',
+  String confirmBtnText = '',
   String? cancelBtnText,
   Function()? onConfirmBtnTap,
   Function()? onCancelBtnTap,
@@ -94,7 +94,7 @@ showCustomBeautyDialog(
     width: MediaQuery.of(context).size.width > 600 ? 400 : null,
     barrierDismissible: false, // 禁止点击外部关闭
     showCancelBtn: showCancelBtn,
-    confirmBtnText: confirmBtnText,
+    confirmBtnText: confirmBtnText == '' ? AppLocale.ok.getString(context) : confirmBtnText,
     cancelBtnText: cancelBtnText ?? AppLocale.cancel.getString(context),
     confirmBtnColor: customColors.linkColor!,
     borderRadius: CustomSize.radiusValue,
@@ -123,7 +123,7 @@ Future<dynamic> showBeautyDialog(
   String? title,
   String? customAsset,
   Widget? widget,
-  String confirmBtnText = '确定',
+  String confirmBtnText = '',
   String? cancelBtnText,
   Function()? onConfirmBtnTap,
   Function()? onCancelBtnTap,
@@ -141,7 +141,7 @@ Future<dynamic> showBeautyDialog(
     width: MediaQuery.of(context).size.width > 600 ? 400 : null,
     barrierDismissible: barrierDismissible,
     showCancelBtn: showCancelBtn,
-    confirmBtnText: confirmBtnText,
+    confirmBtnText: confirmBtnText == '' ? AppLocale.ok.getString(context) : confirmBtnText,
     cancelBtnText: cancelBtnText ?? AppLocale.cancel.getString(context),
     confirmBtnColor: customColors.linkColor!,
     borderRadius: CustomSize.radiusValue,
