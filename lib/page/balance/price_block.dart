@@ -1,5 +1,5 @@
 import 'package:askaide/lang/lang.dart';
-import 'package:askaide/page/component/coin.dart';
+import 'package:askaide/page/component/credit.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/payment.dart';
@@ -47,7 +47,7 @@ class PriceBlock extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Coin(
+                  Credit(
                     count: product.quota,
                     color: customColors.paymentItemTitleColor,
                   ),

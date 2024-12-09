@@ -1,6 +1,6 @@
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/lang/lang.dart';
-import 'package:askaide/page/component/coin.dart';
+import 'package:askaide/page/component/credit.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/user.dart';
@@ -13,17 +13,14 @@ class AccountQuotaCard extends StatelessWidget {
   final UserInfo? userInfo;
   final VoidCallback? onPaymentReturn;
   final bool noBorder;
-  const AccountQuotaCard(
-      {super.key, this.userInfo, this.onPaymentReturn, this.noBorder = false});
+  const AccountQuotaCard({super.key, this.userInfo, this.onPaymentReturn, this.noBorder = false});
 
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
     return Container(
-      margin: noBorder
-          ? null
-          : const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      margin: noBorder ? null : const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       height: 140,
       child: Container(
         padding: noBorder
@@ -72,7 +69,7 @@ class AccountQuotaCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     if (userInfo != null)
-                      Coin(
+                      Credit(
                         count: userInfo!.quota.quotaRemain(),
                       )
                     else
@@ -84,7 +81,7 @@ class AccountQuotaCard extends StatelessWidget {
                           context.push('/quota-usage-statistics');
                         },
                         child: Text(
-                          AppLocale.coinsUsage.getString(context),
+                          AppLocale.creditsUsage.getString(context),
                           style: const TextStyle(
                             fontSize: 12,
                             color: Color.fromARGB(129, 220, 220, 220),

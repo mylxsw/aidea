@@ -43,7 +43,7 @@ class _QuotaUsageStatisticsScreenState extends State<QuotaUsageStatisticsScreen>
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: Text(
-          AppLocale.coinsUsage.getString(context),
+          AppLocale.creditsUsage.getString(context),
           style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
@@ -58,7 +58,7 @@ class _QuotaUsageStatisticsScreenState extends State<QuotaUsageStatisticsScreen>
           child: Column(
             children: [
               MessageBox(
-                message: AppLocale.coinUsageTips.getString(context),
+                message: AppLocale.creditUsageTips.getString(context),
                 type: MessageBoxType.info,
               ),
               const SizedBox(height: 10),

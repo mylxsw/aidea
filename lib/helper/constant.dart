@@ -6,7 +6,7 @@ const clientVersion = '1.0.15';
 const databaseVersion = 27;
 
 const maxRoomNumForNonVIP = 50;
-const coinSign = '个';
+const creditSign = '个';
 
 const settingAPIServerToken = 'api-token';
 const settingUserInfo = 'user-info';

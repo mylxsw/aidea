@@ -216,13 +216,13 @@ mixin AppLocale {
   static const String enableCustomOpenAI = 'enable-custom-openai';
 
   static const String me = 'me';
-  static const String coinsUsage = 'coins-usage';
-  static const String coinUsageTips = 'coin-usage-tips';
+  static const String creditsUsage = 'credits-usage';
+  static const String creditUsageTips = 'credit-usage-tips';
   static const String updateCheck = 'update-check';
   static const String buy = 'buy';
   static const String paymentHistory = 'payment-history';
-  static const String buyCoins = 'buy-coins';
-  static const String coinUnit = 'coin-unit';
+  static const String buyCredits = 'buy-credits';
+  static const String creditUnit = 'credit-unit';
   static const String toPay = 'to-pay';
   static const String discover = 'discover';
 
@@ -512,13 +512,13 @@ mixin AppLocale {
     inviteCodeFormatError: '邀请码格式有误',
     enableCustomOpenAI: '启用后将使用您自己配置的 OpenAI 服务',
     me: '我的',
-    coinsUsage: '使用明细',
-    coinUsageTips: '使用明细将在次日更新，显示近 30 天的使用量。',
+    creditsUsage: '使用明细',
+    creditUsageTips: '使用明细将在次日更新，显示近 30 天的使用量。',
     updateCheck: '检测更新',
     buy: '购买',
     paymentHistory: '购买历史',
-    buyCoins: '购买智慧果',
-    coinUnit: '个',
+    buyCredits: '购买智慧果',
+    creditUnit: '个',
     toPay: '立即支付',
     discover: '绘玩',
     customHomeModels: '常用模型',
@@ -640,7 +640,7 @@ mixin AppLocale {
     themeMode: 'Theme',
     accountInfo: 'Account Info',
     accountSettings: 'Account Settings',
-    usage: 'Coins',
+    usage: 'Credits',
     validBefore: 'Valid Before',
     custom: 'Custom',
     clearCache: 'Clear Cache',
@@ -696,7 +696,7 @@ mixin AppLocale {
     confirmDelete: 'Confirm to delete?',
     confirmStartNewChat: 'Confirm to start a new chat?',
     confirmClearMessages: 'Confirm to clear chat histories?',
-    quotaExceeded: 'Insufficient coins, please purchase first',
+    quotaExceeded: 'Insufficient credits, please purchase first',
     internalServerError: 'Internal server error, please try again later',
     badGateway:
         'Sorry, our server is currently unable to process your request. We are working to resolve the issue, please try again later',
@@ -806,13 +806,13 @@ mixin AppLocale {
     inviteCodeFormatError: 'Invite code format error',
     enableCustomOpenAI: 'Your custom OpenAI service will be used once enabled',
     me: 'Me',
-    coinsUsage: 'Usage',
-    coinUsageTips: 'Usage details will be updated the next day, showing usage in the last 30 days.',
+    creditsUsage: 'Usage',
+    creditUsageTips: 'Usage details will be updated the next day, showing usage in the last 30 days.',
     updateCheck: 'Check Update',
     buy: 'Buy',
     paymentHistory: 'Histories',
-    buyCoins: 'Buy coins',
-    coinUnit: '',
+    buyCredits: 'Buy Credits',
+    creditUnit: '',
     toPay: 'Create Order',
     discover: 'Discover',
     customHomeModels: 'Favorite Models',

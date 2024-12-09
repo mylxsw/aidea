@@ -325,7 +325,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
-                            'Coins/1K Token',
+                            'Credits/1K Token',
                             style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
                           ),
                         ),
@@ -345,7 +345,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
-                            'Coins/1K Token',
+                            'Credits/1K Token',
                             style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
                           ),
                         ),

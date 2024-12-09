@@ -188,7 +188,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         toolbarHeight: CustomSize.toolbarHeight,
         elevation: 0,
         title: Text(
-          AppLocale.buyCoins.getString(context),
+          AppLocale.buyCredits.getString(context),
           style: const TextStyle(
             fontSize: CustomSize.appBarTitleSize,
           ),

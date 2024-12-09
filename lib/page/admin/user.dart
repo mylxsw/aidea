@@ -2,7 +2,7 @@ import 'package:askaide/bloc/user_bloc.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/admin/users.dart';
 import 'package:askaide/page/component/background_container.dart';
-import 'package:askaide/page/component/coin.dart';
+import 'package:askaide/page/component/credit.dart';
 import 'package:askaide/page/component/column_block.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/enhanced_textfield.dart';
@@ -54,7 +54,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.card_giftcard_outlined),
-            tooltip: 'Give Coins',
+            tooltip: 'Give Credits',
             onPressed: () {
               int sendCount = 600;
               String? note;
@@ -67,7 +67,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Text(
-                        'Give Coins',
+                        'Give Credits',
                         style: TextStyle(fontSize: 18),
                       ),
                       const SizedBox(height: 10),
@@ -82,7 +82,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
-                            'Coins',
+                            'Credits',
                             style: TextStyle(
                               color: customColors.weakTextColor,
                               fontSize: 12,
@@ -300,7 +300,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
                           ),
                           children: [
                             TextItem(
-                              title: 'Remaining coins',
+                              title: 'Remaining credits',
                               value: state.quota.total.toString(),
                             ),
                             buildPaymentDetails(customColors, state)
@@ -396,7 +396,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    Coin(
+                                    Credit(
                                       count: item.quota,
                                       color: Colors.amber,
                                       withAddPrefix: true,

@@ -1,7 +1,7 @@
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
-import 'package:askaide/page/component/coin.dart';
+import 'package:askaide/page/component/credit.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/quota.dart';
@@ -129,7 +129,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Coin(
+                                  Credit(
                                     count: item.quota,
                                     color: Colors.amber,
                                     withAddPrefix: true,

@@ -357,9 +357,9 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
     if (mod.inputPrice > 0 || mod.outputPrice > 0) {
       desc += '💰 ';
       if (mod.inputPrice == mod.outputPrice) {
-        desc += '${mod.inputPrice} Coins/1K Token';
+        desc += '${mod.inputPrice} Credits/1K Token';
       } else {
-        desc += '${mod.inputPrice} / ${mod.outputPrice} Coins/1K Token';
+        desc += '${mod.inputPrice} / ${mod.outputPrice} Credits/1K Token';
       }
     }
 
