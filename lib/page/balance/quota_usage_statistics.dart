@@ -131,7 +131,7 @@ class _QuotaUsageStatisticsScreenState extends State<QuotaUsageStatisticsScreen>
                         if (item.used == -1)
                           Text(AppLocale.unbilled.getString(context))
                         else
-                          Text('${item.used > 0 ? "-" : ""}${item.used}'),
+                          Text('${item.used > 0 ? "-" : ""}${AppLocale.creditUnit.getString(context)}${item.used}'),
                       ],
                     ),
                   ),

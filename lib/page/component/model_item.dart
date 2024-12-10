@@ -3,6 +3,7 @@ import 'package:askaide/helper/color.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/image.dart';
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
@@ -10,6 +11,7 @@ import 'package:askaide/page/component/weak_text_button.dart';
 import 'package:askaide/repo/model/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:quickalert/models/quickalert_type.dart';
 
 class ModelItem extends StatefulWidget {
   final List<Model> models;
@@ -86,8 +88,17 @@ class _ModelItemState extends State<ModelItem> {
                     itemCount: models.length,
                     itemBuilder: (context, i) {
                       var item = models[i];
+                      final modelPrice = item.modelPrice;
 
                       var tags = <Widget>[];
+                      if (modelPrice.isFree) {
+                        tags.add(buildTag(
+                          customColors,
+                          AppLocale.free.getString(context),
+                          tagTextColor: colorToString(Colors.white),
+                          tagBgColor: colorToString(customColors.markdownLinkColor!),
+                        ));
+                      }
                       if (item.tag != null) {
                         item.tag!.split(",").forEach((tag) {
                           if (tag.isEmpty) return;
@@ -191,18 +202,19 @@ class _ModelItemState extends State<ModelItem> {
                                             ],
                                           ],
                                         ),
-                                        if (item.description != null && item.description != '')
-                                          Text(
-                                            item.description!,
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: widget.initValue == item.uid()
-                                                  ? customColors.linkColor
-                                                  : customColors.weakTextColor,
-                                            ),
-                                          ),
+                                        if (!modelPrice.isFree) buildPriceBlock(customColors, item, modelPrice),
+                                        // if (item.description != null && item.description != '')
+                                        //   Text(
+                                        //     item.description!,
+                                        //     maxLines: 2,
+                                        //     overflow: TextOverflow.ellipsis,
+                                        //     style: TextStyle(
+                                        //       fontSize: 12,
+                                        //       color: widget.initValue == item.uid()
+                                        //           ? customColors.linkColor
+                                        //           : customColors.weakTextColor,
+                                        //     ),
+                                        //   ),
                                       ],
                                     ),
                                   ),
@@ -211,6 +223,19 @@ class _ModelItemState extends State<ModelItem> {
                             ),
                             onTap: () {
                               widget.onSelected(item);
+                            },
+                            onLongPress: () {
+                              if (item.description == null || item.description == '') {
+                                return;
+                              }
+
+                              showBeautyDialog(
+                                context,
+                                type: QuickAlertType.info,
+                                text: item.description,
+                                confirmBtnText: AppLocale.gotIt.getString(context),
+                                showCancelBtn: false,
+                              );
                             },
                           ),
                         ],
@@ -237,6 +262,46 @@ class _ModelItemState extends State<ModelItem> {
               textAlign: TextAlign.center,
             ),
           );
+  }
+
+  Widget buildPriceBlock(CustomColors customColors, Model model, ModelPrice item) {
+    if (item.isFree) {
+      return const SizedBox();
+    }
+
+    return Row(
+      children: [
+        Text(
+          '${AppLocale.input.getString(context)} ￠${item.input}, ${AppLocale.output.getString(context)} ￠${item.output}',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 10,
+            color:
+                widget.initValue == model.uid() ? customColors.linkColor : customColors.weakTextColor?.withAlpha(150),
+          ),
+        ),
+        if (item.hasNote) ...[
+          const SizedBox(width: 5),
+          InkWell(
+            onTap: () {
+              showBeautyDialog(
+                context,
+                type: QuickAlertType.info,
+                text: item.note,
+                confirmBtnText: AppLocale.gotIt.getString(context),
+                showCancelBtn: false,
+              );
+            },
+            child: Icon(
+              Icons.help_outline,
+              size: 12,
+              color: customColors.weakLinkColor?.withAlpha(50),
+            ),
+          ),
+        ],
+      ],
+    );
   }
 
   Widget buildCategory(CustomColors customColors, String category) {

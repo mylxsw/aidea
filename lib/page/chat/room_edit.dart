@@ -146,7 +146,20 @@ class _RoomEditPageState extends State<RoomEditPage> {
                 });
               }
             }
+
+            if (state is RoomOperationResult) {
+              if (state.success) {
+                if (state.redirect != null) {
+                  context.push(state.redirect!).then((value) {
+                    context.read<RoomBloc>().add(RoomsLoadEvent());
+                  });
+                }
+              } else {
+                showErrorMessageEnhanced(context, state.error ?? AppLocale.operateFailed.getString(context));
+              }
+            }
           },
+          buildWhen: (previous, current) => current is RoomLoaded,
           builder: (context, state) {
             if (state is RoomLoaded) {
               return SingleChildScrollView(
@@ -267,6 +280,7 @@ class _RoomEditPageState extends State<RoomEditPage> {
                           // 提示语
                           if ((_selectedModel != null && _selectedModel!.isChatModel) || _promptController.text != '')
                             EnhancedTextField(
+                              fontSize: 12,
                               customColors: customColors,
                               controller: _promptController,
                               labelText: AppLocale.prompt.getString(context),
@@ -297,7 +311,7 @@ class _RoomEditPageState extends State<RoomEditPage> {
                                 );
                               },
                               minLines: 4,
-                              maxLines: 8,
+                              maxLines: 20,
                               showCounter: false,
                             ),
                         ],
@@ -402,11 +416,6 @@ class _RoomEditPageState extends State<RoomEditPage> {
 
                                 if (_selectedModel == null) {
                                   showErrorMessage(AppLocale.modelRequiredMessage.getString(context));
-                                  return;
-                                }
-
-                                if (_promptController.text.length > 1000) {
-                                  showErrorMessage(AppLocale.promptFormatError.getString(context));
                                   return;
                                 }
 

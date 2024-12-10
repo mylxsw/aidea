@@ -23,7 +23,7 @@ class Credit extends StatelessWidget {
         text: TextSpan(
       children: [
         TextSpan(
-          text: '${withAddPrefix ? "+ " : ""}${formatCount()}',
+          text: '${withAddPrefix ? "+ " : ""}${AppLocale.creditUnit.getString(context)}${formatCount()}',
           style: TextStyle(
             fontSize: fontSize ?? 20,
             color: color ?? Colors.white,
@@ -32,7 +32,7 @@ class Credit extends StatelessWidget {
           ),
         ),
         TextSpan(
-          text: '${AppLocale.creditUnit.getString(context)}${count >= maxShowCount ? " +" : ""}',
+          text: count >= maxShowCount ? " +" : "",
           style: TextStyle(
             fontSize: fontSize != null ? (fontSize! - 7) : 12,
             color: color ?? Colors.white.withAlpha(200),

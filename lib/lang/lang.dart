@@ -113,7 +113,6 @@ mixin AppLocale {
   static const String modelNotFound = 'model-not-found';
 
   static const String nameRequiredMessage = 'name-required-message';
-  static const String promptFormatError = 'prompt-format-error';
   static const String modelRequiredMessage = 'model-required-message';
 
   static const String writeYourIdeas = 'write-your-ideas';
@@ -303,6 +302,10 @@ mixin AppLocale {
   static const String selectGroupMembers = 'select-group-members';
   static const String selectPaymentMethod = 'select-payment-method';
   static const String validDays = 'valid-days';
+  static const String clickToReSignin = 'click-to-resignin';
+  static const String free = 'free';
+  static const String input = 'input';
+  static const String output = 'output';
 
   static const Map<String, dynamic> zh = {
     required: '必填',
@@ -399,7 +402,6 @@ mixin AppLocale {
     modelUsage: '模型用于设置采用的 AI 数字人类型',
     promptUsage: '领域设定用于设置 AI 数字人的行为',
     nameRequiredMessage: '请输入数字人名称',
-    promptFormatError: '角色设定不能超过1000字',
     modelRequiredMessage: '请选择 AI 模型',
     operateSuccess: '操作成功',
     operateFailed: '操作失败',
@@ -518,7 +520,7 @@ mixin AppLocale {
     buy: '购买',
     paymentHistory: '购买历史',
     buyCredits: '购买智慧果',
-    creditUnit: '个',
+    creditUnit: '￠',
     toPay: '立即支付',
     discover: '绘玩',
     customHomeModels: '常用模型',
@@ -592,6 +594,10 @@ mixin AppLocale {
     selectGroupMembers: '选择参与群聊的成员',
     selectPaymentMethod: '请选择支付方式',
     validDays: '内有效',
+    clickToReSignin: '点击此处重新登录',
+    free: '限免',
+    input: '输入',
+    output: '输出',
   };
 
   static const Map<String, dynamic> en = {
@@ -689,7 +695,6 @@ mixin AppLocale {
     modelUsage: 'The model is used to set the type of AI character used',
     promptUsage: 'Prompt is used to set the behavior of the AI character',
     nameRequiredMessage: 'Please enter the name of the character',
-    promptFormatError: 'Prompt cannot exceed 1000 words',
     modelRequiredMessage: 'Please select AI model',
     operateSuccess: 'Success',
     operateFailed: 'Failed',
@@ -812,7 +817,7 @@ mixin AppLocale {
     buy: 'Buy',
     paymentHistory: 'Histories',
     buyCredits: 'Buy Credits',
-    creditUnit: '',
+    creditUnit: '￠',
     toPay: 'Create Order',
     discover: 'Discover',
     customHomeModels: 'Favorite Models',
@@ -886,6 +891,10 @@ mixin AppLocale {
     selectGroupMembers: 'Select group members',
     selectPaymentMethod: 'Select payment method',
     validDays: 'expiration',
+    clickToReSignin: 'Click here to sign in again',
+    free: 'Free',
+    input: 'Input',
+    output: 'Output',
   };
 }
 

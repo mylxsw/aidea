@@ -41,8 +41,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
         if (Ability().isUserLogon()) {
           final room = await APIServer().room(roomId: event.roomId);
           if (event.chatHistoryId != null && event.chatHistoryId! > 0) {
-            final chatHistory =
-                await chatMsgRepo.getChatHistory(event.chatHistoryId!);
+            final chatHistory = await chatMsgRepo.getChatHistory(event.chatHistoryId!);
             if (chatHistory != null && chatHistory.model != null) {
               room.model = chatHistory.model!;
             }
@@ -58,9 +57,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
               lastActiveTime: room.lastActiveTime,
               systemPrompt: room.systemPrompt,
               priority: room.priority ?? 0,
-              model: room.model.startsWith('v2@')
-                  ? room.model
-                  : '${room.vendor}:${room.model}',
+              model: room.model.startsWith('v2@') ? room.model : '${room.vendor}:${room.model}',
               initMessage: room.initMessage,
               maxContext: room.maxContext,
               avatarId: room.avatarId,
@@ -83,9 +80,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
               lastActiveTime: room.lastActiveTime,
               systemPrompt: room.systemPrompt,
               priority: room.priority ?? 0,
-              model: room.model.startsWith('v2@')
-                  ? room.model
-                  : '${room.vendor}:${room.model}',
+              model: room.model.startsWith('v2@') ? room.model : '${room.vendor}:${room.model}',
               initMessage: room.initMessage,
               maxContext: room.maxContext,
               avatarId: room.avatarId,
@@ -94,9 +89,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
             ),
             states,
             examples: await APIServer().example(
-              room.model.startsWith('v2@')
-                  ? room.model
-                  : '${room.vendor}:${room.model}',
+              room.model.startsWith('v2@') ? room.model : '${room.vendor}:${room.model}',
             ),
             cascading: event.cascading,
           ));
@@ -142,12 +135,8 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
 
           id = await APIServer().createRoom(
             name: event.name,
-            vendor: event.model.startsWith('v2@')
-                ? ''
-                : (segs.length > 1 ? segs.first : ''),
-            model: event.model.startsWith('v2@')
-                ? event.model
-                : (segs.length > 1 ? segs.last : event.model),
+            vendor: event.model.startsWith('v2@') ? '' : (segs.length > 1 ? segs.first : ''),
+            model: event.model.startsWith('v2@') ? event.model : (segs.length > 1 ? segs.last : event.model),
             systemPrompt: event.prompt,
             avatarId: event.avatarId,
             avatarUrl: event.avatarUrl,
@@ -170,7 +159,8 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
         emit(RoomOperationResult(true, redirect: '/room/$id/chat'));
         emit(await createRoomsLoadedState(cache: false));
       } catch (e) {
-        emit(RoomsLoaded(const [], error: e.toString()));
+        emit(RoomOperationResult(false, error: e.toString()));
+        // emit(RoomsLoaded(const [], error: e.toString()));
       }
     });
 
@@ -198,78 +188,76 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
 
     // 更新聊天室信息
     on<RoomUpdateEvent>((event, emit) async {
-      if (Ability().isUserLogon()) {
-        final room = await APIServer().updateRoom(
-          roomId: event.roomId,
-          name: event.name!,
-          model: event.model!.startsWith('v2@')
-              ? event.model!
-              : event.model!.split(':').last,
-          vendor: event.model!.startsWith('v2@')
-              ? ''
-              : event.model!.split(':').first,
-          systemPrompt: event.prompt!,
-          avatarId: event.avatarId,
-          avatarUrl: event.avatarUrl,
-          maxContext: event.maxContext,
-          initMessage: event.initMessage,
-        );
+      try {
+        if (Ability().isUserLogon()) {
+          final room = await APIServer().updateRoom(
+            roomId: event.roomId,
+            name: event.name!,
+            model: event.model!.startsWith('v2@') ? event.model! : event.model!.split(':').last,
+            vendor: event.model!.startsWith('v2@') ? '' : event.model!.split(':').first,
+            systemPrompt: event.prompt!,
+            avatarId: event.avatarId,
+            avatarUrl: event.avatarUrl,
+            maxContext: event.maxContext,
+            initMessage: event.initMessage,
+          );
 
-        final states = await stateManager.loadRoomStates(event.roomId);
-        emit(
-          RoomLoaded(
-            Room(
-              room.name,
-              'chat',
-              description: room.description,
-              id: room.id,
-              userId: room.userId,
-              createdAt: room.createdAt,
-              lastActiveTime: room.lastActiveTime,
-              systemPrompt: room.systemPrompt,
-              priority: room.priority ?? 0,
-              model: room.model.startsWith('v2@')
-                  ? room.model
-                  : '${room.vendor}:${room.model}',
-              avatarId: room.avatarId,
-              avatarUrl: room.avatarUrl,
-              initMessage: room.initMessage,
-              roomType: room.roomType,
-            ),
-            states,
-            examples: await APIServer().example(room.model),
-            cascading: false,
-          ),
-        );
-      } else {
-        final room = await chatMsgRepo.room(event.roomId);
-
-        if (room != null) {
-          if (event.name != null && event.name != '') {
-            room.name = event.name!;
-          }
-
-          if (event.model != null && event.model != '') {
-            room.model = event.model!;
-          }
-
-          if (event.prompt != null && event.prompt != '') {
-            room.systemPrompt = event.prompt!;
-          }
-
-          if (event.maxContext != null) {
-            room.maxContext = event.maxContext!;
-          }
-
-          await chatMsgRepo.updateRoom(room);
           final states = await stateManager.loadRoomStates(event.roomId);
-          emit(RoomLoaded(
-            room,
-            states,
-            examples: await APIServer().examples(),
-            cascading: false,
-          ));
+          emit(
+            RoomLoaded(
+              Room(
+                room.name,
+                'chat',
+                description: room.description,
+                id: room.id,
+                userId: room.userId,
+                createdAt: room.createdAt,
+                lastActiveTime: room.lastActiveTime,
+                systemPrompt: room.systemPrompt,
+                priority: room.priority ?? 0,
+                model: room.model.startsWith('v2@') ? room.model : '${room.vendor}:${room.model}',
+                avatarId: room.avatarId,
+                avatarUrl: room.avatarUrl,
+                initMessage: room.initMessage,
+                roomType: room.roomType,
+              ),
+              states,
+              examples: await APIServer().example(room.model),
+              cascading: false,
+            ),
+          );
+        } else {
+          final room = await chatMsgRepo.room(event.roomId);
+
+          if (room != null) {
+            if (event.name != null && event.name != '') {
+              room.name = event.name!;
+            }
+
+            if (event.model != null && event.model != '') {
+              room.model = event.model!;
+            }
+
+            if (event.prompt != null && event.prompt != '') {
+              room.systemPrompt = event.prompt!;
+            }
+
+            if (event.maxContext != null) {
+              room.maxContext = event.maxContext!;
+            }
+
+            await chatMsgRepo.updateRoom(room);
+            final states = await stateManager.loadRoomStates(event.roomId);
+            emit(RoomLoaded(
+              room,
+              states,
+              examples: await APIServer().examples(),
+              cascading: false,
+            ));
+          }
         }
+      } catch (e) {
+        emit(RoomOperationResult(false, error: e.toString()));
       }
     });
 
@@ -349,9 +337,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
                     lastActiveTime: room.lastActiveTime,
                     systemPrompt: room.systemPrompt,
                     priority: room.priority ?? 0,
-                    model: room.model.startsWith('v2@')
-                        ? room.model
-                        : '${room.vendor}:${room.model}',
+                    model: room.model.startsWith('v2@') ? room.model : '${room.vendor}:${room.model}',
                     avatarId: room.avatarId,
                     avatarUrl: room.avatarUrl,
                     roomType: room.roomType,
@@ -364,8 +350,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
         final rooms = await chatMsgRepo.rooms(
           userId: APIServer().localUserID(),
         );
-        rooms.removeWhere((element) =>
-            element.id == chatAnywhereRoomId && element.category == 'system');
+        rooms.removeWhere((element) => element.id == chatAnywhereRoomId && element.category == 'system');
         return RoomsLoaded(rooms);
       }
     } catch (e) {

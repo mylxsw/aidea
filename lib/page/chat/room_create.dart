@@ -111,77 +111,93 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
         setting: widget.setting,
         enabled: false,
         maxWidth: 0,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Ability().isUserLogon()
-              ? SafeArea(
-                  top: false,
-                  child: DefaultTabController(
-                    length: tags.length + (selectedSuggestions.isEmpty ? 1 : 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Theme(
-                          data: Theme.of(context).copyWith(
-                            colorScheme:
-                                Theme.of(context).colorScheme.copyWith(surfaceContainerHighest: Colors.transparent),
+        child: BlocListener<RoomBloc, RoomState>(
+          listenWhen: (previous, current) => current is RoomOperationResult,
+          listener: (context, state) {
+            if (state is RoomOperationResult) {
+              if (state.success) {
+                if (state.redirect != null) {
+                  context.push(state.redirect!).then((value) {
+                    context.read<RoomBloc>().add(RoomsLoadEvent());
+                  });
+                }
+              } else {
+                showErrorMessageEnhanced(context, state.error ?? AppLocale.operateFailed.getString(context));
+              }
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Ability().isUserLogon()
+                ? SafeArea(
+                    top: false,
+                    child: DefaultTabController(
+                      length: tags.length + (selectedSuggestions.isEmpty ? 1 : 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme:
+                                  Theme.of(context).colorScheme.copyWith(surfaceContainerHighest: Colors.transparent),
+                            ),
+                            child: TabBar(
+                              tabs: [
+                                for (var tag in tags) Tab(text: tag),
+                                if (selectedSuggestions.isEmpty) Tab(text: AppLocale.custom.getString(context)),
+                              ],
+                              isScrollable: true,
+                              labelColor: customColors.linkColor,
+                              indicator: const BoxDecoration(),
+                              labelPadding: const EdgeInsets.only(right: 5, left: 10),
+                              overlayColor: WidgetStateProperty.all(Colors.transparent),
+                              tabAlignment: TabAlignment.center,
+                            ),
                           ),
-                          child: TabBar(
-                            tabs: [
-                              for (var tag in tags) Tab(text: tag),
-                              if (selectedSuggestions.isEmpty) Tab(text: AppLocale.custom.getString(context)),
-                            ],
-                            isScrollable: true,
-                            labelColor: customColors.linkColor,
-                            indicator: const BoxDecoration(),
-                            labelPadding: const EdgeInsets.only(right: 5, left: 10),
-                            overlayColor: WidgetStateProperty.all(Colors.transparent),
-                            tabAlignment: TabAlignment.center,
-                          ),
-                        ),
-                        Expanded(
-                          child: BlocConsumer<RoomBloc, RoomState>(
-                            listenWhen: (previous, current) => current is RoomGalleriesLoaded,
-                            listener: (context, state) {
-                              if (state is RoomGalleriesLoaded) {
-                                if (state.error != null) {
-                                  showErrorMessageEnhanced(context, state.error!);
+                          Expanded(
+                            child: BlocConsumer<RoomBloc, RoomState>(
+                              listenWhen: (previous, current) => current is RoomGalleriesLoaded,
+                              listener: (context, state) {
+                                if (state is RoomGalleriesLoaded) {
+                                  if (state.error != null) {
+                                    showErrorMessageEnhanced(context, state.error!);
+                                  }
+
+                                  if (state.galleries.isNotEmpty) {
+                                    tags = state.tags;
+
+                                    setState(() {});
+                                  }
+                                }
+                              },
+                              buildWhen: (previous, current) => current is RoomGalleriesLoaded,
+                              builder: (context, state) {
+                                if (state is RoomGalleriesLoaded) {
+                                  return TabBarView(
+                                    children: [
+                                      for (var tag in tags)
+                                        buildSuggestTab(
+                                          customColors,
+                                          context,
+                                          state.galleries.where((element) => element.tags.contains(tag)).toList(),
+                                        ),
+                                      if (selectedSuggestions.isEmpty) buildCustomTab(customColors, context),
+                                    ],
+                                  );
                                 }
 
-                                if (state.galleries.isNotEmpty) {
-                                  tags = state.tags;
-
-                                  setState(() {});
-                                }
-                              }
-                            },
-                            buildWhen: (previous, current) => current is RoomGalleriesLoaded,
-                            builder: (context, state) {
-                              if (state is RoomGalleriesLoaded) {
-                                return TabBarView(
-                                  children: [
-                                    for (var tag in tags)
-                                      buildSuggestTab(
-                                        customColors,
-                                        context,
-                                        state.galleries.where((element) => element.tags.contains(tag)).toList(),
-                                      ),
-                                    if (selectedSuggestions.isEmpty) buildCustomTab(customColors, context),
-                                  ],
+                                return const Center(
+                                  child: CircularProgressIndicator(),
                                 );
-                              }
-
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            },
-                          ),
-                        )
-                      ],
+                              },
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                )
-              : buildCustomTab(customColors, context),
+                  )
+                : buildCustomTab(customColors, context),
+          ),
         ),
       ),
       bottomNavigationBar: selectedSuggestions.isNotEmpty
@@ -386,6 +402,7 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
               // 提示语
               if (_selectedModel != null && _selectedModel!.isChatModel)
                 EnhancedTextField(
+                  fontSize: 12,
                   customColors: customColors,
                   controller: _promptController,
                   labelText: AppLocale.prompt.getString(context),
@@ -416,7 +433,7 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                     );
                   },
                   minLines: 4,
-                  maxLines: 8,
+                  maxLines: 20,
                   showCounter: false,
                 ),
             ],
@@ -519,11 +536,6 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                       return;
                     }
 
-                    if (_promptController.text.length > 1000) {
-                      showErrorMessage(AppLocale.promptFormatError.getString(context));
-                      return;
-                    }
-
                     if (_selectedModel == null) {
                       showErrorMessage(AppLocale.modelRequiredMessage.getString(context));
                       return;
@@ -560,8 +572,6 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                               initMessage: _initMessageController.text,
                             ),
                           );
-
-                      context.pop();
                     }
                   },
                 ),
@@ -593,9 +603,10 @@ void openSelectModelDialog(
   bool enableClear = false,
   String? title,
   String? priorityModelId,
+  bool withCustom = false,
 }) {
   future() async {
-    final models = await ModelAggregate.models();
+    final models = await ModelAggregate.models(cache: false, withCustom: withCustom);
 
     if (priorityModelId != null) {
       // 将 models 中，id 与 priorityModelId 相同的元素排序到最前面

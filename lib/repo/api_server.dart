@@ -39,8 +39,7 @@ class APIServer {
     return _instance;
   }
 
-  GlobalAlertEvent _globalAlertEvent =
-      GlobalAlertEvent(id: '', type: 'info', pages: [], message: '');
+  GlobalAlertEvent _globalAlertEvent = GlobalAlertEvent(id: '', type: 'info', pages: [], message: '');
 
   GlobalAlertEvent get globalAlertEvent => _globalAlertEvent;
 
@@ -85,10 +84,7 @@ class APIServer {
       if (e.response != null) {
         final resp = e.response!;
 
-        if (resp.data is Map &&
-            resp.data['error'] != null &&
-            resp.statusCode != 402 &&
-            resp.statusCode != 401) {
+        if (resp.data is Map && resp.data['error'] != null && resp.statusCode != 402 && resp.statusCode != 401) {
           return resp.data['error'] ?? e.toString();
         }
 
@@ -114,12 +110,8 @@ class APIServer {
     return Options(
       headers: _buildAuthHeaders(),
       receiveDataWhenStatusError: true,
-      sendTimeout: requestTimeout != null
-          ? Duration(milliseconds: requestTimeout)
-          : null,
-      receiveTimeout: requestTimeout != null
-          ? Duration(milliseconds: requestTimeout)
-          : null,
+      sendTimeout: requestTimeout != null ? Duration(milliseconds: requestTimeout) : null,
+      receiveTimeout: requestTimeout != null ? Duration(milliseconds: requestTimeout) : null,
     );
   }
 
@@ -321,15 +313,11 @@ class APIServer {
         final globalAlertEvent = GlobalAlertEvent(
           id: resp.headers.value('aidea-global-alert-id') ?? '',
           type: resp.headers.value('aidea-global-alert-type') ?? 'info',
-          pages: (resp.headers.value('aidea-global-alert-pages') ?? '')
-              .split(',')
-              .where((e) => e != '')
-              .toList(),
+          pages: (resp.headers.value('aidea-global-alert-pages') ?? '').split(',').where((e) => e != '').toList(),
           message: msg,
         );
 
-        if (globalAlertEvent.id != '' &&
-            globalAlertEvent.id != _globalAlertEvent.id) {
+        if (globalAlertEvent.id != '' && globalAlertEvent.id != _globalAlertEvent.id) {
           _globalAlertEvent = globalAlertEvent;
           GlobalEvent().emit('global-alert', _globalAlertEvent);
         }
@@ -489,14 +477,13 @@ class APIServer {
   Future<List<String>> proxyServers(String service) async {
     return sendCachedGetRequest(
       '/v1/proxy/servers',
-      (resp) =>
-          (resp['servers'][service] as List).map((e) => e.toString()).toList(),
+      (resp) => (resp['servers'][service] as List).map((e) => e.toString()).toList(),
       subKey: _cacheSubKey(),
     );
   }
 
   /// 获取模型列表
-  Future<List<Model>> models({bool cache = true}) async {
+  Future<List<Model>> models({bool cache = true, bool withCustom = false}) async {
     return sendCachedGetRequest(
       '/v2/models',
       (resp) {
@@ -506,6 +493,9 @@ class APIServer {
         }
 
         return models;
+      },
+      queryParameters: {
+        "with-custom": withCustom,
       },
       subKey: _cacheSubKey(),
       forceRefresh: !cache,
@@ -553,9 +543,7 @@ class APIServer {
     return sendCachedGetRequest(
       '/v1/images/avatar',
       (resp) {
-        return (resp.data['avatars'] as List<dynamic>)
-            .map((e) => e.toString())
-            .toList();
+        return (resp.data['avatars'] as List<dynamic>).map((e) => e.toString()).toList();
       },
     );
   }
@@ -616,9 +604,7 @@ class APIServer {
           examples.add(ChatExample(
             example['title'],
             content: example['content'],
-            models: ((example['models'] ?? []) as List<dynamic>)
-                .map((e) => e.toString())
-                .toList(),
+            models: ((example['models'] ?? []) as List<dynamic>).map((e) => e.toString()).toList(),
           ));
         }
         return examples;
@@ -655,9 +641,7 @@ class APIServer {
           examples.add(ChatExample(
             example['title'],
             content: example['content'],
-            models: ((example['models'] ?? []) as List<dynamic>)
-                .map((e) => e.toString())
-                .toList(),
+            models: ((example['models'] ?? []) as List<dynamic>).map((e) => e.toString()).toList(),
           ));
         }
         return examples;
@@ -693,9 +677,7 @@ class APIServer {
         for (var item in resp.data['items']) {
           items.add(CreativeIslandItem.fromJson(item));
         }
-        final categories = (resp.data['categories'] as List<dynamic>)
-            .map((e) => e.toString())
-            .toList();
+        final categories = (resp.data['categories'] as List<dynamic>).map((e) => e.toString()).toList();
         return CreativeIslandItems(
           items,
           categories,
@@ -719,8 +701,7 @@ class APIServer {
   }
 
   /// 创作岛生成消耗量预估
-  Future<QuotaEvaluated> creativeIslandCompletionsEvaluate(
-      String id, Map<String, dynamic> params) async {
+  Future<QuotaEvaluated> creativeIslandCompletionsEvaluate(String id, Map<String, dynamic> params) async {
     return sendPostRequest(
       '/v1/creative-island/completions/$id/evaluate',
       (resp) => QuotaEvaluated.fromJson(resp.data),
@@ -729,8 +710,7 @@ class APIServer {
   }
 
   /// 创意岛项目生成数据
-  Future<List<String>> creativeIslandCompletions(
-      String id, Map<String, dynamic> params) async {
+  Future<List<String>> creativeIslandCompletions(String id, Map<String, dynamic> params) async {
     return sendPostRequest(
       '/v1/creative-island/completions/$id',
       (resp) {
@@ -747,8 +727,7 @@ class APIServer {
   }
 
   /// 创意岛项目生成数据
-  Future<String> creativeIslandCompletionsAsync(
-      String id, Map<String, dynamic> params) async {
+  Future<String> creativeIslandCompletionsAsync(String id, Map<String, dynamic> params) async {
     params["mode"] = 'async';
 
     return sendPostRequest(
@@ -761,8 +740,7 @@ class APIServer {
     );
   }
 
-  Future<QuotaEvaluated> creativeIslandCompletionsEvaluateV2(
-      Map<String, dynamic> params) async {
+  Future<QuotaEvaluated> creativeIslandCompletionsEvaluateV2(Map<String, dynamic> params) async {
     return sendPostRequest(
       '/v2/creative-island/completions/evaluate',
       (resp) => QuotaEvaluated.fromJson(resp.data),
@@ -770,8 +748,7 @@ class APIServer {
     );
   }
 
-  Future<String> creativeIslandCompletionsAsyncV2(
-      Map<String, dynamic> params) async {
+  Future<String> creativeIslandCompletionsAsyncV2(Map<String, dynamic> params) async {
     return sendPostRequest(
       '/v2/creative-island/completions',
       (resp) {
@@ -782,8 +759,7 @@ class APIServer {
     );
   }
 
-  Future<String> creativeIslandArtisticTextCompletionsAsyncV2(
-      Map<String, dynamic> params) async {
+  Future<String> creativeIslandArtisticTextCompletionsAsyncV2(Map<String, dynamic> params) async {
     return sendPostRequest(
       '/v2/creative-island/completions/artistic-text',
       (resp) {
@@ -794,8 +770,7 @@ class APIServer {
     );
   }
 
-  Future<String> creativeIslandImageToVideoCompletionsAsyncV2(
-      Map<String, dynamic> params) async {
+  Future<String> creativeIslandImageToVideoCompletionsAsyncV2(Map<String, dynamic> params) async {
     return sendPostRequest(
       '/v2/creative-island/completions/image-to-video',
       (resp) {
@@ -836,8 +811,7 @@ class APIServer {
   }
 
   /// 创作岛能力
-  Future<CreativeIslandCapacity> creativeIslandCapacity(
-      {required String mode, required String id}) async {
+  Future<CreativeIslandCapacity> creativeIslandCapacity({required String mode, required String id}) async {
     return sendCachedGetRequest(
       '/v2/creative-island/capacity',
       (resp) {
@@ -1063,8 +1037,7 @@ class APIServer {
   }
 
   /// 发起支付
-  Future<OtherPayCreatedReponse> createOtherPay(String productId,
-      {required String source}) async {
+  Future<OtherPayCreatedReponse> createOtherPay(String productId, {required String source}) async {
     return sendPostRequest(
       '/v1/payment/others',
       (resp) => OtherPayCreatedReponse.fromJson(resp.data),
@@ -1411,8 +1384,7 @@ class APIServer {
   }
 
   /// 创作岛历史记录
-  Future<List<CreativeItemInServer>> creativeItemHistories(String islandId,
-      {bool cache = true}) async {
+  Future<List<CreativeItemInServer>> creativeItemHistories(String islandId, {bool cache = true}) async {
     return sendCachedGetRequest(
       '/v1/creative-island/items/$islandId/histories',
       (resp) {
@@ -1444,8 +1416,7 @@ class APIServer {
   }
 
   /// 删除创作岛项目历史记录
-  Future<void> deleteCreativeHistoryItem(String islandId,
-      {required hisId}) async {
+  Future<void> deleteCreativeHistoryItem(String islandId, {required hisId}) async {
     return sendDeleteRequest(
       '/v1/creative-island/items/$islandId/histories/$hisId',
       (resp) {},
@@ -1471,8 +1442,7 @@ class APIServer {
   }
 
   /// 获取用户智慧果消耗历史记录详情
-  Future<List<QuotaUsageDetailInDay>> quotaUsedDetails(
-      {required String date}) async {
+  Future<List<QuotaUsageDetailInDay>> quotaUsedDetails({required String date}) async {
     return sendGetRequest(
       '/v1/users/quota/usage-stat/$date',
       (resp) {
@@ -1533,9 +1503,7 @@ class APIServer {
     return sendPostRequest(
       '/v1/voice/text2voice',
       formData: {'text': text},
-      (resp) => (resp.data['results'] as List<dynamic>)
-          .map((e) => e.toString())
-          .toList(),
+      (resp) => (resp.data['results'] as List<dynamic>).map((e) => e.toString()).toList(),
     );
   }
 
@@ -1574,8 +1542,7 @@ class APIServer {
     );
   }
 
-  Future<RoomGallery> roomGalleryItem(
-      {required int id, bool cache = true}) async {
+  Future<RoomGallery> roomGalleryItem({required int id, bool cache = true}) async {
     return sendCachedGetRequest(
       '/v1/room-galleries/$id',
       (resp) => RoomGallery.fromJson(resp.data),
@@ -1592,8 +1559,7 @@ class APIServer {
     );
   }
 
-  Future<List<CreativeIslandItemV2>> creativeIslandItemsV2(
-      {bool cache = true}) async {
+  Future<List<CreativeIslandItemV2>> creativeIslandItemsV2({bool cache = true}) async {
     return sendCachedGetRequest(
       '/v2/creative/items',
       (resp) {
@@ -1686,8 +1652,7 @@ class APIServer {
   }
 
   /// 用户免费聊天次数统计(单个模型)
-  Future<FreeModelCount> userFreeStatisticsForModel(
-      {required String model}) async {
+  Future<FreeModelCount> userFreeStatisticsForModel({required String model}) async {
     return sendGetRequest(
       '/v1/users/stat/free-chat-counts/${Uri.encodeComponent(model)}',
       (resp) => FreeModelCount.fromJson(resp.data),
@@ -1695,8 +1660,7 @@ class APIServer {
   }
 
   /// 通知信息（促销事件）
-  Future<Map<String, List<PromotionEvent>>> notificationPromotionEvents(
-      {bool cache = true}) async {
+  Future<Map<String, List<PromotionEvent>>> notificationPromotionEvents({bool cache = true}) async {
     return sendCachedGetRequest(
       '/v1/notifications/promotions',
       (value) {
@@ -1830,8 +1794,7 @@ class APIServer {
   }
 
   /// 发起群聊消息
-  Future<GroupChatSendResponse> chatGroupSendMessage(
-      int groupId, GroupChatSendRequest req) async {
+  Future<GroupChatSendResponse> chatGroupSendMessage(int groupId, GroupChatSendRequest req) async {
     return sendPostJSONRequest(
       '/v1/group-chat/$groupId/chat',
       (resp) {
@@ -1858,8 +1821,7 @@ class APIServer {
   }
 
   /// 群组聊天消息状态
-  Future<List<GroupMessage>> chatGroupMessageStatus(
-      int groupId, List<int> messageIds) async {
+  Future<List<GroupMessage>> chatGroupMessageStatus(int groupId, List<int> messageIds) async {
     return sendGetRequest(
       '/v1/group-chat/$groupId/chat-messages',
       (resp) {
@@ -1883,17 +1845,14 @@ class APIServer {
 
   /// 删除群组聊天消息
   Future<void> chatGroupDeleteMessage(int groupId, int messageId) async {
-    return sendDeleteRequest(
-        '/v1/group-chat/$groupId/chat/$messageId', (resp) {});
+    return sendDeleteRequest('/v1/group-chat/$groupId/chat/$messageId', (resp) {});
   }
 
   /// API 模式 ////////////////////////////////////////////////////////////////////
   /// 查询用户所有的 API Keys
   Future<List<UserAPIKey>> userAPIKeys() async {
     return sendGetRequest('/v1/api-keys', (data) {
-      return ((data.data['data'] ?? []) as List<dynamic>)
-          .map((e) => UserAPIKey.fromJson(e))
-          .toList();
+      return ((data.data['data'] ?? []) as List<dynamic>).map((e) => UserAPIKey.fromJson(e)).toList();
     });
   }
 
@@ -2021,8 +1980,7 @@ class APIServer {
     });
 
     final channelTypes = await adminChannelTypes();
-    channels.addAll(
-        channelTypes.map((e) => AdminChannel(name: e.text, type: e.name)));
+    channels.addAll(channelTypes.map((e) => AdminChannel(name: e.text, type: e.name)));
 
     return channels;
   }
@@ -2056,8 +2014,7 @@ class APIServer {
   }
 
   /// 管理员接口：更新渠道
-  Future<void> adminUpdateChannel(
-      {required int id, required AdminChannelUpdateReq req}) {
+  Future<void> adminUpdateChannel({required int id, required AdminChannelUpdateReq req}) {
     return sendPutJSONRequest(
       '/v1/admin/channels/$id',
       (resp) {},
@@ -2090,8 +2047,7 @@ class APIServer {
 
   /// 管理员接口：返回指定模型
   Future<AdminModel> adminModel({required String modelId}) async {
-    return sendGetRequest('/v1/admin/models/${Uri.encodeComponent(modelId)}',
-        (resp) {
+    return sendGetRequest('/v1/admin/models/${Uri.encodeComponent(modelId)}', (resp) {
       return AdminModel.fromJson(resp.data['data']);
     });
   }
@@ -2106,8 +2062,7 @@ class APIServer {
   }
 
   /// 管理员接口：更新模型
-  Future<void> adminUpdateModel(
-      {required String modelId, required AdminModelUpdateReq req}) {
+  Future<void> adminUpdateModel({required String modelId, required AdminModelUpdateReq req}) {
     return sendPutJSONRequest(
       '/v1/admin/models/${Uri.encodeComponent(modelId)}',
       (resp) {},
@@ -2117,8 +2072,7 @@ class APIServer {
 
   /// 管理员接口：删除模型
   Future<void> adminDeleteModel({required String modelId}) {
-    return sendDeleteRequest(
-        '/v1/admin/models/${Uri.encodeComponent(modelId)}', (resp) {});
+    return sendDeleteRequest('/v1/admin/models/${Uri.encodeComponent(modelId)}', (resp) {});
   }
 
   /// 管理员接口：查询用户列表
@@ -2237,18 +2191,15 @@ class APIServer {
   }
 
   /// 管理员接口：查询用户指定的数字人
-  Future<RoomInServer> adminUserRoom(
-      {required int userId, required int roomId}) async {
+  Future<RoomInServer> adminUserRoom({required int userId, required int roomId}) async {
     return sendGetRequest('/v1/admin/messages/$userId/rooms/$roomId', (resp) {
       return RoomInServer.fromJson(resp.data['data']);
     });
   }
 
   /// 管理员接口：查询用户指定数字人最近聊天历史记录
-  Future<List<MessageInServer>> adminUserRoomMessages(
-      {required int userId, required int roomId}) async {
-    return sendGetRequest('/v1/admin/messages/$userId/rooms/$roomId/messages',
-        (resp) {
+  Future<List<MessageInServer>> adminUserRoomMessages({required int userId, required int roomId}) async {
+    return sendGetRequest('/v1/admin/messages/$userId/rooms/$roomId/messages', (resp) {
       var res = <MessageInServer>[];
       for (var item in resp.data['data']) {
         res.add(MessageInServer.fromJson(item));

@@ -63,13 +63,7 @@ class _RoomsPageState extends State<RoomsPage> {
             }
 
             if (state is RoomOperationResult) {
-              if (state.success) {
-                if (state.redirect != null) {
-                  context.push(state.redirect!).then((value) {
-                    context.read<RoomBloc>().add(RoomsLoadEvent());
-                  });
-                }
-              } else {
+              if (!state.success) {
                 showErrorMessageEnhanced(context, state.error ?? AppLocale.operateFailed.getString(context));
               }
             }

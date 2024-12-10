@@ -55,7 +55,7 @@ class _AdminRoomMessagesPageState extends State<AdminRoomMessagesPage> {
           roomType: widget.roomType,
         ));
 
-    ModelAggregate.models().then((value) {
+    ModelAggregate.models(withCustom: true).then((value) {
       setState(() {
         for (var element in value) {
           models[element.id] = element;

@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 class Model {
   final String id;
   final String name;
   final String? shortName;
   final String ownedBy;
   String? description;
+  String? priceInfo;
   bool isChatModel = false;
   bool disabled;
   String? avatarUrl;
@@ -24,6 +27,7 @@ class Model {
     this.shortName,
     required this.category,
     this.description,
+    this.priceInfo,
     this.isChatModel = false,
     this.disabled = false,
     this.tag,
@@ -45,6 +49,7 @@ class Model {
     String? shortName,
     String? ownedBy,
     String? description,
+    String? priceInfo,
     bool? isChatModel,
     bool? disabled,
     String? avatarUrl,
@@ -62,6 +67,7 @@ class Model {
       ownedBy ?? this.ownedBy,
       shortName: shortName ?? this.shortName,
       description: description ?? this.description,
+      priceInfo: priceInfo ?? this.priceInfo,
       isChatModel: isChatModel ?? this.isChatModel,
       disabled: disabled ?? this.disabled,
       avatarUrl: avatarUrl ?? this.avatarUrl,
@@ -74,4 +80,37 @@ class Model {
       isDefault: isDefault ?? false,
     );
   }
+
+  ModelPrice get modelPrice {
+    if (priceInfo == null || priceInfo == '') {
+      return ModelPrice(input: 0, output: 0, note: '');
+    }
+
+    return ModelPrice.fromMap(jsonDecode(priceInfo!) as Map<String, dynamic>);
+  }
+}
+
+class ModelPrice {
+  final int input;
+  final int output;
+  final String note;
+
+  bool get isFree {
+    return input == output && input == 0;
+  }
+
+  bool get hasNote {
+    return note != '';
+  }
+
+  ModelPrice({
+    required this.input,
+    required this.output,
+    required this.note,
+  });
+
+  ModelPrice.fromMap(Map<String, dynamic> map)
+      : input = map['input'] ?? 0,
+        output = map['output'] ?? 0,
+        note = map['note'] ?? '';
 }

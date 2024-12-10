@@ -138,7 +138,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
     };
 
     // 加载模型列表，用于查询模型名称
-    ModelAggregate.models().then((value) {
+    ModelAggregate.models(withCustom: true).then((value) {
       setState(() {
         supportModels = value;
       });

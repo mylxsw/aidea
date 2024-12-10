@@ -597,6 +597,7 @@ class Model {
   String name;
   String shortName;
   String? description;
+  String? priceInfo;
   bool isChat;
   bool isImage;
   bool disabled;
@@ -622,6 +623,7 @@ class Model {
     required this.isChat,
     required this.isImage,
     this.description,
+    this.priceInfo,
     this.disabled = false,
     this.tag,
     this.avatarUrl,
@@ -637,6 +639,7 @@ class Model {
         'name': name,
         'short_name': shortName,
         'description': description,
+        'price_info': priceInfo,
         'category': category,
         'is_chat': isChat,
         'is_image': isImage,
@@ -656,6 +659,7 @@ class Model {
       name: json['name'],
       shortName: json['short_name'] ?? json['name'],
       description: json['description'],
+      priceInfo: json['price_info'],
       category: json['category'],
       isChat: json['is_chat'],
       isImage: json['is_image'],

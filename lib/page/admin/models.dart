@@ -357,9 +357,10 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
     if (mod.inputPrice > 0 || mod.outputPrice > 0) {
       desc += '💰 ';
       if (mod.inputPrice == mod.outputPrice) {
-        desc += '${mod.inputPrice} Credits/1K Token';
+        desc += 'IO${AppLocale.creditUnit.getString(context)}${mod.inputPrice}';
       } else {
-        desc += '${mod.inputPrice} / ${mod.outputPrice} Credits/1K Token';
+        desc +=
+            'I${AppLocale.creditUnit.getString(context)}${mod.inputPrice}/O${AppLocale.creditUnit.getString(context)}${mod.outputPrice}';
       }
     }
 
@@ -369,6 +370,10 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
       }
 
       desc += '🎞️ ${mod.maxContext} Tokens';
+    }
+
+    if (mod.meta != null && mod.meta!.tag != null && mod.meta!.tag != '') {
+      desc += ' | ${mod.meta!.tag}';
     }
 
     if (desc != '') {

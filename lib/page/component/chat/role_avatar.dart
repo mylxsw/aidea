@@ -48,7 +48,7 @@ class _RoleAvatarState extends State<RoleAvatar> {
 
     if (widget.his != null && widget.his!.model != null) {
       return FutureBuilder(
-        future: ModelAggregate.models(),
+        future: ModelAggregate.models(withCustom: true),
         builder: (context, snapshot) {
           if (!snapshot.hasError && snapshot.hasData) {
             var mod = snapshot.data!.where((e) => e.id == widget.his!.model!).firstOrNull;

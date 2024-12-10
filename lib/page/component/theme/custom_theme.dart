@@ -288,7 +288,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     weakTextColorPlus: Color.fromARGB(255, 137, 137, 137),
     weakTextColorPlusPlus: Color.fromARGB(255, 173, 173, 173),
     dialogDefaultTextColor: Color.fromARGB(195, 255, 255, 255),
-    dialogBackgroundColor: Color.fromARGB(255, 48, 48, 48),
+    dialogBackgroundColor: Colors.black,
     columnBlockBorderColor: Color.fromARGB(255, 72, 72, 72),
     columnBlockBackgroundColor: Color.fromARGB(255, 44, 44, 46),
     columnBlockDividerColor: Color.fromARGB(160, 60, 60, 60),

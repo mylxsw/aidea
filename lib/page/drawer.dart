@@ -21,6 +21,13 @@ class LeftDrawer extends StatefulWidget {
 
 class _LeftDrawerState extends State<LeftDrawer> {
   @override
+  void initState() {
+    super.initState();
+
+    context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
+  }
+
+  @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return Drawer(

@@ -117,7 +117,7 @@ class _NewHomePageState extends State<NewHomePage> {
 
   /// 加载模型列表，用于查询模型名称
   Future<void> reloadModels({bool cache = true}) async {
-    var value = await ModelAggregate.models(cache: cache);
+    var value = await ModelAggregate.models(cache: cache, withCustom: true);
     setState(() {
       supportModels = value;
     });
