@@ -87,6 +87,8 @@ class _LeftDrawerState extends State<LeftDrawer> {
                         if (state is ChatChatRecentHistoriesLoaded) {
                           return ListView.builder(
                             shrinkWrap: true,
+                            padding: const EdgeInsets.all(0),
+                            physics: const NeverScrollableScrollPhysics(),
                             itemCount: state.histories.length,
                             itemBuilder: (context, index) {
                               final item = state.histories[index];
