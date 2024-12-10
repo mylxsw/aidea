@@ -366,22 +366,6 @@ class _ChatPreviewState extends State<ChatPreview> {
                                                     color: customColors.chatRoomSenderText,
                                                   ),
                                                 ),
-                                          if (message.quotaConsumed != null && message.quotaConsumed! > 0)
-                                            Row(
-                                              children: [
-                                                const Icon(Icons.check_circle, size: 12, color: Colors.green),
-                                                const SizedBox(width: 5),
-                                                Expanded(
-                                                  child: Text(
-                                                    '共 ${message.tokenConsumed} 个 Token， 消耗 ${message.quotaConsumed} 个智慧果',
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      color: customColors.weakTextColor,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
                                         ],
                                       );
                                     },
@@ -811,7 +795,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Icon(
-                    Icons.delete,
+                    Icons.delete_outline,
                     color: Color.fromARGB(255, 255, 255, 255),
                     size: 14,
                   ),
@@ -833,7 +817,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Icon(
-                    Icons.record_voice_over,
+                    Icons.record_voice_over_outlined,
                     color: Color.fromARGB(255, 255, 255, 255),
                     size: 14,
                   ),
@@ -866,6 +850,34 @@ class _ChatPreviewState extends State<ChatPreview> {
                 ],
               ),
             ),
+          if (message.quotaConsumed != null && message.quotaConsumed! > 0)
+            TextButton.icon(
+              onPressed: () {
+                showBeautyDialog(
+                  context,
+                  type: QuickAlertType.info,
+                  text: '本轮对话共 ${message.tokenConsumed} 个 Token， 消耗 ${message.quotaConsumed} 个智慧果。',
+                  confirmBtnText: AppLocale.gotIt.getString(context),
+                  showCancelBtn: false,
+                );
+                cancel();
+              },
+              label: const Text(''),
+              icon: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.info_outline,
+                    color: Color.fromARGB(255, 255, 255, 255),
+                    size: 14,
+                  ),
+                  Text(
+                    AppLocale.info.getString(context),
+                    style: const TextStyle(fontSize: 12, color: Colors.white),
+                  ),
+                ],
+              ),
+            )
         ],
       ),
     );

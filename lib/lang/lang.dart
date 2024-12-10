@@ -43,6 +43,7 @@ mixin AppLocale {
   static const String share = 'share';
   static const String cancelShare = 'cancel-share';
   static const String histories = 'histories';
+  static const String moreHistories = 'more-histories';
   static const String enable = 'enable';
   static const String disable = 'disable';
 
@@ -306,6 +307,7 @@ mixin AppLocale {
   static const String free = 'free';
   static const String input = 'input';
   static const String output = 'output';
+  static const String info = 'info';
 
   static const Map<String, dynamic> zh = {
     required: '必填',
@@ -324,6 +326,7 @@ mixin AppLocale {
     share: '分享',
     cancelShare: '取消分享',
     histories: '最近的对话',
+    moreHistories: '更多历史对话',
     enable: '启用',
     disable: '未启用',
     newChat: '新对话',
@@ -598,6 +601,7 @@ mixin AppLocale {
     free: '限免',
     input: '输入',
     output: '输出',
+    info: '详情',
   };
 
   static const Map<String, dynamic> en = {
@@ -617,6 +621,7 @@ mixin AppLocale {
     share: 'Share',
     cancelShare: 'Cancel share',
     histories: 'Recents',
+    moreHistories: 'More Histories',
     enable: 'Enable',
     disable: 'Disable',
     newChat: 'New Chat',
@@ -895,6 +900,7 @@ mixin AppLocale {
     free: 'Free',
     input: 'Input',
     output: 'Output',
+    info: 'Detail',
   };
 }
 

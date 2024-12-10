@@ -606,7 +606,7 @@ void openSelectModelDialog(
   bool withCustom = false,
 }) {
   future() async {
-    final models = await ModelAggregate.models(cache: false, withCustom: withCustom);
+    final models = await ModelAggregate.models(cache: true, withCustom: withCustom);
 
     if (priorityModelId != null) {
       // 将 models 中，id 与 priorityModelId 相同的元素排序到最前面
@@ -619,6 +619,9 @@ void openSelectModelDialog(
                 .copyWith(category: AppLocale.recentlyUsed.getString(context)));
       }
     }
+
+    // 再请求一次，用于异步更新 Cache，下次打开时将显示最新数据
+    ModelAggregate.models(cache: false, withCustom: withCustom);
 
     return models;
   }

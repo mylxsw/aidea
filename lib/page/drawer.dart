@@ -25,6 +25,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
     super.initState();
 
     context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
+    context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
   }
 
   @override
@@ -43,41 +44,74 @@ class _LeftDrawerState extends State<LeftDrawer> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    DrawerHeader(
-                      padding:
-                          PlatformTool.isMacOS() ? const EdgeInsets.only(top: kToolbarHeight) : const EdgeInsets.all(0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        image: DecorationImage(
-                          image: CachedNetworkImageProviderEnhanced(
-                            "https://ssl.aicode.cc/ai-server/assets/quota-card-bg.webp-thumb1000",
+                    SizedBox(
+                      height: 170,
+                      child: DrawerHeader(
+                        padding: PlatformTool.isMacOS()
+                            ? const EdgeInsets.only(top: kToolbarHeight)
+                            : const EdgeInsets.all(0),
+                        margin: const EdgeInsets.all(0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          image: DecorationImage(
+                            image: CachedNetworkImageProviderEnhanced(
+                              "https://ssl.aicode.cc/ai-server/assets/quota-card-bg.webp-thumb1000",
+                            ),
+                            fit: BoxFit.cover,
                           ),
-                          fit: BoxFit.cover,
                         ),
-                      ),
-                      child: BlocBuilder<AccountBloc, AccountState>(
-                        builder: (_, state) {
-                          UserInfo? userInfo;
-                          if (state is AccountLoaded) {
-                            userInfo = state.user;
-                          }
+                        child: BlocBuilder<AccountBloc, AccountState>(
+                          builder: (_, state) {
+                            UserInfo? userInfo;
+                            if (state is AccountLoaded) {
+                              userInfo = state.user;
+                            }
 
-                          return AccountQuotaCard(
-                            userInfo: userInfo,
-                            noBorder: true,
-                            onPaymentReturn: () {
-                              if (userInfo != null) {
-                                context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
-                              }
-                            },
-                          );
-                        },
+                            return AccountQuotaCard(
+                              userInfo: userInfo,
+                              noBorder: true,
+                              onPaymentReturn: () {
+                                if (userInfo != null) {
+                                  context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
+                                }
+                              },
+                            );
+                          },
+                        ),
                       ),
                     ),
                     const SizedBox(height: 15),
+                    BlocBuilder<ChatChatBloc, ChatChatState>(
+                      buildWhen: (previous, current) => current is ChatChatRecentHistoriesLoaded,
+                      builder: (_, state) {
+                        if (state is ChatChatRecentHistoriesLoaded) {
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: state.histories.length,
+                            itemBuilder: (context, index) {
+                              final item = state.histories[index];
+                              return ListTile(
+                                leading: const Icon(Icons.question_answer_outlined),
+                                title: Text(
+                                  item.title ?? 'Unknown',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                onTap: () {
+                                  context.push(
+                                      '/chat-anywhere?chat_id=${item.id}&model=${item.model}&title=${item.title}');
+                                },
+                              );
+                            },
+                          );
+                        }
+
+                        return const SizedBox();
+                      },
+                    ),
                     ListTile(
                       leading: const Icon(Icons.history),
-                      title: Text(AppLocale.histories.getString(context)),
+                      title: Text(AppLocale.moreHistories.getString(context)),
                       onTap: () {
                         context.push('/chat-chat/history').whenComplete(() {
                           context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
