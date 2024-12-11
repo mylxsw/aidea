@@ -600,7 +600,6 @@ void openSelectModelDialog(
   Function(mm.Model? selected) onSelected, {
   String? initValue,
   List<String>? reservedModels,
-  bool enableClear = false,
   String? title,
   String? priorityModelId,
   bool withCustom = false,
@@ -649,7 +648,6 @@ void openSelectModelDialog(
                 context.pop();
               },
               initValue: initValue,
-              enableClear: enableClear,
             );
           });
     },

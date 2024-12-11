@@ -7,7 +7,6 @@ import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
-import 'package:askaide/page/component/weak_text_button.dart';
 import 'package:askaide/repo/model/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
@@ -17,7 +16,6 @@ class ModelItem extends StatefulWidget {
   final List<Model> models;
   final Function(Model? selected) onSelected;
   final String? initValue;
-  final bool enableClear;
   final bool showUsing;
 
   const ModelItem({
@@ -25,7 +23,6 @@ class ModelItem extends StatefulWidget {
     required this.models,
     required this.onSelected,
     this.initValue,
-    this.enableClear = false,
     this.showUsing = false,
   });
 
@@ -39,15 +36,6 @@ class _ModelItemState extends State<ModelItem> {
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
-
-    if (widget.enableClear && widget.initValue != null && widget.showUsing) {
-      // 将当前选中的模型放在第一位
-      var index = widget.models.indexWhere((e) => e.uid() == widget.initValue || e.id == widget.initValue);
-      if (index != -1) {
-        widget.models.insert(0, widget.models[index].copyWith(category: AppLocale.using.getString(context)));
-      }
-    }
-
     return widget.models.isNotEmpty
         ? Column(
             children: [
@@ -95,40 +83,37 @@ class _ModelItemState extends State<ModelItem> {
                         tags.add(buildTag(
                           customColors,
                           AppLocale.free.getString(context),
-                          tagTextColor: colorToString(Colors.white),
-                          tagBgColor: colorToString(customColors.markdownLinkColor!),
+                          tagTextColor: 'FFFFFFFF',
+                          tagBgColor: '2196F3',
                         ));
                       }
                       if (item.tag != null) {
-                        item.tag!.split(",").forEach((tag) {
-                          if (tag.isEmpty) return;
-
+                        var tt = item.tag!.split(",").where((e) => e.isNotEmpty).toList();
+                        for (var i = 0; i < tt.length; i++) {
                           tags.add(buildTag(
                             customColors,
-                            tag,
-                            tagTextColor: item.tagTextColor,
-                            tagBgColor: item.tagBgColor,
+                            tt[i],
+                            tagTextColor: i == 0 ? item.tagTextColor : 'FFFFFFFF',
+                            tagBgColor: i == 0 ? item.tagBgColor : modelTagColorSeq(i),
                           ));
-                        });
+                        }
                       }
 
                       if (item.supportVision) {
                         tags.add(buildTag(
                           customColors,
                           AppLocale.visionTag.getString(context),
-                          tagTextColor: colorToString(Colors.white),
-                          tagBgColor: colorToString(
-                            customColors.linkColor ?? Colors.green,
-                          ),
+                          tagTextColor: 'FFFFFFFF',
+                          tagBgColor: '4CAF50',
                         ));
                       }
 
-                      if (item.isNew && widget.initValue != item.uid()) {
+                      if (item.isNew) {
                         tags.add(buildTag(
                           customColors,
                           AppLocale.newTag.getString(context),
-                          tagTextColor: colorToString(Colors.white),
-                          tagBgColor: colorToString(Colors.red),
+                          tagTextColor: 'FFFFFFFF',
+                          tagBgColor: 'F44336',
                         ));
                       }
 
@@ -184,25 +169,19 @@ class _ModelItemState extends State<ModelItem> {
                                                 ),
                                               ),
                                             ),
-                                            ...tags,
-                                            if (item.avatarUrl != null) ...[
-                                              if (widget.enableClear && i == 0 && widget.showUsing)
-                                                SizedBox(
-                                                  width: 60,
-                                                  child: widget.initValue == item.uid()
-                                                      ? WeakTextButton(
-                                                          title: AppLocale.cancel.getString(context),
-                                                          fontSize: 10,
-                                                          onPressed: () {
-                                                            widget.onSelected(null);
-                                                          },
-                                                        )
-                                                      : const SizedBox(),
-                                                ),
-                                            ],
+                                            if (tags.length <= 3) ...formatTags(tags),
                                           ],
                                         ),
+                                        if (tags.length > 3)
+                                          SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: Container(
+                                              margin: const EdgeInsets.symmetric(vertical: 5),
+                                              child: Row(children: formatTags(tags)),
+                                            ),
+                                          ),
                                         if (!modelPrice.isFree) buildPriceBlock(customColors, item, modelPrice),
+
                                         // if (item.description != null && item.description != '')
                                         //   Text(
                                         //     item.description!,
@@ -341,10 +320,11 @@ class _ModelItemState extends State<ModelItem> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: tagBgColor != null ? stringToColor(tagBgColor) : customColors.tagsBackgroundHover,
+        color: tagBgColor != null
+            ? stringToColor(tagBgColor, defaultColor: customColors.tagsBackgroundHover ?? Colors.grey)
+            : customColors.tagsBackgroundHover,
         borderRadius: CustomSize.borderRadius,
       ),
-      margin: const EdgeInsets.only(left: 5),
       padding: const EdgeInsets.symmetric(
         horizontal: 5,
         vertical: 2,
@@ -353,9 +333,37 @@ class _ModelItemState extends State<ModelItem> {
         tag,
         style: TextStyle(
           fontSize: 8,
-          color: tagTextColor != null ? stringToColor(tagTextColor) : customColors.tagsText,
+          color: tagTextColor != null
+              ? stringToColor(tagTextColor, defaultColor: customColors.tagsText ?? Colors.white)
+              : customColors.tagsText,
         ),
       ),
     );
   }
+}
+
+String modelTagColorSeq(int index) {
+  var colors = <Color>{
+    Colors.grey,
+    Colors.purple,
+    Colors.orange,
+    Colors.pink,
+    Colors.deepPurple,
+    Colors.indigo,
+    Colors.cyan,
+  };
+  return colorToString(colors.elementAt(index % colors.length));
+}
+
+List<Widget> formatTags(List<Widget> tags) {
+  var widgets = <Widget>[];
+
+  for (var i = 0; i < tags.length; i++) {
+    widgets.add(tags[i]);
+    if (i < tags.length - 1) {
+      widgets.add(const SizedBox(width: 5));
+    }
+  }
+
+  return widgets;
 }

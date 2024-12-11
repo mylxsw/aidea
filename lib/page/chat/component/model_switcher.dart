@@ -30,7 +30,6 @@ class ModelSwitcher extends StatelessWidget {
         onSelected(selected);
       },
       initValue: initValue?.uid(),
-      enableClear: true,
       title: AppLocale.switchModelTitle.getString(context),
       withCustom: true,
     );
