@@ -194,6 +194,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                     perRequestPriceController.value = TextEditingValue(text: state.model.meta!.perReqPrice.toString());
                   }
 
+                  shortNameController.value = TextEditingValue(text: state.model.shortName ?? '');
                   promptController.value = TextEditingValue(text: state.model.meta!.prompt ?? '');
                   supportVision = state.model.meta!.vision ?? false;
                   restricted = state.model.meta!.restricted ?? false;
