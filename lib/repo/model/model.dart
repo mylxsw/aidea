@@ -83,7 +83,7 @@ class Model {
 
   ModelPrice get modelPrice {
     if (priceInfo == null || priceInfo == '') {
-      return ModelPrice(input: 0, output: 0, note: '');
+      return ModelPrice(input: 0, output: 0, request: 0, note: '');
     }
 
     return ModelPrice.fromMap(jsonDecode(priceInfo!) as Map<String, dynamic>);
@@ -93,10 +93,11 @@ class Model {
 class ModelPrice {
   final int input;
   final int output;
+  final int request;
   final String note;
 
   bool get isFree {
-    return input == output && input == 0;
+    return input == output && input == 0 && request == 0;
   }
 
   bool get hasNote {
@@ -106,11 +107,13 @@ class ModelPrice {
   ModelPrice({
     required this.input,
     required this.output,
+    required this.request,
     required this.note,
   });
 
   ModelPrice.fromMap(Map<String, dynamic> map)
       : input = map['input'] ?? 0,
         output = map['output'] ?? 0,
+        request = map['request'] ?? 0,
         note = map['note'] ?? '';
 }

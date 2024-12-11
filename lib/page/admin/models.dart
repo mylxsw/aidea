@@ -354,13 +354,19 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
 
   String buildModelDescription(AdminModel mod) {
     String desc = '';
-    if (mod.inputPrice > 0 || mod.outputPrice > 0) {
+    if (mod.inputPrice > 0 || mod.outputPrice > 0 || mod.perReqPrice > 0) {
       desc += '💰 ';
-      if (mod.inputPrice == mod.outputPrice) {
-        desc += 'IO${AppLocale.creditUnit.getString(context)}${mod.inputPrice}';
-      } else {
-        desc +=
-            'I${AppLocale.creditUnit.getString(context)}${mod.inputPrice}/O${AppLocale.creditUnit.getString(context)}${mod.outputPrice}';
+      if (mod.inputPrice > 0 || mod.outputPrice > 0) {
+        if (mod.inputPrice == mod.outputPrice) {
+          desc += 'IO${AppLocale.creditUnit.getString(context)}${mod.inputPrice} ';
+        } else {
+          desc +=
+              'I${AppLocale.creditUnit.getString(context)}${mod.inputPrice} O${AppLocale.creditUnit.getString(context)}${mod.outputPrice} ';
+        }
+      }
+
+      if (mod.perReqPrice > 0) {
+        desc += 'R${AppLocale.creditUnit.getString(context)}${mod.perReqPrice}';
       }
     }
 

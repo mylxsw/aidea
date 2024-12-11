@@ -52,6 +52,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
   final TextEditingController maxContextController = TextEditingController();
   final TextEditingController inputPriceController = TextEditingController();
   final TextEditingController outputPriceController = TextEditingController();
+  final TextEditingController perRequestPriceController = TextEditingController();
   final TextEditingController promptController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
 
@@ -96,6 +97,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
     maxContextController.dispose();
     inputPriceController.dispose();
     outputPriceController.dispose();
+    perRequestPriceController.dispose();
     promptController.dispose();
     categoryController.dispose();
     tagController.dispose();
@@ -123,6 +125,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
     maxContextController.value = const TextEditingValue(text: '7500');
     inputPriceController.value = const TextEditingValue(text: '0');
     outputPriceController.value = const TextEditingValue(text: '0');
+    perRequestPriceController.value = const TextEditingValue(text: '0');
 
     super.initState();
   }
@@ -185,6 +188,10 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
 
                   if (state.model.meta!.outputPrice != null) {
                     outputPriceController.value = TextEditingValue(text: state.model.meta!.outputPrice.toString());
+                  }
+
+                  if (state.model.meta!.perReqPrice != null) {
+                    perRequestPriceController.value = TextEditingValue(text: state.model.meta!.perReqPrice.toString());
                   }
 
                   promptController.value = TextEditingValue(text: state.model.meta!.prompt ?? '');
@@ -346,6 +353,26 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                           alignment: Alignment.center,
                           child: Text(
                             'Credits/1K Token',
+                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
+                          ),
+                        ),
+                      ),
+                      EnhancedTextField(
+                        labelWidth: 120,
+                        labelText: 'Request Price',
+                        customColors: customColors,
+                        controller: perRequestPriceController,
+                        textAlignVertical: TextAlignVertical.top,
+                        hintText: 'Optional',
+                        showCounter: false,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        textDirection: TextDirection.rtl,
+                        suffixIcon: Container(
+                          width: 110,
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Credits/Request',
                             style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
                           ),
                         ),
@@ -759,6 +786,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
         maxContext: int.parse(maxContextController.text),
         inputPrice: int.parse(inputPriceController.text),
         outputPrice: int.parse(outputPriceController.text),
+        perReqPrice: int.parse(perRequestPriceController.text),
         prompt: promptController.text,
         vision: supportVision,
         restricted: restricted,

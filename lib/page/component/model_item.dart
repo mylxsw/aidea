@@ -248,10 +248,20 @@ class _ModelItemState extends State<ModelItem> {
       return const SizedBox();
     }
 
+    var priceText = '';
+    if (item.input > 0 || item.output > 0) {
+      priceText +=
+          '${AppLocale.input.getString(context)} ￠${item.input}, ${AppLocale.output.getString(context)} ￠${item.output}';
+    }
+
+    if (item.request > 0) {
+      priceText += ', ${AppLocale.perRequest.getString(context)} ￠${item.request}';
+    }
+
     return Row(
       children: [
         Text(
-          '${AppLocale.input.getString(context)} ￠${item.input}, ${AppLocale.output.getString(context)} ￠${item.output}',
+          priceText,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(

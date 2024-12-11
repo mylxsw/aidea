@@ -307,6 +307,7 @@ mixin AppLocale {
   static const String free = 'free';
   static const String input = 'input';
   static const String output = 'output';
+  static const String perRequest = 'per-request';
   static const String info = 'info';
 
   static const Map<String, dynamic> zh = {
@@ -601,6 +602,7 @@ mixin AppLocale {
     free: '限免',
     input: '输入',
     output: '输出',
+    perRequest: '每次',
     info: '详情',
   };
 
@@ -900,6 +902,7 @@ mixin AppLocale {
     free: 'Free',
     input: 'Input',
     output: 'Output',
+    perRequest: 'Per',
     info: 'Detail',
   };
 }

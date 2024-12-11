@@ -50,6 +50,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
   final TextEditingController maxContextController = TextEditingController();
   final TextEditingController inputPriceController = TextEditingController();
   final TextEditingController outputPriceController = TextEditingController();
+  final TextEditingController perReqPriceController = TextEditingController();
   final TextEditingController promptController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
 
@@ -91,6 +92,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
     maxContextController.dispose();
     inputPriceController.dispose();
     outputPriceController.dispose();
+    perReqPriceController.dispose();
     promptController.dispose();
     categoryController.dispose();
     tagController.dispose();
@@ -113,6 +115,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
     maxContextController.value = const TextEditingValue(text: '7500');
     inputPriceController.value = const TextEditingValue(text: '0');
     outputPriceController.value = const TextEditingValue(text: '0');
+    perReqPriceController.value = const TextEditingValue(text: '0');
     providers.add(AdminModelProvider());
 
     super.initState();
@@ -291,6 +294,26 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                           alignment: Alignment.center,
                           child: Text(
                             'Credits/1K Token',
+                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
+                          ),
+                        ),
+                      ),
+                      EnhancedTextField(
+                        labelWidth: 120,
+                        labelText: 'Request Price',
+                        customColors: customColors,
+                        controller: perReqPriceController,
+                        textAlignVertical: TextAlignVertical.top,
+                        hintText: 'Optional',
+                        showCounter: false,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        textDirection: TextDirection.rtl,
+                        suffixIcon: Container(
+                          width: 110,
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Credits/Request',
                             style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
                           ),
                         ),
@@ -685,6 +708,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
         maxContext: int.parse(maxContextController.text),
         inputPrice: int.parse(inputPriceController.text),
         outputPrice: int.parse(outputPriceController.text),
+        perReqPrice: int.parse(perReqPriceController.text),
         prompt: promptController.text,
         vision: supportVision,
         restricted: restricted,
