@@ -167,7 +167,7 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
                       controller: secretController,
                       textAlignVertical: TextAlignVertical.top,
                       hintText: 'Enter API Key',
-                      maxLength: 255,
+                      maxLength: 2048,
                       obscureText: true,
                       showCounter: false,
                     ),
