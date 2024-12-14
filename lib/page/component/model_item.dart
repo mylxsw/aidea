@@ -84,7 +84,7 @@ class _ModelItemState extends State<ModelItem> {
                           customColors,
                           AppLocale.free.getString(context),
                           tagTextColor: 'FFFFFFFF',
-                          tagBgColor: '2196F3',
+                          tagBgColor: 'FF2196F3',
                         ));
                       }
                       if (item.tag != null) {
@@ -104,7 +104,7 @@ class _ModelItemState extends State<ModelItem> {
                           customColors,
                           AppLocale.visionTag.getString(context),
                           tagTextColor: 'FFFFFFFF',
-                          tagBgColor: '4CAF50',
+                          tagBgColor: 'FF4CAF50',
                         ));
                       }
 
@@ -113,7 +113,7 @@ class _ModelItemState extends State<ModelItem> {
                           customColors,
                           AppLocale.newTag.getString(context),
                           tagTextColor: 'FFFFFFFF',
-                          tagBgColor: 'F44336',
+                          tagBgColor: 'FFF44336',
                         ));
                       }
 
