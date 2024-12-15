@@ -1,4 +1,5 @@
 import 'package:askaide/page/component/theme/custom_size.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
 
 class EnhancedPopupMenuItem {
@@ -20,23 +21,34 @@ class EnhancedPopupMenu extends StatelessWidget {
   final IconData? icon;
   final Color? color;
   final String? tooltip;
+  final void Function()? onOpened;
+  final void Function()? onCanceled;
+
   const EnhancedPopupMenu({
     super.key,
     required this.items,
     this.icon,
     this.color,
     this.tooltip,
+    this.onOpened,
+    this.onCanceled,
   });
 
   @override
   Widget build(BuildContext context) {
+    final customColors = Theme.of(context).extension<CustomColors>()!;
+
     return PopupMenuButton(
       icon: Icon(icon ?? Icons.more_horiz, color: color),
       tooltip: tooltip,
       splashRadius: 20,
       elevation: 0,
+      enableFeedback: true,
+      color: customColors.backgroundColor,
       shape: RoundedRectangleBorder(borderRadius: CustomSize.borderRadius),
       position: PopupMenuPosition.under,
+      onOpened: onOpened,
+      onCanceled: onCanceled,
       onSelected: (value) {
         if (value.onTap != null) {
           value.onTap!(context);

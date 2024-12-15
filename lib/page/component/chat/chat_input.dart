@@ -8,7 +8,6 @@ import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/voice_record.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/file_preview.dart';
-import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:camera/camera.dart';
@@ -90,6 +89,9 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
   var maxLines = 5;
   var minLines = 1;
   var hasCamera = false;
+
+  // Whether to display the bottom tool bar
+  var showBottomTools = false;
 
   @override
   void initState() {
@@ -386,7 +388,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
       );
     }
 
-    return _textController.text == ''
+    return _textController.text == '' && !PlatformTool.isWeb()
         ? InkWell(
             onTap: () {
               HapticFeedbackHelper.mediumImpact();
@@ -461,6 +463,8 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
     }
   }
 
+  final _menuKey = GlobalKey<PopupMenuButtonState>();
+
   /// Build image or file upload button
   Widget buildUploadButtons(
     BuildContext context,
@@ -487,121 +491,122 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
       );
     }
 
-    return IconButton(
-      icon: const Icon(Icons.add),
-      color: customColors.chatInputPanelText,
-      splashRadius: 20,
-      tooltip: 'Tools',
-      onPressed: () {
-        openListSelectDialog(
-          context,
-          <SelectorItem<String>>[
-            if (hasCamera)
-              SelectorItem(
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+    return Listener(
+      onPointerDown: (_) async {
+        if (FocusScope.of(context).hasFocus) {
+          FocusScope.of(context).unfocus();
+          await Future.delayed(const Duration(milliseconds: 200));
+        }
+        _menuKey.currentState?.showButtonMenu();
+      },
+      child: PopupMenuButton(
+        key: _menuKey,
+        enabled: false,
+        icon: Icon(Icons.add, color: customColors.chatInputPanelText),
+        splashRadius: 20,
+        elevation: 0,
+        enableFeedback: true,
+        color: customColors.backgroundColor,
+        shape: RoundedRectangleBorder(borderRadius: CustomSize.borderRadius),
+        position: PopupMenuPosition.under,
+        onSelected: (value) {
+          switch (value) {
+            case 'take_photo':
+              onTakePhotoButtonPressed(context, customColors);
+              break;
+            case 'photo_library':
+              onImageUploadButtonPressed();
+              break;
+            case 'file_library':
+              onFileUploadButtonPressed();
+              break;
+          }
+        },
+        itemBuilder: (context) {
+          return <PopupMenuItem>[
+            if (canUploadImage)
+              PopupMenuItem(
+                value: 'take_photo',
+                child: Row(
                   children: [
-                    const Icon(Icons.camera_alt, size: 50),
-                    const SizedBox(height: 5),
+                    const Icon(Icons.camera_alt),
+                    const SizedBox(width: 10),
                     Text(
                       AppLocale.takePhoto.getString(context),
-                      style: const TextStyle(fontSize: 12),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 14),
                     ),
                   ],
                 ),
-                'take-photo',
               ),
-            SelectorItem(
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.photo_library, size: 50),
-                  const SizedBox(height: 5),
-                  Text(
-                    AppLocale.photoLibrary.getString(context),
-                    style: const TextStyle(fontSize: 12),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-              'select-image',
-            ),
-            if (canUploadFile)
-              SelectorItem(
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+            if (canUploadImage)
+              PopupMenuItem(
+                value: 'photo_library',
+                child: Row(
                   children: [
-                    const Icon(Icons.upload_file_sharp, size: 50),
-                    const SizedBox(height: 5),
+                    const Icon(Icons.photo_library),
+                    const SizedBox(width: 10),
+                    Text(
+                      AppLocale.photoLibrary.getString(context),
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+            if (canUploadFile)
+              PopupMenuItem(
+                value: 'file_library',
+                child: Row(
+                  children: [
+                    const Icon(Icons.upload_file_sharp),
+                    const SizedBox(width: 10),
                     Text(
                       AppLocale.fileLibrary.getString(context),
-                      style: const TextStyle(fontSize: 12),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 14),
                     ),
                   ],
                 ),
-                'select-file',
               ),
-          ],
-          (value) {
-            switch (value.value) {
-              case 'select-image':
-                onImageUploadButtonPressed();
-                break;
-              case 'select-file':
-                onFileUploadButtonPressed();
-                break;
-              case 'take-photo':
-                HapticFeedbackHelper.mediumImpact();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Scaffold(
-                      appBar: AppBar(
-                        title: Text(AppLocale.takePhoto.getString(context)),
-                        backgroundColor: customColors.backgroundColor,
-                      ),
-                      body: CameraAwesomeBuilder.awesome(
-                        saveConfig: SaveConfig.photo(),
-                        enablePhysicalButton: true,
-                        onMediaCaptureEvent: (mediaCapture) async {
-                          if (mediaCapture.status == MediaCaptureStatus.success) {
-                            final file = FileUpload(
-                                file: PlatformFile(
-                              path: mediaCapture.captureRequest.path!,
-                              name: mediaCapture.captureRequest.path!.split('/').last,
-                              size: await File(mediaCapture.captureRequest.path!).length(),
-                            ));
+          ];
+        },
+      ),
+    );
+  }
 
-                            final files = widget.selectedImageFiles ?? [];
-                            files.add(file);
-                            widget.onImageSelected?.call(files.sublist(0, files.length > 4 ? 4 : files.length));
+  // Take a photo
+  void onTakePhotoButtonPressed(BuildContext context, CustomColors customColors) {
+    HapticFeedbackHelper.mediumImpact();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(
+            title: Text(AppLocale.takePhoto.getString(context)),
+            backgroundColor: customColors.backgroundColor,
+          ),
+          body: CameraAwesomeBuilder.awesome(
+            saveConfig: SaveConfig.photo(),
+            enablePhysicalButton: true,
+            onMediaCaptureEvent: (mediaCapture) async {
+              if (mediaCapture.status == MediaCaptureStatus.success) {
+                final file = FileUpload(
+                    file: PlatformFile(
+                  path: mediaCapture.captureRequest.path!,
+                  name: mediaCapture.captureRequest.path!.split('/').last,
+                  size: await File(mediaCapture.captureRequest.path!).length(),
+                ));
 
-                            if (context.mounted) {
-                              context.pop();
-                            }
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                ).whenComplete(() {
+                final files = widget.selectedImageFiles ?? [];
+                files.add(file);
+                widget.onImageSelected?.call(files.sublist(0, files.length > 4 ? 4 : files.length));
+
+                if (context.mounted) {
                   context.pop();
-                });
-                return false;
-              default:
-            }
-            return true;
-          },
-          heightFactor: 0.3,
-          horizontal: true,
-          horizontalCount: canUploadFile ? 3 : 2,
-        );
-      },
+                }
+              }
+            },
+          ),
+        ),
+      ),
     );
   }
 
