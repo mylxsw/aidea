@@ -16,6 +16,7 @@ class Model {
   String? tagTextColor;
   String? tagBgColor;
   bool isNew = false;
+  bool isRecommend = false;
   String category;
 
   bool isDefault;
@@ -36,6 +37,7 @@ class Model {
     this.tagTextColor,
     this.tagBgColor,
     this.isNew = false,
+    this.isRecommend = false,
     this.isDefault = false,
   });
 
@@ -58,6 +60,7 @@ class Model {
     String? tagTextColor,
     String? tagBgColor,
     bool? isNew,
+    bool? isRecommend,
     String? category,
     bool? isDefault,
   }) {
@@ -76,6 +79,7 @@ class Model {
       tagTextColor: tagTextColor ?? this.tagTextColor,
       tagBgColor: tagBgColor ?? this.tagBgColor,
       isNew: isNew ?? this.isNew,
+      isRecommend: isRecommend ?? this.isRecommend,
       category: category ?? this.category,
       isDefault: isDefault ?? false,
     );

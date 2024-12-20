@@ -52,7 +52,8 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
   final TextEditingController maxContextController = TextEditingController();
   final TextEditingController inputPriceController = TextEditingController();
   final TextEditingController outputPriceController = TextEditingController();
-  final TextEditingController perRequestPriceController = TextEditingController();
+  final TextEditingController perRequestPriceController =
+      TextEditingController();
   final TextEditingController promptController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
 
@@ -70,6 +71,9 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
 
   /// 是否是上新
   bool isNew = false;
+
+  /// 是否是推荐模型
+  bool isRecommended = false;
 
   /// Tag
   final TextEditingController tagController = TextEditingController();
@@ -149,7 +153,8 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
         enabled: false,
         child: SingleChildScrollView(
           child: BlocListener<ModelBloc, ModelState>(
-            listenWhen: (previous, current) => current is ModelOperationResult || current is ModelLoaded,
+            listenWhen: (previous, current) =>
+                current is ModelOperationResult || current is ModelLoaded,
             listener: (context, state) {
               if (state is ModelOperationResult) {
                 if (state.success) {
@@ -161,10 +166,12 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
               }
 
               if (state is ModelLoaded) {
-                modelIdController.value = TextEditingValue(text: state.model.modelId);
+                modelIdController.value =
+                    TextEditingValue(text: state.model.modelId);
                 nameController.value = TextEditingValue(text: state.model.name);
                 if (state.model.description != null) {
-                  descriptionController.value = TextEditingValue(text: state.model.description!);
+                  descriptionController.value =
+                      TextEditingValue(text: state.model.description!);
                 }
 
                 if (state.model.avatarUrl != null) {
@@ -179,30 +186,41 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
 
                 if (state.model.meta != null) {
                   if (state.model.meta!.maxContext != null) {
-                    maxContextController.value = TextEditingValue(text: state.model.meta!.maxContext.toString());
+                    maxContextController.value = TextEditingValue(
+                        text: state.model.meta!.maxContext.toString());
                   }
 
                   if (state.model.meta!.inputPrice != null) {
-                    inputPriceController.value = TextEditingValue(text: state.model.meta!.inputPrice.toString());
+                    inputPriceController.value = TextEditingValue(
+                        text: state.model.meta!.inputPrice.toString());
                   }
 
                   if (state.model.meta!.outputPrice != null) {
-                    outputPriceController.value = TextEditingValue(text: state.model.meta!.outputPrice.toString());
+                    outputPriceController.value = TextEditingValue(
+                        text: state.model.meta!.outputPrice.toString());
                   }
 
                   if (state.model.meta!.perReqPrice != null) {
-                    perRequestPriceController.value = TextEditingValue(text: state.model.meta!.perReqPrice.toString());
+                    perRequestPriceController.value = TextEditingValue(
+                        text: state.model.meta!.perReqPrice.toString());
                   }
 
-                  shortNameController.value = TextEditingValue(text: state.model.shortName ?? '');
-                  promptController.value = TextEditingValue(text: state.model.meta!.prompt ?? '');
+                  shortNameController.value =
+                      TextEditingValue(text: state.model.shortName ?? '');
+                  promptController.value =
+                      TextEditingValue(text: state.model.meta!.prompt ?? '');
                   supportVision = state.model.meta!.vision ?? false;
                   restricted = state.model.meta!.restricted ?? false;
-                  tagController.value = TextEditingValue(text: state.model.meta!.tag ?? '');
+                  tagController.value =
+                      TextEditingValue(text: state.model.meta!.tag ?? '');
                   tagTextColor = state.model.meta!.tagTextColor;
                   tagBgColor = state.model.meta!.tagBgColor;
                   isNew = state.model.meta!.isNew ?? false;
-                  categoryController.value = TextEditingValue(text: state.model.meta!.category ?? '');
+                  isRecommended = state.model.meta!.isRecommend ?? false;
+                  categoryController.value =
+                      TextEditingValue(text: state.model.meta!.category ?? '');
+
+                  setState(() {});
                 }
               }
 
@@ -211,7 +229,8 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
               });
             },
             child: Container(
-              padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 20),
+              padding: const EdgeInsets.only(
+                  left: 10, right: 10, top: 10, bottom: 20),
               child: Column(
                 children: [
                   ColumnBlock(
@@ -266,8 +285,10 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                                     ? null
                                     : DecorationImage(
                                         image: (avatarUrl!.startsWith('http')
-                                            ? CachedNetworkImageProviderEnhanced(avatarUrl!)
-                                            : FileImage(File(avatarUrl!))) as ImageProvider,
+                                            ? CachedNetworkImageProviderEnhanced(
+                                                avatarUrl!)
+                                            : FileImage(File(
+                                                avatarUrl!))) as ImageProvider,
                                         fit: BoxFit.cover,
                                       ),
                               ),
@@ -327,14 +348,18 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                         hintText: 'Optional',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
                             'Credits/1K Token',
-                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
+                            style: TextStyle(
+                                color: customColors.weakTextColor,
+                                fontSize: 12),
                           ),
                         ),
                       ),
@@ -347,14 +372,18 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                         hintText: 'Optional',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
                             'Credits/1K Token',
-                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
+                            style: TextStyle(
+                                color: customColors.weakTextColor,
+                                fontSize: 12),
                           ),
                         ),
                       ),
@@ -367,14 +396,18 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                         hintText: 'Optional',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
                             'Credits/Request',
-                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
+                            style: TextStyle(
+                                color: customColors.weakTextColor,
+                                fontSize: 12),
                           ),
                         ),
                       ),
@@ -383,17 +416,22 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                         customColors: customColors,
                         controller: maxContextController,
                         textAlignVertical: TextAlignVertical.top,
-                        hintText: 'Subtract the expected output length from the maximum context.',
+                        hintText:
+                            'Subtract the expected output length from the maximum context.',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 50,
                           alignment: Alignment.center,
                           child: Text(
                             'Token',
-                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
+                            style: TextStyle(
+                                color: customColors.weakTextColor,
+                                fontSize: 12),
                           ),
                         ),
                       ),
@@ -401,7 +439,8 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                   ),
                   for (var i = 0; i < providers.length; i++)
                     Container(
-                      margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
+                      margin:
+                          const EdgeInsets.only(bottom: 10, left: 5, right: 5),
                       child: Slidable(
                         endActionPane: ActionPane(
                           motion: const ScrollMotion(),
@@ -414,13 +453,15 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                               icon: Icons.delete,
                               onPressed: (_) {
                                 if (providers.length == 1) {
-                                  showErrorMessage('At least one channel is needed');
+                                  showErrorMessage(
+                                      'At least one channel is needed');
                                   return;
                                 }
 
                                 openConfirmDialog(
                                   context,
-                                  AppLocale.confirmToDeleteRoom.getString(context),
+                                  AppLocale.confirmToDeleteRoom
+                                      .getString(context),
                                   () {
                                     setState(() {
                                       providers.removeAt(i);
@@ -457,7 +498,8 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                                     ...modelChannels
                                         .map(
                                           (e) => SelectorItem(
-                                            Text('${e.id == null ? '【System】' : ''}${e.name}'),
+                                            Text(
+                                                '${e.id == null ? '【System】' : ''}${e.name}'),
                                             e,
                                           ),
                                         )
@@ -499,14 +541,16 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                                     type: QuickAlertType.info,
                                     text:
                                         'When the model identifier corresponding to the channel does not match the ID here, calling the channel interface will automatically replace the model with the value configured here.',
-                                    confirmBtnText: AppLocale.gotIt.getString(context),
+                                    confirmBtnText:
+                                        AppLocale.gotIt.getString(context),
                                     showCancelBtn: false,
                                   );
                                 },
                                 child: Icon(
                                   Icons.help_outline,
                                   size: 16,
-                                  color: customColors.weakLinkColor?.withAlpha(150),
+                                  color: customColors.weakLinkColor
+                                      ?.withAlpha(150),
                                 ),
                               ),
                             ),
@@ -562,15 +606,18 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                                     showBeautyDialog(
                                       context,
                                       type: QuickAlertType.info,
-                                      text: 'Whether the current model supports visual capabilities.',
-                                      confirmBtnText: AppLocale.gotIt.getString(context),
+                                      text:
+                                          'Whether the current model supports visual capabilities.',
+                                      confirmBtnText:
+                                          AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
                                     );
                                   },
                                   child: Icon(
                                     Icons.help_outline,
                                     size: 16,
-                                    color: customColors.weakLinkColor?.withAlpha(150),
+                                    color: customColors.weakLinkColor
+                                        ?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -603,14 +650,16 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                                       type: QuickAlertType.info,
                                       text:
                                           'Whether to display a "New" icon next to the model to inform users that this is a new model.',
-                                      confirmBtnText: AppLocale.gotIt.getString(context),
+                                      confirmBtnText:
+                                          AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
                                     );
                                   },
                                   child: Icon(
                                     Icons.help_outline,
                                     size: 16,
-                                    color: customColors.weakLinkColor?.withAlpha(150),
+                                    color: customColors.weakLinkColor
+                                        ?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -621,6 +670,48 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                               onChanged: (value) {
                                 setState(() {
                                   isNew = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Text(
+                                  'Recommended',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 5),
+                                InkWell(
+                                  onTap: () {
+                                    showBeautyDialog(
+                                      context,
+                                      type: QuickAlertType.info,
+                                      text:
+                                          'Whether to display a "Recommended" icon next to the model to inform users that this is a recommended model.',
+                                      confirmBtnText:
+                                          AppLocale.gotIt.getString(context),
+                                      showCancelBtn: false,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.help_outline,
+                                    size: 16,
+                                    color: customColors.weakLinkColor
+                                        ?.withAlpha(150),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            CupertinoSwitch(
+                              activeColor: customColors.linkColor,
+                              value: isRecommended,
+                              onChanged: (value) {
+                                setState(() {
+                                  isRecommended = value;
                                 });
                               },
                             ),
@@ -643,14 +734,16 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                                       type: QuickAlertType.info,
                                       text:
                                           'Restricted models refer to models that cannot be used in Chinese Mainland due to policy factors.',
-                                      confirmBtnText: AppLocale.gotIt.getString(context),
+                                      confirmBtnText:
+                                          AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
                                     );
                                   },
                                   child: Icon(
                                     Icons.help_outline,
                                     size: 16,
-                                    color: customColors.weakLinkColor?.withAlpha(150),
+                                    color: customColors.weakLinkColor
+                                        ?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -708,7 +801,9 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                         color: customColors.weakLinkColor,
                         fontSize: 15,
                         icon: Icon(
-                          showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
+                          showAdvancedOptions
+                              ? Icons.unfold_less
+                              : Icons.unfold_more,
                           color: customColors.weakLinkColor,
                           size: 15,
                         ),
@@ -725,8 +820,10 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                           title: AppLocale.save.getString(context),
                           onPressed: onSubmit,
                           icon: editLocked
-                              ? const Icon(Icons.lock, color: Colors.white, size: 16)
-                              : const Icon(Icons.lock_open, color: Colors.white, size: 16),
+                              ? const Icon(Icons.lock,
+                                  color: Colors.white, size: 16)
+                              : const Icon(Icons.lock_open,
+                                  color: Colors.white, size: 16),
                         ),
                       ),
                     ],
@@ -757,7 +854,9 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
       return;
     }
 
-    if (avatarUrl != null && (!avatarUrl!.startsWith('http://') && !avatarUrl!.startsWith('https://'))) {
+    if (avatarUrl != null &&
+        (!avatarUrl!.startsWith('http://') &&
+            !avatarUrl!.startsWith('https://'))) {
       final cancel = BotToast.showCustomLoading(
         toastBuilder: (cancel) {
           return const LoadingIndicator(
@@ -768,7 +867,8 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
       );
 
       try {
-        final res = await ImageUploader(widget.setting).upload(avatarUrl!, usage: 'avatar');
+        final res = await ImageUploader(widget.setting)
+            .upload(avatarUrl!, usage: 'avatar');
         avatarUrl = res.url;
       } catch (e) {
         showErrorMessage('Failed to upload avatar');
@@ -796,6 +896,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
         tagTextColor: tagTextColor,
         tagBgColor: tagBgColor,
         isNew: isNew,
+        isRecommend: isRecommended,
       ),
       status: modelEnabled ? 1 : 2,
       providers: ps,

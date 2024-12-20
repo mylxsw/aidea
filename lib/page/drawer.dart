@@ -3,7 +3,6 @@ import 'package:askaide/bloc/chat_chat_bloc.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/account_quota_card.dart';
-import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/user.dart';
 import 'package:flutter/material.dart';
@@ -45,21 +44,21 @@ class _LeftDrawerState extends State<LeftDrawer> {
                 child: Column(
                   children: [
                     SizedBox(
-                      height: 170,
+                      height: 150,
                       child: DrawerHeader(
                         padding: PlatformTool.isMacOS()
                             ? const EdgeInsets.only(top: kToolbarHeight)
                             : const EdgeInsets.all(0),
                         margin: const EdgeInsets.all(0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          image: DecorationImage(
-                            image: CachedNetworkImageProviderEnhanced(
-                              "https://ssl.aicode.cc/ai-server/assets/quota-card-bg.webp-thumb1000",
-                            ),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                        // decoration: BoxDecoration(
+                        //   color: Colors.white,
+                        //   image: DecorationImage(
+                        //     image: CachedNetworkImageProviderEnhanced(
+                        //       "https://ssl.aicode.cc/ai-server/assets/quota-card-bg.webp-thumb1000",
+                        //     ),
+                        //     fit: BoxFit.cover,
+                        //   ),
+                        // ),
                         child: BlocBuilder<AccountBloc, AccountState>(
                           builder: (_, state) {
                             UserInfo? userInfo;
@@ -72,7 +71,9 @@ class _LeftDrawerState extends State<LeftDrawer> {
                               noBorder: true,
                               onPaymentReturn: () {
                                 if (userInfo != null) {
-                                  context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
+                                  context
+                                      .read<AccountBloc>()
+                                      .add(AccountLoadEvent(cache: false));
                                 }
                               },
                             );
@@ -82,7 +83,8 @@ class _LeftDrawerState extends State<LeftDrawer> {
                     ),
                     const SizedBox(height: 15),
                     BlocBuilder<ChatChatBloc, ChatChatState>(
-                      buildWhen: (previous, current) => current is ChatChatRecentHistoriesLoaded,
+                      buildWhen: (previous, current) =>
+                          current is ChatChatRecentHistoriesLoaded,
                       builder: (_, state) {
                         if (state is ChatChatRecentHistoriesLoaded) {
                           return ListView.builder(
@@ -93,7 +95,8 @@ class _LeftDrawerState extends State<LeftDrawer> {
                             itemBuilder: (context, index) {
                               final item = state.histories[index];
                               return ListTile(
-                                leading: const Icon(Icons.question_answer_outlined),
+                                leading:
+                                    const Icon(Icons.question_answer_outlined),
                                 title: Text(
                                   item.title ?? 'Unknown',
                                   maxLines: 1,
@@ -116,7 +119,9 @@ class _LeftDrawerState extends State<LeftDrawer> {
                       title: Text(AppLocale.moreHistories.getString(context)),
                       onTap: () {
                         context.push('/chat-chat/history').whenComplete(() {
-                          context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
+                          context
+                              .read<ChatChatBloc>()
+                              .add(ChatChatLoadRecentHistories());
                         });
                       },
                     ),
@@ -201,7 +206,8 @@ class _LeftDrawerState extends State<LeftDrawer> {
                             mode: LaunchMode.externalApplication,
                           );
                         },
-                        child: Image.asset('assets/app-256-transparent.png', width: 25),
+                        child: Image.asset('assets/app-256-transparent.png',
+                            width: 25),
                       ),
                       GestureDetector(
                         onTap: () {

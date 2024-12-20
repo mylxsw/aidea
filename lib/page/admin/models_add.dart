@@ -73,6 +73,9 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
   /// 是否是上新
   bool isNew = false;
 
+  /// 是否是推荐模型
+  bool isRecommended = false;
+
   /// Tag
   final TextEditingController tagController = TextEditingController();
   String? tagTextColor;
@@ -152,7 +155,8 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
               }
             },
             child: Container(
-              padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 20),
+              padding: const EdgeInsets.only(
+                  left: 10, right: 10, top: 10, bottom: 20),
               child: Column(
                 children: [
                   ColumnBlock(
@@ -206,8 +210,10 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                     ? null
                                     : DecorationImage(
                                         image: (avatarUrl!.startsWith('http')
-                                            ? CachedNetworkImageProviderEnhanced(avatarUrl!)
-                                            : FileImage(File(avatarUrl!))) as ImageProvider,
+                                            ? CachedNetworkImageProviderEnhanced(
+                                                avatarUrl!)
+                                            : FileImage(File(
+                                                avatarUrl!))) as ImageProvider,
                                         fit: BoxFit.cover,
                                       ),
                               ),
@@ -267,14 +273,18 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         hintText: 'Optional',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
                             'Credits/1K Token',
-                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
+                            style: TextStyle(
+                                color: customColors.weakTextColor,
+                                fontSize: 12),
                           ),
                         ),
                       ),
@@ -287,14 +297,18 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         hintText: 'Optional',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
                             'Credits/1K Token',
-                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
+                            style: TextStyle(
+                                color: customColors.weakTextColor,
+                                fontSize: 12),
                           ),
                         ),
                       ),
@@ -307,14 +321,18 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         hintText: 'Optional',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
                             'Credits/Request',
-                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
+                            style: TextStyle(
+                                color: customColors.weakTextColor,
+                                fontSize: 12),
                           ),
                         ),
                       ),
@@ -324,17 +342,22 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         customColors: customColors,
                         controller: maxContextController,
                         textAlignVertical: TextAlignVertical.top,
-                        hintText: 'Subtract the expected output length from the maximum context.',
+                        hintText:
+                            'Subtract the expected output length from the maximum context.',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 50,
                           alignment: Alignment.center,
                           child: Text(
                             'Token',
-                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
+                            style: TextStyle(
+                                color: customColors.weakTextColor,
+                                fontSize: 12),
                           ),
                         ),
                       ),
@@ -342,7 +365,8 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                   ),
                   ...providers.map((e) {
                     return Container(
-                      margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
+                      margin:
+                          const EdgeInsets.only(bottom: 10, left: 5, right: 5),
                       child: Slidable(
                         endActionPane: ActionPane(
                           motion: const ScrollMotion(),
@@ -355,16 +379,19 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                               icon: Icons.delete,
                               onPressed: (_) {
                                 if (providers.length == 1) {
-                                  showErrorMessage('At least one channel is needed');
+                                  showErrorMessage(
+                                      'At least one channel is needed');
                                   return;
                                 }
 
                                 openConfirmDialog(
                                   context,
-                                  AppLocale.confirmToDeleteRoom.getString(context),
+                                  AppLocale.confirmToDeleteRoom
+                                      .getString(context),
                                   () {
                                     setState(() {
-                                      providers.removeWhere((item) => item == e);
+                                      providers
+                                          .removeWhere((item) => item == e);
                                     });
                                   },
                                   danger: true,
@@ -398,7 +425,8 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                     ...modelChannels
                                         .map(
                                           (e) => SelectorItem(
-                                            Text('${e.id == null ? '【System】' : ''}${e.name}'),
+                                            Text(
+                                                '${e.id == null ? '【System】' : ''}${e.name}'),
                                             e,
                                           ),
                                         )
@@ -484,15 +512,18 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                     showBeautyDialog(
                                       context,
                                       type: QuickAlertType.info,
-                                      text: 'Whether the current model supports visual capabilities.',
-                                      confirmBtnText: AppLocale.gotIt.getString(context),
+                                      text:
+                                          'Whether the current model supports visual capabilities.',
+                                      confirmBtnText:
+                                          AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
                                     );
                                   },
                                   child: Icon(
                                     Icons.help_outline,
                                     size: 16,
-                                    color: customColors.weakLinkColor?.withAlpha(150),
+                                    color: customColors.weakLinkColor
+                                        ?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -525,14 +556,16 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                       type: QuickAlertType.info,
                                       text:
                                           'Whether to display a "New" icon next to the model to inform users that this is a new model.',
-                                      confirmBtnText: AppLocale.gotIt.getString(context),
+                                      confirmBtnText:
+                                          AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
                                     );
                                   },
                                   child: Icon(
                                     Icons.help_outline,
                                     size: 16,
-                                    color: customColors.weakLinkColor?.withAlpha(150),
+                                    color: customColors.weakLinkColor
+                                        ?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -543,6 +576,48 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                               onChanged: (value) {
                                 setState(() {
                                   isNew = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Text(
+                                  'Recommended',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 5),
+                                InkWell(
+                                  onTap: () {
+                                    showBeautyDialog(
+                                      context,
+                                      type: QuickAlertType.info,
+                                      text:
+                                          'Whether to display a "Recommended" icon next to the model to inform users that this is a recommended model.',
+                                      confirmBtnText:
+                                          AppLocale.gotIt.getString(context),
+                                      showCancelBtn: false,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.help_outline,
+                                    size: 16,
+                                    color: customColors.weakLinkColor
+                                        ?.withAlpha(150),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            CupertinoSwitch(
+                              activeColor: customColors.linkColor,
+                              value: isRecommended,
+                              onChanged: (value) {
+                                setState(() {
+                                  isRecommended = value;
                                 });
                               },
                             ),
@@ -565,14 +640,16 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                       type: QuickAlertType.info,
                                       text:
                                           'Restricted models refer to models that cannot be used in Chinese Mainland due to policy factors.',
-                                      confirmBtnText: AppLocale.gotIt.getString(context),
+                                      confirmBtnText:
+                                          AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
                                     );
                                   },
                                   child: Icon(
                                     Icons.help_outline,
                                     size: 16,
-                                    color: customColors.weakLinkColor?.withAlpha(150),
+                                    color: customColors.weakLinkColor
+                                        ?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -630,7 +707,9 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         color: customColors.weakLinkColor,
                         fontSize: 15,
                         icon: Icon(
-                          showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
+                          showAdvancedOptions
+                              ? Icons.unfold_less
+                              : Icons.unfold_more,
                           color: customColors.weakLinkColor,
                           size: 15,
                         ),
@@ -677,7 +756,9 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
       return;
     }
 
-    if (avatarUrl != null && (!avatarUrl!.startsWith('http://') && !avatarUrl!.startsWith('https://'))) {
+    if (avatarUrl != null &&
+        (!avatarUrl!.startsWith('http://') &&
+            !avatarUrl!.startsWith('https://'))) {
       final cancel = BotToast.showCustomLoading(
         toastBuilder: (cancel) {
           return const LoadingIndicator(
@@ -688,7 +769,8 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
       );
 
       try {
-        final res = await ImageUploader(widget.setting).upload(avatarUrl!, usage: 'avatar');
+        final res = await ImageUploader(widget.setting)
+            .upload(avatarUrl!, usage: 'avatar');
         avatarUrl = res.url;
       } catch (e) {
         showErrorMessage('Failed to upload avatar');
@@ -717,6 +799,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
         tagBgColor: tagBgColor,
         category: categoryController.text,
         isNew: isNew,
+        isRecommend: isRecommended,
       ),
       status: modelEnabled ? 1 : 2,
       providers: ps,

@@ -19,7 +19,8 @@ class HomeChatHistoryPage extends StatefulWidget {
   final SettingRepository setting;
   final ChatMessageRepository chatMessageRepo;
 
-  const HomeChatHistoryPage({super.key, required this.setting, required this.chatMessageRepo});
+  const HomeChatHistoryPage(
+      {super.key, required this.setting, required this.chatMessageRepo});
 
   @override
   State<HomeChatHistoryPage> createState() => _HomeChatHistoryPageState();
@@ -88,7 +89,8 @@ class _HomeChatHistoryPageState extends State<HomeChatHistoryPage> {
               ),
               Expanded(
                 child: BlocListener<ChatChatBloc, ChatChatState>(
-                  listenWhen: (previous, current) => current is ChatChatRecentHistoriesLoaded,
+                  listenWhen: (previous, current) =>
+                      current is ChatChatRecentHistoriesLoaded,
                   listener: (context, state) {
                     if (state is ChatChatRecentHistoriesLoaded) {
                       datasource.refresh(false, keyword);
@@ -108,10 +110,14 @@ class _HomeChatHistoryPageState extends State<HomeChatHistoryPage> {
                             customColors: customColors,
                             onTap: () {
                               context
-                                  .push('/chat-anywhere?chat_id=${item.id}&model=${item.model}&title=${item.title}')
+                                  .push(
+                                      '/chat-anywhere?chat_id=${item.id}&model=${item.model}&title=${item.title}')
                                   .whenComplete(() {
-                                FocusScope.of(context).requestFocus(FocusNode());
-                                context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
+                                FocusScope.of(context)
+                                    .requestFocus(FocusNode());
+                                context
+                                    .read<ChatChatBloc>()
+                                    .add(ChatChatLoadRecentHistories());
                               });
                             },
                           );

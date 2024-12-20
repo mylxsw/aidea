@@ -133,6 +133,7 @@ dependencies:
   camera: ^0.11.0+2
   camerawesome: ^2.1.0
   flutter_markdown_latex: ^0.3.4
+  auto_size_text: ^3.0.0
   
 dev_dependencies:
   flutter_test:

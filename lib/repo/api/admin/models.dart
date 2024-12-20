@@ -35,7 +35,9 @@ class AdminModel {
       avatarUrl: json['avatar_url'],
       status: json['status'],
       meta: json['meta'] != null ? AdminModelMeta.fromJson(json['meta']) : null,
-      providers: ((json['providers'] ?? []) as List).map((e) => AdminModelProvider.fromJson(e)).toList(),
+      providers: ((json['providers'] ?? []) as List)
+          .map((e) => AdminModelProvider.fromJson(e))
+          .toList(),
     );
   }
 
@@ -67,6 +69,7 @@ class AdminModelMeta {
   String? tagBgColor;
 
   bool? isNew;
+  bool? isRecommend;
   String? category;
 
   AdminModelMeta({
@@ -81,6 +84,7 @@ class AdminModelMeta {
     this.tagTextColor,
     this.tagBgColor,
     this.isNew,
+    this.isRecommend,
     this.category,
   });
 
@@ -97,6 +101,7 @@ class AdminModelMeta {
       tagTextColor: json['tag_text_color'],
       tagBgColor: json['tag_bg_color'],
       isNew: json['is_new'] ?? false,
+      isRecommend: json['is_recommend'] ?? false,
       category: json['category'],
     );
   }
@@ -114,6 +119,7 @@ class AdminModelMeta {
       'tag_text_color': tagTextColor,
       'tag_bg_color': tagBgColor,
       'is_new': isNew,
+      'is_recommend': isRecommend,
       'category': category,
     };
   }

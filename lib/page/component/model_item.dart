@@ -8,6 +8,7 @@ import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/model/model.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:quickalert/models/quickalert_type.dart';
@@ -36,6 +37,56 @@ class _ModelItemState extends State<ModelItem> {
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
+
+    var tags = <Widget>[];
+
+    // Collect all unique tags from models
+    var uniqueTags = <String>{};
+    for (var model in widget.models) {
+      if (model.tag != null) {
+        uniqueTags.addAll(model.tag!.split(',').where((e) => e.isNotEmpty));
+      }
+
+      if (model.isRecommend) {
+        uniqueTags.add(AppLocale.recommendTag.getString(context));
+      }
+
+      if (model.isNew) {
+        uniqueTags.add(AppLocale.newTag.getString(context));
+      }
+
+      if (model.supportVision) {
+        uniqueTags.add(AppLocale.visionTag.getString(context));
+      }
+
+      if (model.modelPrice.isFree) {
+        uniqueTags.add(AppLocale.free.getString(context));
+      }
+    }
+
+    // Create tag widgets
+    tags = uniqueTags.map((tag) {
+      return InkWell(
+        onTap: () {
+          setState(() {
+            selectedTag = selectedTag == tag ? '' : tag;
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          child: buildTag(
+            customColors,
+            tag,
+            tagBgColor: selectedTag == tag
+                ? colorToString(customColors.linkColor ?? Colors.green)
+                : colorToString(customColors.tagsBackground ?? Colors.grey),
+            tagTextColor: selectedTag == tag ? 'FFFFFFFF' : null,
+            tagFontSize: 12,
+          ),
+        ),
+      );
+    }).toList();
+
     return widget.models.isNotEmpty
         ? Column(
             children: [
@@ -56,22 +107,21 @@ class _ModelItemState extends State<ModelItem> {
                     isDense: true,
                     border: InputBorder.none,
                   ),
-                  onChanged: (value) => setState(() => keyword = value.toLowerCase()),
+                  onChanged: (value) =>
+                      setState(() => keyword = value.toLowerCase()),
                 ),
               ),
+
+              // Tags
+              if (tags.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.only(left: 5, right: 5, bottom: 5),
+                  child: Row(children: tags),
+                ),
+
               Expanded(
                 child: Builder(builder: (context) {
-                  final models = keyword.isEmpty
-                      ? widget.models
-                      : widget.models.where((e) {
-                          var matchText =
-                              e.name + (e.description ?? '') + (e.shortName ?? '') + (e.tag ?? '') + (e.category);
-                          if (e.supportVision) {
-                            matchText += 'vision视觉看图';
-                          }
-
-                          return matchText.toLowerCase().contains(keyword);
-                        }).toList();
+                  final models = searchModels();
                   return ListView.separated(
                     itemCount: models.length,
                     itemBuilder: (context, i) {
@@ -88,13 +138,18 @@ class _ModelItemState extends State<ModelItem> {
                         ));
                       }
                       if (item.tag != null) {
-                        var tt = item.tag!.split(",").where((e) => e.isNotEmpty).toList();
+                        var tt = item.tag!
+                            .split(",")
+                            .where((e) => e.isNotEmpty)
+                            .toList();
                         for (var i = 0; i < tt.length; i++) {
                           tags.add(buildTag(
                             customColors,
                             tt[i],
-                            tagTextColor: i == 0 ? item.tagTextColor : 'FFFFFFFF',
-                            tagBgColor: i == 0 ? item.tagBgColor : modelTagColorSeq(i),
+                            tagTextColor:
+                                i == 0 ? item.tagTextColor : 'FFFFFFFF',
+                            tagBgColor:
+                                i == 0 ? item.tagBgColor : modelTagColorSeq(i),
                           ));
                         }
                       }
@@ -119,11 +174,15 @@ class _ModelItemState extends State<ModelItem> {
 
                       List<Widget> separators = [];
                       if (i == 0 && models[i].category != '') {
-                        separators.add(buildCategory(customColors, item.category));
-                      } else if (i > 0 && models[i].category != models[i - 1].category) {
+                        separators
+                            .add(buildCategory(customColors, item.category));
+                      } else if (i > 0 &&
+                          models[i].category != models[i - 1].category) {
                         separators.add(buildCategory(
                           customColors,
-                          item.category == '' ? AppLocale.others.getString(context) : item.category,
+                          item.category == ''
+                              ? AppLocale.others.getString(context)
+                              : item.category,
                         ));
                       }
 
@@ -136,51 +195,71 @@ class _ModelItemState extends State<ModelItem> {
                               alignment: Alignment.center,
                               padding: const EdgeInsets.symmetric(vertical: 5),
                               decoration: BoxDecoration(
-                                color: widget.initValue == item.uid() ? customColors.dialogBackgroundColor : null,
+                                color: widget.initValue == item.uid()
+                                    ? customColors.dialogBackgroundColor
+                                    : null,
                                 borderRadius: CustomSize.borderRadius,
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   if (item.avatarUrl != null) ...[
-                                    _buildAvatar(avatarUrl: item.avatarUrl, size: 50),
+                                    _buildAvatar(
+                                        avatarUrl: item.avatarUrl, size: 50),
                                     const SizedBox(width: 10),
                                   ],
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Row(
                                           children: [
                                             Expanded(
                                               child: Container(
                                                 alignment:
-                                                    item.avatarUrl != null ? Alignment.centerLeft : Alignment.center,
-                                                child: Text(
+                                                    item.avatarUrl != null
+                                                        ? Alignment.centerLeft
+                                                        : Alignment.center,
+                                                child: AutoSizeText(
                                                   item.name,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  minFontSize: 10,
+                                                  maxFontSize: 15,
+                                                  maxLines: 1,
                                                   style: TextStyle(
-                                                    fontSize: 15,
-                                                    color:
-                                                        widget.initValue == item.uid() ? customColors.linkColor : null,
-                                                    fontWeight: widget.initValue == item.uid() ? FontWeight.bold : null,
+                                                    color: widget.initValue ==
+                                                            item.uid()
+                                                        ? customColors.linkColor
+                                                        : null,
+                                                    fontWeight:
+                                                        widget.initValue ==
+                                                                item.uid()
+                                                            ? FontWeight.bold
+                                                            : null,
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                            if (tags.length <= 3) ...formatTags(tags),
+                                            if (tags.length <= 3)
+                                              ...formatTags(tags),
                                           ],
                                         ),
                                         if (tags.length > 3)
                                           SingleChildScrollView(
                                             scrollDirection: Axis.horizontal,
                                             child: Container(
-                                              margin: const EdgeInsets.symmetric(vertical: 5),
-                                              child: Row(children: formatTags(tags)),
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 5),
+                                              child: Row(
+                                                  children: formatTags(tags)),
                                             ),
                                           ),
-                                        if (!modelPrice.isFree) buildPriceBlock(customColors, item, modelPrice),
+                                        if (!modelPrice.isFree)
+                                          buildPriceBlock(
+                                              customColors, item, modelPrice),
 
                                         // if (item.description != null && item.description != '')
                                         //   Text(
@@ -204,7 +283,8 @@ class _ModelItemState extends State<ModelItem> {
                               widget.onSelected(item);
                             },
                             onLongPress: () {
-                              if (item.description == null || item.description == '') {
+                              if (item.description == null ||
+                                  item.description == '') {
                                 return;
                               }
 
@@ -212,7 +292,8 @@ class _ModelItemState extends State<ModelItem> {
                                 context,
                                 type: QuickAlertType.info,
                                 text: item.description,
-                                confirmBtnText: AppLocale.gotIt.getString(context),
+                                confirmBtnText:
+                                    AppLocale.gotIt.getString(context),
                                 showCancelBtn: false,
                               );
                             },
@@ -243,7 +324,67 @@ class _ModelItemState extends State<ModelItem> {
           );
   }
 
-  Widget buildPriceBlock(CustomColors customColors, Model model, ModelPrice item) {
+  String selectedTag = '';
+
+  List<Model> searchModels() {
+    var models = keyword.isEmpty
+        ? widget.models
+        : widget.models.where((e) {
+            var matchText = e.name +
+                (e.description ?? '') +
+                (e.shortName ?? '') +
+                (e.tag ?? '') +
+                (e.category);
+            if (e.supportVision) {
+              matchText += 'vision视觉看图';
+            }
+            if (e.isNew) {
+              matchText += 'new新';
+            }
+
+            if (e.isRecommend) {
+              matchText += 'recommend推荐';
+            }
+
+            if (e.modelPrice.isFree) {
+              matchText += 'free免费';
+            }
+
+            return matchText.toLowerCase().contains(keyword);
+          }).toList();
+
+    if (selectedTag.isNotEmpty) {
+      models = models.where((e) {
+        var tags = [];
+        if (e.tag != null) {
+          tags = e.tag!.split(',').where((e) => e.isNotEmpty).toList();
+        }
+
+        if (e.isRecommend) {
+          tags.add(AppLocale.recommendTag.getString(context));
+        }
+
+        if (e.isNew) {
+          tags.add(AppLocale.newTag.getString(context));
+        }
+
+        if (e.supportVision) {
+          tags.add(AppLocale.visionTag.getString(context));
+        }
+
+        if (e.modelPrice.isFree) {
+          tags.add(AppLocale.free.getString(context));
+        }
+
+        return tags.contains(selectedTag);
+      }).toList();
+    }
+
+    return models;
+  }
+
+  Widget buildPriceBlock(
+      CustomColors customColors, Model model, ModelPrice item) {
     if (item.isFree) {
       return const SizedBox();
     }
@@ -255,7 +396,8 @@ class _ModelItemState extends State<ModelItem> {
     }
 
     if (item.request > 0) {
-      priceText += '${priceText == '' ? '' : ', '}${AppLocale.perRequest.getString(context)} ￠${item.request}';
+      priceText +=
+          '${priceText == '' ? '' : ', '}${AppLocale.perRequest.getString(context)} ￠${item.request}';
     }
 
     return Row(
@@ -266,8 +408,9 @@ class _ModelItemState extends State<ModelItem> {
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontSize: 10,
-            color:
-                widget.initValue == model.uid() ? customColors.linkColor : customColors.weakTextColor?.withAlpha(150),
+            color: widget.initValue == model.uid()
+                ? customColors.linkColor
+                : customColors.weakTextColor?.withAlpha(150),
           ),
         ),
         if (item.hasNote) ...[
@@ -327,11 +470,13 @@ class _ModelItemState extends State<ModelItem> {
     String tag, {
     String? tagTextColor,
     String? tagBgColor,
+    double? tagFontSize,
   }) {
     return Container(
       decoration: BoxDecoration(
         color: tagBgColor != null
-            ? stringToColor(tagBgColor, defaultColor: customColors.tagsBackgroundHover ?? Colors.grey)
+            ? stringToColor(tagBgColor,
+                defaultColor: customColors.tagsBackgroundHover ?? Colors.grey)
             : customColors.tagsBackgroundHover,
         borderRadius: CustomSize.borderRadius,
       ),
@@ -342,9 +487,10 @@ class _ModelItemState extends State<ModelItem> {
       child: Text(
         tag,
         style: TextStyle(
-          fontSize: 8,
+          fontSize: tagFontSize ?? 8,
           color: tagTextColor != null
-              ? stringToColor(tagTextColor, defaultColor: customColors.tagsText ?? Colors.white)
+              ? stringToColor(tagTextColor,
+                  defaultColor: customColors.tagsText ?? Colors.white)
               : customColors.tagsText,
         ),
       ),
