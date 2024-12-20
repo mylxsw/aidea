@@ -77,9 +77,7 @@ class _ModelItemState extends State<ModelItem> {
           child: buildTag(
             customColors,
             tag,
-            tagBgColor: selectedTag == tag
-                ? colorToString(customColors.linkColor ?? Colors.green)
-                : colorToString(customColors.tagsBackground ?? Colors.grey),
+            tagBgColor: selectedTag == tag ? 'FF4CAF50' : '2A9E9E9E',
             tagTextColor: selectedTag == tag ? 'FFFFFFFF' : null,
             tagFontSize: 12,
           ),
