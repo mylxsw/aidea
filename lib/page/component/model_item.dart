@@ -3,25 +3,28 @@ import 'package:askaide/helper/color.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/image.dart';
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/random_avatar.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
-import 'package:askaide/page/component/weak_text_button.dart';
 import 'package:askaide/repo/model/model.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:quickalert/models/quickalert_type.dart';
 
 class ModelItem extends StatefulWidget {
   final List<Model> models;
   final Function(Model? selected) onSelected;
   final String? initValue;
-  final bool enableClear;
+  final bool showUsing;
 
   const ModelItem({
     super.key,
     required this.models,
     required this.onSelected,
     this.initValue,
-    this.enableClear = false,
+    this.showUsing = false,
   });
 
   @override
@@ -35,15 +38,54 @@ class _ModelItemState extends State<ModelItem> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    if (widget.enableClear && widget.initValue != null) {
-      // 将当前选中的模型放在第一位
-      var index = widget.models.indexWhere(
-          (e) => e.uid() == widget.initValue || e.id == widget.initValue);
-      if (index != -1) {
-        widget.models
-            .insert(0, widget.models[index].copyWith(category: '正在使用'));
+    var tags = <Widget>[];
+
+    // Collect all unique tags from models
+    var uniqueTags = <String>{};
+    for (var model in widget.models) {
+      if (model.tag != null) {
+        uniqueTags.addAll(model.tag!.split(',').where((e) => e.isNotEmpty));
+      }
+
+      if (model.isRecommend) {
+        uniqueTags.add(AppLocale.recommendTag.getString(context));
+      }
+
+      if (model.isNew) {
+        uniqueTags.add(AppLocale.newTag.getString(context));
+      }
+
+      if (model.supportVision) {
+        uniqueTags.add(AppLocale.visionTag.getString(context));
+      }
+
+      if (model.modelPrice.isFree) {
+        uniqueTags.add(AppLocale.free.getString(context));
       }
     }
+
+    // Create tag widgets
+    tags = uniqueTags.map((tag) {
+      return InkWell(
+        onTap: () {
+          setState(() {
+            selectedTag = selectedTag == tag ? '' : tag;
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          child: buildTag(
+            customColors,
+            tag,
+            tagBgColor: selectedTag == tag
+                ? colorToString(customColors.linkColor ?? Colors.green)
+                : colorToString(customColors.tagsBackground ?? Colors.grey),
+            tagTextColor: selectedTag == tag ? 'FFFFFFFF' : null,
+            tagFontSize: 12,
+          ),
+        ),
+      );
+    }).toList();
 
     return widget.models.isNotEmpty
         ? Column(
@@ -69,54 +111,64 @@ class _ModelItemState extends State<ModelItem> {
                       setState(() => keyword = value.toLowerCase()),
                 ),
               ),
+
+              // Tags
+              if (tags.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.only(left: 5, right: 5, bottom: 5),
+                  child: Row(children: tags),
+                ),
+
               Expanded(
                 child: Builder(builder: (context) {
-                  final models = keyword.isEmpty
-                      ? widget.models
-                      : widget.models.where((e) {
-                          var matchText = e.name +
-                              (e.description ?? '') +
-                              (e.shortName ?? '') +
-                              (e.tag ?? '') +
-                              (e.category);
-                          if (e.supportVision) {
-                            matchText += 'vision视觉看图';
-                          }
-
-                          return matchText.toLowerCase().contains(keyword);
-                        }).toList();
+                  final models = searchModels();
                   return ListView.separated(
                     itemCount: models.length,
                     itemBuilder: (context, i) {
                       var item = models[i];
+                      final modelPrice = item.modelPrice;
 
                       var tags = <Widget>[];
-                      if (item.tag != null) {
+                      if (modelPrice.isFree) {
                         tags.add(buildTag(
                           customColors,
-                          item.tag!,
-                          tagTextColor: item.tagTextColor,
-                          tagBgColor: item.tagBgColor,
+                          AppLocale.free.getString(context),
+                          tagTextColor: 'FFFFFFFF',
+                          tagBgColor: 'FF2196F3',
                         ));
+                      }
+                      if (item.tag != null) {
+                        var tt = item.tag!
+                            .split(",")
+                            .where((e) => e.isNotEmpty)
+                            .toList();
+                        for (var i = 0; i < tt.length; i++) {
+                          tags.add(buildTag(
+                            customColors,
+                            tt[i],
+                            tagTextColor:
+                                i == 0 ? item.tagTextColor : 'FFFFFFFF',
+                            tagBgColor:
+                                i == 0 ? item.tagBgColor : modelTagColorSeq(i),
+                          ));
+                        }
                       }
 
                       if (item.supportVision) {
                         tags.add(buildTag(
                           customColors,
                           AppLocale.visionTag.getString(context),
-                          tagTextColor: colorToString(Colors.white),
-                          tagBgColor: colorToString(
-                            customColors.linkColor ?? Colors.green,
-                          ),
+                          tagTextColor: 'FFFFFFFF',
+                          tagBgColor: 'FF4CAF50',
                         ));
                       }
 
-                      if (item.isNew && widget.initValue != item.uid()) {
+                      if (item.isNew) {
                         tags.add(buildTag(
                           customColors,
                           AppLocale.newTag.getString(context),
-                          tagTextColor: colorToString(Colors.white),
-                          tagBgColor: colorToString(Colors.red),
+                          tagTextColor: 'FFFFFFFF',
+                          tagBgColor: 'FFF44336',
                         ));
                       }
 
@@ -142,6 +194,12 @@ class _ModelItemState extends State<ModelItem> {
                             title: Container(
                               alignment: Alignment.center,
                               padding: const EdgeInsets.symmetric(vertical: 5),
+                              decoration: BoxDecoration(
+                                color: widget.initValue == item.uid()
+                                    ? customColors.dialogBackgroundColor
+                                    : null,
+                                borderRadius: CustomSize.borderRadius,
+                              ),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -165,56 +223,56 @@ class _ModelItemState extends State<ModelItem> {
                                                     item.avatarUrl != null
                                                         ? Alignment.centerLeft
                                                         : Alignment.center,
-                                                child: Text(
+                                                child: AutoSizeText(
                                                   item.name,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: const TextStyle(
-                                                      fontSize: 15),
+                                                  minFontSize: 10,
+                                                  maxFontSize: 15,
+                                                  maxLines: 1,
+                                                  style: TextStyle(
+                                                    color: widget.initValue ==
+                                                            item.uid()
+                                                        ? customColors.linkColor
+                                                        : null,
+                                                    fontWeight:
+                                                        widget.initValue ==
+                                                                item.uid()
+                                                            ? FontWeight.bold
+                                                            : null,
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                            ...tags,
-                                            if (item.avatarUrl != null) ...[
-                                              if (widget.enableClear && i == 0)
-                                                SizedBox(
-                                                  width: 50,
-                                                  child: widget.initValue ==
-                                                          item.uid()
-                                                      ? WeakTextButton(
-                                                          title: '取消',
-                                                          fontSize: 10,
-                                                          onPressed: () {
-                                                            widget.onSelected(
-                                                                null);
-                                                          },
-                                                        )
-                                                      : const SizedBox(),
-                                                )
-                                              else if (widget.initValue ==
-                                                  item.uid())
-                                                SizedBox(
-                                                  width: 20,
-                                                  child: Icon(
-                                                    Icons.check,
-                                                    color:
-                                                        customColors.linkColor,
-                                                  ),
-                                                ),
-                                            ],
+                                            if (tags.length <= 3)
+                                              ...formatTags(tags),
                                           ],
                                         ),
-                                        if (item.description != null &&
-                                            item.description != '')
-                                          Text(
-                                            item.description!,
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: customColors.weakTextColor,
+                                        if (tags.length > 3)
+                                          SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: Container(
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 5),
+                                              child: Row(
+                                                  children: formatTags(tags)),
                                             ),
                                           ),
+                                        if (!modelPrice.isFree)
+                                          buildPriceBlock(
+                                              customColors, item, modelPrice),
+
+                                        // if (item.description != null && item.description != '')
+                                        //   Text(
+                                        //     item.description!,
+                                        //     maxLines: 2,
+                                        //     overflow: TextOverflow.ellipsis,
+                                        //     style: TextStyle(
+                                        //       fontSize: 12,
+                                        //       color: widget.initValue == item.uid()
+                                        //           ? customColors.linkColor
+                                        //           : customColors.weakTextColor,
+                                        //     ),
+                                        //   ),
                                       ],
                                     ),
                                   ),
@@ -223,6 +281,21 @@ class _ModelItemState extends State<ModelItem> {
                             ),
                             onTap: () {
                               widget.onSelected(item);
+                            },
+                            onLongPress: () {
+                              if (item.description == null ||
+                                  item.description == '') {
+                                return;
+                              }
+
+                              showBeautyDialog(
+                                context,
+                                type: QuickAlertType.info,
+                                text: item.description,
+                                confirmBtnText:
+                                    AppLocale.gotIt.getString(context),
+                                showCancelBtn: false,
+                              );
                             },
                           ),
                         ],
@@ -249,6 +322,118 @@ class _ModelItemState extends State<ModelItem> {
               textAlign: TextAlign.center,
             ),
           );
+  }
+
+  String selectedTag = '';
+
+  List<Model> searchModels() {
+    var models = keyword.isEmpty
+        ? widget.models
+        : widget.models.where((e) {
+            var matchText = e.name +
+                (e.description ?? '') +
+                (e.shortName ?? '') +
+                (e.tag ?? '') +
+                (e.category);
+            if (e.supportVision) {
+              matchText += 'vision视觉看图';
+            }
+            if (e.isNew) {
+              matchText += 'new新';
+            }
+
+            if (e.isRecommend) {
+              matchText += 'recommend推荐';
+            }
+
+            if (e.modelPrice.isFree) {
+              matchText += 'free免费';
+            }
+
+            return matchText.toLowerCase().contains(keyword);
+          }).toList();
+
+    if (selectedTag.isNotEmpty) {
+      models = models.where((e) {
+        var tags = [];
+        if (e.tag != null) {
+          tags = e.tag!.split(',').where((e) => e.isNotEmpty).toList();
+        }
+
+        if (e.isRecommend) {
+          tags.add(AppLocale.recommendTag.getString(context));
+        }
+
+        if (e.isNew) {
+          tags.add(AppLocale.newTag.getString(context));
+        }
+
+        if (e.supportVision) {
+          tags.add(AppLocale.visionTag.getString(context));
+        }
+
+        if (e.modelPrice.isFree) {
+          tags.add(AppLocale.free.getString(context));
+        }
+
+        return tags.contains(selectedTag);
+      }).toList();
+    }
+
+    return models;
+  }
+
+  Widget buildPriceBlock(
+      CustomColors customColors, Model model, ModelPrice item) {
+    if (item.isFree) {
+      return const SizedBox();
+    }
+
+    var priceText = '';
+    if (item.input > 0 || item.output > 0) {
+      priceText +=
+          '${AppLocale.input.getString(context)} ￠${item.input}, ${AppLocale.output.getString(context)} ￠${item.output}';
+    }
+
+    if (item.request > 0) {
+      priceText +=
+          '${priceText == '' ? '' : ', '}${AppLocale.perRequest.getString(context)} ￠${item.request}';
+    }
+
+    return Row(
+      children: [
+        Text(
+          priceText,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 10,
+            color: widget.initValue == model.uid()
+                ? customColors.linkColor
+                : customColors.weakTextColor?.withAlpha(150),
+          ),
+        ),
+        if (item.hasNote) ...[
+          const SizedBox(width: 5),
+          InkWell(
+            onTap: () {
+              showBeautyDialog(
+                context,
+                type: QuickAlertType.info,
+                text: item.note,
+                confirmBtnText: AppLocale.gotIt.getString(context),
+                showCancelBtn: false,
+              );
+            },
+            child: Icon(
+              Icons.help_outline,
+              size: 12,
+              color: customColors.weakLinkColor?.withAlpha(50),
+            ),
+          ),
+        ],
+      ],
+    );
   }
 
   Widget buildCategory(CustomColors customColors, String category) {
@@ -285,15 +470,16 @@ class _ModelItemState extends State<ModelItem> {
     String tag, {
     String? tagTextColor,
     String? tagBgColor,
+    double? tagFontSize,
   }) {
     return Container(
       decoration: BoxDecoration(
         color: tagBgColor != null
-            ? stringToColor(tagBgColor)
+            ? stringToColor(tagBgColor,
+                defaultColor: customColors.tagsBackgroundHover ?? Colors.grey)
             : customColors.tagsBackgroundHover,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: CustomSize.borderRadius,
       ),
-      margin: const EdgeInsets.only(left: 5),
       padding: const EdgeInsets.symmetric(
         horizontal: 5,
         vertical: 2,
@@ -301,12 +487,39 @@ class _ModelItemState extends State<ModelItem> {
       child: Text(
         tag,
         style: TextStyle(
-          fontSize: 8,
+          fontSize: tagFontSize ?? 8,
           color: tagTextColor != null
-              ? stringToColor(tagTextColor)
+              ? stringToColor(tagTextColor,
+                  defaultColor: customColors.tagsText ?? Colors.white)
               : customColors.tagsText,
         ),
       ),
     );
   }
+}
+
+String modelTagColorSeq(int index) {
+  var colors = <Color>{
+    Colors.grey,
+    Colors.purple,
+    Colors.orange,
+    Colors.pink,
+    Colors.deepPurple,
+    Colors.indigo,
+    Colors.cyan,
+  };
+  return colorToString(colors.elementAt(index % colors.length));
+}
+
+List<Widget> formatTags(List<Widget> tags) {
+  var widgets = <Widget>[];
+
+  for (var i = 0; i < tags.length; i++) {
+    widgets.add(tags[i]);
+    if (i < tags.length - 1) {
+      widgets.add(const SizedBox(width: 5));
+    }
+  }
+
+  return widgets;
 }

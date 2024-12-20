@@ -19,8 +19,7 @@ class AdminRecentlyMessagesPage extends StatefulWidget {
   const AdminRecentlyMessagesPage({super.key, required this.setting});
 
   @override
-  State<AdminRecentlyMessagesPage> createState() =>
-      _AdminRecentlyMessagesPageState();
+  State<AdminRecentlyMessagesPage> createState() => _AdminRecentlyMessagesPageState();
 }
 
 class _AdminRecentlyMessagesPageState extends State<AdminRecentlyMessagesPage> {
@@ -57,12 +56,12 @@ class _AdminRecentlyMessagesPageState extends State<AdminRecentlyMessagesPage> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          '最近聊天历史记录',
+          'Chat History',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.chatInputPanelBackground,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -87,9 +86,7 @@ class _AdminRecentlyMessagesPageState extends State<AdminRecentlyMessagesPage> {
                   border: InputBorder.none,
                 ),
                 onEditingComplete: () {
-                  context
-                      .read<AdminRoomBloc>()
-                      .add(AdminRecentlyMessagesLoadEvent(
+                  context.read<AdminRoomBloc>().add(AdminRecentlyMessagesLoadEvent(
                         perPage: perPage,
                         page: page,
                         keyword: keywordController.text,
@@ -101,9 +98,7 @@ class _AdminRecentlyMessagesPageState extends State<AdminRecentlyMessagesPage> {
               child: RefreshIndicator(
                 color: customColors.linkColor,
                 onRefresh: () async {
-                  context
-                      .read<AdminRoomBloc>()
-                      .add(AdminRecentlyMessagesLoadEvent(
+                  context.read<AdminRoomBloc>().add(AdminRecentlyMessagesLoadEvent(
                         perPage: perPage,
                         page: page,
                         keyword: keywordController.text,
@@ -114,11 +109,9 @@ class _AdminRecentlyMessagesPageState extends State<AdminRecentlyMessagesPage> {
                   listener: (context, state) {
                     if (state is AdminRoomOperationResult) {
                       if (state.success) {
-                        showSuccessMessage(
-                            AppLocale.operateSuccess.getString(context));
+                        showSuccessMessage(AppLocale.operateSuccess.getString(context));
                       } else {
-                        showErrorMessage(
-                            AppLocale.operateFailed.getString(context));
+                        showErrorMessage(AppLocale.operateFailed.getString(context));
                       }
                     }
 
@@ -129,8 +122,7 @@ class _AdminRecentlyMessagesPageState extends State<AdminRecentlyMessagesPage> {
                       });
                     }
                   },
-                  buildWhen: (previous, current) =>
-                      current is AdminRecentlyMessagesLoaded,
+                  buildWhen: (previous, current) => current is AdminRecentlyMessagesLoaded,
                   builder: (context, state) {
                     if (state is AdminRecentlyMessagesLoaded) {
                       return SafeArea(
@@ -148,83 +140,51 @@ class _AdminRecentlyMessagesPageState extends State<AdminRecentlyMessagesPage> {
                                       horizontal: 10,
                                       vertical: 5,
                                     ),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                          customColors.borderRadius ?? 8),
-                                    ),
+                                    decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
                                     child: Slidable(
-                                      startActionPane: ActionPane(
-                                          motion: const ScrollMotion(),
-                                          children: [
-                                            SlidableAction(
-                                              label: '数字人',
-                                              borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(
-                                                    customColors.borderRadius ??
-                                                        8),
-                                                bottomLeft: Radius.circular(
-                                                    customColors.borderRadius ??
-                                                        8),
-                                                topRight: Radius.circular(
-                                                    customColors.borderRadius ??
-                                                        8),
-                                                bottomRight: Radius.circular(
-                                                    customColors.borderRadius ??
-                                                        8),
-                                              ),
-                                              backgroundColor: Colors.blue,
-                                              icon: Icons.people,
-                                              foregroundColor: Colors.white,
-                                              onPressed: (_) {
-                                                context.push(
-                                                    '/admin/users/${message.userId}/rooms');
-                                              },
-                                            ),
-                                          ]),
+                                      startActionPane: ActionPane(motion: const ScrollMotion(), children: [
+                                        SlidableAction(
+                                          label: AppLocale.character.getString(context),
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: CustomSize.radius,
+                                            bottomLeft: CustomSize.radius,
+                                            topRight: CustomSize.radius,
+                                            bottomRight: CustomSize.radius,
+                                          ),
+                                          backgroundColor: Colors.blue,
+                                          icon: Icons.people,
+                                          foregroundColor: Colors.white,
+                                          onPressed: (_) {
+                                            context.push('/admin/users/${message.userId}/rooms');
+                                          },
+                                        ),
+                                      ]),
                                       endActionPane: ActionPane(
                                         motion: const ScrollMotion(),
                                         children: [
                                           const SizedBox(width: 10),
                                           SlidableAction(
-                                            label: '用户',
-                                            borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(
-                                                  customColors.borderRadius ??
-                                                      8),
-                                              bottomLeft: Radius.circular(
-                                                  customColors.borderRadius ??
-                                                      8),
-                                              topRight: Radius.circular(
-                                                  customColors.borderRadius ??
-                                                      8),
-                                              bottomRight: Radius.circular(
-                                                  customColors.borderRadius ??
-                                                      8),
+                                            label: 'User',
+                                            borderRadius: const BorderRadius.only(
+                                              topLeft: CustomSize.radius,
+                                              bottomLeft: CustomSize.radius,
+                                              topRight: CustomSize.radius,
+                                              bottomRight: CustomSize.radius,
                                             ),
-                                            backgroundColor:
-                                                customColors.linkColor ??
-                                                    Colors.green,
+                                            backgroundColor: customColors.linkColor ?? Colors.green,
                                             icon: Icons.person,
                                             foregroundColor: Colors.white,
                                             onPressed: (_) {
-                                              context.push(
-                                                  '/admin/users/${message.userId}');
+                                              context.push('/admin/users/${message.userId}');
                                             },
                                           ),
                                         ],
                                       ),
                                       child: Material(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(
-                                                customColors.borderRadius ??
-                                                    8)),
-                                        color: customColors
-                                            .columnBlockBackgroundColor,
+                                        borderRadius: CustomSize.borderRadius,
+                                        color: customColors.columnBlockBackgroundColor,
                                         child: InkWell(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(
-                                                  customColors.borderRadius ??
-                                                      8)),
+                                          borderRadius: CustomSize.borderRadiusAll,
                                           onTap: () {
                                             context.push(
                                                 '/admin/users/${message.userId}/rooms/${message.roomId}/messages?room_type=1');
@@ -235,83 +195,59 @@ class _AdminRecentlyMessagesPageState extends State<AdminRecentlyMessagesPage> {
                                                 top: 0,
                                                 right: 0,
                                                 child: Container(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
+                                                  padding: const EdgeInsets.symmetric(
                                                     horizontal: 5,
                                                     vertical: 2,
                                                   ),
                                                   decoration: BoxDecoration(
-                                                    color: customColors
-                                                        .columnBlockBackgroundColor
-                                                        ?.withAlpha(100),
-                                                    borderRadius:
-                                                        BorderRadius.only(
-                                                      topRight: Radius.circular(
-                                                          customColors
-                                                                  .borderRadius ??
-                                                              8),
-                                                      bottomLeft: Radius
-                                                          .circular(customColors
-                                                                  .borderRadius ??
-                                                              8),
+                                                    color: customColors.columnBlockBackgroundColor?.withAlpha(100),
+                                                    borderRadius: const BorderRadius.only(
+                                                      topRight: CustomSize.radius,
+                                                      bottomLeft: CustomSize.radius,
                                                     ),
                                                   ),
                                                   child: Text(
                                                     '@ ${message.userId}',
                                                     style: TextStyle(
                                                       fontSize: 12,
-                                                      color: customColors
-                                                          .weakTextColor
-                                                          ?.withAlpha(100),
+                                                      color: customColors.weakTextColor?.withAlpha(100),
                                                     ),
                                                   ),
                                                 ),
                                               ),
                                               Container(
-                                                padding:
-                                                    const EdgeInsets.all(15),
+                                                padding: const EdgeInsets.all(15),
                                                 child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      state.messages.data[index]
-                                                          .text,
+                                                      state.messages.data[index].text,
                                                       maxLines: 2,
                                                       style: const TextStyle(
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
+                                                        overflow: TextOverflow.ellipsis,
                                                       ),
                                                     ),
                                                     const SizedBox(height: 5),
                                                     Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
+                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                       children: [
                                                         Expanded(
                                                           child: Text(
                                                             '${message.model}',
-                                                            style:
-                                                                const TextStyle(
+                                                            style: const TextStyle(
                                                               fontSize: 12,
-                                                              color:
-                                                                  Colors.grey,
+                                                              color: Colors.grey,
                                                             ),
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
+                                                            overflow: TextOverflow.ellipsis,
                                                             maxLines: 1,
                                                           ),
                                                         ),
                                                         if (message.ts != null)
                                                           Text(
                                                             '  ${DateFormat('MM/dd HH:mm').format(message.ts!.toLocal())}',
-                                                            style:
-                                                                const TextStyle(
+                                                            style: const TextStyle(
                                                               fontSize: 12,
-                                                              color:
-                                                                  Colors.grey,
+                                                              color: Colors.grey,
                                                             ),
                                                           ),
                                                       ],
@@ -328,8 +264,7 @@ class _AdminRecentlyMessagesPageState extends State<AdminRecentlyMessagesPage> {
                                 },
                               ),
                             ),
-                            if (state.messages.lastPage != null &&
-                                state.messages.lastPage! > 1)
+                            if (state.messages.lastPage != null && state.messages.lastPage! > 1)
                               Container(
                                 padding: const EdgeInsets.all(10),
                                 child: Pagination(
@@ -337,9 +272,7 @@ class _AdminRecentlyMessagesPageState extends State<AdminRecentlyMessagesPage> {
                                   selectedPage: page,
                                   pagesVisible: 5,
                                   onPageChanged: (selected) {
-                                    context
-                                        .read<AdminRoomBloc>()
-                                        .add(AdminRecentlyMessagesLoadEvent(
+                                    context.read<AdminRoomBloc>().add(AdminRecentlyMessagesLoadEvent(
                                           perPage: perPage,
                                           page: selected,
                                           keyword: keywordController.text,

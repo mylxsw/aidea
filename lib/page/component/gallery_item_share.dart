@@ -85,13 +85,11 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
               },
               child: Row(
                 children: [
-                  Icon(Icons.share,
-                      size: 14, color: customColors.weakLinkColor),
+                  Icon(Icons.share, size: 14, color: customColors.weakLinkColor),
                   const SizedBox(width: 5),
                   Text(
-                    '分享',
-                    style: TextStyle(
-                        color: customColors.weakLinkColor, fontSize: 14),
+                    AppLocale.share.getString(context),
+                    style: TextStyle(color: customColors.weakLinkColor, fontSize: 14),
                   ),
                 ],
               ),
@@ -99,7 +97,7 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
           EnhancedPopupMenu(
             items: [
               EnhancedPopupMenuItem(
-                title: '保存到本地',
+                title: AppLocale.saveToLocal.getString(context),
                 icon: Icons.save,
                 onTap: (ctx) async {
                   final cancel = BotToast.showCustomLoading(
@@ -121,7 +119,7 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
                       if (PlatformTool.isIOS() || PlatformTool.isAndroid()) {
                         await ImageGallerySaver.saveImage(data, quality: 100);
 
-                        showSuccessMessage('图片保存成功');
+                        showSuccessMessage(AppLocale.operateSuccess.getString(context));
                       } else {
                         if (PlatformTool.isWindows()) {
                           FileSaver.instance
@@ -138,8 +136,8 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
 
                             await File(value).writeAsBytes(data);
 
-                            Logger.instance.d('文件保存成功: $value');
-                            showSuccessMessage('文件保存成功');
+                            Logger.instance.d('File saved successfully: $value');
+                            showSuccessMessage(AppLocale.operateSuccess.getString(context));
                           });
                         } else {
                           FileSaver.instance
@@ -150,8 +148,8 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
                             mimeType: MimeType.png,
                           )
                               .then((value) {
-                            Logger.instance.d('文件保存成功: $value');
-                            showSuccessMessage('文件保存成功');
+                            Logger.instance.d('File saved successfully: $value');
+                            showSuccessMessage(AppLocale.operateSuccess.getString(context));
                           });
                         }
                       }
@@ -162,7 +160,9 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
                 },
               ),
               EnhancedPopupMenuItem(
-                title: showQRCode ? '不显示邀请信息' : '显示邀请信息',
+                title: showQRCode
+                    ? AppLocale.dontShowInviteCode.getString(context)
+                    : AppLocale.showInviteCode.getString(context),
                 icon: showQRCode ? Icons.visibility_off : Icons.visibility,
                 onTap: (ctx) {
                   setState(() {
@@ -174,7 +174,7 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
           )
         ],
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: Align(
         alignment: Alignment.topCenter,
         child: ConstrainedBox(
@@ -205,33 +205,28 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
                                 children: [
                                   for (var img in widget.images)
                                     Container(
-                                      decoration: BoxDecoration(
-                                        color: customColors.backgroundColor,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
+                                      decoration: BoxDecoration(color: customColors.backgroundColor),
                                       child: NetworkImagePreviewer(
                                         url: img,
-                                        preview:
-                                            imageURL(img, qiniuImageTypeThumb),
+                                        preview: imageURL(img, qiniuImageTypeThumb),
                                         hidePreviewButton: true,
                                         notClickable: true,
-                                        borderRadius: BorderRadius.circular(0),
+                                        borderRadius: BorderRadius.zero,
                                       ),
                                     ),
                                   ColumnBlock(
+                                    backgroundColor: customColors.backgroundContainerColor,
                                     innerPanding: 10,
                                     padding: const EdgeInsets.all(15),
                                     margin: const EdgeInsets.all(0),
                                     borderRadius: 0,
                                     children: [
-                                      if (widget.prompt != null &&
-                                          widget.prompt!.isNotEmpty)
+                                      if (widget.prompt != null && widget.prompt!.isNotEmpty)
                                         TextItem(
                                           title: 'Prompt',
                                           value: widget.prompt!,
                                         ),
-                                      if (widget.negativePrompt != null &&
-                                          widget.negativePrompt!.isNotEmpty)
+                                      if (widget.negativePrompt != null && widget.negativePrompt!.isNotEmpty)
                                         TextItem(
                                           title: 'Negative Prompt',
                                           value: widget.negativePrompt!,
@@ -240,7 +235,7 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
                                   ),
                                   if (showQRCode)
                                     Container(
-                                      color: customColors.backgroundColor,
+                                      color: customColors.backgroundContainerColor,
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 15,
@@ -249,8 +244,7 @@ class _GalleryItemShareScreenState extends State<GalleryItemShareScreen> {
                                         child: Row(
                                           children: [
                                             ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
+                                              borderRadius: CustomSize.borderRadius,
                                               child: CachedNetworkImageEnhanced(
                                                 imageUrl: snapshot.data!.qrCode,
                                                 width: 100,

@@ -1,5 +1,6 @@
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/prompt_tags_selector.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -24,9 +25,9 @@ class CreativeItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return Material(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: CustomSize.borderRadius,
       child: InkWell(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: CustomSize.borderRadiusAll,
         onTap: onTap,
         child: Stack(
           children: [
@@ -34,7 +35,7 @@ class CreativeItem extends StatelessWidget {
               width: double.infinity,
               height: double.infinity,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: CustomSize.borderRadius,
                 child: CachedNetworkImageEnhanced(
                   imageUrl: imageURL,
                   fit: BoxFit.cover,

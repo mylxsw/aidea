@@ -54,4 +54,22 @@ class Cache {
   Future<String?> stringGet({required String key}) async {
     return await cacheRepo.get(key);
   }
+
+  Future<int> setInt({
+    required String key,
+    required int value,
+    Duration duration = const Duration(days: 1),
+  }) async {
+    await cacheRepo.set(key, value.toString(), duration);
+    return value;
+  }
+
+  Future<int> intGet({required String key}) async {
+    var value = await cacheRepo.get(key);
+    if (value == null || value.isEmpty) {
+      return 0;
+    }
+
+    return int.parse(value);
+  }
 }

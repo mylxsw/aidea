@@ -1,5 +1,6 @@
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
+import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
@@ -8,6 +9,7 @@ import 'package:askaide/page/data/notification_datasource.dart';
 import 'package:askaide/repo/api/notification.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loading_more_list/loading_more_list.dart';
@@ -35,14 +37,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          '消息',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+        title: Text(
+          AppLocale.notification.getString(context),
+          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         toolbarHeight: CustomSize.toolbarHeight,
         centerTitle: true,
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -63,9 +65,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     message: item,
                     customColors: customColors,
                     onTap: () {
-                      context.push(Uri(path: '/article', queryParameters: {
-                        'id': item.articleId.toString()
-                      }).toString());
+                      context
+                          .push(Uri(path: '/article', queryParameters: {'id': item.articleId.toString()}).toString());
                     },
                   );
                 },
@@ -74,16 +75,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   String msg = '';
                   switch (status) {
                     case IndicatorStatus.noMoreLoad:
-                      msg = '~ 没有更多了 ~';
+                      msg = '~ No more left ~';
                       break;
                     case IndicatorStatus.loadingMoreBusying:
-                      msg = '加载中...';
+                      msg = 'Loading...';
                       break;
                     case IndicatorStatus.error:
-                      msg = '加载失败，请稍后再试';
+                      msg = 'Failed to load, please try again later.';
                       break;
                     case IndicatorStatus.empty:
-                      msg = '暂无数据';
+                      msg = 'No data';
                       break;
                     default:
                       return const Center(child: LoadingIndicator());
@@ -128,17 +129,15 @@ class NotifyMessageItem extends StatelessWidget {
         horizontal: 15,
         vertical: 5,
       ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-      ),
+      decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
       child: Slidable(
         endActionPane: ActionPane(
           motion: const ScrollMotion(),
           children: [
             const SizedBox(width: 10),
             SlidableAction(
-              label: '详情',
-              borderRadius: BorderRadius.circular(10),
+              label: 'Details',
+              borderRadius: CustomSize.borderRadiusAll,
               backgroundColor: Colors.green,
               icon: Icons.info_outline,
               onPressed: (_) {
@@ -149,18 +148,12 @@ class NotifyMessageItem extends StatelessWidget {
           ],
         ),
         child: Material(
-          color: customColors.backgroundColor?.withAlpha(200),
-          borderRadius: BorderRadius.all(
-            Radius.circular(customColors.borderRadius ?? 8),
-          ),
+          color: customColors.backgroundContainerColor,
+          borderRadius: CustomSize.borderRadius,
           child: InkWell(
             child: ListTile(
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(customColors.borderRadius ?? 8),
-              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              shape: RoundedRectangleBorder(borderRadius: CustomSize.borderRadius),
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

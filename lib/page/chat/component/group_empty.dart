@@ -1,3 +1,4 @@
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -15,10 +16,9 @@ class GroupEmptyBoard extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               color: customColors.backgroundColor?.withAlpha(200),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: CustomSize.borderRadius,
             ),
-            padding:
-                const EdgeInsets.only(top: 20, left: 15, right: 10, bottom: 3),
+            padding: const EdgeInsets.only(top: 20, left: 15, right: 10, bottom: 3),
             width: _resolveTipWidth(context),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -26,8 +26,7 @@ class GroupEmptyBoard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Image.asset('assets/app-256-transparent.png',
-                        width: 20, height: 20),
+                    Image.asset('assets/app-256-transparent.png', width: 20, height: 20),
                     const SizedBox(width: 5),
                     const Text(
                       '小提示',

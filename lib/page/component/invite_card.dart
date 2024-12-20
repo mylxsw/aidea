@@ -1,9 +1,11 @@
 import 'package:askaide/helper/color.dart';
+import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/share.dart';
 import 'package:askaide/repo/api/user.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 class InviteCard extends StatelessWidget {
   final UserInfo userInfo;
@@ -14,7 +16,7 @@ class InviteCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(15), // Maintain consistency with Settings Card
         boxShadow: [
           BoxShadow(
             color: Colors.white.withOpacity(0.1),
@@ -24,9 +26,8 @@ class InviteCard extends StatelessWidget {
         ],
         image: DecorationImage(
           // opacity: 0.83,
-          image: CachedNetworkImageProviderEnhanced(userInfo
-                  .control.inviteCardBg ??
-              'https://ssl.aicode.cc/ai-server/assets/invite-card-bg.webp-thumb1000'),
+          image: CachedNetworkImageProviderEnhanced(
+              userInfo.control.inviteCardBg ?? 'https://ssl.aicode.cc/ai-server/assets/invite-card-bg.webp-thumb1000'),
           fit: BoxFit.cover,
         ),
         // gradient: const LinearGradient(
@@ -65,7 +66,7 @@ class InviteCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    userInfo.control.inviteCardSlogan ?? '邀请好友注册，双方都可获得奖励',
+                    userInfo.control.inviteCardSlogan ?? AppLocale.inviteSlogan.getString(context),
                     strutStyle: const StrutStyle(height: 1.3),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 4,
@@ -80,7 +81,7 @@ class InviteCard extends StatelessWidget {
               ),
             ),
             EnhancedButton(
-              title: '立即邀请',
+              title: AppLocale.inviteNow.getString(context),
               fontSize: 14,
               height: 35,
               width: 80,
@@ -89,8 +90,8 @@ class InviteCard extends StatelessWidget {
                 shareTo(
                   context,
                   content: userInfo.control.inviteMessage ??
-                      '邀请码 ${userInfo.user.inviteCode}',
-                  title: '邀请码分享',
+                      '${AppLocale.inviteCode.getString(context)} ${userInfo.user.inviteCode}',
+                  title: AppLocale.inviteCodeShare.getString(context),
                 );
               },
             ),

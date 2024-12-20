@@ -55,7 +55,7 @@ class _AdminRoomMessagesPageState extends State<AdminRoomMessagesPage> {
           roomType: widget.roomType,
         ));
 
-    ModelAggregate.models().then((value) {
+    ModelAggregate.models(withCustom: true).then((value) {
       setState(() {
         for (var element in value) {
           models[element.id] = element;
@@ -84,7 +84,7 @@ class _AdminRoomMessagesPageState extends State<AdminRoomMessagesPage> {
             }
 
             return const Text(
-              '用户数字人',
+              'Character',
               style: TextStyle(fontSize: CustomSize.appBarTitleSize),
             );
           },

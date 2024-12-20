@@ -40,8 +40,7 @@ class HttpClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
-    return await dio.get(url,
-        queryParameters: queryParameters, options: options);
+    return await dio.get(url, queryParameters: queryParameters, options: options);
   }
 
   static Future<Response> getCached(
@@ -61,14 +60,12 @@ class HttpClient {
           extra: cacheOptions
               .copyWith(
                 maxStale: Nullable<Duration>(duration),
-                policy: forceRefresh
-                    ? CachePolicy.refreshForceCache
-                    : CachePolicy.forceCache,
+                policy: forceRefresh ? CachePolicy.refreshForceCache : CachePolicy.forceCache,
               )
               .toExtra()),
     );
     // print("=======================");
-    Logger.instance.d("request: $url [${resp.statusCode}]");
+    // Logger.instance.d("request: $url [${resp.statusCode}]");
     // print("response: ${resp.data}");
 
     return resp;

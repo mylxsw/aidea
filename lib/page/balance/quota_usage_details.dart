@@ -51,7 +51,7 @@ class _QuotaUsageDetailScreenState extends State<QuotaUsageDetailScreen> {
         centerTitle: true,
         elevation: 0,
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -103,14 +103,13 @@ class _QuotaUsageDetailScreenState extends State<QuotaUsageDetailScreen> {
                   margin: const EdgeInsets.symmetric(vertical: 6),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: customColors.paymentItemBackgroundColor,
-                    borderRadius: BorderRadius.circular(10),
+                    color: customColors.backgroundContainerColor,
+                    borderRadius: CustomSize.borderRadius,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(item.createdAt,
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(item.createdAt, style: const TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(width: 20),
                       Expanded(
                         child: Text('使用 ${item.type} 消耗 ${item.used} 个智慧果'),

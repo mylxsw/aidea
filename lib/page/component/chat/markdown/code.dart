@@ -3,10 +3,20 @@ import 'package:askaide/page/component/dialog.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
-import 'package:flutter_highlight/themes/default.dart';
-import 'package:flutter_highlight/themes/monokai.dart';
+import 'package:flutter_highlight/themes/tomorrow-night.dart';
+import 'package:flutter_highlight/themes/tomorrow.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:markdown/markdown.dart' as md;
+
+Map<String, TextStyle> codeTheme() {
+  var theme = Map<String, TextStyle>.from(Ability().themeMode != 'dark' ? tomorrowTheme : tomorrowNightTheme);
+  theme['root'] = TextStyle(
+    backgroundColor: Colors.transparent,
+    color: theme['root']?.color,
+  );
+
+  return theme;
+}
 
 class CodeElementBuilder extends MarkdownElementBuilder {
   @override
@@ -31,7 +41,7 @@ class CodeElementBuilder extends MarkdownElementBuilder {
 
         // Specify highlight theme
         // All available themes are listed in `themes` folder
-        theme: Ability().themeMode != 'dark' ? defaultTheme : monokaiTheme,
+        theme: codeTheme(),
 
         // Specify padding
         padding: multiLine
@@ -44,7 +54,7 @@ class CodeElementBuilder extends MarkdownElementBuilder {
             : const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
 
         textStyle: const TextStyle(
-          fontSize: 14,
+          fontSize: 13,
           height: 1.5,
           wordSpacing: 3,
         ),
@@ -59,11 +69,11 @@ class CodeElementBuilder extends MarkdownElementBuilder {
             right: 0,
             top: 0,
             child: IconButton(
-              tooltip: '复制代码',
+              tooltip: 'Copy code',
               icon: const Icon(Icons.copy, size: 12),
               onPressed: () {
                 FlutterClipboard.copy(element.textContent).then((value) {
-                  showSuccessMessage('已复制到剪贴板');
+                  showSuccessMessage('Copied to clipboard');
                 });
               },
             ),

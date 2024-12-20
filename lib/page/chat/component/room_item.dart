@@ -8,6 +8,7 @@ import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/chat/component/group_avatar.dart';
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/model/room.dart';
 import 'package:flutter/material.dart';
@@ -29,31 +30,22 @@ class RoomItem extends StatelessWidget {
         horizontal: 10,
         vertical: 5,
       ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(customColors.borderRadius ?? 8),
-      ),
+      decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
       child: Slidable(
         endActionPane: ActionPane(
           motion: const ScrollMotion(),
           children: [
             const SizedBox(width: 10),
             SlidableAction(
-              label: '设置',
+              label: AppLocale.settings.getString(context),
               backgroundColor: Colors.green,
               borderRadius: room.category == 'system'
-                  ? BorderRadius.all(
-                      Radius.circular(customColors.borderRadius ?? 8))
-                  : BorderRadius.only(
-                      topLeft: Radius.circular(customColors.borderRadius ?? 8),
-                      bottomLeft:
-                          Radius.circular(customColors.borderRadius ?? 8),
-                    ),
+                  ? CustomSize.borderRadiusAll
+                  : const BorderRadius.only(topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
               icon: Icons.settings,
               onPressed: (_) {
                 final chatRoomBloc = context.read<RoomBloc>();
-                final redirectUrl = room.roomType == 4
-                    ? '/group-chat/${room.id}/edit'
-                    : '/room/${room.id}/setting';
+                final redirectUrl = room.roomType == 4 ? '/group-chat/${room.id}/edit' : '/room/${room.id}/setting';
 
                 context.push(redirectUrl).then((value) {
                   chatRoomBloc.add(RoomsLoadEvent());
@@ -63,18 +55,14 @@ class RoomItem extends StatelessWidget {
             if (room.category != 'system')
               SlidableAction(
                 label: AppLocale.delete.getString(context),
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(customColors.borderRadius ?? 8),
-                  bottomRight: Radius.circular(customColors.borderRadius ?? 8),
-                ),
+                borderRadius: const BorderRadius.only(topRight: CustomSize.radius, bottomRight: CustomSize.radius),
                 backgroundColor: Colors.red,
                 icon: Icons.delete,
                 onPressed: (_) {
                   openConfirmDialog(
                     context,
                     AppLocale.confirmToDeleteRoom.getString(context),
-                    () =>
-                        context.read<RoomBloc>().add(RoomDeleteEvent(room.id!)),
+                    () => context.read<RoomBloc>().add(RoomDeleteEvent(room.id!)),
                     danger: true,
                   );
                 },
@@ -82,16 +70,12 @@ class RoomItem extends StatelessWidget {
           ],
         ),
         child: Material(
-          borderRadius:
-              BorderRadius.all(Radius.circular(customColors.borderRadius ?? 8)),
-          color: customColors.columnBlockBackgroundColor,
+          borderRadius: CustomSize.borderRadius,
+          color: customColors.backgroundContainerColor,
           child: InkWell(
-            borderRadius: BorderRadius.all(
-                Radius.circular(customColors.borderRadius ?? 8)),
+            borderRadius: CustomSize.borderRadiusAll,
             onTap: () {
-              final redirectRoute = room.roomType == 4
-                  ? '/group-chat/${room.id}/chat'
-                  : '/room/${room.id}/chat';
+              final redirectRoute = room.roomType == 4 ? '/group-chat/${room.id}/chat' : '/room/${room.id}/chat';
               HapticFeedbackHelper.lightImpact();
               final chatRoomBloc = context.read<RoomBloc>();
               context.push(redirectRoute).then((value) {
@@ -122,8 +106,7 @@ class RoomItem extends StatelessWidget {
                                 Text(
                                   humanTime(room.lastActiveTime),
                                   style: TextStyle(
-                                    color: customColors.weakLinkColor
-                                        ?.withAlpha(65),
+                                    color: customColors.weakLinkColor?.withAlpha(65),
                                     fontSize: 10,
                                   ),
                                 ),
@@ -144,15 +127,12 @@ class RoomItem extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         color: customColors.backgroundContainerColor,
-                        borderRadius: const BorderRadius.only(
-                          topRight: Radius.circular(8),
-                          bottomLeft: Radius.circular(8),
-                        ),
+                        borderRadius:
+                            const BorderRadius.only(topRight: CustomSize.radius, bottomLeft: CustomSize.radius),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       child: Text(
-                        '群聊',
+                        AppLocale.groupChat.getString(context),
                         style: TextStyle(
                           color: customColors.weakTextColor,
                           fontSize: 8,
@@ -167,13 +147,10 @@ class RoomItem extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         color: customColors.backgroundContainerColor,
-                        borderRadius: const BorderRadius.only(
-                          topRight: Radius.circular(8),
-                          bottomLeft: Radius.circular(8),
-                        ),
+                        borderRadius:
+                            const BorderRadius.only(topRight: CustomSize.radius, bottomLeft: CustomSize.radius),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       child: Text(
                         'local',
                         style: TextStyle(
@@ -230,8 +207,7 @@ class RoomItem extends StatelessWidget {
   }
 
   Widget _buildAvatar(Room room) {
-    if (room.members.length == 1 &&
-        (room.avatarUrl == null || room.avatarUrl == '')) {
+    if (room.members.length == 1 && (room.avatarUrl == null || room.avatarUrl == '')) {
       room.avatarUrl = room.members[0];
     }
 
@@ -240,10 +216,7 @@ class RoomItem extends StatelessWidget {
         width: 70,
         height: 70,
         child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(8),
-            bottomLeft: Radius.circular(8),
-          ),
+          borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
           child: CachedNetworkImageEnhanced(
             imageUrl: imageURL(room.avatarUrl!, qiniuImageTypeAvatar),
             fit: BoxFit.fill,
@@ -254,10 +227,7 @@ class RoomItem extends StatelessWidget {
 
     if (room.members.isNotEmpty) {
       return ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(8),
-          bottomLeft: Radius.circular(8),
-        ),
+        borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
         child: GroupAvatar(
           size: 70,
           avatars: room.members,
@@ -269,10 +239,7 @@ class RoomItem extends StatelessWidget {
       text: room.name.split('、').join(' '),
       size: 70,
       backgroundColor: Colors.grey.withAlpha(100),
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(8),
-        bottomLeft: Radius.circular(8),
-      ),
+      borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
     );
   }
 }

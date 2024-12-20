@@ -81,42 +81,33 @@ class _ArtisticQRScreenState extends State<ArtisticQRScreen> {
 
   @override
   void initState() {
-    APIServer()
-        .creativeIslandCapacity(mode: widget.type, id: widget.id)
-        .then((cap) {
+    APIServer().creativeIslandCapacity(mode: widget.type, id: widget.id).then((cap) {
       setState(() {
         capacity = cap;
       });
 
       if (widget.galleryCopyId != null && widget.galleryCopyId! > 0) {
-        APIServer()
-            .creativeGalleryItem(id: widget.galleryCopyId!)
-            .then((response) {
+        APIServer().creativeGalleryItem(id: widget.galleryCopyId!).then((response) {
           final gallery = response.item;
           if (gallery.prompt != null && gallery.prompt!.isNotEmpty) {
             promptController.text = gallery.prompt!;
           }
 
-          if (gallery.metaMap['real_prompt'] != null &&
-              gallery.metaMap['real_prompt'] != '') {
+          if (gallery.metaMap['real_prompt'] != null && gallery.metaMap['real_prompt'] != '') {
             promptController.text = gallery.metaMap['real_prompt']!;
           }
 
-          if (gallery.metaMap['negative_prompt'] != null &&
-              gallery.metaMap['negative_prompt'] != '') {
+          if (gallery.metaMap['negative_prompt'] != null && gallery.metaMap['negative_prompt'] != '') {
             negativePromptController.text = gallery.metaMap['negative_prompt']!;
           }
 
-          if (gallery.metaMap['real_negative_prompt'] != null &&
-              gallery.metaMap['real_negative_prompt'] != '') {
-            negativePromptController.text =
-                gallery.metaMap['real_negative_prompt']!;
+          if (gallery.metaMap['real_negative_prompt'] != null && gallery.metaMap['real_negative_prompt'] != '') {
+            negativePromptController.text = gallery.metaMap['real_negative_prompt']!;
           }
 
           // 创建同款时，默认关闭 AI 优化，除非该同款包含 ai_rewrite 的设定
           enableAIRewrite = false;
-          if ((gallery.metaMap['real_prompt'] == null ||
-                  gallery.metaMap['real_prompt'] == '') &&
+          if ((gallery.metaMap['real_prompt'] == null || gallery.metaMap['real_prompt'] == '') &&
               gallery.metaMap['ai_rewrite'] != null &&
               gallery.metaMap['ai_rewrite']) {
             enableAIRewrite = gallery.metaMap['ai_rewrite'];
@@ -128,9 +119,7 @@ class _ArtisticQRScreenState extends State<ArtisticQRScreen> {
     });
 
     if (widget.note != null) {
-      Cache()
-          .boolGet(key: 'creative:tutorials:${widget.type}:dialog')
-          .then((show) {
+      Cache().boolGet(key: 'creative:tutorials:${widget.type}:dialog').then((show) {
         if (!show) {
           return;
         }
@@ -165,7 +154,7 @@ class _ArtisticQRScreenState extends State<ArtisticQRScreen> {
           icon: const Icon(Icons.arrow_back_ios),
         ),
         toolbarHeight: CustomSize.toolbarHeight,
-        backgroundColor: customColors.backgroundContainerColor,
+        backgroundColor: customColors.backgroundColor,
         actions: [
           if (widget.note != null)
             IconButton(
@@ -176,19 +165,17 @@ class _ArtisticQRScreenState extends State<ArtisticQRScreen> {
             )
         ],
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
-        enabled: true,
+        enabled: false,
         maxWidth: CustomSize.smallWindowSize,
         child: Column(
           children: [
-            if (Ability().showGlobalAlert)
-              const GlobalAlert(pageKey: 'creative_create'),
+            if (Ability().showGlobalAlert) const GlobalAlert(pageKey: 'creative_create'),
             Expanded(
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 height: double.infinity,
                 child: SingleChildScrollView(
                   child: buildEditPanel(context, customColors),
@@ -222,7 +209,7 @@ class _ArtisticQRScreenState extends State<ArtisticQRScreen> {
         children: [
           ColumnBlock(
             innerPanding: 10,
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            padding: const EdgeInsets.only(left: 15, right: 15, top: 15, bottom: 0),
             children: [
               if (capacity != null && capacity!.artisticStyles.isNotEmpty)
                 ArtisticStyleSelector(
@@ -270,8 +257,7 @@ class _ArtisticQRScreenState extends State<ArtisticQRScreen> {
                           showBeautyDialog(
                             context,
                             type: QuickAlertType.info,
-                            text: AppLocale.onceEnabledSmartOptimization
-                                .getString(context),
+                            text: AppLocale.onceEnabledSmartOptimization.getString(context),
                             confirmBtnText: AppLocale.gotIt.getString(context),
                             showCancelBtn: false,
                           );
@@ -329,8 +315,7 @@ class _ArtisticQRScreenState extends State<ArtisticQRScreen> {
                               context,
                               type: QuickAlertType.info,
                               text: '文本权重\n\n权重越高，图像中出现的文本痕迹越明显。',
-                              confirmBtnText:
-                                  AppLocale.gotIt.getString(context),
+                              confirmBtnText: AppLocale.gotIt.getString(context),
                               showCancelBtn: false,
                             );
                           },
@@ -380,14 +365,10 @@ class _ArtisticQRScreenState extends State<ArtisticQRScreen> {
                     openListSelectDialog(
                       context,
                       <SelectorItem>[
-                        SelectorItem(
-                            const Text('1', textAlign: TextAlign.center), 1),
-                        SelectorItem(
-                            const Text('2', textAlign: TextAlign.center), 2),
-                        SelectorItem(
-                            const Text('3', textAlign: TextAlign.center), 3),
-                        SelectorItem(
-                            const Text('4', textAlign: TextAlign.center), 4),
+                        SelectorItem(const Text('1', textAlign: TextAlign.center), 1),
+                        SelectorItem(const Text('2', textAlign: TextAlign.center), 2),
+                        SelectorItem(const Text('3', textAlign: TextAlign.center), 3),
+                        SelectorItem(const Text('4', textAlign: TextAlign.center), 4),
                       ],
                       (value) {
                         setState(() {
@@ -597,8 +578,7 @@ class _ArtisticQRScreenState extends State<ArtisticQRScreen> {
 
     request(int waitDuration) async {
       try {
-        final taskId = await APIServer()
-            .creativeIslandArtisticTextCompletionsAsyncV2(params);
+        final taskId = await APIServer().creativeIslandArtisticTextCompletionsAsyncV2(params);
 
         stopPeriodQuery = false;
 
@@ -654,9 +634,7 @@ class _ArtisticQRScreenState extends State<ArtisticQRScreen> {
     final resp = await APIServer().asyncTaskStatus(taskId);
     switch (resp.status) {
       case 'success':
-        if (params != null &&
-            resp.originImage != null &&
-            resp.originImage != '') {
+        if (params != null && resp.originImage != null && resp.originImage != '') {
           params['image'] = resp.originImage;
         }
         return IslandResult(

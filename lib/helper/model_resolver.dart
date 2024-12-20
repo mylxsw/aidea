@@ -118,10 +118,10 @@ class ModelResolver {
         onMessage('\n![image]($data)\n');
       }
     } else if (res.status == 'failed') {
-      throw '响应失败: ${res.errors!.join("\n")}';
+      throw 'Response failed: ${res.errors!.join("\n")}';
     } else {
       if (retry > 10) {
-        throw '响应超时';
+        throw 'Response timeout';
       }
 
       await Future.delayed(const Duration(seconds: 5));
@@ -140,8 +140,7 @@ class ModelResolver {
       var res = await deepAIRepo.painting(room.modelName(), message.text);
       onMessage('\n![${res.id}](${res.url})\n');
     } else {
-      var taskId =
-          await deepAIRepo.paintingAsync(room.modelName(), message.text);
+      var taskId = await deepAIRepo.paintingAsync(room.modelName(), message.text);
       await Future.delayed(const Duration(seconds: 10));
       await _waitForTasks(taskId, onMessage);
     }
@@ -186,8 +185,8 @@ class ModelResolver {
     //     .where((e) => e.ts!.millisecondsSinceEpoch > lastAliveTime())
     //     .toList();
     var recentMessages = messages.toList();
-    int contextBreakIndex = recentMessages.lastIndexWhere((element) =>
-        element.isSystem() && element.type == MessageType.contextBreak);
+    int contextBreakIndex =
+        recentMessages.lastIndexWhere((element) => element.isSystem() && element.type == MessageType.contextBreak);
 
     if (contextBreakIndex > -1) {
       recentMessages = recentMessages.sublist(contextBreakIndex + 1);
@@ -200,16 +199,19 @@ class ModelResolver {
             ? ChatMessage(
                 role: OpenAIChatMessageRole.assistant,
                 content: e.text,
-                images: e.images)
+                images: e.images,
+                file: e.file,
+              )
             : ChatMessage(
                 role: OpenAIChatMessageRole.user,
                 content: e.text,
-                images: e.images))
+                images: e.images,
+                file: e.file,
+              ))
         .toList();
 
     if (contextMessages.length > room.maxContext * 2) {
-      contextMessages =
-          contextMessages.sublist(contextMessages.length - room.maxContext * 2);
+      contextMessages = contextMessages.sublist(contextMessages.length - room.maxContext * 2);
     }
 
     if (room.systemPrompt != null && room.systemPrompt != '') {

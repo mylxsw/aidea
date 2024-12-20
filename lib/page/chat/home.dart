@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:askaide/bloc/chat_chat_bloc.dart';
-import 'package:askaide/bloc/free_count_bloc.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/color.dart';
 import 'package:askaide/helper/global_store.dart';
@@ -144,13 +143,6 @@ class _HomePageState extends State<HomePage> {
         models = cap.homeModels;
 
         if (mounted) {
-          // 加载免费模型剩余使用次数
-          if (currentModel != null && currentModel!.model.modelId != null) {
-            context
-                .read<FreeCountBloc>()
-                .add(FreeCountReloadEvent(model: currentModel!.model.modelId!));
-          }
-
           setState(() {});
         }
       }
@@ -432,25 +424,18 @@ class _HomePageState extends State<HomePage> {
               innerPadding: const EdgeInsets.all(0),
               decoration: BoxDecoration(
                 color: customColors.columnBlockBackgroundColor?.withAlpha(150),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: CustomSize.borderRadius,
               ),
               thumbDecoration: BoxDecoration(
                 color: currentModel?.iconAndColor.color,
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: CustomSize.borderRadius,
               ),
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInToLinear,
               onValueChanged: (value) {
-                currentModel = indicators[value];
-
-                // 重新读取模型的免费使用次数
-                if (currentModel != null &&
-                    currentModel!.model.modelId != null) {
-                  context.read<FreeCountBloc>().add(FreeCountReloadEvent(
-                      model: currentModel!.model.modelId!));
-                }
-
-                setState(() {});
+                setState(() {
+                  currentModel = indicators[value];
+                });
               },
             ),
           ),
@@ -539,7 +524,7 @@ class _HomePageState extends State<HomePage> {
                                   child: Stack(
                                     children: [
                                       ClipRRect(
-                                        borderRadius: BorderRadius.circular(5),
+                                        borderRadius: CustomSize.borderRadius,
                                         child: e.file.bytes != null
                                             ? Image.memory(
                                                 e.file.bytes!,
@@ -567,7 +552,7 @@ class _HomePageState extends State<HomePage> {
                                             padding: const EdgeInsets.all(3),
                                             decoration: BoxDecoration(
                                               borderRadius:
-                                                  BorderRadius.circular(10),
+                                                  CustomSize.borderRadius,
                                               color: customColors
                                                   .chatRoomBackground,
                                             ),
@@ -596,9 +581,7 @@ class _HomePageState extends State<HomePage> {
               state.examples!.isNotEmpty &&
               state.histories.isEmpty)
             Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-              ),
+              decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
               padding:
                   const EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 3),
               margin: const EdgeInsets.all(10),
@@ -824,7 +807,8 @@ class _HomePageState extends State<HomePage> {
                   // 上传图片
                   HapticFeedbackHelper.mediumImpact();
                   if (selectedImageFiles.length >= 4) {
-                    showSuccessMessage('最多只能上传 4 张图片');
+                    showSuccessMessage(
+                        AppLocale.uploadImageLimit4.getString(context));
                     return;
                   }
 
@@ -851,28 +835,7 @@ class _HomePageState extends State<HomePage> {
               ),
           ],
         ),
-        BlocBuilder<FreeCountBloc, FreeCountState>(
-          buildWhen: (previous, current) => current is FreeCountLoadedState,
-          builder: (context, state) {
-            if (state is FreeCountLoadedState) {
-              if (currentModel != null && currentModel!.model.modelId != null) {
-                final matched = state.model(currentModel!.model.modelId!);
-                if (matched != null &&
-                    matched.leftCount > 0 &&
-                    matched.maxCount > 0) {
-                  return Text(
-                    '今日还可免费${matched.leftCount}次',
-                    style: TextStyle(
-                      color: customColors.weakTextColor?.withAlpha(120),
-                      fontSize: 11,
-                    ),
-                  );
-                }
-              }
-            }
-            return const SizedBox();
-          },
-        ),
+        const SizedBox(),
         InkWell(
           onTap: () {
             onSubmit(context, _textController.text.trim());
@@ -935,9 +898,7 @@ class ChatHistoryItem extends StatelessWidget {
         horizontal: 15,
         vertical: 5,
       ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-      ),
+      decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
       child: Slidable(
         endActionPane: ActionPane(
           motion: const ScrollMotion(),
@@ -945,7 +906,7 @@ class ChatHistoryItem extends StatelessWidget {
             const SizedBox(width: 10),
             SlidableAction(
               label: AppLocale.delete.getString(context),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: CustomSize.borderRadiusAll,
               backgroundColor: Colors.red,
               icon: Icons.delete,
               onPressed: (_) {
@@ -964,18 +925,14 @@ class ChatHistoryItem extends StatelessWidget {
           ],
         ),
         child: Material(
-          color: customColors.backgroundColor?.withAlpha(200),
-          borderRadius: BorderRadius.all(
-            Radius.circular(customColors.borderRadius ?? 8),
-          ),
+          color: customColors.backgroundContainerColor,
+          borderRadius: CustomSize.borderRadius,
           child: InkWell(
             child: ListTile(
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(customColors.borderRadius ?? 8),
-              ),
+              shape:
+                  RoundedRectangleBorder(borderRadius: CustomSize.borderRadius),
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

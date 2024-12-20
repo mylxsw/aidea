@@ -67,8 +67,7 @@ class PromotionEvent {
     return PromotionEvent(
       title: json['title'],
       content: json['content'],
-      clickButtonType: PromotionEventClickButtonType.fromName(
-          json['click_button_type'] ?? ''),
+      clickButtonType: PromotionEventClickButtonType.fromName(json['click_button_type'] ?? ''),
       clickValue: json['click_value'],
       clickButtonColor: json['click_button_color'],
       backgroundImage: json['background_image'],
@@ -264,17 +263,10 @@ class RoomInServer {
       maxContext: json['max_context'] ?? 10,
       maxTokens: json['max_tokens'],
       roomType: json['room_type'],
-      lastActiveTime: json['last_active_time'] != null
-          ? DateTime.parse(json['last_active_time'])
-          : null,
-      createdAt:
-          json['CreatedAt'] != null ? DateTime.parse(json['CreatedAt']) : null,
-      updatedAt:
-          json['UpdatedAt'] != null ? DateTime.parse(json['UpdatedAt']) : null,
-      members: (json['members'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          [],
+      lastActiveTime: json['last_active_time'] != null ? DateTime.parse(json['last_active_time']) : null,
+      createdAt: json['CreatedAt'] != null ? DateTime.parse(json['CreatedAt']) : null,
+      updatedAt: json['UpdatedAt'] != null ? DateTime.parse(json['UpdatedAt']) : null,
+      members: (json['members'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
     );
   }
 }
@@ -455,8 +447,7 @@ class AsyncTaskResp {
   int? width;
   int? height;
 
-  AsyncTaskResp(this.status,
-      {this.errors, this.resources, this.originImage, this.width, this.height});
+  AsyncTaskResp(this.status, {this.errors, this.resources, this.originImage, this.width, this.height});
 
   toJson() => {
         'status': status,
@@ -470,14 +461,9 @@ class AsyncTaskResp {
   static AsyncTaskResp fromJson(Map<String, dynamic> json) {
     return AsyncTaskResp(
       json['status'],
-      errors: json['errors'] != null
-          ? (json['errors'] as List<dynamic>).map((e) => e.toString()).toList()
-          : null,
-      resources: json['resources'] != null
-          ? (json['resources'] as List<dynamic>)
-              .map((e) => e.toString())
-              .toList()
-          : null,
+      errors: json['errors'] != null ? (json['errors'] as List<dynamic>).map((e) => e.toString()).toList() : null,
+      resources:
+          json['resources'] != null ? (json['resources'] as List<dynamic>).map((e) => e.toString()).toList() : null,
       originImage: json['origin_image'],
       width: json['width'],
       height: json['height'],
@@ -555,14 +541,22 @@ class UploadInitResponse {
   String key;
   String token;
   String url;
+  bool uploaded;
 
-  UploadInitResponse(this.key, this.bucket, this.token, this.url);
+  UploadInitResponse(
+    this.key,
+    this.bucket,
+    this.token,
+    this.url, {
+    this.uploaded = false,
+  });
 
   toJson() => {
         'bucket': bucket,
         'key': key,
         'token': token,
         'url': url,
+        'uploaded': uploaded,
       };
 
   static fromJson(Map<String, dynamic> json) {
@@ -571,6 +565,7 @@ class UploadInitResponse {
       json['bucket'],
       json['token'],
       json['url'],
+      uploaded: json['uploaded'] ?? false,
     );
   }
 }
@@ -602,6 +597,7 @@ class Model {
   String name;
   String shortName;
   String? description;
+  String? priceInfo;
   bool isChat;
   bool isImage;
   bool disabled;
@@ -613,6 +609,7 @@ class Model {
   String? tagTextColor;
   String? tagBgColor;
   bool isNew;
+  bool isDefault;
 
   String get realModelId {
     return id.split(':').last;
@@ -626,6 +623,7 @@ class Model {
     required this.isChat,
     required this.isImage,
     this.description,
+    this.priceInfo,
     this.disabled = false,
     this.tag,
     this.avatarUrl,
@@ -633,6 +631,7 @@ class Model {
     this.tagBgColor,
     this.tagTextColor,
     this.isNew = false,
+    this.isDefault = false,
   });
 
   toJson() => {
@@ -640,6 +639,7 @@ class Model {
         'name': name,
         'short_name': shortName,
         'description': description,
+        'price_info': priceInfo,
         'category': category,
         'is_chat': isChat,
         'is_image': isImage,
@@ -650,6 +650,7 @@ class Model {
         'tag_bg_color': tagBgColor,
         'tag_text_color': tagTextColor,
         'is_new': isNew,
+        'is_default': isDefault,
       };
 
   static Model fromJson(Map<String, dynamic> json) {
@@ -658,6 +659,7 @@ class Model {
       name: json['name'],
       shortName: json['short_name'] ?? json['name'],
       description: json['description'],
+      priceInfo: json['price_info'],
       category: json['category'],
       isChat: json['is_chat'],
       isImage: json['is_image'],
@@ -668,6 +670,7 @@ class Model {
       tagBgColor: json['tag_bg_color'],
       tagTextColor: json['tag_text_color'],
       isNew: json['is_new'] ?? false,
+      isDefault: json['is_default'] ?? false,
     );
   }
 }

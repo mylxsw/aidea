@@ -13,6 +13,7 @@ import 'package:askaide/page/component/chat/enhanced_selectable_text.dart';
 import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/page/component/file_preview.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/repo/api_server.dart';
@@ -106,18 +107,15 @@ class _ChatPreviewState extends State<ChatPreview> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // 消息选择模式，显示选择框
-                  if (widget.controller.selectMode &&
-                      !message.message.isSystem())
+                  if (widget.controller.selectMode && !message.message.isSystem())
                     Checkbox(
-                      value: widget.controller
-                          .isMessageSelected(message.message.id!),
+                      value: widget.controller.isMessageSelected(message.message.id!),
                       activeColor: customColors.linkColor,
                       onChanged: (value) {
                         if (value != null && value) {
                           widget.controller.selectMessage(message.message.id!);
                         } else {
-                          widget.controller
-                              .unSelectMessage(message.message.id!);
+                          widget.controller.unSelectMessage(message.message.id!);
                         }
                       },
                     ),
@@ -127,14 +125,10 @@ class _ChatPreviewState extends State<ChatPreview> {
                     child: widget.supportBloc
                         ? BlocBuilder<ChatMessageBloc, ChatMessageState>(
                             buildWhen: (previous, current) =>
-                                (current is ChatMessageUpdated &&
-                                    current.message.id == message.message.id),
+                                (current is ChatMessageUpdated && current.message.id == message.message.id),
                             builder: (context, state) {
                               return Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 10,
-                                ),
+                                padding: const EdgeInsets.all(5),
                                 child: _buildMessageBox(
                                   context,
                                   customColors,
@@ -146,10 +140,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                             },
                           )
                         : Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 10,
-                            ),
+                            padding: const EdgeInsets.all(5),
                             child: _buildMessageBox(
                               context,
                               customColors,
@@ -162,9 +153,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                 ],
               ),
 
-            if (index == 0 &&
-                widget.helpWidgets != null &&
-                !message.message.isSystem())
+            if (index == 0 && widget.helpWidgets != null && !message.message.isSystem())
               for (var widget in widget.helpWidgets!) widget,
           ],
         );
@@ -198,72 +187,102 @@ class _ChatPreviewState extends State<ChatPreview> {
             vertical: 5,
           ),
           child: Text(
-            message.isTimeline()
-                ? message.friendlyTime()
-                : message.text.getString(context),
+            message.isTimeline() ? message.friendlyTime() : message.text.getString(context),
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ),
       );
     }
 
-    final showTranslate = state.showTranslate &&
-        state.translateText != null &&
-        state.translateText != '';
+    final showTranslate = state.showTranslate && state.translateText != null && state.translateText != '';
 
     final extra = index == 0 ? message.decodeExtra() : null;
     final extraInfo = extra != null ? extra['info'] ?? '' : '';
 
     // 普通消息
     return Align(
-      alignment:
-          message.role == Role.sender ? Alignment.topRight : Alignment.topLeft,
+      alignment: message.role == Role.sender ? Alignment.topRight : Alignment.topLeft,
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: _chatBoxMaxWidth(context)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            if (message.file != null)
+              Container(
+                margin: message.role == Role.sender
+                    ? const EdgeInsets.fromLTRB(0, 0, 10, 7)
+                    : const EdgeInsets.fromLTRB(10, 0, 0, 7),
+                padding: const EdgeInsets.only(bottom: 5, left: 5),
+                constraints: BoxConstraints(
+                  maxWidth: _chatBoxFilePreviewWidth(context),
+                ),
+                child: Builder(builder: (context) {
+                  try {
+                    final file = jsonDecode(message.file!);
+                    final filename = file['name'];
+                    // final fileUrl = file['url'];
+
+                    return FilePreview(
+                      filename: filename,
+                      fileType: filename.split('.').last,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                    );
+                  } catch (e) {
+                    return FilePreview(
+                      fileType: '',
+                      filename: AppLocale.unknownFile.getString(context),
+                      mainAxisAlignment: MainAxisAlignment.end,
+                    );
+                  }
+                }),
+              ),
             if (message.images != null && message.images!.isNotEmpty)
               Container(
                 margin: message.role == Role.sender
                     ? const EdgeInsets.fromLTRB(0, 0, 10, 7)
                     : const EdgeInsets.fromLTRB(10, 0, 0, 7),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: _chatBoxImagePreviewWidth(
-                      context,
-                      (message.images ?? []).length,
-                    ),
+                constraints: BoxConstraints(
+                  maxWidth: _chatBoxImagePreviewWidth(
+                    context,
+                    (message.images ?? []).length,
                   ),
-                  child: FileUploadPreview(images: message.images ?? []),
                 ),
+                child: FileUploadPreview(images: message.images ?? []),
               ),
-            Row(
+            Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // 消息头像
-                buildAvatar(message),
+                Container(
+                  margin: const EdgeInsets.only(left: 10),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      buildAvatar(message),
+                      // 发送人名称
+                      if (message.role == Role.receiver && widget.senderNameBuilder != null)
+                        widget.senderNameBuilder!(message) ?? const SizedBox(),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
                 // 消息内容部分
                 ConstrainedBox(
                   constraints: BoxConstraints(
-                    maxWidth: _chatBoxMaxWidth(context) - 80,
+                    maxWidth: _chatBoxMaxWidth(context) - 30,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 发送人名称
-                      if (message.role == Role.receiver &&
-                          widget.senderNameBuilder != null)
-                        widget.senderNameBuilder!(message) ?? const SizedBox(),
                       Wrap(
                         crossAxisAlignment: WrapCrossAlignment.end,
                         children: [
                           // 错误指示器
-                          if (message.role == Role.sender &&
-                              message.statusIsFailed())
+                          if (message.role == Role.sender && message.statusIsFailed())
                             buildErrorIndicator(message, state, context, index),
                           // 消息主体
                           GestureDetector(
@@ -271,8 +290,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                             // 非选择模式下，单击隐藏键盘
                             onTap: () {
                               if (widget.controller.selectMode) {
-                                widget.controller
-                                    .toggleMessageSelected(message.id!);
+                                widget.controller.toggleMessageSelected(message.id!);
                               }
                               FocusScope.of(context).requestFocus(FocusNode());
                             },
@@ -311,7 +329,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                                       ? const EdgeInsets.fromLTRB(0, 0, 10, 7)
                                       : const EdgeInsets.fromLTRB(10, 0, 0, 7),
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius: CustomSize.borderRadius,
                                     color: message.role == Role.receiver
                                         ? customColors.chatRoomReplyBackground
                                         : customColors.chatRoomSenderBackground,
@@ -322,9 +340,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                                   ),
                                   child: Builder(
                                     builder: (context) {
-                                      if ((message.statusPending() ||
-                                              !message.isReady) &&
-                                          message.text.isEmpty) {
+                                      if ((message.statusPending() || !message.isReady) && message.text.isEmpty) {
                                         return LoadingAnimationWidget.waveDots(
                                           color: customColors.weakLinkColor!,
                                           size: 25,
@@ -337,42 +353,19 @@ class _ChatPreviewState extends State<ChatPreview> {
                                       }
                                       return Column(
                                         mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           state.showMarkdown
                                               ? Markdown(
                                                   data: text.trim(),
-                                                  onUrlTap: (value) =>
-                                                      onMarkdownUrlTap(value),
+                                                  onUrlTap: (value) => onMarkdownUrlTap(value),
                                                 )
                                               : SelectableText(
                                                   text,
                                                   style: TextStyle(
-                                                    color: customColors
-                                                        .chatRoomSenderText,
+                                                    color: customColors.chatRoomSenderText,
                                                   ),
                                                 ),
-                                          if (message.quotaConsumed != null &&
-                                              message.quotaConsumed! > 0)
-                                            Row(
-                                              children: [
-                                                const Icon(Icons.check_circle,
-                                                    size: 12,
-                                                    color: Colors.green),
-                                                const SizedBox(width: 5),
-                                                Expanded(
-                                                  child: Text(
-                                                    '共 ${message.tokenConsumed} 个 Token， 消耗 ${message.quotaConsumed} 个智慧果',
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      color: customColors
-                                                          .weakTextColor,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
                                         ],
                                       );
                                     },
@@ -380,17 +373,16 @@ class _ChatPreviewState extends State<ChatPreview> {
                                 ),
                                 if (extraInfo.isNotEmpty)
                                   Positioned(
-                                    top: 5,
-                                    right: 5,
+                                    top: 0,
+                                    right: 0,
                                     child: InkWell(
                                       onTap: () {
                                         showCustomBeautyDialog(
                                           context,
                                           type: QuickAlertType.warning,
-                                          confirmBtnText: AppLocale.gotIt
-                                              .getString(context),
+                                          confirmBtnText: AppLocale.gotIt.getString(context),
                                           showCancelBtn: false,
-                                          title: '温馨提示',
+                                          title: AppLocale.goodTips.getString(context),
                                           child: Markdown(
                                             data: extraInfo,
                                             onUrlTap: (value) {
@@ -399,8 +391,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                                             },
                                             textStyle: TextStyle(
                                               fontSize: 14,
-                                              color: customColors
-                                                  .dialogDefaultTextColor,
+                                              color: customColors.dialogDefaultTextColor,
                                             ),
                                           ),
                                         );
@@ -408,8 +399,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                                       child: Icon(
                                         Icons.info_outline,
                                         size: 16,
-                                        color: customColors.weakLinkColor
-                                            ?.withAlpha(50),
+                                        color: customColors.weakLinkColor?.withAlpha(50),
                                       ),
                                     ),
                                   ),
@@ -424,14 +414,12 @@ class _ChatPreviewState extends State<ChatPreview> {
                               ? const EdgeInsets.fromLTRB(7, 10, 14, 7)
                               : const EdgeInsets.fromLTRB(10, 10, 0, 7),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: CustomSize.borderRadius,
                             color: message.role == Role.receiver
                                 ? customColors.chatRoomReplyBackgroundSecondary
-                                : customColors
-                                    .chatRoomSenderBackgroundSecondary,
+                                : customColors.chatRoomSenderBackgroundSecondary,
                           ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           child: Builder(
                             builder: (context) {
                               return Column(
@@ -442,25 +430,23 @@ class _ChatPreviewState extends State<ChatPreview> {
                                       : SelectableText(
                                           state.translateText!,
                                           style: TextStyle(
-                                            color:
-                                                customColors.chatRoomSenderText,
+                                            color: customColors.chatRoomSenderText,
                                           ),
                                         ),
-                                  const Row(
+                                  Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.check_circle,
                                         size: 12,
                                         color: Colors.green,
                                       ),
-                                      SizedBox(width: 5),
+                                      const SizedBox(width: 5),
                                       Text(
-                                        '翻译完成',
-                                        style: TextStyle(
+                                        AppLocale.translateFinished.getString(context),
+                                        style: const TextStyle(
                                           fontSize: 12,
-                                          color: Color.fromARGB(
-                                              255, 145, 145, 145),
+                                          color: Color.fromARGB(255, 145, 145, 145),
                                         ),
                                       ),
                                     ],
@@ -470,8 +456,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                             },
                           ),
                         ),
-                      if (widget.messageFooterBuilder != null)
-                        widget.messageFooterBuilder!(message),
+                      if (widget.messageFooterBuilder != null) widget.messageFooterBuilder!(message),
                     ],
                   ),
                 ),
@@ -522,7 +507,7 @@ class _ChatPreviewState extends State<ChatPreview> {
               widget.onResentEvent!(message, index);
             },
             title: Text(AppLocale.robotHasSomeError.getString(context)),
-            confirmText: '重新发送',
+            confirmText: AppLocale.sendRetry.getString(context),
           );
         },
         child: const Icon(Icons.error, color: Colors.red, size: 20),
@@ -548,24 +533,28 @@ class _ChatPreviewState extends State<ChatPreview> {
     }
   }
 
+  Widget avatarWrap(Widget avatar) {
+    return avatar;
+  }
+
   Widget buildAvatar(Message message) {
     if (widget.avatarBuilder != null) {
       final avatar = widget.avatarBuilder!(message);
       if (avatar != null) {
-        return avatar;
+        return avatarWrap(avatar);
       }
     }
 
     if (widget.robotAvatar != null) {
       if (message.role == Role.receiver && message.avatarUrl != null) {
-        return RemoteAvatar(
+        return avatarWrap(RemoteAvatar(
           avatarUrl: message.avatarUrl!,
           size: 30,
-        );
+        ));
       }
 
       if (message.role == Role.receiver) {
-        return widget.robotAvatar!;
+        return avatarWrap(widget.robotAvatar!);
       }
     }
 
@@ -586,9 +575,7 @@ class _ChatPreviewState extends State<ChatPreview> {
 
     HapticFeedbackHelper.mediumImpact();
 
-    final showTranslate = state.showTranslate &&
-        state.translateText != null &&
-        state.translateText != '';
+    final showTranslate = state.showTranslate && state.translateText != null && state.translateText != '';
 
     BotToast.showAttachedWidget(
       target: offset,
@@ -612,7 +599,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                     text: message.text,
                   ),
                 ),
-                title: '选择文本',
+                title: AppLocale.selectText.getString(context),
               );
 
               cancel();
@@ -626,9 +613,9 @@ class _ChatPreviewState extends State<ChatPreview> {
                   color: const Color.fromARGB(255, 255, 255, 255),
                   size: 14,
                 ),
-                const Text(
-                  "文本",
-                  style: TextStyle(fontSize: 12, color: Colors.white),
+                Text(
+                  AppLocale.text.getString(context),
+                  style: const TextStyle(fontSize: 12, color: Colors.white),
                 ),
               ],
             ),
@@ -636,22 +623,22 @@ class _ChatPreviewState extends State<ChatPreview> {
           TextButton.icon(
             onPressed: () {
               FlutterClipboard.copy(message.text).then((value) {
-                showSuccessMessage('已复制到剪贴板');
+                showSuccessMessage(AppLocale.textCopied.getString(context));
               });
               cancel();
             },
             label: const Text(''),
-            icon: const Column(
+            icon: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
+                const Icon(
                   Icons.copy,
                   color: Color.fromARGB(255, 255, 255, 255),
                   size: 14,
                 ),
                 Text(
-                  "复制",
-                  style: TextStyle(fontSize: 12, color: Colors.white),
+                  AppLocale.copy.getString(context),
+                  style: const TextStyle(fontSize: 12, color: Colors.white),
                 ),
               ],
             ),
@@ -663,23 +650,18 @@ class _ChatPreviewState extends State<ChatPreview> {
 
                   if (showTranslate) {
                     widget.stateManager!
-                        .setState(message.roomId!, message.id!,
-                            state..showTranslate = false)
+                        .setState(message.roomId!, message.id!, state..showTranslate = false)
                         .then((value) {
                       setState(() {});
-                      context.read<RoomBloc>().add(
-                          RoomLoadEvent(message.roomId!, cascading: false));
+                      context.read<RoomBloc>().add(RoomLoadEvent(message.roomId!, cascading: false));
                     });
                   } else {
-                    if (state.translateText != null &&
-                        state.translateText != '') {
+                    if (state.translateText != null && state.translateText != '') {
                       widget.stateManager!
-                          .setState(message.roomId!, message.id!,
-                              state..showTranslate = true)
+                          .setState(message.roomId!, message.id!, state..showTranslate = true)
                           .then((value) {
                         setState(() {});
-                        context.read<RoomBloc>().add(
-                            RoomLoadEvent(message.roomId!, cascading: false));
+                        context.read<RoomBloc>().add(RoomLoadEvent(message.roomId!, cascading: false));
                       });
                       return;
                     }
@@ -695,8 +677,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                       )
                           .then((value) {
                         setState(() {});
-                        context.read<RoomBloc>().add(
-                            RoomLoadEvent(message.roomId!, cascading: false));
+                        context.read<RoomBloc>().add(RoomLoadEvent(message.roomId!, cascading: false));
                       });
                     }).onError((error, stackTrace) {
                       showErrorMessage(resolveError(context, error!));
@@ -713,7 +694,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                       size: 14,
                     ),
                     Text(
-                      showTranslate ? '隐藏' : '翻译',
+                      showTranslate ? AppLocale.hide.getString(context) : AppLocale.translate.getString(context),
                       style: const TextStyle(fontSize: 12, color: Colors.white),
                     )
                   ],
@@ -724,9 +705,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                 var messages = <ChatShareMessage>[];
 
                 if (message.role == Role.receiver) {
-                  final questions = widget.messages
-                      .where((e) => e.message.id == message.refId)
-                      .toList();
+                  final questions = widget.messages.where((e) => e.message.id == message.refId).toList();
                   if (questions.isNotEmpty) {
                     var q = questions.first;
                     messages.add(ChatShareMessage(
@@ -746,9 +725,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                 ));
 
                 if (message.role == Role.sender) {
-                  final answers = widget.messages
-                      .where((e) => e.message.refId == message.id)
-                      .toList();
+                  final answers = widget.messages.where((e) => e.message.refId == message.id).toList();
                   if (answers.isNotEmpty) {
                     for (var a in answers) {
                       messages.add(ChatShareMessage(
@@ -818,7 +795,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Icon(
-                    Icons.delete,
+                    Icons.delete_outline,
                     color: Color.fromARGB(255, 255, 255, 255),
                     size: 14,
                   ),
@@ -836,17 +813,17 @@ class _ChatPreviewState extends State<ChatPreview> {
                 widget.onSpeakEvent!(message);
               },
               label: const Text(''),
-              icon: const Column(
+              icon: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.record_voice_over,
+                  const Icon(
+                    Icons.record_voice_over_outlined,
                     color: Color.fromARGB(255, 255, 255, 255),
                     size: 14,
                   ),
                   Text(
-                    '朗读',
-                    style: TextStyle(fontSize: 12, color: Colors.white),
+                    AppLocale.readByVoice.getString(context),
+                    style: const TextStyle(fontSize: 12, color: Colors.white),
                   )
                 ],
               ),
@@ -858,21 +835,49 @@ class _ChatPreviewState extends State<ChatPreview> {
                 cancel();
               },
               label: const Text(''),
-              icon: const Column(
+              icon: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.restore,
                     color: Color.fromARGB(255, 255, 255, 255),
                     size: 14,
                   ),
                   Text(
-                    '重发',
-                    style: TextStyle(fontSize: 12, color: Colors.white),
+                    AppLocale.sendRetryS.getString(context),
+                    style: const TextStyle(fontSize: 12, color: Colors.white),
                   ),
                 ],
               ),
             ),
+          if (message.quotaConsumed != null && message.quotaConsumed! > 0)
+            TextButton.icon(
+              onPressed: () {
+                showBeautyDialog(
+                  context,
+                  type: QuickAlertType.info,
+                  text: '本轮对话共 ${message.tokenConsumed} 个 Token， 消耗 ${message.quotaConsumed} 个智慧果。',
+                  confirmBtnText: AppLocale.gotIt.getString(context),
+                  showCancelBtn: false,
+                );
+                cancel();
+              },
+              label: const Text(''),
+              icon: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.info_outline,
+                    color: Color.fromARGB(255, 255, 255, 255),
+                    size: 14,
+                  ),
+                  Text(
+                    AppLocale.info.getString(context),
+                    style: const TextStyle(fontSize: 12, color: Colors.white),
+                  ),
+                ],
+              ),
+            )
         ],
       ),
     );
@@ -893,6 +898,16 @@ class _ChatPreviewState extends State<ChatPreview> {
     final expect = _chatBoxMaxWidth(context) / 1.3;
     final max = imageCount > 1 ? 600.0 : 400.0;
     return expect > max ? max : expect;
+  }
+
+  // 获取文件预览的最大宽度
+  double _chatBoxFilePreviewWidth(BuildContext context) {
+    var maxWidth = MediaQuery.of(context).size.width * 0.8;
+    if (maxWidth > 300) {
+      maxWidth = 300;
+    }
+
+    return maxWidth;
   }
 }
 
@@ -916,9 +931,7 @@ class ChatPreviewController extends ChangeNotifier {
       return [];
     }
 
-    return _allMessages!
-        .where((element) => _selectedMessageIds.contains(element.message.id))
-        .toList();
+    return _allMessages!.where((element) => _selectedMessageIds.contains(element.message.id)).toList();
   }
 
   /// 设置所有消息

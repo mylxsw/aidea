@@ -50,6 +50,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
   final TextEditingController maxContextController = TextEditingController();
   final TextEditingController inputPriceController = TextEditingController();
   final TextEditingController outputPriceController = TextEditingController();
+  final TextEditingController perReqPriceController = TextEditingController();
   final TextEditingController promptController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
 
@@ -72,6 +73,9 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
   /// 是否是上新
   bool isNew = false;
 
+  /// 是否是推荐模型
+  bool isRecommended = false;
+
   /// Tag
   final TextEditingController tagController = TextEditingController();
   String? tagTextColor;
@@ -91,6 +95,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
     maxContextController.dispose();
     inputPriceController.dispose();
     outputPriceController.dispose();
+    perReqPriceController.dispose();
     promptController.dispose();
     categoryController.dispose();
     tagController.dispose();
@@ -110,9 +115,10 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
     });
 
     // 初始值设置
-    maxContextController.value = const TextEditingValue(text: '3500');
-    inputPriceController.value = const TextEditingValue(text: '1');
-    outputPriceController.value = const TextEditingValue(text: '1');
+    maxContextController.value = const TextEditingValue(text: '7500');
+    inputPriceController.value = const TextEditingValue(text: '0');
+    outputPriceController.value = const TextEditingValue(text: '0');
+    perReqPriceController.value = const TextEditingValue(text: '0');
     providers.add(AdminModelProvider());
 
     super.initState();
@@ -126,12 +132,12 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          '新增模型',
+          'New Model',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.chatInputPanelBackground,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -156,36 +162,36 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                   ColumnBlock(
                     children: [
                       EnhancedTextField(
-                        labelText: '唯一标识',
+                        labelText: 'ID',
                         customColors: customColors,
                         controller: modelIdController,
                         textAlignVertical: TextAlignVertical.top,
-                        hintText: '请输入模型唯一标识',
+                        hintText: 'Enter a unique ID',
                         maxLength: 100,
                         showCounter: false,
                       ),
                       EnhancedTextField(
-                        labelText: '厂商',
+                        labelText: 'Vendor',
                         customColors: customColors,
                         controller: categoryController,
                         textAlignVertical: TextAlignVertical.top,
-                        hintText: '请输入厂商名称（可选）',
+                        hintText: 'Enter a vendor name (Optional)',
                         maxLength: 100,
                         showCounter: false,
                       ),
                       EnhancedTextField(
-                        labelText: '名称',
+                        labelText: 'Name',
                         customColors: customColors,
                         controller: nameController,
                         textAlignVertical: TextAlignVertical.top,
-                        hintText: '请输入模型名称',
+                        hintText: 'Enter a model name',
                         maxLength: 100,
                         showCounter: false,
                       ),
                       EnhancedInput(
                         padding: const EdgeInsets.only(top: 10, bottom: 5),
                         title: Text(
-                          '头像',
+                          'Avatar',
                           style: TextStyle(
                             color: customColors.textfieldLabelColor,
                             fontSize: 16,
@@ -199,7 +205,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                               width: 45,
                               height: 45,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: CustomSize.borderRadius,
                                 image: avatarUrl == null
                                     ? null
                                     : DecorationImage(
@@ -245,11 +251,11 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         },
                       ),
                       EnhancedTextField(
-                        labelText: '描述',
+                        labelText: 'Description',
                         customColors: customColors,
                         controller: descriptionController,
                         textAlignVertical: TextAlignVertical.top,
-                        hintText: '可选',
+                        hintText: 'Optional',
                         maxLength: 255,
                         showCounter: false,
                         maxLines: 3,
@@ -259,11 +265,12 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                   ColumnBlock(
                     children: [
                       EnhancedTextField(
-                        labelText: '输入价格',
+                        labelWidth: 120,
+                        labelText: 'Input Price',
                         customColors: customColors,
                         controller: inputPriceController,
                         textAlignVertical: TextAlignVertical.top,
-                        hintText: '可选',
+                        hintText: 'Optional',
                         showCounter: false,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
@@ -274,7 +281,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
-                            '智慧果/1K Token',
+                            'Credits/1K Token',
                             style: TextStyle(
                                 color: customColors.weakTextColor,
                                 fontSize: 12),
@@ -282,11 +289,12 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         ),
                       ),
                       EnhancedTextField(
-                        labelText: '输出价格',
+                        labelWidth: 120,
+                        labelText: 'Output Price',
                         customColors: customColors,
                         controller: outputPriceController,
                         textAlignVertical: TextAlignVertical.top,
-                        hintText: '可选',
+                        hintText: 'Optional',
                         showCounter: false,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
@@ -297,7 +305,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
-                            '智慧果/1K Token',
+                            'Credits/1K Token',
                             style: TextStyle(
                                 color: customColors.weakTextColor,
                                 fontSize: 12),
@@ -305,11 +313,37 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         ),
                       ),
                       EnhancedTextField(
-                        labelText: '输入限制',
+                        labelWidth: 120,
+                        labelText: 'Request Price',
+                        customColors: customColors,
+                        controller: perReqPriceController,
+                        textAlignVertical: TextAlignVertical.top,
+                        hintText: 'Optional',
+                        showCounter: false,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        textDirection: TextDirection.rtl,
+                        suffixIcon: Container(
+                          width: 110,
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Credits/Request',
+                            style: TextStyle(
+                                color: customColors.weakTextColor,
+                                fontSize: 12),
+                          ),
+                        ),
+                      ),
+                      EnhancedTextField(
+                        labelWidth: 120,
+                        labelText: 'Context Length',
                         customColors: customColors,
                         controller: maxContextController,
                         textAlignVertical: TextAlignVertical.top,
-                        hintText: '最大上下文减掉预期的输出长度',
+                        hintText:
+                            'Subtract the expected output length from the maximum context.',
                         showCounter: false,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
@@ -340,13 +374,13 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                             const SizedBox(width: 10),
                             SlidableAction(
                               label: AppLocale.delete.getString(context),
-                              borderRadius: BorderRadius.circular(
-                                  customColors.borderRadius ?? 8),
+                              borderRadius: CustomSize.borderRadiusAll,
                               backgroundColor: Colors.red,
                               icon: Icons.delete,
                               onPressed: (_) {
                                 if (providers.length == 1) {
-                                  showErrorMessage('至少需要一个渠道');
+                                  showErrorMessage(
+                                      'At least one channel is needed');
                                   return;
                                 }
 
@@ -371,7 +405,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                           children: [
                             EnhancedInput(
                               title: Text(
-                                '渠道',
+                                'Channel',
                                 style: TextStyle(
                                   color: customColors.textfieldLabelColor,
                                   fontSize: 16,
@@ -392,7 +426,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                         .map(
                                           (e) => SelectorItem(
                                             Text(
-                                                '${e.id == null ? '【系统】' : ''}${e.name}'),
+                                                '${e.id == null ? '【System】' : ''}${e.name}'),
                                             e,
                                           ),
                                         )
@@ -413,10 +447,11 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                               },
                             ),
                             EnhancedTextField(
-                              labelText: '模型重写',
+                              labelWidth: 120,
+                              labelText: 'Model Rewrite',
                               customColors: customColors,
                               textAlignVertical: TextAlignVertical.top,
-                              hintText: '可选',
+                              hintText: 'Optional',
                               maxLength: 100,
                               showCounter: false,
                               initValue: e.modelRewrite,
@@ -431,7 +466,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                   }).toList(),
                   const SizedBox(width: 10),
                   WeakTextButton(
-                    title: '添加渠道',
+                    title: 'Add Channel',
                     icon: Icons.add,
                     onPressed: () {
                       setState(() {
@@ -445,20 +480,20 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                       innerPanding: 5,
                       children: [
                         EnhancedTextField(
-                          labelText: '简称',
+                          labelText: 'Abbr.',
                           customColors: customColors,
                           controller: shortNameController,
                           textAlignVertical: TextAlignVertical.top,
-                          hintText: '请输入模型简称',
+                          hintText: 'Enter model shorthand',
                           maxLength: 100,
                           showCounter: false,
                         ),
                         EnhancedTextField(
-                          labelText: '标签',
+                          labelText: 'Tag',
                           customColors: customColors,
                           controller: tagController,
                           textAlignVertical: TextAlignVertical.top,
-                          hintText: '请输入标签',
+                          hintText: 'Enter tags',
                           maxLength: 100,
                           showCounter: false,
                         ),
@@ -468,7 +503,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                             Row(
                               children: [
                                 const Text(
-                                  '视觉',
+                                  'Vision',
                                   style: TextStyle(fontSize: 16),
                                 ),
                                 const SizedBox(width: 5),
@@ -477,7 +512,8 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                     showBeautyDialog(
                                       context,
                                       type: QuickAlertType.info,
-                                      text: '当前模型是否支持视觉能力。',
+                                      text:
+                                          'Whether the current model supports visual capabilities.',
                                       confirmBtnText:
                                           AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
@@ -509,7 +545,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                             Row(
                               children: [
                                 const Text(
-                                  '上新',
+                                  'New',
                                   style: TextStyle(fontSize: 16),
                                 ),
                                 const SizedBox(width: 5),
@@ -518,7 +554,8 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                     showBeautyDialog(
                                       context,
                                       type: QuickAlertType.info,
-                                      text: '是否在模型旁边展示“新”标识，告知用户这是一个新模型。',
+                                      text:
+                                          'Whether to display a "New" icon next to the model to inform users that this is a new model.',
                                       confirmBtnText:
                                           AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
@@ -550,7 +587,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                             Row(
                               children: [
                                 const Text(
-                                  '受限模型',
+                                  'Recommended',
                                   style: TextStyle(fontSize: 16),
                                 ),
                                 const SizedBox(width: 5),
@@ -559,7 +596,50 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                     showBeautyDialog(
                                       context,
                                       type: QuickAlertType.info,
-                                      text: '受限模型是指因政策因素，不能在中国大陆地区使用的模型。',
+                                      text:
+                                          'Whether to display a "Recommended" icon next to the model to inform users that this is a recommended model.',
+                                      confirmBtnText:
+                                          AppLocale.gotIt.getString(context),
+                                      showCancelBtn: false,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.help_outline,
+                                    size: 16,
+                                    color: customColors.weakLinkColor
+                                        ?.withAlpha(150),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            CupertinoSwitch(
+                              activeColor: customColors.linkColor,
+                              value: isRecommended,
+                              onChanged: (value) {
+                                setState(() {
+                                  isRecommended = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Text(
+                                  'Restricted',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 5),
+                                InkWell(
+                                  onTap: () {
+                                    showBeautyDialog(
+                                      context,
+                                      type: QuickAlertType.info,
+                                      text:
+                                          'Restricted models refer to models that cannot be used in Chinese Mainland due to policy factors.',
                                       confirmBtnText:
                                           AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
@@ -589,7 +669,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text(
-                              '启用',
+                              'Enabled',
                               style: TextStyle(fontSize: 16),
                             ),
                             CupertinoSwitch(
@@ -605,11 +685,11 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         ),
                         EnhancedTextField(
                           labelPosition: LabelPosition.top,
-                          labelText: '系统提示语',
+                          labelText: 'System prompt',
                           customColors: customColors,
                           controller: promptController,
                           textAlignVertical: TextAlignVertical.top,
-                          hintText: '全局系统提示语',
+                          hintText: 'Global system prompt',
                           maxLength: 2000,
                           maxLines: 3,
                         ),
@@ -661,18 +741,18 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
   /// 提交
   void onSubmit() async {
     if (nameController.text.isEmpty) {
-      showErrorMessage('请输入模型名称');
+      showErrorMessage('Please enter a model name');
       return;
     }
 
     if (modelIdController.text.isEmpty) {
-      showErrorMessage('请输入模型唯一标识');
+      showErrorMessage('Please enter a model ID');
       return;
     }
 
     final ps = providers.where((e) => e.id != null || e.name != null).toList();
     if (ps.isEmpty) {
-      showErrorMessage('至少需要一个渠道');
+      showErrorMessage('At least one channel is required');
       return;
     }
 
@@ -682,7 +762,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
       final cancel = BotToast.showCustomLoading(
         toastBuilder: (cancel) {
           return const LoadingIndicator(
-            message: '正在上传头像，请稍后...',
+            message: 'Uploading avatar, please wait...',
           );
         },
         allowClick: false,
@@ -693,7 +773,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
             .upload(avatarUrl!, usage: 'avatar');
         avatarUrl = res.url;
       } catch (e) {
-        showErrorMessage('上传头像失败');
+        showErrorMessage('Failed to upload avatar');
         cancel();
         return;
       } finally {
@@ -710,6 +790,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
         maxContext: int.parse(maxContextController.text),
         inputPrice: int.parse(inputPriceController.text),
         outputPrice: int.parse(outputPriceController.text),
+        perReqPrice: int.parse(perReqPriceController.text),
         prompt: promptController.text,
         vision: supportVision,
         restricted: restricted,
@@ -718,6 +799,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
         tagBgColor: tagBgColor,
         category: categoryController.text,
         isNew: isNew,
+        isRecommend: isRecommended,
       ),
       status: modelEnabled ? 1 : 2,
       providers: ps,
@@ -738,11 +820,11 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
       return modelChannels
           .firstWhere(
             (e) => e.type == provider.name! && e.id == null,
-            orElse: () => AdminChannel(name: '未知', type: ''),
+            orElse: () => AdminChannel(name: 'Unknown', type: ''),
           )
           .display;
     }
 
-    return '请选择';
+    return 'Select';
   }
 }

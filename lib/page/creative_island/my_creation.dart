@@ -23,8 +23,7 @@ import 'package:loading_more_list/loading_more_list.dart';
 class MyCreationScreen extends StatefulWidget {
   final SettingRepository setting;
   final String mode;
-  const MyCreationScreen(
-      {super.key, required this.setting, required this.mode});
+  const MyCreationScreen({super.key, required this.setting, required this.mode});
 
   @override
   State<MyCreationScreen> createState() => _MyCreationScreenState();
@@ -52,7 +51,7 @@ class _MyCreationScreenState extends State<MyCreationScreen> {
         centerTitle: true,
         toolbarHeight: CustomSize.toolbarHeight,
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -61,30 +60,25 @@ class _MyCreationScreenState extends State<MyCreationScreen> {
           child: RefreshIndicator(
             color: customColors.linkColor,
             onRefresh: () async {
-              context.read<CreativeIslandBloc>().add(
-                  CreativeIslandHistoriesAllLoadEvent(
-                      forceRefresh: true, mode: widget.mode));
+              context
+                  .read<CreativeIslandBloc>()
+                  .add(CreativeIslandHistoriesAllLoadEvent(forceRefresh: true, mode: widget.mode));
             },
             child: LoadingMoreList(
               ListConfig<CreativeItemInServer>(
-                extendedListDelegate:
-                    SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                extendedListDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
                   crossAxisCount: _calCrossAxisCount(context),
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                 ),
                 itemBuilder: (context, item, index) {
                   return Material(
-                    // color: customColors.chatExampleItemBackground,
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(10),
-                    ),
-                    // color: Colors.transparent,
+                    color: customColors.backgroundContainerColor,
+                    borderRadius: CustomSize.borderRadius,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: CustomSize.borderRadiusAll,
                       onTap: () {
-                        context.push(
-                            '/creative-island/${item.islandId}/history/${item.id}?show_error=true');
+                        context.push('/creative-island/${item.islandId}/history/${item.id}?show_error=true');
                       },
                       onLongPress: () {
                         openModalBottomSheet(
@@ -107,8 +101,7 @@ class _MyCreationScreenState extends State<MyCreationScreen> {
                                       },
                                       size: const ButtonSize.full(),
                                       color: customColors.weakLinkColor,
-                                      backgroundColor: const Color.fromARGB(
-                                          36, 222, 222, 222),
+                                      backgroundColor: const Color.fromARGB(36, 222, 222, 222),
                                     ),
                                     const SizedBox(height: 10),
                                     Button(
@@ -125,17 +118,13 @@ class _MyCreationScreenState extends State<MyCreationScreen> {
                                       },
                                       size: const ButtonSize.full(),
                                       color: customColors.weakLinkColor,
-                                      backgroundColor: const Color.fromARGB(
-                                          36, 222, 222, 222),
+                                      backgroundColor: const Color.fromARGB(36, 222, 222, 222),
                                     ),
                                     const SizedBox(height: 10),
                                     Button(
-                                      title:
-                                          AppLocale.cancel.getString(context),
-                                      backgroundColor: const Color.fromARGB(
-                                          36, 222, 222, 222),
-                                      color: customColors.dialogDefaultTextColor
-                                          ?.withAlpha(150),
+                                      title: AppLocale.cancel.getString(context),
+                                      backgroundColor: const Color.fromARGB(36, 222, 222, 222),
+                                      color: customColors.dialogDefaultTextColor?.withAlpha(150),
                                       onPressed: () {
                                         context.pop();
                                       },
@@ -156,8 +145,7 @@ class _MyCreationScreenState extends State<MyCreationScreen> {
                             children: [
                               _buildAnswerImagePreview(context, item),
                               // TODO 风格名称，测试阶段使用
-                              if (item.filterName != null &&
-                                  item.filterName!.isNotEmpty)
+                              if (item.filterName != null && item.filterName!.isNotEmpty)
                                 Positioned(
                                   bottom: 0,
                                   child: Container(
@@ -168,9 +156,7 @@ class _MyCreationScreenState extends State<MyCreationScreen> {
                                     decoration: BoxDecoration(
                                       color: Colors.black.withOpacity(0.5),
                                       borderRadius: const BorderRadius.only(
-                                        topRight: Radius.circular(8),
-                                        bottomLeft: Radius.circular(8),
-                                      ),
+                                          topRight: CustomSize.radius, bottomLeft: CustomSize.radius),
                                     ),
                                     child: Text(
                                       item.filterName!,
@@ -193,8 +179,8 @@ class _MyCreationScreenState extends State<MyCreationScreen> {
                                     decoration: BoxDecoration(
                                       color: Colors.black.withOpacity(0.5),
                                       borderRadius: const BorderRadius.only(
-                                        topRight: Radius.circular(8),
-                                        bottomLeft: Radius.circular(8),
+                                        topRight: CustomSize.radius,
+                                        bottomLeft: CustomSize.radius,
                                       ),
                                     ),
                                     child: const Text(
@@ -218,8 +204,7 @@ class _MyCreationScreenState extends State<MyCreationScreen> {
                                   humanTime(item.createdAt, withTime: true),
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: customColors.weakTextColor
-                                        ?.withAlpha(150),
+                                    color: customColors.weakTextColor?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -270,8 +255,7 @@ class _MyCreationScreenState extends State<MyCreationScreen> {
     );
   }
 
-  Widget buildIslandTypeText(
-      CustomColors customColors, CreativeItemInServer item) {
+  Widget buildIslandTypeText(CustomColors customColors, CreativeItemInServer item) {
     return Text(
       item.islandTitle ?? '',
       style: TextStyle(
@@ -281,12 +265,9 @@ class _MyCreationScreenState extends State<MyCreationScreen> {
     );
   }
 
-  void onItemDelete(BuildContext context, CreativeItemInServer item, int index,
-      {Function? onFinished}) {
+  void onItemDelete(BuildContext context, CreativeItemInServer item, int index, {Function? onFinished}) {
     openConfirmDialog(context, AppLocale.confirmDelete.getString(context), () {
-      APIServer()
-          .deleteCreativeHistoryItem(item.islandId, hisId: item.id)
-          .then((value) {
+      APIServer().deleteCreativeHistoryItem(item.islandId, hisId: item.id).then((value) {
         // datasource.refresh(true);
         datasource.removeAt(index);
         setState(() {});
@@ -308,13 +289,9 @@ class _MyCreationScreenState extends State<MyCreationScreen> {
         child: Stack(
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(8),
-                topRight: Radius.circular(8),
-              ),
+              borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, topRight: CustomSize.radius),
               child: CachedNetworkImageEnhanced(
-                imageUrl:
-                    imageURL(item.originalImage!, qiniuImageTypeThumbMedium),
+                imageUrl: imageURL(item.originalImage!, qiniuImageTypeThumbMedium),
                 fit: BoxFit.cover,
               ),
             ),
@@ -338,13 +315,9 @@ class _MyCreationScreenState extends State<MyCreationScreen> {
         child: Stack(
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(8),
-                topRight: Radius.circular(8),
-              ),
+              borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, topRight: CustomSize.radius),
               child: CachedNetworkImageEnhanced(
-                imageUrl:
-                    imageURL(item.images.first, qiniuImageTypeThumbMedium),
+                imageUrl: imageURL(item.images.first, qiniuImageTypeThumbMedium),
                 fit: BoxFit.cover,
               ),
             ),
@@ -356,10 +329,9 @@ class _MyCreationScreenState extends State<MyCreationScreen> {
                   width: 60,
                   height: 60,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: CustomSize.borderRadius,
                     child: CachedNetworkImageEnhanced(
-                      imageUrl:
-                          imageURL(item.params['image'], qiniuImageTypeAvatar),
+                      imageUrl: imageURL(item.params['image'], qiniuImageTypeAvatar),
                       fit: BoxFit.cover,
                     ),
                   ),

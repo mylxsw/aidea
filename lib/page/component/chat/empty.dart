@@ -1,21 +1,19 @@
+import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/model/misc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 class EmptyPreview extends StatefulWidget {
   final List<ChatExample> examples;
   final Function(String message) onSubmit;
 
-  EmptyPreview({
+  const EmptyPreview({
     super.key,
     required this.examples,
     required this.onSubmit,
-  }) {
-    // 示例问题随机排序
-    if (examples.isNotEmpty) {
-      examples.shuffle();
-    }
-  }
+  });
 
   @override
   State<EmptyPreview> createState() => _EmptyPreviewState();
@@ -37,11 +35,10 @@ class _EmptyPreviewState extends State<EmptyPreview> {
           // 示例内容区域
           Container(
             decoration: BoxDecoration(
-              color: customColors.backgroundColor?.withAlpha(200),
-              borderRadius: BorderRadius.circular(10),
+              // color: customColors.backgroundColor?.withAlpha(200),
+              borderRadius: CustomSize.borderRadius,
             ),
-            padding:
-                const EdgeInsets.only(top: 20, left: 15, right: 10, bottom: 3),
+            padding: const EdgeInsets.only(top: 20, left: 15, right: 10, bottom: 3),
             height: _resolveTipHeight(context),
             width: _resolveTipWidth(context),
             child: Column(
@@ -50,12 +47,11 @@ class _EmptyPreviewState extends State<EmptyPreview> {
               children: [
                 Row(
                   children: [
-                    Image.asset('assets/app-256-transparent.png',
-                        width: 20, height: 20),
+                    Image.asset('assets/app-256-transparent.png', width: 20, height: 20),
                     const SizedBox(width: 5),
-                    const Text(
-                      '可以这样问我：',
-                      style: TextStyle(
+                    Text(
+                      AppLocale.askMeLikeThis.getString(context),
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -65,8 +61,7 @@ class _EmptyPreviewState extends State<EmptyPreview> {
                 const SizedBox(height: 20),
                 Expanded(
                   child: ListView.separated(
-                    itemCount:
-                        widget.examples.length > 4 ? 4 : widget.examples.length,
+                    itemCount: widget.examples.length > 4 ? 4 : widget.examples.length,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       return ListTextItem(
@@ -105,7 +100,7 @@ class _EmptyPreviewState extends State<EmptyPreview> {
                         ),
                         const SizedBox(width: 3),
                         Text(
-                          '换一换',
+                          AppLocale.refresh.getString(context),
                           style: TextStyle(
                             color: customColors.chatExampleItemText,
                           ),

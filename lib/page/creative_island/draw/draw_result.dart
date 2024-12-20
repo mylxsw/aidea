@@ -61,7 +61,7 @@ class _DrawResultPageState extends State<DrawResultPage> {
               },
             ),
           ),
-          backgroundColor: customColors.backgroundContainerColor,
+          backgroundColor: customColors.backgroundColor,
           body: FutureBuilder(
             future: widget.future,
             builder: (context, snapshot) {
@@ -150,8 +150,7 @@ class _DrawResultPageState extends State<DrawResultPage> {
                     Text(
                       '如队列太长，将会有数分钟等待时间',
                       style: TextStyle(
-                        color: customColors.backgroundInvertedColor
-                            ?.withAlpha(150),
+                        color: customColors.backgroundInvertedColor?.withAlpha(150),
                         fontSize: 10,
                       ),
                     )

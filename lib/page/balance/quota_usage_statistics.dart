@@ -1,3 +1,4 @@
+import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/message_box.dart';
@@ -7,6 +8,7 @@ import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:askaide/repo/model/misc.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 
 class QuotaUsageStatisticsScreen extends StatefulWidget {
@@ -14,12 +16,10 @@ class QuotaUsageStatisticsScreen extends StatefulWidget {
   const QuotaUsageStatisticsScreen({super.key, required this.setting});
 
   @override
-  State<QuotaUsageStatisticsScreen> createState() =>
-      _QuotaUsageStatisticsScreenState();
+  State<QuotaUsageStatisticsScreen> createState() => _QuotaUsageStatisticsScreenState();
 }
 
-class _QuotaUsageStatisticsScreenState
-    extends State<QuotaUsageStatisticsScreen> {
+class _QuotaUsageStatisticsScreenState extends State<QuotaUsageStatisticsScreen> {
   List<QuotaUsageInDay> usages = [];
   bool loaded = false;
 
@@ -42,14 +42,14 @@ class _QuotaUsageStatisticsScreenState
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
-        title: const Text(
-          '使用明细',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+        title: Text(
+          AppLocale.creditsUsage.getString(context),
+          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
         elevation: 0,
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -57,8 +57,8 @@ class _QuotaUsageStatisticsScreenState
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              const MessageBox(
-                message: '使用明细将在次日更新，显示近 30 天的使用量。',
+              MessageBox(
+                message: AppLocale.creditUsageTips.getString(context),
                 type: MessageBoxType.info,
               ),
               const SizedBox(height: 10),
@@ -94,7 +94,7 @@ class _QuotaUsageStatisticsScreenState
             ),
             SizedBox(height: 10),
             Text(
-              '暂无使用记录',
+              'No records yet',
             ),
           ],
         ),
@@ -112,13 +112,12 @@ class _QuotaUsageStatisticsScreenState
                   margin: const EdgeInsets.symmetric(vertical: 6),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: customColors.paymentItemBackgroundColor,
-                    borderRadius: BorderRadius.circular(10),
+                    color: customColors.backgroundContainerColor,
+                    borderRadius: CustomSize.borderRadius,
                   ),
                   child: InkWell(
                     onTap: () {
-                      context
-                          .push('/quota-usage-daily-details?date=${item.date}');
+                      context.push('/quota-usage-daily-details?date=${item.date}');
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -130,9 +129,9 @@ class _QuotaUsageStatisticsScreenState
                           ),
                         ),
                         if (item.used == -1)
-                          const Text('未出账')
+                          Text(AppLocale.unbilled.getString(context))
                         else
-                          Text('${item.used > 0 ? "-" : ""}${item.used}'),
+                          Text('${item.used > 0 ? "-" : ""}${AppLocale.creditUnit.getString(context)}${item.used}'),
                       ],
                     ),
                   ),

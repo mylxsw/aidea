@@ -29,7 +29,7 @@ showErrorMessageEnhanced(
           context,
           type: QuickAlertType.warning,
           text: message.message.getString(context),
-          confirmBtnText: '立即购买',
+          confirmBtnText: AppLocale.buy.getString(context),
           showCancelBtn: true,
           onConfirmBtnTap: () {
             context.pop();
@@ -43,7 +43,7 @@ showErrorMessageEnhanced(
           context,
           type: QuickAlertType.warning,
           text: message.message.getString(context),
-          confirmBtnText: '重新登录',
+          confirmBtnText: AppLocale.reSignIn.getString(context),
           showCancelBtn: true,
           onConfirmBtnTap: () {
             context.pop();
@@ -56,13 +56,13 @@ showErrorMessageEnhanced(
         showBeautyDialog(
           context,
           type: QuickAlertType.warning,
-          text: '该功能需要登录账号后使用',
+          text: AppLocale.needSigninToUse.getString(context),
           onConfirmBtnTap: () {
             context.pop();
             context.push('/login');
           },
           showCancelBtn: true,
-          confirmBtnText: '立即登录',
+          confirmBtnText: AppLocale.signinNow.getString(context),
         );
         return;
     }
@@ -78,7 +78,7 @@ showCustomBeautyDialog(
   BuildContext context, {
   required QuickAlertType type,
   required Widget child,
-  String confirmBtnText = '确定',
+  String confirmBtnText = '',
   String? cancelBtnText,
   Function()? onConfirmBtnTap,
   Function()? onCancelBtnTap,
@@ -94,11 +94,11 @@ showCustomBeautyDialog(
     width: MediaQuery.of(context).size.width > 600 ? 400 : null,
     barrierDismissible: false, // 禁止点击外部关闭
     showCancelBtn: showCancelBtn,
-    confirmBtnText: confirmBtnText,
+    confirmBtnText: confirmBtnText == '' ? AppLocale.ok.getString(context) : confirmBtnText,
     cancelBtnText: cancelBtnText ?? AppLocale.cancel.getString(context),
     confirmBtnColor: customColors.linkColor!,
-    borderRadius: 10,
-    buttonBorderRadius: 10,
+    borderRadius: CustomSize.radiusValue,
+    buttonBorderRadius: CustomSize.radiusValue,
     backgroundColor: customColors.dialogBackgroundColor!,
     confirmBtnTextStyle: const TextStyle(
       color: Colors.white,
@@ -123,7 +123,7 @@ Future<dynamic> showBeautyDialog(
   String? title,
   String? customAsset,
   Widget? widget,
-  String confirmBtnText = '确定',
+  String confirmBtnText = '',
   String? cancelBtnText,
   Function()? onConfirmBtnTap,
   Function()? onCancelBtnTap,
@@ -141,11 +141,11 @@ Future<dynamic> showBeautyDialog(
     width: MediaQuery.of(context).size.width > 600 ? 400 : null,
     barrierDismissible: barrierDismissible,
     showCancelBtn: showCancelBtn,
-    confirmBtnText: confirmBtnText,
+    confirmBtnText: confirmBtnText == '' ? AppLocale.ok.getString(context) : confirmBtnText,
     cancelBtnText: cancelBtnText ?? AppLocale.cancel.getString(context),
     confirmBtnColor: customColors.linkColor!,
-    borderRadius: 10,
-    buttonBorderRadius: 10,
+    borderRadius: CustomSize.radiusValue,
+    buttonBorderRadius: CustomSize.radiusValue,
     backgroundColor: customColors.dialogBackgroundColor!,
     confirmBtnTextStyle: const TextStyle(
       color: Colors.white,
@@ -163,8 +163,7 @@ Future<dynamic> showBeautyDialog(
   );
 }
 
-showErrorMessage(String message,
-    {Duration duration = const Duration(seconds: 3)}) {
+showErrorMessage(String message, {Duration duration = const Duration(seconds: 3)}) {
   HapticFeedbackHelper.mediumImpact();
   Logger.instance.e(message);
 
@@ -179,8 +178,7 @@ showErrorMessage(String message,
   );
 }
 
-showSuccessMessage(String message,
-    {Duration duration = const Duration(seconds: 3)}) async {
+showSuccessMessage(String message, {Duration duration = const Duration(seconds: 3)}) async {
   BotToast.showText(
     text: message,
     duration: duration,
@@ -230,9 +228,7 @@ Future openModalBottomSheet(
     useSafeArea: useSafeArea,
     isScrollControlled: isScrollControlled,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(10),
-      ),
+      borderRadius: BorderRadius.vertical(top: CustomSize.radius),
     ),
     elevation: 0,
     backgroundColor: Colors.transparent,
@@ -317,9 +313,7 @@ openConfirmDialog(
                     context.pop();
                   },
                   size: const ButtonSize.full(),
-                  color: danger
-                      ? const Color.fromARGB(255, 255, 17, 0)
-                      : customColors.linkColor,
+                  color: danger ? const Color.fromARGB(255, 255, 17, 0) : customColors.linkColor,
                   backgroundColor: const Color.fromARGB(36, 222, 222, 222),
                 ),
                 const SizedBox(height: 10),
@@ -391,7 +385,7 @@ Center buildBottomSheetTopBar(CustomColors customColors) {
         height: 4,
         decoration: BoxDecoration(
           color: const Color.fromARGB(255, 192, 192, 192),
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: CustomSize.borderRadius,
           border: Border.all(
             color: Colors.black12,
             width: 0.5,
@@ -595,8 +589,7 @@ openTextFieldDialog(
                                 builder: (context, snapshot) {
                                   if (snapshot.hasData) {
                                     return ItemSearchSelector(
-                                      items:
-                                          snapshot.data as List<SelectorItem>,
+                                      items: snapshot.data as List<SelectorItem>,
                                       onSelected: (value) {
                                         controller.text = value.value;
                                         return true;
@@ -741,23 +734,14 @@ class CustomDialog extends StatelessWidget {
     final dialog = AlertDialog(
       title: title,
       elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      // actionsPadding: EdgeInsetsGeometry.lerp(
-      //   const EdgeInsets.all(10),
-      //   const EdgeInsets.all(10),
-      //   10,
-      // ),
+      shape: RoundedRectangleBorder(borderRadius: CustomSize.borderRadius),
       titleTextStyle: TextStyle(
         color: customColors.dialogDefaultTextColor,
         fontSize: 20,
         fontWeight: FontWeight.bold,
       ),
       backgroundColor: backgroundColor ??
-          (glassEffect
-              ? customColors.dialogBackgroundColor!.withAlpha(50)
-              : customColors.dialogBackgroundColor),
+          (glassEffect ? customColors.dialogBackgroundColor!.withAlpha(50) : customColors.dialogBackgroundColor),
       content: content,
       actions: actions,
       actionsAlignment: MainAxisAlignment.spaceAround,

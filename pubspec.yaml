@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
 # 应用正式发布时，需要同步修改 lib/helper/constant.dart 中的 VERSION 值
-version: 1.0.15
+version: 2.0.0
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -62,7 +62,7 @@ dependencies:
   http: ^1.1.0
   cached_network_image: ^3.2.3
   photo_view: ^0.14.0
-  flutter_image_compress: ^1.1.3
+  flutter_image_compress: ^2.3.0
   isolate_image_compress: ^2.0.0
   image: 4.1.7
   flutter_cache_manager: ^3.3.0
@@ -102,7 +102,6 @@ dependencies:
     git:
       url: https://github.com/mylxsw/before_after.git
   flutter_native_splash: ^2.2.19
-  flutter_local_notifications: ^14.1.1
   flutter_drawing_board: ^0.4.4+2
   loading_more_list: ^5.0.3
   tobias: ^2.4.2
@@ -131,6 +130,10 @@ dependencies:
   qr_flutter: ^4.1.0
   flutter_phoenix: ^1.1.1
   dio_cache_interceptor: ^3.5.0
+  camera: ^0.11.0+2
+  camerawesome: ^2.1.0
+  flutter_markdown_latex: ^0.3.4
+  auto_size_text: ^3.0.0
   
 dev_dependencies:
   flutter_test:
@@ -200,6 +203,11 @@ flutter:
     - assets/zhifubao.png
     - assets/stripe.png
     - assets/apple.webp
+    - assets/icons/doc.png
+    - assets/icons/file.png
+    - assets/icons/mp3.png
+    - assets/icons/pdf.png
+    - assets/icons/txt.png
 
   
   #   - images/a_dot_ham.jpeg

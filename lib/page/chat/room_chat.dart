@@ -1,8 +1,7 @@
-import 'package:askaide/bloc/free_count_bloc.dart';
+import 'dart:convert';
+
 import 'package:askaide/helper/ability.dart';
-import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
-import 'package:askaide/helper/image.dart';
 import 'package:askaide/helper/model.dart';
 import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
@@ -10,17 +9,17 @@ import 'package:askaide/page/chat/component/model_switcher.dart';
 import 'package:askaide/page/chat/component/stop_button.dart';
 import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/background_container.dart';
-import 'package:askaide/page/component/chat/chat_share.dart';
 import 'package:askaide/page/component/chat/empty.dart';
 import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/help_tips.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
+import 'package:askaide/page/component/chat/role_avatar.dart';
 import 'package:askaide/page/component/effect/glass.dart';
 import 'package:askaide/page/component/enhanced_popup_menu.dart';
 import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/loading.dart';
-import 'package:askaide/page/component/random_avatar.dart';
+import 'package:askaide/page/component/select_mode_toolbar.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/bloc/chat_message_bloc.dart';
@@ -35,7 +34,6 @@ import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_initicon/flutter_initicon.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
@@ -62,14 +60,16 @@ class _RoomChatPageState extends State<RoomChatPage> {
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<bool> _inputEnabled = ValueNotifier(true);
   final ChatPreviewController _chatPreviewController = ChatPreviewController();
-  final AudioPlayerController _audioPlayerController =
-      AudioPlayerController(useRemoteAPI: true);
+  final AudioPlayerController _audioPlayerController = AudioPlayerController(useRemoteAPI: true);
   bool showAudioPlayer = false;
   bool audioLoadding = false;
 
+  // The selected image files for image upload
   List<FileUpload> selectedImageFiles = [];
+  // The selected file for file upload
+  FileUpload? selectedFile;
 
-  /// 当前选择的模型
+  /// Currently selected model
   mm.Model? tempModel;
 
   // 全量模型列表
@@ -103,7 +103,7 @@ class _RoomChatPageState extends State<RoomChatPage> {
     };
 
     // 加载模型列表，用于查询模型名称
-    ModelAggregate.models().then((value) {
+    ModelAggregate.models(withCustom: true).then((value) {
       setState(() {
         supportModels = value;
       });
@@ -138,15 +138,6 @@ class _RoomChatPageState extends State<RoomChatPage> {
     return BlocConsumer<RoomBloc, RoomState>(
       listenWhen: (previous, current) => current is RoomLoaded,
       listener: (context, state) {
-        if (state is RoomLoaded && state.cascading) {
-          // 加载免费使用次数
-          if (tempModel == null) {
-            context
-                .read<FreeCountBloc>()
-                .add(FreeCountReloadEvent(model: state.room.model));
-          }
-        }
-
         if (state is RoomLoaded) {
           ModelAggregate.model(state.room.model).then((value) {
             setState(() {
@@ -158,13 +149,14 @@ class _RoomChatPageState extends State<RoomChatPage> {
       buildWhen: (previous, current) => current is RoomLoaded,
       builder: (context, room) {
         if (room is RoomLoaded) {
+          final enableImageUpload =
+              tempModel == null ? (roomModel != null && roomModel!.supportVision) : (tempModel?.supportVision ?? false);
           return SafeArea(
             top: false,
             bottom: false,
             child: Column(
               children: [
-                if (Ability().showGlobalAlert)
-                  const GlobalAlert(pageKey: 'chat'),
+                if (Ability().showGlobalAlert) const GlobalAlert(pageKey: 'chat'),
                 // 语音输出中提示
                 if (showAudioPlayer)
                   EnhancedAudioPlayer(
@@ -184,15 +176,13 @@ class _RoomChatPageState extends State<RoomChatPage> {
                       if (!_inputEnabled.value)
                         Positioned(
                           bottom: 10,
-                          width: maxWindowWidth(context),
+                          width: CustomSize.adaptiveMaxWindowWidth(context),
                           child: Center(
                             child: StopButton(
-                              label: '停止输出',
+                              label: AppLocale.stopOutput.getString(context),
                               onPressed: () {
                                 HapticFeedbackHelper.mediumImpact();
-                                context
-                                    .read<ChatMessageBloc>()
-                                    .add(ChatMessageStopEvent());
+                                context.read<ChatMessageBloc>().add(ChatMessageStopEvent());
                               },
                             ),
                           ),
@@ -204,72 +194,54 @@ class _RoomChatPageState extends State<RoomChatPage> {
                 // 聊天输入窗口
                 Container(
                   decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                    ),
+                    borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, topRight: CustomSize.radius),
                     color: customColors.chatInputPanelBackground,
                   ),
-                  child: BlocBuilder<FreeCountBloc, FreeCountState>(
-                    builder: (context, freeState) {
-                      var hintText = '有问题尽管问我';
-                      if (freeState is FreeCountLoadedState &&
-                          tempModel == null) {
-                        final matched = freeState.model(room.room.model);
-                        if (matched != null &&
-                            matched.leftCount > 0 &&
-                            matched.maxCount > 0) {
-                          hintText += '（今日还可免费${matched.leftCount}次）';
-                        }
-                      }
-
-                      return _chatPreviewController.selectMode
-                          ? buildSelectModeToolbars(
-                              context,
-                              _chatPreviewController,
-                              customColors,
-                            )
-                          : ChatInput(
-                              enableNotifier: _inputEnabled,
-                              onSubmit: (value) {
-                                _handleSubmit(value);
-                                FocusManager.instance.primaryFocus?.unfocus();
-                              },
-                              enableImageUpload: tempModel == null
-                                  ? (roomModel != null &&
-                                      roomModel!.supportVision)
-                                  : (tempModel?.supportVision ?? false),
-                              onImageSelected: (files) {
-                                setState(() {
-                                  selectedImageFiles = files;
-                                });
-                              },
-                              selectedImageFiles: selectedImageFiles,
-                              onNewChat: () => handleResetContext(context),
-                              hintText: hintText,
-                              onVoiceRecordTappedEvent: () {
-                                _audioPlayerController.stop();
-                              },
-                              onStopGenerate: () {
-                                context
-                                    .read<ChatMessageBloc>()
-                                    .add(ChatMessageStopEvent());
-                              },
-                              leftSideToolsBuilder: () {
-                                return [
-                                  ModelSwitcher(
-                                    onSelected: (selected) {
-                                      setState(() {
-                                        tempModel = selected;
-                                      });
-                                    },
-                                    value: tempModel,
-                                  ),
-                                ];
-                              },
-                            );
-                    },
-                  ),
+                  child: _chatPreviewController.selectMode
+                      ? SelectModeToolbar(
+                          chatPreviewController: _chatPreviewController,
+                        )
+                      : ChatInput(
+                          enableNotifier: _inputEnabled,
+                          onSubmit: (value) {
+                            _handleSubmit(value);
+                            FocusManager.instance.primaryFocus?.unfocus();
+                          },
+                          enableImageUpload: enableImageUpload && selectedFile == null,
+                          onImageSelected: (files) {
+                            setState(() {
+                              selectedImageFiles = files;
+                            });
+                          },
+                          selectedImageFiles: selectedImageFiles,
+                          // enableFileUpload: selectedImageFiles.isEmpty,
+                          onFileSelected: (file) {
+                            setState(() {
+                              selectedFile = file;
+                            });
+                          },
+                          selectedFile: selectedFile,
+                          onNewChat: () => handleResetContext(context),
+                          hintText: AppLocale.askMeAnyQuestion.getString(context),
+                          onVoiceRecordTappedEvent: () {
+                            _audioPlayerController.stop();
+                          },
+                          onStopGenerate: () {
+                            context.read<ChatMessageBloc>().add(ChatMessageStopEvent());
+                          },
+                          leftSideToolsBuilder: () {
+                            return [
+                              ModelSwitcher(
+                                onSelected: (selected) {
+                                  setState(() {
+                                    tempModel = selected;
+                                  });
+                                },
+                                value: tempModel,
+                              ),
+                            ];
+                          },
+                        ),
                 ),
               ],
             ),
@@ -291,6 +263,7 @@ class _RoomChatPageState extends State<RoomChatPage> {
         if (state is ChatMessagesLoaded && state.error == null) {
           setState(() {
             selectedImageFiles = [];
+            selectedFile = null;
           });
         }
         // 显示错误提示
@@ -312,13 +285,6 @@ class _RoomChatPageState extends State<RoomChatPage> {
               _inputEnabled.value = false;
             });
           } else if (!state.processing && !_inputEnabled.value) {
-            // 更新免费使用次数
-            if (tempModel == null) {
-              context
-                  .read<FreeCountBloc>()
-                  .add(FreeCountReloadEvent(model: room.room.model));
-            }
-
             // 聊天回复完成时，取消输入框的禁止编辑状态
             setState(() {
               _inputEnabled.value = true;
@@ -330,9 +296,7 @@ class _RoomChatPageState extends State<RoomChatPage> {
       builder: (context, state) {
         if (state is ChatMessagesLoaded) {
           final loadedMessages = state.messages as List<Message>;
-          if (room.room.initMessage != null &&
-              room.room.initMessage != '' &&
-              loadedMessages.isEmpty) {
+          if (room.room.initMessage != null && room.room.initMessage != '' && loadedMessages.isEmpty) {
             loadedMessages.add(
               Message(
                 Role.receiver,
@@ -355,8 +319,7 @@ class _RoomChatPageState extends State<RoomChatPage> {
 
           final messages = loadedMessages.map((e) {
             if (e.model != null && !e.model!.startsWith('v2@')) {
-              final mod =
-                  supportModels.where((m) => m.id == e.model).firstOrNull;
+              final mod = supportModels.where((m) => m.id == e.model).firstOrNull;
               if (mod != null) {
                 e.senderName = mod.shortName;
                 e.avatarUrl = mod.avatarUrl;
@@ -369,22 +332,41 @@ class _RoomChatPageState extends State<RoomChatPage> {
 
             return MessageWithState(
               e,
-              room.states[
-                      widget.stateManager.getKey(e.roomId ?? 0, e.id ?? 0)] ??
-                  MessageState(),
+              room.states[widget.stateManager.getKey(e.roomId ?? 0, e.id ?? 0)] ?? MessageState(),
             );
           }).toList();
 
           _chatPreviewController.setAllMessageIds(messages);
 
           return ChatPreview(
-            padding:
-                _inputEnabled.value ? null : const EdgeInsets.only(bottom: 35),
+            padding: _inputEnabled.value ? null : const EdgeInsets.only(bottom: 35),
             messages: messages,
             scrollController: _scrollController,
             controller: _chatPreviewController,
             stateManager: widget.stateManager,
-            robotAvatar: selectMode ? null : _buildAvatar(room.room),
+            robotAvatar: selectMode
+                ? null
+                : RoleAvatar(
+                    avatarUrl: room.room.avatarUrl,
+                    name: room.room.name,
+                  ),
+            senderNameBuilder: (message) {
+              if (message.senderName == null) {
+                return null;
+              }
+
+              return Container(
+                margin: const EdgeInsets.fromLTRB(0, 0, 10, 7),
+                padding: const EdgeInsets.symmetric(horizontal: 13),
+                child: Text(
+                  message.senderName!,
+                  style: TextStyle(
+                    color: customColors.weakTextColor,
+                    fontSize: 12,
+                  ),
+                ),
+              );
+            },
             onDeleteMessage: (id) {
               handleDeleteMessage(context, id);
             },
@@ -393,11 +375,8 @@ class _RoomChatPageState extends State<RoomChatPage> {
               _audioPlayerController.playAudio(message.text);
             },
             onResentEvent: (message, index) {
-              _scrollController.animateTo(0,
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.easeOut);
-              _handleSubmit(message.text,
-                  messagetType: message.type, index: index, isResent: true);
+              _scrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
+              _handleSubmit(message.text, messagetType: message.type, index: index, isResent: true);
             },
             helpWidgets: state.processing || loadedMessages.last.isInitMessage()
                 ? null
@@ -424,6 +403,7 @@ class _RoomChatPageState extends State<RoomChatPage> {
             ),
             centerTitle: true,
             elevation: 0,
+            leadingWidth: 80,
             leading: TextButton(
               onPressed: () {
                 _chatPreviewController.exitSelectMode();
@@ -494,22 +474,6 @@ class _RoomChatPageState extends State<RoomChatPage> {
           );
   }
 
-  Widget _buildAvatar(Room room) {
-    if (room.avatarUrl != null && room.avatarUrl!.startsWith('http')) {
-      return RemoteAvatar(
-        avatarUrl: imageURL(room.avatarUrl!, qiniuImageTypeAvatar),
-        size: 30,
-      );
-    }
-
-    return Initicon(
-      text: room.name.split('、').join(' '),
-      size: 30,
-      backgroundColor: Colors.grey.withAlpha(100),
-      borderRadius: BorderRadius.circular(8),
-    );
-  }
-
   /// 提交新消息
   void _handleSubmit(
     String text, {
@@ -521,11 +485,47 @@ class _RoomChatPageState extends State<RoomChatPage> {
       _inputEnabled.value = false;
     });
 
+    if (selectedFile != null) {
+      final cancel = BotToast.showCustomLoading(
+        toastBuilder: (cancel) {
+          return const LoadingIndicator(
+            message: '正在上传，请稍后...',
+          );
+        },
+        allowClick: false,
+      );
+
+      try {
+        final uploader = QiniuUploader(widget.setting);
+
+        if (!selectedFile!.uploaded) {
+          final path = selectedFile!.file.path;
+          if (path != null && path.isNotEmpty) {
+            final uploadRes = await uploader.uploadFile(path, usage: 'document');
+            selectedFile!.setUrl(uploadRes.url);
+          } else if (selectedFile!.file.bytes != null && selectedFile!.file.bytes!.isNotEmpty) {
+            final uploadRes = await uploader.upload(
+              'file-${DateTime.now().millisecondsSinceEpoch}.${selectedFile!.file.name}',
+              selectedFile!.file.bytes!,
+              usage: 'document',
+            );
+            selectedFile!.setUrl(uploadRes.url);
+          }
+        }
+      } catch (e) {
+        // ignore: use_build_context_synchronously
+        showErrorMessageEnhanced(context, e);
+        return;
+      } finally {
+        cancel();
+      }
+    }
+
     if (selectedImageFiles.isNotEmpty) {
       final cancel = BotToast.showCustomLoading(
         toastBuilder: (cancel) {
           return const LoadingIndicator(
-            message: '正在上传图片，请稍后...',
+            message: '正在上传，请稍后...',
           );
         },
         allowClick: false,
@@ -575,10 +575,13 @@ class _RoomChatPageState extends State<RoomChatPage> {
               user: 'me',
               ts: DateTime.now(),
               type: messagetType,
-              images: selectedImageFiles
-                  .where((e) => e.uploaded)
-                  .map((e) => e.url!)
-                  .toList(),
+              images: selectedImageFiles.where((e) => e.uploaded).map((e) => e.url!).toList(),
+              file: selectedFile != null && selectedFile!.uploaded
+                  ? jsonEncode({
+                      'name': selectedFile!.file.name,
+                      'url': selectedFile!.url,
+                    })
+                  : null,
             ),
             index: index,
             isResent: isResent,
@@ -589,16 +592,7 @@ class _RoomChatPageState extends State<RoomChatPage> {
     // ignore: use_build_context_synchronously
     context.read<NotifyBloc>().add(NotifyResetEvent());
     // ignore: use_build_context_synchronously
-    context
-        .read<RoomBloc>()
-        .add(RoomLoadEvent(widget.roomId, cascading: false));
-  }
-
-  double maxWindowWidth(BuildContext context) {
-    final windowSize = MediaQuery.of(context).size.width;
-    return windowSize > CustomSize.maxWindowSize
-        ? CustomSize.maxWindowSize
-        : windowSize;
+    context.read<RoomBloc>().add(RoomLoadEvent(widget.roomId, cascading: false));
   }
 }
 
@@ -607,9 +601,7 @@ void handleDeleteMessage(BuildContext context, int id, {int? chatHistoryId}) {
   openConfirmDialog(
     context,
     AppLocale.confirmDelete.getString(context),
-    () => context
-        .read<ChatMessageBloc>()
-        .add(ChatMessageDeleteEvent([id], chatHistoryId: chatHistoryId)),
+    () => context.read<ChatMessageBloc>().add(ChatMessageDeleteEvent([id], chatHistoryId: chatHistoryId)),
     danger: true,
   );
 }
@@ -679,7 +671,7 @@ void handleOpenExampleQuestion(
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: CustomSize.borderRadius,
                           color: customColors.chatExampleItemBackground,
                         ),
                         child: Column(
@@ -692,8 +684,7 @@ void handleOpenExampleQuestion(
                                 color: customColors.chatExampleItemText,
                               ),
                             ),
-                            if (examples[i].content != null)
-                              const SizedBox(height: 5),
+                            if (examples[i].content != null) const SizedBox(height: 5),
                             if (examples[i].content != null)
                               Text(
                                 examples[i].content!,
@@ -745,127 +736,6 @@ void handleOpenExampleQuestion(
         ),
       );
     },
-  );
-}
-
-/// 构建聊天内容窗口
-Widget buildSelectModeToolbars(
-  BuildContext context,
-  ChatPreviewController chatPreviewController,
-  CustomColors customColors,
-) {
-  return Container(
-    padding: const EdgeInsets.all(10),
-    decoration: BoxDecoration(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(10),
-        topRight: Radius.circular(10),
-      ),
-      color: customColors.backgroundColor,
-    ),
-    child: SafeArea(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          TextButton.icon(
-            onPressed: () {
-              var messages = chatPreviewController.selectedMessages();
-              if (messages.isEmpty) {
-                showErrorMessageEnhanced(
-                    context, AppLocale.noMessageSelected.getString(context));
-                return;
-              }
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  fullscreenDialog: true,
-                  builder: (context) => ChatShareScreen(
-                    messages: messages
-                        .map((e) => ChatShareMessage(
-                              content: e.message.text,
-                              username: e.message.senderName,
-                              avatarURL: e.message.avatarUrl,
-                              leftSide: e.message.role == Role.receiver,
-                              images: e.message.images,
-                            ))
-                        .toList(),
-                  ),
-                ),
-              );
-              // var messages = chatPreviewController.selectedMessages();
-              // if (messages.isEmpty) {
-              //   showErrorMessageEnhanced(
-              //       context, AppLocale.noMessageSelected.getString(context));
-              //   return;
-              // }
-              // var shareText = messages.map((e) {
-              //   if (e.message.role == Role.sender) {
-              //     return '我：\n${e.message.text}';
-              //   }
-
-              //   return '助理：\n${e.message.text}';
-              // }).join('\n\n');
-
-              // shareTo(
-              //   context,
-              //   content: shareText,
-              //   title: AppLocale.chatHistory.getString(context),
-              // );
-            },
-            icon: Icon(Icons.share, color: customColors.linkColor),
-            label: Text(
-              AppLocale.share.getString(context),
-              style: TextStyle(color: customColors.linkColor),
-            ),
-          ),
-          TextButton.icon(
-            onPressed: () {
-              chatPreviewController.selectAllMessage();
-            },
-            icon:
-                Icon(Icons.select_all_outlined, color: customColors.linkColor),
-            label: Text(
-              AppLocale.selectAll.getString(context),
-              style: TextStyle(color: customColors.linkColor),
-            ),
-          ),
-          TextButton.icon(
-            onPressed: () {
-              if (chatPreviewController.selectedMessageIds.isEmpty) {
-                showErrorMessageEnhanced(
-                    context, AppLocale.noMessageSelected.getString(context));
-                return;
-              }
-
-              openConfirmDialog(
-                context,
-                AppLocale.confirmDelete.getString(context),
-                () {
-                  final ids = chatPreviewController.selectedMessageIds.toList();
-                  if (ids.isNotEmpty) {
-                    context
-                        .read<ChatMessageBloc>()
-                        .add(ChatMessageDeleteEvent(ids));
-
-                    showErrorMessageEnhanced(
-                        context, AppLocale.operateSuccess.getString(context));
-
-                    chatPreviewController.exitSelectMode();
-                  }
-                },
-                danger: true,
-              );
-            },
-            icon: Icon(Icons.delete, color: customColors.linkColor),
-            label: Text(
-              AppLocale.delete.getString(context),
-              style: TextStyle(color: customColors.linkColor),
-            ),
-          ),
-        ],
-      ),
-    ),
   );
 }
 

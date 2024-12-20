@@ -24,7 +24,7 @@ class ModelBloc extends Bloc<ModelEvent, ModelState> {
     on<ModelCreateEvent>((event, emit) async {
       try {
         await APIServer().adminCreateModel(event.req);
-        emit(ModelOperationResult(true, '创建成功'));
+        emit(ModelOperationResult(true, 'Creation successful'));
       } catch (e) {
         emit(ModelOperationResult(false, e.toString()));
       }
@@ -37,7 +37,7 @@ class ModelBloc extends Bloc<ModelEvent, ModelState> {
           modelId: event.modelId,
           req: event.req,
         );
-        emit(ModelOperationResult(true, '更新成功'));
+        emit(ModelOperationResult(true, 'Update successful'));
       } catch (e) {
         emit(ModelOperationResult(false, e.toString()));
       }
@@ -47,7 +47,7 @@ class ModelBloc extends Bloc<ModelEvent, ModelState> {
     on<ModelDeleteEvent>((event, emit) async {
       try {
         await APIServer().adminDeleteModel(modelId: event.modelId);
-        emit(ModelOperationResult(true, '删除成功'));
+        emit(ModelOperationResult(true, 'Delete successful'));
       } catch (e) {
         emit(ModelOperationResult(false, e.toString()));
       }

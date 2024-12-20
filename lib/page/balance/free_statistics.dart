@@ -27,9 +27,7 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
   @override
   void initState() {
     super.initState();
-    context
-        .read<FreeCountBloc>()
-        .add(FreeCountReloadAllEvent(checkSigninStatus: true));
+    context.read<FreeCountBloc>().add(FreeCountReloadAllEvent(checkSigninStatus: true));
   }
 
   @override
@@ -39,13 +37,13 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
-        title: const Text(
-          '免费畅享额度',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+        title: Text(
+          AppLocale.freeQuota.getString(context),
+          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -61,16 +59,15 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: BlocConsumer<FreeCountBloc, FreeCountState>(
-                  listenWhen: (previous, current) =>
-                      current is FreeCountLoadedState,
+                  listenWhen: (previous, current) => current is FreeCountLoadedState,
                   listener: (BuildContext context, FreeCountState state) {
                     if (state is FreeCountLoadedState) {
                       if (state.needSignin) {
                         showBeautyDialog(
                           context,
                           type: QuickAlertType.warning,
-                          text: '免费模型需登录账号后使用',
-                          confirmBtnText: '去登录',
+                          text: AppLocale.freeModelNeedSignIn.getString(context),
+                          confirmBtnText: AppLocale.signIn.getString(context),
                           onConfirmBtnTap: () {
                             context.pop();
                             context.go('/login');
@@ -83,11 +80,11 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
                   builder: (context, state) {
                     if (state is FreeCountLoadedState) {
                       if (state.counts.isEmpty) {
-                        return const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Center(
                             child: MessageBox(
-                              message: '当前无可用的免费模型。',
+                              message: AppLocale.noFreeModel.getString(context),
                               type: MessageBoxType.warning,
                             ),
                           ),
@@ -97,21 +94,21 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Column(
                           children: [
-                            const MessageBox(
-                              message: '以下模型享有每日免费额度。',
+                            MessageBox(
+                              message: AppLocale.freeModelInfo.getString(context),
                               type: MessageBoxType.info,
                             ),
                             const SizedBox(height: 10),
                             ColumnBlock(
                               innerPanding: 5,
                               children: [
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 5),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 5),
                                   child: Row(
                                     children: [
-                                      Expanded(
+                                      const Expanded(
                                           child: Text(
-                                        '模型',
+                                        'Model',
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 14,
@@ -120,8 +117,8 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
                                       Row(
                                         children: [
                                           Text(
-                                            '今日可用',
-                                            style: TextStyle(
+                                            AppLocale.todayLeft.getString(context),
+                                            style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 14,
                                             ),
@@ -133,8 +130,7 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
                                 ),
                                 ...state.counts.map((e) {
                                   return Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 5),
+                                    padding: const EdgeInsets.symmetric(vertical: 5),
                                     child: Row(
                                       children: [
                                         Expanded(
@@ -146,29 +142,22 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
                                                   fontSize: 14,
                                                 ),
                                               ),
-                                              if (e.info != null &&
-                                                  e.info != '')
-                                                const SizedBox(width: 5),
-                                              if (e.info != null &&
-                                                  e.info != '')
+                                              if (e.info != null && e.info != '') const SizedBox(width: 5),
+                                              if (e.info != null && e.info != '')
                                                 InkWell(
                                                   onTap: () {
                                                     showBeautyDialog(
                                                       context,
                                                       type: QuickAlertType.info,
                                                       text: e.info ?? '',
-                                                      confirmBtnText: AppLocale
-                                                          .gotIt
-                                                          .getString(context),
+                                                      confirmBtnText: AppLocale.gotIt.getString(context),
                                                       showCancelBtn: false,
                                                     );
                                                   },
                                                   child: Icon(
                                                     Icons.help_outline,
                                                     size: 16,
-                                                    color: customColors
-                                                        .weakLinkColor
-                                                        ?.withAlpha(150),
+                                                    color: customColors.weakLinkColor?.withAlpha(150),
                                                   ),
                                                 ),
                                             ],
@@ -202,7 +191,7 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
 
   Widget buildLeftCountWidget({required int leftCount, required int maxCount}) {
     return Text(
-      '$leftCount 次',
+      '$leftCount',
       style: const TextStyle(
         fontSize: 14,
       ),

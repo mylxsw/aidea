@@ -52,9 +52,9 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          '发起群聊',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+        title: Text(
+          AppLocale.createGroupChat.getString(context),
+          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
         elevation: 0,
@@ -68,9 +68,7 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
               fontSize: 14,
               title: AppLocale.ok.getString(context),
               color: selectedModels.isEmpty ? customColors.weakTextColor : null,
-              backgroundColor: selectedModels.isEmpty
-                  ? customColors.weakTextColor!.withAlpha(20)
-                  : null,
+              backgroundColor: selectedModels.isEmpty ? customColors.weakTextColor!.withAlpha(20) : null,
               onPressed: () {
                 onSave(context);
               },
@@ -78,13 +76,12 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
           ),
         ],
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
         child: BlocListener<RoomBloc, RoomState>(
-          listenWhen: (previous, current) =>
-              current is GroupRoomUpdateResultState,
+          listenWhen: (previous, current) => current is GroupRoomUpdateResultState,
           listener: (context, state) {
             if (state is GroupRoomUpdateResultState) {
               globalLoadingCancel?.call();
@@ -92,8 +89,7 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
                 showSuccessMessage(AppLocale.operateSuccess.getString(context));
                 context.pop();
               } else {
-                showErrorMessageEnhanced(context,
-                    state.error ?? AppLocale.operateFailed.getString(context));
+                showErrorMessageEnhanced(context, state.error ?? AppLocale.operateFailed.getString(context));
               }
             }
           },
@@ -103,7 +99,7 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
               Container(
                 padding: const EdgeInsets.only(top: 15, left: 20, bottom: 15),
                 child: Text(
-                  '选择参与群聊的成员',
+                  AppLocale.selectGroupMembers.getString(context),
                   style: TextStyle(
                     fontSize: 14,
                     color: customColors.weakLinkColor,
@@ -155,8 +151,7 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
                   separatorBuilder: (BuildContext context, int index) {
                     return Divider(
                       height: 1,
-                      color:
-                          customColors.columnBlockDividerColor?.withAlpha(200),
+                      color: customColors.columnBlockDividerColor?.withAlpha(200),
                     );
                   },
                 ),
@@ -188,10 +183,8 @@ class _GroupCreatePageState extends State<GroupCreatePage> {
         context.read<RoomBloc>().add(
               GroupRoomCreateEvent(
                 name: selectedModels.map((e) => e.shortName).take(3).join("、"),
-                members: selectedModels
-                    .map((e) => GroupMember(
-                        modelId: e.realModelId, modelName: e.shortName))
-                    .toList(),
+                members:
+                    selectedModels.map((e) => GroupMember(modelId: e.realModelId, modelName: e.shortName)).toList(),
               ),
             );
       }

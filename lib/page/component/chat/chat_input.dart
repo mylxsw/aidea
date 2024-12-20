@@ -7,8 +7,11 @@ import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/voice_record.dart';
 import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/page/component/file_preview.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/repo/settings_repo.dart';
+import 'package:camera/camera.dart';
+import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +19,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:go_router/go_router.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ChatInput extends StatefulWidget {
@@ -32,6 +36,12 @@ class ChatInput extends StatefulWidget {
   final Function()? onStopGenerate;
   final Function(bool hasFocus)? onFocusChange;
 
+  // Whether to enable file uploading
+  final bool enableFileUpload;
+  // Selected file for uploading
+  final FileUpload? selectedFile;
+  final Function(FileUpload? file)? onFileSelected;
+
   const ChatInput({
     super.key,
     required this.onSubmit,
@@ -46,6 +56,9 @@ class ChatInput extends StatefulWidget {
     this.selectedImageFiles,
     this.onStopGenerate,
     this.onFocusChange,
+    this.enableFileUpload = false,
+    this.selectedFile,
+    this.onFileSelected,
   });
 
   @override
@@ -58,8 +71,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
   /// 用于监听键盘事件，实现回车发送消息，Shift+Enter换行
   late final FocusNode _focusNode = FocusNode(
     onKeyEvent: (node, event) {
-      if (!HardwareKeyboard.instance.isShiftPressed &&
-          event.logicalKey.keyLabel == 'Enter') {
+      if (!HardwareKeyboard.instance.isShiftPressed && event.logicalKey.keyLabel == 'Enter') {
         if (event is KeyDownEvent && widget.enableNotifier.value) {
           _handleSubmited(_textController.text.trim());
         }
@@ -75,10 +87,23 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
 
   /// Maximum height of the chat input box
   var maxLines = 5;
+  var minLines = 1;
+  var hasCamera = false;
+
+  // Whether to display the bottom tool bar
+  var showBottomTools = false;
 
   @override
   void initState() {
     super.initState();
+
+    if (!PlatformTool.isDesktop()) {
+      availableCameras().then((cameras) {
+        setState(() {
+          hasCamera = cameras.isNotEmpty;
+        });
+      });
+    }
 
     _textController.addListener(() {
       setState(() {});
@@ -100,83 +125,32 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  // Whether the user can upload images
+  bool get canUploadImage =>
+      widget.enableImageUpload &&
+      Ability().supportImageUploader &&
+      widget.onImageSelected != null &&
+      Ability().supportWebSocket;
+
+  // Whether the user can upload files
+  bool get canUploadFile => widget.enableFileUpload && Ability().supportWebSocket;
+
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      decoration: BoxDecoration(
-        color: customColors.backgroundColor,
-      ),
+      decoration: BoxDecoration(color: customColors.chatInputPanelBackground),
       child: Builder(builder: (context) {
         final setting = context.read<SettingRepository>();
         return SafeArea(
           child: Column(
             children: [
-              if (widget.selectedImageFiles != null &&
-                  widget.selectedImageFiles!.isNotEmpty)
-                SizedBox(
-                  height: 110,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: widget.selectedImageFiles!
-                        .map(
-                          (e) => Container(
-                            margin: const EdgeInsets.only(right: 8),
-                            padding: const EdgeInsets.all(5),
-                            child: Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(5),
-                                  child: e.file.bytes != null
-                                      ? Image.memory(
-                                          e.file.bytes!,
-                                          fit: BoxFit.cover,
-                                          width: 100,
-                                          height: 100,
-                                        )
-                                      : Image.file(
-                                          File(e.file.path!),
-                                          fit: BoxFit.cover,
-                                          width: 100,
-                                          height: 100,
-                                        ),
-                                ),
-                                if (widget.enableNotifier.value)
-                                  Positioned(
-                                    right: 5,
-                                    top: 5,
-                                    child: InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          widget.selectedImageFiles!.remove(e);
-                                          widget.onImageSelected?.call(
-                                              widget.selectedImageFiles!);
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.all(3),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          color:
-                                              customColors.chatRoomBackground,
-                                        ),
-                                        child: Icon(
-                                          Icons.close,
-                                          size: 10,
-                                          color: customColors.weakTextColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
+              // 选中的图片预览
+              if (widget.selectedImageFiles != null && widget.selectedImageFiles!.isNotEmpty)
+                buildSelectedImagePreview(customColors),
+              // 选中文件预览
+              if (widget.selectedFile != null) buildSelectedFilePreview(customColors),
               // 工具栏
               if (widget.toolbar != null) widget.toolbar!,
               // if (widget.toolbar != null)
@@ -193,8 +167,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                               autoClose: true,
                               label: AppLocale.newChat.getString(context),
                               backgroundColor: Colors.blue,
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(20)),
+                              borderRadius: CustomSize.borderRadiusAll,
                               onPressed: (_) {
                                 widget.onNewChat!();
                               },
@@ -208,24 +181,16 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                       // 聊天功能按钮
                       Row(
                         children: [
-                          if (widget.leftSideToolsBuilder != null)
-                            ...widget.leftSideToolsBuilder!(),
-                          if (widget.enableNotifier.value &&
-                              widget.enableImageUpload &&
-                              Ability().supportImageUploader &&
-                              widget.onImageSelected != null &&
-                              Ability().supportWebSocket)
-                            _buildImageUploadButton(
-                                context, setting, customColors),
+                          if (widget.leftSideToolsBuilder != null) ...widget.leftSideToolsBuilder!(),
+                          if (widget.enableNotifier.value && (canUploadImage || canUploadFile))
+                            buildUploadButtons(context, setting, customColors),
                         ],
                       ),
                       // 聊天输入框
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: customColors.chatInputAreaBackground,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
+                              color: customColors.chatInputAreaBackground, borderRadius: CustomSize.borderRadius),
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Row(
                             children: [
@@ -235,8 +200,10 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                                     setState(() {
                                       if (hasFocus) {
                                         maxLines = 10;
+                                        minLines = 3;
                                       } else {
-                                        maxLines = 5;
+                                        maxLines = 3;
+                                        minLines = 1;
                                       }
                                     });
 
@@ -246,15 +213,15 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                                     keyboardType: TextInputType.multiline,
                                     textInputAction: TextInputAction.newline,
                                     maxLines: maxLines,
-                                    minLines: 1,
+                                    minLines: minLines,
                                     maxLength: maxLength,
                                     focusNode: _focusNode,
                                     controller: _textController,
+                                    style: const TextStyle(fontSize: CustomSize.defaultHintTextSize),
                                     decoration: InputDecoration(
                                       hintText: widget.hintText,
                                       hintStyle: const TextStyle(
-                                        fontSize:
-                                            CustomSize.defaultHintTextSize,
+                                        fontSize: CustomSize.defaultHintTextSize,
                                       ),
                                       border: InputBorder.none,
                                       counterText: '',
@@ -279,6 +246,121 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
     );
   }
 
+  Widget buildSelectedFilePreview(CustomColors customColors) {
+    var maxWidth = MediaQuery.of(context).size.width * 0.8;
+    if (maxWidth > 300) {
+      maxWidth = 300;
+    }
+
+    return SizedBox(
+      height: 30,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.all(5),
+            child: Stack(
+              children: [
+                FilePreview(
+                  fileType: widget.selectedFile!.file.extension ?? '',
+                  maxWidth: maxWidth,
+                  filename: widget.selectedFile!.file.name,
+                ),
+                if (widget.enableNotifier.value)
+                  Positioned(
+                    right: 5,
+                    top: 5,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          widget.onFileSelected?.call(null);
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          borderRadius: CustomSize.borderRadius,
+                          color: customColors.chatRoomBackground,
+                        ),
+                        child: Icon(
+                          Icons.close,
+                          size: 10,
+                          color: customColors.weakTextColor,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildSelectedImagePreview(CustomColors customColors) {
+    return SizedBox(
+      height: 110,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: widget.selectedImageFiles!
+            .map(
+              (e) => Container(
+                margin: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.all(5),
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: CustomSize.borderRadius,
+                      child: e.file.bytes != null
+                          ? Image.memory(
+                              e.file.bytes!,
+                              fit: BoxFit.cover,
+                              width: 100,
+                              height: 100,
+                            )
+                          : Image.file(
+                              File(e.file.path!),
+                              fit: BoxFit.cover,
+                              width: 100,
+                              height: 100,
+                            ),
+                    ),
+                    if (widget.enableNotifier.value)
+                      Positioned(
+                        right: 5,
+                        top: 5,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              widget.selectedImageFiles!.remove(e);
+                              widget.onImageSelected?.call(widget.selectedImageFiles!);
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              borderRadius: CustomSize.borderRadius,
+                              color: customColors.chatRoomBackground,
+                            ),
+                            child: Icon(
+                              Icons.close,
+                              size: 10,
+                              color: customColors.weakTextColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+
   /// 构建发送或者语音按钮
   Widget _buildSendOrVoiceButton(
     BuildContext context,
@@ -290,7 +372,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
           if (widget.onStopGenerate != null) {
             openConfirmDialog(
               context,
-              '确定要停止当前输出？',
+              AppLocale.confirmStopOutput.getString(context),
               () {
                 widget.onStopGenerate!();
                 HapticFeedbackHelper.heavyImpact();
@@ -306,7 +388,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
       );
     }
 
-    return _textController.text == ''
+    return _textController.text == '' && !PlatformTool.isWeb()
         ? InkWell(
             onTap: () {
               HapticFeedbackHelper.mediumImpact();
@@ -329,7 +411,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
               );
             },
             child: Icon(
-              Icons.mic,
+              Icons.mic_none,
               color: customColors.chatInputPanelText,
             ),
           )
@@ -337,9 +419,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
             onPressed: () => _handleSubmited(_textController.text.trim()),
             icon: Icon(
               Icons.send,
-              color: _textController.text.trim().isNotEmpty
-                  ? const Color.fromARGB(255, 70, 165, 73)
-                  : null,
+              color: _textController.text.trim().isNotEmpty ? const Color.fromARGB(255, 70, 165, 73) : null,
             ),
             splashRadius: 20,
             tooltip: AppLocale.send.getString(context),
@@ -347,36 +427,186 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
           );
   }
 
-  /// 构建图片上传按钮
-  Widget _buildImageUploadButton(
+  // Image upload button event
+  void onImageUploadButtonPressed() async {
+    HapticFeedbackHelper.mediumImpact();
+    if (widget.selectedImageFiles != null && widget.selectedImageFiles!.length >= 4) {
+      showSuccessMessage(AppLocale.uploadImageLimit4.getString(context));
+      return;
+    }
+
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowMultiple: true,
+      allowCompression: true,
+    );
+    if (result != null && result.files.isNotEmpty) {
+      final files = widget.selectedImageFiles ?? [];
+      files.addAll(result.files.map((e) => FileUpload(file: e)).toList());
+      widget.onImageSelected?.call(files.sublist(0, files.length > 4 ? 4 : files.length));
+    }
+  }
+
+  // File upload button event
+  void onFileUploadButtonPressed() async {
+    HapticFeedbackHelper.mediumImpact();
+
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'docx', 'txt', 'md'],
+      allowMultiple: false,
+    );
+    if (result != null && result.files.isNotEmpty) {
+      if (widget.onFileSelected != null) {
+        widget.onFileSelected?.call(FileUpload(file: result.files.first));
+      }
+    }
+  }
+
+  final _menuKey = GlobalKey<PopupMenuButtonState>();
+
+  /// Build image or file upload button
+  Widget buildUploadButtons(
     BuildContext context,
     SettingRepository setting,
     CustomColors customColors,
   ) {
-    return IconButton(
-      onPressed: () async {
-        HapticFeedbackHelper.mediumImpact();
-        if (widget.selectedImageFiles != null &&
-            widget.selectedImageFiles!.length >= 4) {
-          showSuccessMessage('最多只能上传 4 张图片');
-          return;
-        }
+    if (canUploadImage && !canUploadFile && !hasCamera) {
+      return IconButton(
+        onPressed: onImageUploadButtonPressed,
+        icon: const Icon(Icons.camera_alt),
+        color: customColors.chatInputPanelText,
+        splashRadius: 20,
+        tooltip: AppLocale.photoLibrary.getString(context),
+      );
+    }
 
-        FilePickerResult? result = await FilePicker.platform.pickFiles(
-          type: FileType.image,
-          allowMultiple: true,
-        );
-        if (result != null && result.files.isNotEmpty) {
-          final files = widget.selectedImageFiles ?? [];
-          files.addAll(result.files.map((e) => FileUpload(file: e)).toList());
-          widget.onImageSelected
-              ?.call(files.sublist(0, files.length > 4 ? 4 : files.length));
+    if (!canUploadImage && canUploadFile && !hasCamera) {
+      return IconButton(
+        onPressed: onFileUploadButtonPressed,
+        icon: const Icon(Icons.upload_file),
+        color: customColors.chatInputPanelText,
+        splashRadius: 20,
+        tooltip: AppLocale.fileLibrary.getString(context),
+      );
+    }
+
+    return Listener(
+      onPointerDown: (_) async {
+        if (FocusScope.of(context).hasFocus) {
+          FocusScope.of(context).unfocus();
+          await Future.delayed(const Duration(milliseconds: 200));
         }
+        _menuKey.currentState?.showButtonMenu();
       },
-      icon: const Icon(Icons.camera_alt),
-      color: customColors.chatInputPanelText,
-      splashRadius: 20,
-      tooltip: AppLocale.uploadImage.getString(context),
+      child: PopupMenuButton(
+        key: _menuKey,
+        enabled: false,
+        icon: Icon(Icons.add, color: customColors.chatInputPanelText),
+        splashRadius: 20,
+        elevation: 0,
+        enableFeedback: true,
+        color: customColors.backgroundColor,
+        shape: RoundedRectangleBorder(borderRadius: CustomSize.borderRadius),
+        position: PopupMenuPosition.under,
+        onSelected: (value) {
+          switch (value) {
+            case 'take_photo':
+              onTakePhotoButtonPressed(context, customColors);
+              break;
+            case 'photo_library':
+              onImageUploadButtonPressed();
+              break;
+            case 'file_library':
+              onFileUploadButtonPressed();
+              break;
+          }
+        },
+        itemBuilder: (context) {
+          return <PopupMenuItem>[
+            if (canUploadImage)
+              PopupMenuItem(
+                value: 'take_photo',
+                child: Row(
+                  children: [
+                    const Icon(Icons.camera_alt),
+                    const SizedBox(width: 10),
+                    Text(
+                      AppLocale.takePhoto.getString(context),
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+            if (canUploadImage)
+              PopupMenuItem(
+                value: 'photo_library',
+                child: Row(
+                  children: [
+                    const Icon(Icons.photo_library),
+                    const SizedBox(width: 10),
+                    Text(
+                      AppLocale.photoLibrary.getString(context),
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+            if (canUploadFile)
+              PopupMenuItem(
+                value: 'file_library',
+                child: Row(
+                  children: [
+                    const Icon(Icons.upload_file_sharp),
+                    const SizedBox(width: 10),
+                    Text(
+                      AppLocale.fileLibrary.getString(context),
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+          ];
+        },
+      ),
+    );
+  }
+
+  // Take a photo
+  void onTakePhotoButtonPressed(BuildContext context, CustomColors customColors) {
+    HapticFeedbackHelper.mediumImpact();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(
+            title: Text(AppLocale.takePhoto.getString(context)),
+            backgroundColor: customColors.backgroundColor,
+          ),
+          body: CameraAwesomeBuilder.awesome(
+            saveConfig: SaveConfig.photo(),
+            enablePhysicalButton: true,
+            onMediaCaptureEvent: (mediaCapture) async {
+              if (mediaCapture.status == MediaCaptureStatus.success) {
+                final file = FileUpload(
+                    file: PlatformFile(
+                  path: mediaCapture.captureRequest.path!,
+                  name: mediaCapture.captureRequest.path!.split('/').last,
+                  size: await File(mediaCapture.captureRequest.path!).length(),
+                ));
+
+                final files = widget.selectedImageFiles ?? [];
+                files.add(file);
+                widget.onImageSelected?.call(files.sublist(0, files.length > 4 ? 4 : files.length));
+
+                if (context.mounted) {
+                  context.pop();
+                }
+              }
+            },
+          ),
+        ),
+      ),
     );
   }
 

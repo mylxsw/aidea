@@ -2,13 +2,13 @@ import 'package:askaide/lang/lang.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 
-class Coin extends StatelessWidget {
+class Credit extends StatelessWidget {
   final int count;
   final Color? color;
   final FontWeight? fontWeight;
   final double? fontSize;
   final bool withAddPrefix;
-  const Coin({
+  const Credit({
     super.key,
     required this.count,
     this.color,
@@ -23,7 +23,7 @@ class Coin extends StatelessWidget {
         text: TextSpan(
       children: [
         TextSpan(
-          text: '${withAddPrefix ? "+ " : ""}${formatCount()}',
+          text: '${withAddPrefix ? "+ " : ""}${AppLocale.creditUnit.getString(context)}${formatCount()}',
           style: TextStyle(
             fontSize: fontSize ?? 20,
             color: color ?? Colors.white,
@@ -32,8 +32,7 @@ class Coin extends StatelessWidget {
           ),
         ),
         TextSpan(
-          text:
-              '${AppLocale.coinUnit.getString(context)}${count >= maxShowCount ? " +" : ""}',
+          text: count >= maxShowCount ? " +" : "",
           style: TextStyle(
             fontSize: fontSize != null ? (fontSize! - 7) : 12,
             color: color ?? Colors.white.withAlpha(200),

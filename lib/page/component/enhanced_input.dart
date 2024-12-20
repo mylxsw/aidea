@@ -1,3 +1,4 @@
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -71,7 +72,7 @@ class EnhancedInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onPressed,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: CustomSize.borderRadiusAll,
       child: Container(
         padding: padding ?? const EdgeInsets.symmetric(vertical: 12),
         child: Column(
@@ -112,45 +113,5 @@ class EnhancedInput extends StatelessWidget {
         ),
       ),
     );
-
-    // return Material(
-    //   borderRadius: BorderRadius.circular(8),
-    //   // color: customColors.dialogBackgroundColor,
-    //   child: InkWell(
-    //     onTap: onPressed,
-    //     borderRadius: BorderRadius.circular(8),
-    //     child: Container(
-    //       padding: const EdgeInsets.symmetric(
-    //         // horizontal: 10,
-    //         vertical: 12,
-    //       ),
-    //       child: Row(
-    //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //         children: [
-    //           SizedBox(
-    //             width: 80,
-    //             child: title,
-    //           ),
-    //           Expanded(
-    //             child: Row(
-    //               mainAxisAlignment: MainAxisAlignment.end,
-    //               mainAxisSize: MainAxisSize.min,
-    //               children: [
-    //                 value ?? Container(),
-    //                 const SizedBox(width: 10),
-    //                 icon ??
-    //                     Icon(
-    //                       CupertinoIcons.chevron_forward,
-    //                       size: MediaQuery.of(context).textScaleFactor * 18,
-    //                       color: Colors.grey,
-    //                     ),
-    //               ],
-    //             ),
-    //           ),
-    //         ],
-    //       ),
-    //     ),
-    //   ),
-    // );
   }
 }

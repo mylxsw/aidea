@@ -24,8 +24,8 @@ class ArticleScreen extends StatefulWidget {
 class _ArticleScreenState extends State<ArticleScreen> {
   Article article = Article(
     id: 0,
-    title: '标题',
-    content: '内容',
+    title: 'Title',
+    content: 'Content',
   );
 
   @override
@@ -64,17 +64,17 @@ class _ArticleScreenState extends State<ArticleScreen> {
           },
         ),
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.settings,
+        enabled: false,
         child: SafeArea(
           top: false,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: SingleChildScrollView(
               child: ColumnBlock(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,7 +83,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '作者：${article.author ?? '管理员'}',
+                            'Author: ${article.author ?? 'Admin'}',
                             style: TextStyle(
                               fontSize: 12,
                               color: customColors.weakTextColor,
@@ -91,12 +91,10 @@ class _ArticleScreenState extends State<ArticleScreen> {
                           ),
                           if (article.createdAt != null)
                             Text(
-                              DateFormat('yyyy/MM/dd HH:mm')
-                                  .format(article.createdAt!.toLocal()),
+                              DateFormat('yyyy/MM/dd HH:mm').format(article.createdAt!.toLocal()),
                               style: TextStyle(
                                 fontSize: 12,
-                                color:
-                                    customColors.weakTextColor?.withAlpha(100),
+                                color: customColors.weakTextColor?.withAlpha(100),
                               ),
                             ),
                         ],

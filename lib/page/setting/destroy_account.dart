@@ -46,13 +46,13 @@ class _DestroyAccountScreenState extends State<DestroyAccountScreen> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
-        title: const Text(
-          '注销账号',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+        title: Text(
+          AppLocale.deleteAccount.getString(context),
+          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -62,14 +62,16 @@ class _DestroyAccountScreenState extends State<DestroyAccountScreen> {
             children: [
               const MessageBox(
                 message:
-                    '请注意，注销账号后：\n1. 您的数据将被清空，包括数字人、创作岛历史纪录、充值数据、智慧果使用明细等全部数据；\n2. 您未使用完的智慧果将会被销毁，无法继续使用，无法退回；\n3. 注销操作不可逆，一旦账号注销，所有被删除数据均无法恢复。',
+                    '请注意，注销账号后：\n1. 您的数据将被清空，包括角色、创作岛历史纪录、充值数据、智慧果使用明细等全部数据；\n2. 您未使用完的智慧果将会被销毁，无法继续使用，无法退回；\n3. 注销操作不可逆，一旦账号注销，所有被删除数据均无法恢复。',
                 type: MessageBoxType.warning,
               ),
               const SizedBox(height: 15),
               ColumnBlock(
+                padding: const EdgeInsets.only(
+                    top: 20, left: 10, right: 10, bottom: 20),
                 children: [
                   VerifyCodeInput(
-                    inColumnBlock: true,
+                    inColumnBlock: false,
                     controller: _verificationCodeController,
                     onVerifyCodeSent: (id) {
                       verifyCodeId = id;
@@ -88,14 +90,12 @@ class _DestroyAccountScreenState extends State<DestroyAccountScreen> {
                 height: 45,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(8),
-                ),
+                    color: Colors.red, borderRadius: CustomSize.borderRadius),
                 child: TextButton(
                   onPressed: onDestroySubmit,
-                  child: const Text(
-                    '确认注销账号',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  child: Text(
+                    AppLocale.confirmDeleteAccount.getString(context),
+                    style: const TextStyle(color: Colors.white, fontSize: 18),
                   ),
                 ),
               ),

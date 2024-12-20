@@ -5,12 +5,13 @@ import 'package:askaide/page/component/chat/markdown/code.dart';
 import 'package:askaide/page/component/chat/markdown/latex.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/image_preview.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:flutter_highlight/themes/default.dart';
 import 'package:flutter_markdown/flutter_markdown.dart' as md;
+import 'package:flutter_markdown_latex/flutter_markdown_latex.dart';
 import 'package:markdown/markdown.dart' as mm;
 import 'package:markdown_widget/config/all.dart';
 import 'package:markdown_widget/widget/all.dart';
@@ -52,19 +53,14 @@ class Markdown extends StatelessWidget {
           color: customColors.markdownCodeColor,
           backgroundColor: Colors.transparent,
         ),
-        codeblockPadding:
-            const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        codeblockDecoration: BoxDecoration(
-          color: customColors.markdownPreColor,
-          borderRadius: BorderRadius.circular(5),
-        ),
+        codeblockPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        codeblockDecoration: const BoxDecoration(borderRadius: CustomSize.borderRadiusAll),
         tableBorder: TableBorder.all(
           color: customColors.weakTextColor!.withOpacity(0.5),
           width: 1,
         ),
         tableColumnWidth: const FlexColumnWidth(),
-        blockquotePadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+        blockquotePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
         blockquoteDecoration: BoxDecoration(
           border: Border(
             left: BorderSide(
@@ -85,21 +81,23 @@ class Markdown extends StatelessWidget {
           );
         }
 
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(5),
-          child: Image.network(uri.toString()),
-        );
+        return ClipRRect(borderRadius: CustomSize.borderRadiusAll, child: Image.network(uri.toString()));
       },
       extensionSet: mm.ExtensionSet(
-        mm.ExtensionSet.gitHubFlavored.blockSyntaxes,
+        [
+          ...mm.ExtensionSet.gitHubFlavored.blockSyntaxes,
+          LatexBlockSyntax(),
+        ],
         <mm.InlineSyntax>[
           mm.EmojiSyntax(),
           ...mm.ExtensionSet.gitHubFlavored.inlineSyntaxes,
+          LatexInlineSyntax(),
         ],
       ),
       data: data,
       builders: {
         'code': CodeElementBuilder(),
+        'latex': LatexElementBuilder(),
       },
     );
   }
@@ -136,15 +134,11 @@ class MarkdownPlus extends StatelessWidget {
         ),
         // 代码块配置
         PreConfig(
-          theme: defaultTheme,
-          decoration: BoxDecoration(
-            color: customColors.markdownPreColor,
-            borderRadius: BorderRadius.circular(5),
-          ),
+          theme: codeTheme(),
+          decoration: const BoxDecoration(borderRadius: CustomSize.borderRadiusAll),
           margin: const EdgeInsets.symmetric(vertical: 0.0),
-          padding:
-              const EdgeInsets.only(top: 35, left: 10, right: 10, bottom: 10),
-          textStyle: const TextStyle(fontSize: 14),
+          padding: const EdgeInsets.only(top: 28, left: 10, right: 10, bottom: 10),
+          textStyle: const TextStyle(fontSize: 13),
           wrapper: (child, code, language) {
             return Stack(
               children: [
@@ -153,27 +147,15 @@ class MarkdownPlus extends StatelessWidget {
                   right: 0,
                   top: 0,
                   child: IconButton(
-                    tooltip: '复制代码',
-                    icon: Row(
-                      children: [
-                        Icon(
-                          Icons.copy,
-                          size: 12,
-                          color: customColors.weakLinkColor,
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          'Copy',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: customColors.weakLinkColor,
-                          ),
-                        ),
-                      ],
+                    tooltip: 'Copy code',
+                    icon: Icon(
+                      Icons.copy,
+                      size: 10,
+                      color: customColors.weakLinkColor,
                     ),
                     onPressed: () {
                       FlutterClipboard.copy(code).then((value) {
-                        showSuccessMessage('已复制到剪贴板');
+                        showSuccessMessage('Copied to clipboard');
                       });
                     },
                   ),
@@ -185,7 +167,7 @@ class MarkdownPlus extends StatelessWidget {
         // 代码配置
         CodeConfig(
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 13,
             color: customColors.markdownCodeColor,
           ),
         ),
@@ -198,7 +180,7 @@ class MarkdownPlus extends StatelessWidget {
 
             if (url.startsWith('data:')) {
               return ClipRRect(
-                borderRadius: BorderRadius.circular(5),
+                borderRadius: CustomSize.borderRadiusAll,
                 child: Image.memory(
                   const Base64Decoder().convert(url.split(',')[1]),
                   fit: BoxFit.cover,
@@ -219,11 +201,12 @@ class MarkdownPlus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
+    final markdownGenerator = MarkdownGenerator(
+      generators: [latexGenerator],
+      inlineSyntaxList: [LatexSyntax()],
+    );
+
     if (compact) {
-      final markdownGenerator = MarkdownGenerator(
-        generators: [latexGenerator],
-        inlineSyntaxList: [LatexSyntax()],
-      );
       return Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -240,6 +223,7 @@ class MarkdownPlus extends StatelessWidget {
       data: data,
       shrinkWrap: true,
       config: _buildMarkdownConfig(customColors),
+      markdownGenerator: markdownGenerator,
     );
   }
 }

@@ -11,7 +11,9 @@ class AdminModel {
   bool get isVision => meta?.vision ?? false;
   int get inputPrice => meta?.inputPrice ?? 0;
   int get outputPrice => meta?.outputPrice ?? 0;
+  int get perReqPrice => meta?.perReqPrice ?? 0;
   int get maxContext => meta?.maxContext ?? 0;
+  bool get enabled => status == 1;
 
   AdminModel({
     required this.modelId,
@@ -59,6 +61,7 @@ class AdminModelMeta {
   int? maxContext;
   int? inputPrice;
   int? outputPrice;
+  int? perReqPrice;
   String? prompt;
 
   String? tag;
@@ -66,6 +69,7 @@ class AdminModelMeta {
   String? tagBgColor;
 
   bool? isNew;
+  bool? isRecommend;
   String? category;
 
   AdminModelMeta({
@@ -74,26 +78,30 @@ class AdminModelMeta {
     this.maxContext,
     this.inputPrice,
     this.outputPrice,
+    this.perReqPrice,
     this.prompt,
     this.tag,
     this.tagTextColor,
     this.tagBgColor,
     this.isNew,
+    this.isRecommend,
     this.category,
   });
 
   factory AdminModelMeta.fromJson(Map<String, dynamic> json) {
     return AdminModelMeta(
-      vision: json['vision'],
-      restricted: json['restricted'],
+      vision: json['vision'] ?? false,
+      restricted: json['restricted'] ?? false,
       maxContext: json['max_context'],
-      inputPrice: json['input_price'],
-      outputPrice: json['output_price'],
+      inputPrice: json['input_price'] ?? 0,
+      outputPrice: json['output_price'] ?? 0,
+      perReqPrice: json['per_req_price'] ?? 0,
       prompt: json['prompt'],
       tag: json['tag'],
       tagTextColor: json['tag_text_color'],
       tagBgColor: json['tag_bg_color'],
-      isNew: json['is_new'],
+      isNew: json['is_new'] ?? false,
+      isRecommend: json['is_recommend'] ?? false,
       category: json['category'],
     );
   }
@@ -105,11 +113,13 @@ class AdminModelMeta {
       'max_context': maxContext,
       'input_price': inputPrice,
       'output_price': outputPrice,
+      'per_req_price': perReqPrice,
       'prompt': prompt,
       'tag': tag,
       'tag_text_color': tagTextColor,
       'tag_bg_color': tagBgColor,
       'is_new': isNew,
+      'is_recommend': isRecommend,
       'category': category,
     };
   }

@@ -55,34 +55,29 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
           icon: const Icon(Icons.close),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        backgroundColor: customColors.backgroundContainerColor?.withAlpha(200),
+        backgroundColor: customColors.backgroundColor,
         toolbarHeight: CustomSize.toolbarHeight,
         actions: [
           BlocBuilder<GalleryBloc, GalleryState>(
             buildWhen: (previous, current) => current is GalleryItemLoaded,
             builder: (context, state) {
-              if (state is GalleryItemLoaded &&
-                  state.isInternalUser &&
-                  state.item.status == 1) {
+              if (state is GalleryItemLoaded && state.isInternalUser && state.item.status == 1) {
                 return TextButton(
                   onPressed: () {
                     openConfirmDialog(
                       context,
                       '确认取消？',
                       () => APIServer()
-                          .cancelShareCreativeHistoryToGallery(
-                              historyId: state.item.creativeHistoryId!)
+                          .cancelShareCreativeHistoryToGallery(historyId: state.item.creativeHistoryId!)
                           .then((value) {
-                        showSuccessMessage(
-                            AppLocale.operateSuccess.getString(context));
+                        showSuccessMessage(AppLocale.operateSuccess.getString(context));
 
-                        context.read<GalleryBloc>().add(GalleryItemLoadEvent(
-                            id: widget.galleryId, forceRefresh: true));
+                        context.read<GalleryBloc>().add(GalleryItemLoadEvent(id: widget.galleryId, forceRefresh: true));
                       }),
                     );
                   },
                   child: Text(
-                    '取消共享',
+                    AppLocale.cancelShare.getString(context),
                     style: TextStyle(
                       color: customColors.weakLinkColor,
                       fontSize: 12,
@@ -97,7 +92,7 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
         ],
       ),
       extendBodyBehindAppBar: true,
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -114,8 +109,7 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                   child: SingleChildScrollView(
                     child: SafeArea(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 5, vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -124,14 +118,13 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                               Container(
                                 decoration: BoxDecoration(
                                   color: customColors.backgroundColor,
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: CustomSize.borderRadius,
                                 ),
                                 // padding: const EdgeInsets.symmetric(
                                 //   horizontal: 10,
                                 //   vertical: 10,
                                 // ),
-                                margin: const EdgeInsets.symmetric(
-                                    horizontal: 5, vertical: 5),
+                                margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                                 child: NetworkImagePreviewer(
                                   url: img,
                                   preview: imageURL(img, qiniuImageTypeThumb),
@@ -144,8 +137,7 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                                 vertical: 8,
                               ),
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
@@ -188,14 +180,12 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                               innerPanding: 10,
                               padding: const EdgeInsets.all(15),
                               children: [
-                                if (state.item.prompt != null &&
-                                    state.item.prompt!.isNotEmpty)
+                                if (state.item.prompt != null && state.item.prompt!.isNotEmpty)
                                   TextItem(
                                     title: 'Prompt',
                                     value: state.item.prompt!,
                                   ),
-                                if (state.item.negativePrompt != null &&
-                                    state.item.negativePrompt!.isNotEmpty)
+                                if (state.item.negativePrompt != null && state.item.negativePrompt!.isNotEmpty)
                                   TextItem(
                                     title: 'Negative Prompt',
                                     value: state.item.negativePrompt!,
@@ -211,23 +201,20 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   EnhancedButton(
-                                    title: '分享',
+                                    title: AppLocale.share.getString(context),
                                     icon: const Icon(Icons.share, size: 14),
                                     width: 80,
                                     color: customColors.backgroundInvertedColor,
-                                    backgroundColor:
-                                        customColors.backgroundColor,
+                                    backgroundColor: customColors.backgroundColor,
                                     onPressed: () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           fullscreenDialog: true,
-                                          builder: (context) =>
-                                              GalleryItemShareScreen(
+                                          builder: (context) => GalleryItemShareScreen(
                                             images: state.item.images,
                                             prompt: state.item.prompt,
-                                            negativePrompt:
-                                                state.item.negativePrompt,
+                                            negativePrompt: state.item.negativePrompt,
                                           ),
                                         ),
                                       );
@@ -235,25 +222,21 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                                   ),
                                   const SizedBox(width: 10),
                                   EnhancedButton(
-                                    title: '动作',
+                                    title: AppLocale.shortcut.getString(context),
                                     icon: const Icon(Icons.webhook, size: 14),
                                     width: 80,
                                     color: customColors.backgroundInvertedColor,
-                                    backgroundColor:
-                                        customColors.backgroundColor,
+                                    backgroundColor: customColors.backgroundColor,
                                     onPressed: () {
                                       if (state.item.images.length > 1) {
                                         List<SelectorItem<String>> items = [];
-                                        for (var i = 0;
-                                            i < state.item.images.length;
-                                            i++) {
+                                        for (var i = 0; i < state.item.images.length; i++) {
                                           items.add(SelectorItem(
                                             NetworkImagePreviewer(
                                               url: state.item.images[i],
                                               notClickable: true,
                                               hidePreviewButton: true,
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
+                                              borderRadius: CustomSize.borderRadiusAll,
                                             ),
                                             state.item.images[i],
                                           ));
@@ -275,11 +258,10 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                                           horizontal: true,
                                           horizontalCount: 2,
                                           heightFactor: 0.8,
-                                          innerPadding:
-                                              const EdgeInsets.symmetric(
+                                          innerPadding: const EdgeInsets.symmetric(
                                             vertical: 10,
                                           ),
-                                          title: '选择要执行动作的图片',
+                                          title: AppLocale.selectImageToShortcut.getString(context),
                                         );
                                       } else {
                                         openImageWorkflowActionDialog(
@@ -293,7 +275,7 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: EnhancedButton(
-                                      title: '制作同款',
+                                      title: AppLocale.makeSameStyle.getString(context),
                                       onPressed: () {
                                         context.push(
                                             '/creative-draw/create?mode=text-to-image&id=${state.item.creativeId}&gallery_copy_id=${state.item.id}');
@@ -470,8 +452,7 @@ class _TextItemState extends State<TextItem> {
                       target: details.globalPosition,
                       duration: const Duration(seconds: 8),
                       animationDuration: const Duration(milliseconds: 200),
-                      animationReverseDuration:
-                          const Duration(milliseconds: 200),
+                      animationReverseDuration: const Duration(milliseconds: 200),
                       preferDirection: PreferDirection.topCenter,
                       ignoreContentClick: false,
                       onlyOne: true,
@@ -481,8 +462,7 @@ class _TextItemState extends State<TextItem> {
                         buttons: [
                           TextButton.icon(
                             onPressed: () {
-                              FlutterClipboard.copy(valueTranslated)
-                                  .then((value) {
+                              FlutterClipboard.copy(valueTranslated).then((value) {
                                 showSuccessMessage('已复制到剪贴板');
                               });
                               cancel();
@@ -498,8 +478,7 @@ class _TextItemState extends State<TextItem> {
                                 ),
                                 Text(
                                   "复制",
-                                  style: TextStyle(
-                                      fontSize: 12, color: Colors.white),
+                                  style: TextStyle(fontSize: 12, color: Colors.white),
                                 ),
                               ],
                             ),

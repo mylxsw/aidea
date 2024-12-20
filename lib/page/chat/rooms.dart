@@ -1,10 +1,7 @@
 import 'package:askaide/helper/ability.dart';
-import 'package:askaide/helper/cache.dart';
-import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/event.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/bloc/room_bloc.dart';
-import 'package:askaide/page/chat/room_create.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
 import 'package:askaide/page/component/enhanced_error.dart';
@@ -48,8 +45,9 @@ class _RoomsPageState extends State<RoomsPage> {
     var customColors = Theme.of(context).extension<CustomColors>()!;
     return BackgroundContainer(
       setting: widget.setting,
+      enabled: false,
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: customColors.backgroundColor,
         body: BlocConsumer<RoomBloc, RoomState>(
           listener: (context, state) {
             if (state is RoomsLoaded) {
@@ -65,19 +63,12 @@ class _RoomsPageState extends State<RoomsPage> {
             }
 
             if (state is RoomOperationResult) {
-              if (state.success) {
-                if (state.redirect != null) {
-                  context.push(state.redirect!).then((value) {
-                    context.read<RoomBloc>().add(RoomsLoadEvent());
-                  });
-                }
-              } else {
-                showErrorMessageEnhanced(context, state.error ?? '操作失败');
+              if (!state.success) {
+                showErrorMessageEnhanced(context, state.error ?? AppLocale.operateFailed.getString(context));
               }
             }
           },
-          buildWhen: (previous, current) =>
-              current is RoomsLoading || current is RoomsLoaded,
+          buildWhen: (previous, current) => current is RoomsLoading || current is RoomsLoaded,
           builder: (context, state) {
             if (state is RoomsLoaded) {
               if (state.error != null) {
@@ -90,42 +81,8 @@ class _RoomsPageState extends State<RoomsPage> {
                   if (selectedSuggestions.isEmpty)
                     EnhancedPopupMenu(
                       items: [
-                        if (Ability().isUserLogon() &&
-                            !Ability().enableLocalOpenAI)
-                          EnhancedPopupMenuItem(
-                            title: '快速开始',
-                            icon: Icons.quickreply_outlined,
-                            onTap: (p0) async {
-                              final lastModel = await Cache()
-                                  .stringGet(key: cacheKeyLastModel);
-                              openSelectModelDialog(
-                                // ignore: use_build_context_synchronously
-                                context,
-                                (selected) {
-                                  if (selected == null) {
-                                    return;
-                                  }
-                                  // 缓存最后一次使用的模型 ID，下次创建时自动排在最前面
-                                  Cache().setString(
-                                    key: cacheKeyLastModel,
-                                    value: selected.id,
-                                  );
-
-                                  context.read<RoomBloc>().add(
-                                        RoomCreateEvent(
-                                          selected.name,
-                                          selected.id,
-                                          null,
-                                        ),
-                                      );
-                                },
-                                title: '选择要对话的模型',
-                                priorityModelId: lastModel,
-                              );
-                            },
-                          ),
                         EnhancedPopupMenuItem(
-                          title: '创建数字人',
+                          title: AppLocale.createRoom.getString(context),
                           icon: Icons.person_add_alt_outlined,
                           onTap: (p0) {
                             context.push('/create-room').whenComplete(() {
@@ -133,15 +90,12 @@ class _RoomsPageState extends State<RoomsPage> {
                             });
                           },
                         ),
-                        if (Ability().isUserLogon() &&
-                            !Ability().enableLocalOpenAI)
+                        if (Ability().isUserLogon() && !Ability().enableLocalOpenAI)
                           EnhancedPopupMenuItem(
-                            title: '发起群聊',
+                            title: AppLocale.createGroupChat.getString(context),
                             icon: Icons.forum_outlined,
                             onTap: (p0) {
-                              context
-                                  .push('/group-chat-create')
-                                  .whenComplete(() {
+                              context.push('/group-chat-create').whenComplete(() {
                                 context.read<RoomBloc>().add(RoomsLoadEvent());
                               });
                             },
@@ -150,10 +104,7 @@ class _RoomsPageState extends State<RoomsPage> {
                       icon: Icons.add_circle_outline,
                     ),
                 ],
-                centerTitle: state.suggests.isEmpty,
-                titlePadding: state.suggests.isEmpty
-                    ? null
-                    : const EdgeInsets.only(left: 0),
+                centerTitle: true,
                 title: state.suggests.isEmpty
                     ? Text(
                         AppLocale.homeTitle.getString(context),
@@ -163,13 +114,13 @@ class _RoomsPageState extends State<RoomsPage> {
                         ),
                       )
                     : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
                             margin: const EdgeInsets.only(top: 10, left: 10),
                             child: Text(
-                              '热门推荐',
+                              AppLocale.robotRecommand.getString(context),
                               style: TextStyle(
                                 fontWeight: FontWeight.w900,
                                 color: customColors.backgroundInvertedColor,
@@ -178,10 +129,9 @@ class _RoomsPageState extends State<RoomsPage> {
                             ),
                           ),
                           Container(
-                            margin: const EdgeInsets.only(
-                                top: 0, left: 10, bottom: 10),
+                            margin: const EdgeInsets.only(top: 0, left: 10, bottom: 10),
                             child: Text(
-                              '挑选你的专属伙伴',
+                              AppLocale.pickYourRobot.getString(context),
                               style: TextStyle(
                                 color: customColors.weakTextColorPlus,
                                 fontSize: 11,
@@ -197,15 +147,12 @@ class _RoomsPageState extends State<RoomsPage> {
                 child: RefreshIndicator(
                   color: customColors.linkColor,
                   onRefresh: () async {
-                    context
-                        .read<RoomBloc>()
-                        .add(RoomsLoadEvent(forceRefresh: true));
+                    context.read<RoomBloc>().add(RoomsLoadEvent(forceRefresh: true));
                   },
                   displacement: 20,
                   child: Column(
                     children: [
-                      if (Ability().showGlobalAlert)
-                        const GlobalAlert(pageKey: 'rooms'),
+                      if (Ability().showGlobalAlert) const GlobalAlert(pageKey: 'rooms'),
                       Expanded(child: buildBody(customColors, state, context)),
                     ],
                   ),
@@ -230,7 +177,7 @@ class _RoomsPageState extends State<RoomsPage> {
                   child: Row(
                     children: [
                       WeakTextButton(
-                        title: '取消',
+                        title: AppLocale.cancel.getString(context),
                         onPressed: () {
                           selectedSuggestions.clear();
                           setState(() {});
@@ -242,12 +189,10 @@ class _RoomsPageState extends State<RoomsPage> {
                         child: EnhancedButton(
                             title: AppLocale.ok.getString(context),
                             onPressed: () {
-                              context.read<RoomBloc>().add(GalleryRoomCopyEvent(
-                                  selectedSuggestions
-                                      .map((e) => e.id)
-                                      .toList()));
-                              showSuccessMessage(
-                                  AppLocale.operateSuccess.getString(context));
+                              context
+                                  .read<RoomBloc>()
+                                  .add(GalleryRoomCopyEvent(selectedSuggestions.map((e) => e.id).toList()));
+                              showSuccessMessage(AppLocale.operateSuccess.getString(context));
                             }),
                       )
                     ],
@@ -259,8 +204,7 @@ class _RoomsPageState extends State<RoomsPage> {
     );
   }
 
-  Widget buildBody(
-      CustomColors customColors, RoomsLoaded state, BuildContext context) {
+  Widget buildBody(CustomColors customColors, RoomsLoaded state, BuildContext context) {
     if (state.rooms.isEmpty && state.suggests.isEmpty) {
       return Center(
         // 数字人列表为空
@@ -317,18 +261,16 @@ class _RoomsPageState extends State<RoomsPage> {
                   context.read<RoomBloc>().add(RoomsLoadEvent());
                 });
               },
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: CustomSize.borderRadiusAll,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                    decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: CustomSize.borderRadius,
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
@@ -344,7 +286,7 @@ class _RoomsPageState extends State<RoomsPage> {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    '查看更多',
+                    AppLocale.viewMore.getString(context),
                     style: TextStyle(
                       color: customColors.weakTextColor,
                       fontSize: 13,

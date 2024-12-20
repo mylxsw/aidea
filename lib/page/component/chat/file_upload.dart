@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:askaide/page/component/image_preview.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
 
@@ -34,7 +35,7 @@ class FileUploadPreview extends StatelessWidget {
 
           if (e.startsWith('data:')) {
             return ImageProviderPreviewer(
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: CustomSize.borderRadiusAll,
               imageProvider: MemoryImage(
                 const Base64Decoder().convert(e.split(',')[1]),
               ),
