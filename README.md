@@ -6,17 +6,7 @@
 
 <a href="https://trendshift.io/repositories/1013" target="_blank"><img src="https://trendshift.io/api/badge/repositories/1013" alt="mylxsw%2Faidea | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
-一款集成了主流大语言模型以及绘图模型的 APP， 采用 Flutter 开发，代码完全开源，支持以下功能：
-
-- 支持 OpenAI 的 GPT-3.5，GPT-4 大语言模型
-- 支持 Anthropic 的 Claude instant，Claude 2.1 大语言模型
-- 支持 Google 的 Gemini Pro 以及视觉大语言模型
-- 支持国产模型：通义千问，文心一言，讯飞星火，商汤日日新，腾讯混元，百川53B，360智脑，天工，智谱，月之暗面等
-- 支持开源大模型：Yi 34B，Llama2，ChatGLM2，AquilaChat 7B，Bloomz 7B，轩辕 70B，ChatLaw，Mixtral 等，后续还将开放更多
-- 支持文生图、图生图、超分辨率、黑白图片上色、艺术字、艺术二维码等功能，支持 SDXL 1.0、Dall·E 3 等
-
-![image](https://github.com/mylxsw/aidea/assets/2330911/297bfe8e-8b26-45b3-bc03-26bc81823211)
-
+一款集成了主流大语言模型以及绘图模型的 APP， 采用 Flutter 开发，代码完全开源。
 
 下载体验地址：
 
@@ -29,6 +19,12 @@ https://aidea.aicode.cc
 - Docker 部署：https://github.com/mylxsw/aidea-docker
 
 ## 开发、编译运行环境
+
+默认分支 `main` 是 v2 版本，当前正在开发中，如需自己部署，请切换到 [v1.x](https://github.com/mylxsw/aidea/tree/v1.x) 分支。
+
+```bash
+git checkout v1.x
+```
 
 搭建开发环境，用来编译和打包 APP，可以参考下面的文章，更多文章后面有时间了会持续更新。
 
@@ -44,15 +40,13 @@ https://aidea.aicode.cc
 
 - 微信技术交流群：
 
-    <img src="https://github.com/mylxsw/aidea/assets/2330911/0a697937-b357-4d88-bb16-c07c5517d13c" width="400"/>
+    <img src="https://ssl.aicode.cc/mweb/20241220/17346847070027.jpg" width="400"/>
 
     如果无法加入，请添加微信号 `x-prometheus` 为好友，拉你进群。
 
 - 微信公众号
 
     <img src="https://github.com/mylxsw/aidea-server/assets/2330911/376a3b9f-eacd-45c6-9630-39eb720ba097" width="500" />
-
-- 电报群：[点此加入](https://t.me/aideachat)
 
 
 ## APP 截图
