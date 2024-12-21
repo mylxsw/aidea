@@ -135,6 +135,8 @@ dependencies:
   flutter_markdown_latex: ^0.3.4
   auto_size_text: ^3.0.0
   animated_list_plus: ^0.5.2
+  lottie: ^3.2.0
+  motion: ^2.0.0
   
 dev_dependencies:
   flutter_test:
@@ -209,6 +211,7 @@ flutter:
     - assets/icons/mp3.png
     - assets/icons/pdf.png
     - assets/icons/txt.png
+    - assets/lottie/empty_status.json
 
   
   #   - images/a_dot_ham.jpeg

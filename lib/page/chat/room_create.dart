@@ -55,7 +55,7 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
 
   List<String> avatarPresets = [];
 
-  int maxContext = 3;
+  int maxContext = 6;
 
   List<ChatMemory> validMemories = [
     ChatMemory('Ephemeral', 1, description: 'Each conversation is independent, often used for one-off Q&A'),
@@ -400,42 +400,41 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                 value: _selectedModel != null ? _selectedModel!.name : AppLocale.select.getString(context),
               ),
               // 提示语
-              if (_selectedModel != null && _selectedModel!.isChatModel)
-                EnhancedTextField(
-                  fontSize: 12,
-                  customColors: customColors,
-                  controller: _promptController,
-                  labelText: AppLocale.prompt.getString(context),
-                  labelPosition: LabelPosition.top,
-                  hintText: AppLocale.promptHint.getString(context),
-                  bottomButton: Row(
-                    children: [
-                      Icon(
-                        Icons.tips_and_updates_outlined,
-                        size: 13,
+              EnhancedTextField(
+                fontSize: 12,
+                customColors: customColors,
+                controller: _promptController,
+                labelText: AppLocale.prompt.getString(context),
+                labelPosition: LabelPosition.top,
+                hintText: AppLocale.promptHint.getString(context),
+                bottomButton: Row(
+                  children: [
+                    Icon(
+                      Icons.tips_and_updates_outlined,
+                      size: 13,
+                      color: customColors.linkColor?.withAlpha(150),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      AppLocale.examples.getString(context),
+                      style: TextStyle(
                         color: customColors.linkColor?.withAlpha(150),
+                        fontSize: 13,
                       ),
-                      const SizedBox(width: 5),
-                      Text(
-                        AppLocale.examples.getString(context),
-                        style: TextStyle(
-                          color: customColors.linkColor?.withAlpha(150),
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                  bottomButtonOnPressed: () async {
-                    openSystemPromptSelectDialog(
-                      context,
-                      customColors,
-                      _promptController,
-                    );
-                  },
-                  minLines: 4,
-                  maxLines: 20,
-                  showCounter: false,
+                    ),
+                  ],
                 ),
+                bottomButtonOnPressed: () async {
+                  openSystemPromptSelectDialog(
+                    context,
+                    customColors,
+                    _promptController,
+                  );
+                },
+                minLines: 4,
+                maxLines: 20,
+                showCounter: false,
+              ),
             ],
           ),
           if (showAdvancedOptions)
@@ -538,6 +537,11 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
 
                     if (_selectedModel == null) {
                       showErrorMessage(AppLocale.modelRequiredMessage.getString(context));
+                      return;
+                    }
+
+                    if (_promptController.text == '') {
+                      showErrorMessage(AppLocale.charactorPromptRequiredMessage.getString(context));
                       return;
                     }
 
