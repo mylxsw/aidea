@@ -134,6 +134,7 @@ dependencies:
   camerawesome: ^2.1.0
   flutter_markdown_latex: ^0.3.4
   auto_size_text: ^3.0.0
+  animated_list_plus: ^0.5.2
   
 dev_dependencies:
   flutter_test:

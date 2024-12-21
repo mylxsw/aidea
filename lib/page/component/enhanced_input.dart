@@ -89,13 +89,8 @@ class EnhancedInput extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width - 160,
-                        ),
-                        child: value ?? Container(),
-                      ),
-                      const SizedBox(width: 10),
+                      Flexible(child: value ?? Container()),
+                      const SizedBox(width: 5),
                       icon ??
                           const Icon(
                             CupertinoIcons.chevron_forward,

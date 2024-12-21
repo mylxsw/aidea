@@ -1,5 +1,8 @@
 import 'dart:io';
+import 'dart:ui';
 
+import 'package:animated_list_plus/animated_list_plus.dart';
+import 'package:animated_list_plus/transitions.dart';
 import 'package:askaide/bloc/model_bloc.dart';
 import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
@@ -21,6 +24,7 @@ import 'package:askaide/repo/api/admin/channels.dart';
 import 'package:askaide/repo/api/admin/models.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -155,8 +159,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
               }
             },
             child: Container(
-              padding: const EdgeInsets.only(
-                  left: 10, right: 10, top: 10, bottom: 20),
+              padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 20),
               child: Column(
                 children: [
                   ColumnBlock(
@@ -210,10 +213,8 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                     ? null
                                     : DecorationImage(
                                         image: (avatarUrl!.startsWith('http')
-                                            ? CachedNetworkImageProviderEnhanced(
-                                                avatarUrl!)
-                                            : FileImage(File(
-                                                avatarUrl!))) as ImageProvider,
+                                            ? CachedNetworkImageProviderEnhanced(avatarUrl!)
+                                            : FileImage(File(avatarUrl!))) as ImageProvider,
                                         fit: BoxFit.cover,
                                       ),
                               ),
@@ -273,18 +274,14 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         hintText: 'Optional',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
                             'Credits/1K Token',
-                            style: TextStyle(
-                                color: customColors.weakTextColor,
-                                fontSize: 12),
+                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
                           ),
                         ),
                       ),
@@ -297,18 +294,14 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         hintText: 'Optional',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
                             'Credits/1K Token',
-                            style: TextStyle(
-                                color: customColors.weakTextColor,
-                                fontSize: 12),
+                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
                           ),
                         ),
                       ),
@@ -321,150 +314,224 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         hintText: 'Optional',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
                             'Credits/Request',
-                            style: TextStyle(
-                                color: customColors.weakTextColor,
-                                fontSize: 12),
+                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
                           ),
                         ),
                       ),
                       EnhancedTextField(
                         labelWidth: 120,
-                        labelText: 'Context Length',
+                        labelText: 'Context Len',
                         customColors: customColors,
                         controller: maxContextController,
                         textAlignVertical: TextAlignVertical.top,
-                        hintText:
-                            'Subtract the expected output length from the maximum context.',
+                        hintText: 'Subtract the expected output length from the maximum context.',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 50,
                           alignment: Alignment.center,
                           child: Text(
                             'Token',
-                            style: TextStyle(
-                                color: customColors.weakTextColor,
-                                fontSize: 12),
+                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  ...providers.map((e) {
-                    return Container(
-                      margin:
-                          const EdgeInsets.only(bottom: 10, left: 5, right: 5),
-                      child: Slidable(
-                        endActionPane: ActionPane(
-                          motion: const ScrollMotion(),
-                          children: [
-                            const SizedBox(width: 10),
-                            SlidableAction(
-                              label: AppLocale.delete.getString(context),
-                              borderRadius: CustomSize.borderRadiusAll,
-                              backgroundColor: Colors.red,
-                              icon: Icons.delete,
-                              onPressed: (_) {
-                                if (providers.length == 1) {
-                                  showErrorMessage(
-                                      'At least one channel is needed');
-                                  return;
-                                }
+                  ImplicitlyAnimatedReorderableList<AdminModelProvider>(
+                    items: providers,
+                    shrinkWrap: true,
+                    itemBuilder: (context, itemAnimation, item, index) {
+                      return Reorderable(
+                        key: ValueKey(item),
+                        builder: (context, dragAnimation, inDrag) {
+                          final t = dragAnimation.value;
+                          final elevation = lerpDouble(0, 8, t);
+                          final color = Color.lerp(Colors.white, Colors.white.withOpacity(0.8), t);
 
-                                openConfirmDialog(
-                                  context,
-                                  AppLocale.confirmToDeleteRoom
-                                      .getString(context),
-                                  () {
-                                    setState(() {
-                                      providers
-                                          .removeWhere((item) => item == e);
-                                    });
-                                  },
-                                  danger: true,
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                        child: ColumnBlock(
-                          margin: const EdgeInsets.all(0),
-                          children: [
-                            EnhancedInput(
-                              title: Text(
-                                'Channel',
-                                style: TextStyle(
-                                  color: customColors.textfieldLabelColor,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              value: Text(
-                                buildChannelName(e),
-                                style: TextStyle(
-                                  color: customColors.textfieldValueColor,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              onPressed: () {
-                                openListSelectDialog(
-                                  context,
-                                  <SelectorItem<AdminChannel>>[
-                                    ...modelChannels
-                                        .map(
-                                          (e) => SelectorItem(
-                                            Text(
-                                                '${e.id == null ? '【System】' : ''}${e.name}'),
-                                            e,
-                                          ),
-                                        )
-                                        .toList(),
+                          return SizeFadeTransition(
+                            sizeFraction: 0.7,
+                            curve: Curves.easeInOut,
+                            animation: itemAnimation,
+                            child: Material(
+                              color: color,
+                              elevation: elevation ?? 0,
+                              type: MaterialType.transparency,
+                              child: Slidable(
+                                startActionPane: ActionPane(
+                                  motion: const ScrollMotion(),
+                                  children: [
+                                    const SizedBox(width: 10),
+                                    SlidableAction(
+                                      label: AppLocale.delete.getString(context),
+                                      borderRadius: CustomSize.borderRadiusAll,
+                                      backgroundColor: Colors.red,
+                                      icon: Icons.delete,
+                                      onPressed: (_) {
+                                        if (providers.length == 1) {
+                                          showErrorMessage('At least one channel is needed');
+                                          return;
+                                        }
+
+                                        openConfirmDialog(
+                                          context,
+                                          AppLocale.confirmToDeleteRoom.getString(context),
+                                          () {
+                                            setState(() {
+                                              providers.removeAt(index);
+                                            });
+                                          },
+                                          danger: true,
+                                        );
+                                      },
+                                    ),
                                   ],
-                                  (value) {
-                                    setState(() {
-                                      e.id = value.value.id;
-                                      if (value.value.id == null) {
-                                        e.name = value.value.type;
-                                      }
-                                    });
-                                    return true;
-                                  },
-                                  heightFactor: 0.5,
-                                  value: e,
-                                );
-                              },
+                                ),
+                                child: ListTile(
+                                  contentPadding: const EdgeInsets.all(5),
+                                  title: ColumnBlock(
+                                    margin: const EdgeInsets.all(0),
+                                    children: [
+                                      EnhancedInput(
+                                        title: Text(
+                                          'Channel',
+                                          style: TextStyle(
+                                            color: customColors.textfieldLabelColor,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        value: AutoSizeText(
+                                          buildChannelName(item),
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                            color: customColors.textfieldValueColor,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          openListSelectDialog(
+                                            context,
+                                            <SelectorItem<AdminChannel>>[
+                                              ...modelChannels
+                                                  .map((e) => SelectorItem(
+                                                      Text('${e.id == null ? '【System】' : ''}${e.name}'), e))
+                                                  .toList(),
+                                            ],
+                                            (value) {
+                                              setState(() {
+                                                providers[index].id = value.value.id;
+                                                if (value.value.id == null) {
+                                                  providers[index].name = value.value.type;
+                                                }
+                                              });
+                                              return true;
+                                            },
+                                            heightFactor: 0.5,
+                                            value: item,
+                                          );
+                                        },
+                                      ),
+                                      EnhancedTextField(
+                                        labelWidth: 90,
+                                        labelText: 'Rewrite',
+                                        customColors: customColors,
+                                        textAlignVertical: TextAlignVertical.top,
+                                        hintText: 'Optional',
+                                        maxLength: 100,
+                                        showCounter: false,
+                                        initValue: item.modelRewrite,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            providers[index].modelRewrite = value;
+                                          });
+                                        },
+                                        labelHelpWidget: InkWell(
+                                          onTap: () {
+                                            showBeautyDialog(
+                                              context,
+                                              type: QuickAlertType.info,
+                                              text:
+                                                  'When the model identifier corresponding to the channel does not match the ID here, calling the channel interface will automatically replace the model with the value configured here.',
+                                              confirmBtnText: AppLocale.gotIt.getString(context),
+                                              showCancelBtn: false,
+                                            );
+                                          },
+                                          child: Icon(
+                                            Icons.help_outline,
+                                            size: 16,
+                                            color: customColors.weakLinkColor?.withAlpha(150),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: Handle(
+                                    delay: const Duration(milliseconds: 100),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          width: 15,
+                                          height: 15,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.blue.withOpacity(0.1),
+                                            border: Border.all(
+                                              color: Colors.blue.withOpacity(0.3),
+                                              width: 1,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.blue.withOpacity(0.1),
+                                                blurRadius: 2,
+                                                spreadRadius: 1,
+                                              ),
+                                            ],
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              '${index + 1}',
+                                              style: TextStyle(
+                                                fontSize: 9,
+                                                color: Colors.blue.shade700,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        const Icon(
+                                          Icons.drag_indicator,
+                                          size: 20,
+                                          color: Colors.grey,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
-                            EnhancedTextField(
-                              labelWidth: 120,
-                              labelText: 'Model Rewrite',
-                              customColors: customColors,
-                              textAlignVertical: TextAlignVertical.top,
-                              hintText: 'Optional',
-                              maxLength: 100,
-                              showCounter: false,
-                              initValue: e.modelRewrite,
-                              onChanged: (value) {
-                                e.modelRewrite = value;
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                  const SizedBox(width: 10),
+                          );
+                        },
+                      );
+                    },
+                    areItemsTheSame: (AdminModelProvider oldItem, AdminModelProvider newItem) {
+                      return oldItem.id == newItem.id;
+                    },
+                    onReorderFinished: (AdminModelProvider item, int from, int to, List<AdminModelProvider> newItems) {
+                      setState(() {
+                        providers = newItems;
+                      });
+                    },
+                  ),
                   WeakTextButton(
                     title: 'Add Channel',
                     icon: Icons.add,
@@ -474,6 +541,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                       });
                     },
                   ),
+                  const SizedBox(height: 10),
                   // 高级选项
                   if (showAdvancedOptions)
                     ColumnBlock(
@@ -512,18 +580,15 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                     showBeautyDialog(
                                       context,
                                       type: QuickAlertType.info,
-                                      text:
-                                          'Whether the current model supports visual capabilities.',
-                                      confirmBtnText:
-                                          AppLocale.gotIt.getString(context),
+                                      text: 'Whether the current model supports visual capabilities.',
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
                                     );
                                   },
                                   child: Icon(
                                     Icons.help_outline,
                                     size: 16,
-                                    color: customColors.weakLinkColor
-                                        ?.withAlpha(150),
+                                    color: customColors.weakLinkColor?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -556,16 +621,14 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                       type: QuickAlertType.info,
                                       text:
                                           'Whether to display a "New" icon next to the model to inform users that this is a new model.',
-                                      confirmBtnText:
-                                          AppLocale.gotIt.getString(context),
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
                                     );
                                   },
                                   child: Icon(
                                     Icons.help_outline,
                                     size: 16,
-                                    color: customColors.weakLinkColor
-                                        ?.withAlpha(150),
+                                    color: customColors.weakLinkColor?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -598,16 +661,14 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                       type: QuickAlertType.info,
                                       text:
                                           'Whether to display a "Recommended" icon next to the model to inform users that this is a recommended model.',
-                                      confirmBtnText:
-                                          AppLocale.gotIt.getString(context),
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
                                     );
                                   },
                                   child: Icon(
                                     Icons.help_outline,
                                     size: 16,
-                                    color: customColors.weakLinkColor
-                                        ?.withAlpha(150),
+                                    color: customColors.weakLinkColor?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -640,16 +701,14 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                       type: QuickAlertType.info,
                                       text:
                                           'Restricted models refer to models that cannot be used in Chinese Mainland due to policy factors.',
-                                      confirmBtnText:
-                                          AppLocale.gotIt.getString(context),
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
                                     );
                                   },
                                   child: Icon(
                                     Icons.help_outline,
                                     size: 16,
-                                    color: customColors.weakLinkColor
-                                        ?.withAlpha(150),
+                                    color: customColors.weakLinkColor?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -707,9 +766,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         color: customColors.weakLinkColor,
                         fontSize: 15,
                         icon: Icon(
-                          showAdvancedOptions
-                              ? Icons.unfold_less
-                              : Icons.unfold_more,
+                          showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
                           color: customColors.weakLinkColor,
                           size: 15,
                         ),
@@ -756,9 +813,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
       return;
     }
 
-    if (avatarUrl != null &&
-        (!avatarUrl!.startsWith('http://') &&
-            !avatarUrl!.startsWith('https://'))) {
+    if (avatarUrl != null && (!avatarUrl!.startsWith('http://') && !avatarUrl!.startsWith('https://'))) {
       final cancel = BotToast.showCustomLoading(
         toastBuilder: (cancel) {
           return const LoadingIndicator(
@@ -769,8 +824,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
       );
 
       try {
-        final res = await ImageUploader(widget.setting)
-            .upload(avatarUrl!, usage: 'avatar');
+        final res = await ImageUploader(widget.setting).upload(avatarUrl!, usage: 'avatar');
         avatarUrl = res.url;
       } catch (e) {
         showErrorMessage('Failed to upload avatar');
