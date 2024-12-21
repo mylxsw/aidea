@@ -23,7 +23,6 @@ import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/creative_island/draw/artistic_wordart.dart';
 import 'package:askaide/page/home.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:motion/motion.dart';
 import 'package:path/path.dart';
 
 import 'package:askaide/bloc/account_bloc.dart';
@@ -136,7 +135,6 @@ void main() async {
 
   // 初始化路径，获取到系统相关的文档、缓存目录
   await PathHelper().init();
-  await Motion.instance.initialize();
 
   FlutterError.onError = (FlutterErrorDetails details) {
     if (details.library == 'rendering library' || details.library == 'image resource service') {

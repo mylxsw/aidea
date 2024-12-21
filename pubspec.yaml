@@ -136,7 +136,6 @@ dependencies:
   auto_size_text: ^3.0.0
   animated_list_plus: ^0.5.2
   lottie: ^3.2.0
-  motion: ^2.0.0
   
 dev_dependencies:
   flutter_test:

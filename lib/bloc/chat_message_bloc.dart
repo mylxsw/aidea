@@ -83,9 +83,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       userId: APIServer().localUserID(),
     );
 
-    if (lastMessage != null &&
-        (lastMessage.type == MessageType.contextBreak ||
-            lastMessage.isInitMessage())) {
+    if (lastMessage != null && (lastMessage.type == MessageType.contextBreak || lastMessage.isInitMessage())) {
       return;
     }
 
@@ -218,8 +216,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
         emit(ChatAnywhereInited(chatHistory.id!));
       } else {
         if (localChatHistoryId > 0) {
-          localChatHistory =
-              await chatMsgRepo.getChatHistory(localChatHistoryId);
+          localChatHistory = await chatMsgRepo.getChatHistory(localChatHistoryId);
         }
       }
     }
@@ -252,9 +249,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       chatHistoryId: localChatHistoryId,
       userId: APIServer().localUserID(),
     );
-    if (last == null ||
-        last.ts == null ||
-        DateTime.now().difference(last.ts!).inMinutes > 60 * 3) {
+    if (last == null || last.ts == null || DateTime.now().difference(last.ts!).inMinutes > 60 * 3) {
       // 发送时间线消息
       await chatMsgRepo.sendMessage(
         roomId,
@@ -287,10 +282,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
     // 记录当前消息
     var sentMessageId = 0;
-    if (event.isResent &&
-        event.index == 0 &&
-        last != null &&
-        last.type == MessageType.text) {
+    if (event.isResent && event.index == 0 && last != null && last.type == MessageType.text) {
       // 如果当前是消息重发，同时重发的是最后一条消息，则不会重新生成该消息，直接生成答案即可
       sentMessageId = last.id!;
       if (last.statusIsFailed()) {
@@ -389,17 +381,13 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
             }
           }
 
-          waitMessage.text += items
-              .where((e) => e.role != 'system')
-              .map((e) => e.content)
-              .join('');
+          waitMessage.text += items.where((e) => e.role != 'system').map((e) => e.content).join('');
           emit(ChatMessageUpdated(waitMessage, processing: true));
 
           // 失败处理
           for (var e in items) {
             if (e.code != null && e.code! > 0) {
-              error = RequestFailedException(
-                  e.error ?? 'Request processing failure', e.code!);
+              error = RequestFailedException(e.error ?? 'Request processing failure', e.code!);
             }
           }
         });
@@ -426,8 +414,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
         }
       } catch (e) {
         if (waitMessage.text.isEmpty) {
-          Logger.instance
-              .e('An error occurred during the response process: $e');
+          Logger.instance.e('An error occurred during the response process: $e');
           rethrow;
         }
       }
@@ -449,12 +436,9 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
         sentMessageParts,
       );
 
-      if (room.id == chatAnywhereRoomId &&
-          localChatHistoryId != null &&
-          localChatHistoryId > 0) {
+      if (room.id == chatAnywhereRoomId && localChatHistoryId != null && localChatHistoryId > 0) {
         // 更新聊天历史纪录最后一条消息
-        final chatHistory =
-            await chatMsgRepo.getChatHistory(localChatHistoryId);
+        final chatHistory = await chatMsgRepo.getChatHistory(localChatHistoryId);
         if (chatHistory != null) {
           chatHistory.lastMessage = waitMessage.text;
           // 异步处理就好，不需要等待
@@ -524,8 +508,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
   }
 }
 
-Future<Room?> queryRoomById(
-    ChatMessageRepository chatMsgRepo, int roomId) async {
+Future<Room?> queryRoomById(ChatMessageRepository chatMsgRepo, int roomId) async {
   Room? room;
   if (Ability().isUserLogon()) {
     final roomInServer = await APIServer().room(roomId: roomId);

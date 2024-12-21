@@ -5,7 +5,6 @@ import 'package:askaide/repo/model/misc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:lottie/lottie.dart';
-import 'package:motion/motion.dart';
 
 class EmptyPreview extends StatefulWidget {
   final List<ChatExample> examples;
@@ -51,10 +50,7 @@ class _EmptyPreviewState extends State<EmptyPreview> {
               alignment: Alignment.center,
               child: Opacity(
                 opacity: 0.2,
-                child: Motion(
-                  shadow: null,
-                  child: Lottie.asset('assets/lottie/empty_status.json', width: 200, height: 200),
-                ),
+                child: Lottie.asset('assets/lottie/empty_status.json', width: 200, height: 200),
               ),
             ),
           ),
@@ -93,21 +89,29 @@ class _EmptyPreviewState extends State<EmptyPreview> {
                   );
                 }
                 return Container(
-                  width: 200,
-                  padding: const EdgeInsets.all(10),
                   margin: const EdgeInsets.only(left: 10, right: 5),
-                  decoration: BoxDecoration(
-                    color: customColors.chatInputAreaBackground,
-                    borderRadius: CustomSize.borderRadius,
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    widget.examples[index].title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: customColors.weakTextColor,
+                  child: InkWell(
+                    borderRadius: CustomSize.borderRadiusAll,
+                    onTap: () {
+                      widget.onSubmit(widget.examples[index].text);
+                    },
+                    child: Container(
+                      width: 200,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: customColors.chatInputAreaBackground,
+                        borderRadius: CustomSize.borderRadius,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        widget.examples[index].title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: customColors.weakTextColor,
+                        ),
+                      ),
                     ),
                   ),
                 );
@@ -119,6 +123,7 @@ class _EmptyPreviewState extends State<EmptyPreview> {
               },
             ),
           ),
+          const SizedBox(height: 10),
         ],
       );
     }
