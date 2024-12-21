@@ -44,7 +44,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
                 child: Column(
                   children: [
                     SizedBox(
-                      height: 180,
+                      height: 160,
                       child: DrawerHeader(
                         padding: PlatformTool.isMacOS()
                             ? const EdgeInsets.only(top: kToolbarHeight)
@@ -71,9 +71,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
                               noBorder: true,
                               onPaymentReturn: () {
                                 if (userInfo != null) {
-                                  context
-                                      .read<AccountBloc>()
-                                      .add(AccountLoadEvent(cache: false));
+                                  context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
                                 }
                               },
                             );
@@ -83,8 +81,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
                     ),
                     const SizedBox(height: 15),
                     BlocBuilder<ChatChatBloc, ChatChatState>(
-                      buildWhen: (previous, current) =>
-                          current is ChatChatRecentHistoriesLoaded,
+                      buildWhen: (previous, current) => current is ChatChatRecentHistoriesLoaded,
                       builder: (_, state) {
                         if (state is ChatChatRecentHistoriesLoaded) {
                           return ListView.builder(
@@ -95,8 +92,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
                             itemBuilder: (context, index) {
                               final item = state.histories[index];
                               return ListTile(
-                                leading:
-                                    const Icon(Icons.question_answer_outlined),
+                                leading: const Icon(Icons.question_answer_outlined),
                                 title: Text(
                                   item.title ?? 'Unknown',
                                   maxLines: 1,
@@ -119,9 +115,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
                       title: Text(AppLocale.moreHistories.getString(context)),
                       onTap: () {
                         context.push('/chat-chat/history').whenComplete(() {
-                          context
-                              .read<ChatChatBloc>()
-                              .add(ChatChatLoadRecentHistories());
+                          context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
                         });
                       },
                     ),
@@ -206,8 +200,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
                             mode: LaunchMode.externalApplication,
                           );
                         },
-                        child: Image.asset('assets/app-256-transparent.png',
-                            width: 25),
+                        child: Image.asset('assets/app-256-transparent.png', width: 25),
                       ),
                       GestureDetector(
                         onTap: () {

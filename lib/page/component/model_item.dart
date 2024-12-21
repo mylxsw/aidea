@@ -62,6 +62,12 @@ class _ModelItemState extends State<ModelItem> {
       if (model.modelPrice.isFree) {
         uniqueTags.add(AppLocale.free.getString(context));
       }
+
+      if (model.id.startsWith('v2@rooms')) {
+        uniqueTags.add(AppLocale.character.getString(context));
+      } else {
+        uniqueTags.add(AppLocale.model.getString(context));
+      }
     }
 
     // Create tag widgets
@@ -73,7 +79,7 @@ class _ModelItemState extends State<ModelItem> {
           });
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
           child: buildTag(
             customColors,
             tag,
@@ -105,8 +111,7 @@ class _ModelItemState extends State<ModelItem> {
                     isDense: true,
                     border: InputBorder.none,
                   ),
-                  onChanged: (value) =>
-                      setState(() => keyword = value.toLowerCase()),
+                  onChanged: (value) => setState(() => keyword = value.toLowerCase()),
                 ),
               ),
 
@@ -114,7 +119,10 @@ class _ModelItemState extends State<ModelItem> {
               if (tags.isNotEmpty)
                 Container(
                   padding: const EdgeInsets.only(left: 5, right: 5, bottom: 5),
-                  child: Row(children: tags),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(children: tags),
+                  ),
                 ),
 
               Expanded(
@@ -136,18 +144,13 @@ class _ModelItemState extends State<ModelItem> {
                         ));
                       }
                       if (item.tag != null) {
-                        var tt = item.tag!
-                            .split(",")
-                            .where((e) => e.isNotEmpty)
-                            .toList();
+                        var tt = item.tag!.split(",").where((e) => e.isNotEmpty).toList();
                         for (var i = 0; i < tt.length; i++) {
                           tags.add(buildTag(
                             customColors,
                             tt[i],
-                            tagTextColor:
-                                i == 0 ? item.tagTextColor : 'FFFFFFFF',
-                            tagBgColor:
-                                i == 0 ? item.tagBgColor : modelTagColorSeq(i),
+                            tagTextColor: i == 0 ? item.tagTextColor : 'FFFFFFFF',
+                            tagBgColor: i == 0 ? item.tagBgColor : modelTagColorSeq(i),
                           ));
                         }
                       }
@@ -172,15 +175,11 @@ class _ModelItemState extends State<ModelItem> {
 
                       List<Widget> separators = [];
                       if (i == 0 && models[i].category != '') {
-                        separators
-                            .add(buildCategory(customColors, item.category));
-                      } else if (i > 0 &&
-                          models[i].category != models[i - 1].category) {
+                        separators.add(buildCategory(customColors, item.category));
+                      } else if (i > 0 && models[i].category != models[i - 1].category) {
                         separators.add(buildCategory(
                           customColors,
-                          item.category == ''
-                              ? AppLocale.others.getString(context)
-                              : item.category,
+                          item.category == '' ? AppLocale.others.getString(context) : item.category,
                         ));
                       }
 
@@ -193,71 +192,52 @@ class _ModelItemState extends State<ModelItem> {
                               alignment: Alignment.center,
                               padding: const EdgeInsets.symmetric(vertical: 5),
                               decoration: BoxDecoration(
-                                color: widget.initValue == item.uid()
-                                    ? customColors.dialogBackgroundColor
-                                    : null,
+                                color: widget.initValue == item.uid() ? customColors.dialogBackgroundColor : null,
                                 borderRadius: CustomSize.borderRadius,
                               ),
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   if (item.avatarUrl != null) ...[
-                                    _buildAvatar(
-                                        avatarUrl: item.avatarUrl, size: 50),
+                                    _buildAvatar(avatarUrl: item.avatarUrl, size: 50),
                                     const SizedBox(width: 10),
                                   ],
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Row(
                                           children: [
                                             Expanded(
                                               child: Container(
                                                 alignment:
-                                                    item.avatarUrl != null
-                                                        ? Alignment.centerLeft
-                                                        : Alignment.center,
+                                                    item.avatarUrl != null ? Alignment.centerLeft : Alignment.center,
                                                 child: AutoSizeText(
                                                   item.name,
                                                   minFontSize: 10,
                                                   maxFontSize: 15,
                                                   maxLines: 1,
                                                   style: TextStyle(
-                                                    color: widget.initValue ==
-                                                            item.uid()
-                                                        ? customColors.linkColor
-                                                        : null,
-                                                    fontWeight:
-                                                        widget.initValue ==
-                                                                item.uid()
-                                                            ? FontWeight.bold
-                                                            : null,
+                                                    color:
+                                                        widget.initValue == item.uid() ? customColors.linkColor : null,
+                                                    fontWeight: widget.initValue == item.uid() ? FontWeight.bold : null,
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                            if (tags.length <= 3)
-                                              ...formatTags(tags),
+                                            if (tags.length <= 3) ...formatTags(tags),
                                           ],
                                         ),
                                         if (tags.length > 3)
                                           SingleChildScrollView(
                                             scrollDirection: Axis.horizontal,
                                             child: Container(
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 5),
-                                              child: Row(
-                                                  children: formatTags(tags)),
+                                              margin: const EdgeInsets.symmetric(vertical: 5),
+                                              child: Row(children: formatTags(tags)),
                                             ),
                                           ),
-                                        if (!modelPrice.isFree)
-                                          buildPriceBlock(
-                                              customColors, item, modelPrice),
+                                        if (!modelPrice.isFree) buildPriceBlock(customColors, item, modelPrice),
 
                                         // if (item.description != null && item.description != '')
                                         //   Text(
@@ -281,8 +261,7 @@ class _ModelItemState extends State<ModelItem> {
                               widget.onSelected(item);
                             },
                             onLongPress: () {
-                              if (item.description == null ||
-                                  item.description == '') {
+                              if (item.description == null || item.description == '') {
                                 return;
                               }
 
@@ -290,8 +269,7 @@ class _ModelItemState extends State<ModelItem> {
                                 context,
                                 type: QuickAlertType.info,
                                 text: item.description,
-                                confirmBtnText:
-                                    AppLocale.gotIt.getString(context),
+                                confirmBtnText: AppLocale.gotIt.getString(context),
                                 showCancelBtn: false,
                               );
                             },
@@ -328,11 +306,7 @@ class _ModelItemState extends State<ModelItem> {
     var models = keyword.isEmpty
         ? widget.models
         : widget.models.where((e) {
-            var matchText = e.name +
-                (e.description ?? '') +
-                (e.shortName ?? '') +
-                (e.tag ?? '') +
-                (e.category);
+            var matchText = e.name + (e.description ?? '') + (e.shortName ?? '') + (e.tag ?? '') + (e.category);
             if (e.supportVision) {
               matchText += 'vision视觉看图';
             }
@@ -346,6 +320,12 @@ class _ModelItemState extends State<ModelItem> {
 
             if (e.modelPrice.isFree) {
               matchText += 'free免费';
+            }
+
+            if (e.id.startsWith('v2@rooms')) {
+              matchText += 'character角色';
+            } else {
+              matchText += 'model模型';
             }
 
             return matchText.toLowerCase().contains(keyword);
@@ -374,6 +354,12 @@ class _ModelItemState extends State<ModelItem> {
           tags.add(AppLocale.free.getString(context));
         }
 
+        if (e.id.startsWith('v2@rooms')) {
+          tags.add(AppLocale.character.getString(context));
+        } else {
+          tags.add(AppLocale.model.getString(context));
+        }
+
         return tags.contains(selectedTag);
       }).toList();
     }
@@ -381,8 +367,7 @@ class _ModelItemState extends State<ModelItem> {
     return models;
   }
 
-  Widget buildPriceBlock(
-      CustomColors customColors, Model model, ModelPrice item) {
+  Widget buildPriceBlock(CustomColors customColors, Model model, ModelPrice item) {
     if (item.isFree) {
       return const SizedBox();
     }
@@ -394,8 +379,7 @@ class _ModelItemState extends State<ModelItem> {
     }
 
     if (item.request > 0) {
-      priceText +=
-          '${priceText == '' ? '' : ', '}${AppLocale.perRequest.getString(context)} ￠${item.request}';
+      priceText += '${priceText == '' ? '' : ', '}${AppLocale.perRequest.getString(context)} ￠${item.request}';
     }
 
     return Row(
@@ -406,9 +390,8 @@ class _ModelItemState extends State<ModelItem> {
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontSize: 10,
-            color: widget.initValue == model.uid()
-                ? customColors.linkColor
-                : customColors.weakTextColor?.withAlpha(150),
+            color:
+                widget.initValue == model.uid() ? customColors.linkColor : customColors.weakTextColor?.withAlpha(150),
           ),
         ),
         if (item.hasNote) ...[
@@ -473,8 +456,7 @@ class _ModelItemState extends State<ModelItem> {
     return Container(
       decoration: BoxDecoration(
         color: tagBgColor != null
-            ? stringToColor(tagBgColor,
-                defaultColor: customColors.tagsBackgroundHover ?? Colors.grey)
+            ? stringToColor(tagBgColor, defaultColor: customColors.tagsBackgroundHover ?? Colors.grey)
             : customColors.tagsBackgroundHover,
         borderRadius: CustomSize.borderRadius,
       ),
@@ -487,8 +469,7 @@ class _ModelItemState extends State<ModelItem> {
         style: TextStyle(
           fontSize: tagFontSize ?? 8,
           color: tagTextColor != null
-              ? stringToColor(tagTextColor,
-                  defaultColor: customColors.tagsText ?? Colors.white)
+              ? stringToColor(tagTextColor, defaultColor: customColors.tagsText ?? Colors.white)
               : customColors.tagsText,
         ),
       ),

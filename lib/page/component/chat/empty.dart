@@ -4,15 +4,18 @@ import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/model/misc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:lottie/lottie.dart';
 
 class EmptyPreview extends StatefulWidget {
   final List<ChatExample> examples;
   final Function(String message) onSubmit;
+  final bool cardMode;
 
   const EmptyPreview({
     super.key,
     required this.examples,
     required this.onSubmit,
+    this.cardMode = false,
   });
 
   @override
@@ -20,6 +23,14 @@ class EmptyPreview extends StatefulWidget {
 }
 
 class _EmptyPreviewState extends State<EmptyPreview> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.examples.isEmpty) {
@@ -27,6 +38,96 @@ class _EmptyPreviewState extends State<EmptyPreview> {
     }
 
     final customColors = Theme.of(context).extension<CustomColors>()!;
+
+    if (widget.cardMode) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(
+            child: Container(
+              alignment: Alignment.center,
+              child: Opacity(
+                opacity: 0.2,
+                child: Lottie.asset('assets/lottie/empty_status.json', width: 200, height: 200),
+              ),
+            ),
+          ),
+          Container(
+            height: 60,
+            alignment: Alignment.center,
+            child: ListView.separated(
+              controller: _scrollController,
+              itemCount: (widget.examples.length > 4 ? 4 : widget.examples.length) + 1,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                if (index == (widget.examples.length > 4 ? 4 : widget.examples.length)) {
+                  return Container(
+                    width: 60,
+                    padding: const EdgeInsets.all(10),
+                    margin: const EdgeInsets.only(left: 10, right: 15),
+                    alignment: Alignment.center,
+                    child: InkWell(
+                      borderRadius: CustomSize.borderRadiusAll,
+                      onTap: () {
+                        setState(() {
+                          widget.examples.shuffle();
+                        });
+                        _scrollController.animateTo(
+                          0.0,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeOut,
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        alignment: Alignment.center,
+                        child: Icon(Icons.refresh, color: customColors.weakTextColor),
+                      ),
+                    ),
+                  );
+                }
+                return Container(
+                  margin: const EdgeInsets.only(left: 10, right: 5),
+                  child: InkWell(
+                    borderRadius: CustomSize.borderRadiusAll,
+                    onTap: () {
+                      widget.onSubmit(widget.examples[index].text);
+                    },
+                    child: Container(
+                      width: 200,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: customColors.chatInputAreaBackground,
+                        borderRadius: CustomSize.borderRadius,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        widget.examples[index].title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: customColors.weakTextColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return Divider(
+                  color: customColors.chatExampleItemText?.withAlpha(20),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 10),
+        ],
+      );
+    }
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,

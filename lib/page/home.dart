@@ -64,8 +64,7 @@ class _NewHomePageState extends State<NewHomePage> {
   // 输入框是否可编辑
   final ValueNotifier<bool> enableInput = ValueNotifier(true);
   // 音频播放器控制器
-  final AudioPlayerController audioPlayerController =
-      AudioPlayerController(useRemoteAPI: true);
+  final AudioPlayerController audioPlayerController = AudioPlayerController(useRemoteAPI: true);
 
   // 聊天室 ID，当没有值时，会在第一个聊天消息发送后自动设置新值
   int? chatId;
@@ -113,9 +112,7 @@ class _NewHomePageState extends State<NewHomePage> {
           ));
 
       // 查询最近聊天记录
-      context
-          .read<ChatMessageBloc>()
-          .add(ChatMessageGetRecentEvent(chatHistoryId: chatId));
+      context.read<ChatMessageBloc>().add(ChatMessageGetRecentEvent(chatHistoryId: chatId));
     }
   }
 
@@ -284,9 +281,7 @@ class _NewHomePageState extends State<NewHomePage> {
                 children: [
                   Flexible(
                     child: AutoSizeText(
-                      selectedModel != null
-                          ? selectedModel!.name
-                          : AppLocale.selectModel.getString(context),
+                      selectedModel != null ? selectedModel!.name : AppLocale.selectModel.getString(context),
                       maxFontSize: 15,
                       minFontSize: 12,
                       maxLines: 1,
@@ -434,9 +429,7 @@ class _NewHomePageState extends State<NewHomePage> {
                       label: AppLocale.stopOutput.getString(context),
                       onPressed: () {
                         HapticFeedbackHelper.mediumImpact();
-                        context
-                            .read<ChatMessageBloc>()
-                            .add(ChatMessageStopEvent());
+                        context.read<ChatMessageBloc>().add(ChatMessageStopEvent());
                       },
                     ),
                   ),
@@ -464,15 +457,12 @@ class _NewHomePageState extends State<NewHomePage> {
                     enableImageUpload = currentModelV2?.supportVision ?? false;
                   } else {
                     var model = state.chatHistory?.model ?? room.room.model;
-                    final cur =
-                        supportModels.where((e) => e.id == model).firstOrNull;
+                    final cur = supportModels.where((e) => e.id == model).firstOrNull;
                     enableImageUpload = cur?.supportVision ?? false;
                   }
                 }
 
-                enableImageUpload = selectedModel == null
-                    ? enableImageUpload
-                    : (selectedModel?.supportVision ?? false);
+                enableImageUpload = selectedModel == null ? enableImageUpload : (selectedModel?.supportVision ?? false);
 
                 return ChatInput(
                   enableNotifier: enableInput,
@@ -486,8 +476,7 @@ class _NewHomePageState extends State<NewHomePage> {
                       selectedImageFiles = files;
                     });
                   },
-                  selectedImageFiles:
-                      enableImageUpload ? selectedImageFiles : [],
+                  selectedImageFiles: enableImageUpload ? selectedImageFiles : [],
                   hintText: AppLocale.askMeAnyQuestion.getString(context),
                   onVoiceRecordTappedEvent: () {
                     audioPlayerController.stop();
@@ -501,8 +490,7 @@ class _NewHomePageState extends State<NewHomePage> {
           ),
 
         // 选择模式工具栏
-        if (chatPreviewController.selectMode)
-          SelectModeToolbar(chatPreviewController: chatPreviewController),
+        if (chatPreviewController.selectMode) SelectModeToolbar(chatPreviewController: chatPreviewController),
       ],
     );
   }
@@ -522,6 +510,7 @@ class _NewHomePageState extends State<NewHomePage> {
       return EmptyPreview(
         examples: examples,
         onSubmit: handleSubmit,
+        cardMode: true,
       );
     }
 
@@ -535,15 +524,12 @@ class _NewHomePageState extends State<NewHomePage> {
       }
 
       if (e.avatarUrl == null || e.senderName == null) {
-        if (loadedState.chatHistory != null &&
-            loadedState.chatHistory!.model != null) {
+        if (loadedState.chatHistory != null && loadedState.chatHistory!.model != null) {
           if (currentModelV2 != null) {
             e.senderName = currentModelV2!.name;
             e.avatarUrl = currentModelV2!.avatarUrl;
           } else {
-            final mod = supportModels
-                .where((e) => e.id == loadedState.chatHistory!.model!)
-                .firstOrNull;
+            final mod = supportModels.where((e) => e.id == loadedState.chatHistory!.model!).firstOrNull;
             if (mod != null) {
               e.senderName = mod.shortName;
               e.avatarUrl = mod.avatarUrl;
@@ -552,9 +538,7 @@ class _NewHomePageState extends State<NewHomePage> {
         }
       }
 
-      final stateMessage =
-          room.states[widget.stateManager.getKey(e.roomId ?? 0, e.id ?? 0)] ??
-              MessageState();
+      final stateMessage = room.states[widget.stateManager.getKey(e.roomId ?? 0, e.id ?? 0)] ?? MessageState();
       return MessageWithState(e, stateMessage);
     }).toList();
 
@@ -595,11 +579,9 @@ class _NewHomePageState extends State<NewHomePage> {
       },
       onResetContext: () => handleResetContext(context),
       onResentEvent: (message, index) {
-        scrollController.animateTo(0,
-            duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
+        scrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
 
-        handleSubmit(message.text,
-            messagetType: message.type, index: index, isResent: true);
+        handleSubmit(message.text, messagetType: message.type, index: index, isResent: true);
       },
       onSpeakEvent: (message) {
         audioPlayerController.playAudio(message.text);
@@ -677,10 +659,7 @@ class _NewHomePageState extends State<NewHomePage> {
               model: selectedModel?.id,
               type: messagetType,
               chatHistoryId: chatId,
-              images: selectedImageFiles
-                  .where((e) => e.uploaded)
-                  .map((e) => e.url!)
-                  .toList(),
+              images: selectedImageFiles.where((e) => e.uploaded).map((e) => e.url!).toList(),
             ),
             index: index,
             isResent: isResent,
@@ -688,8 +667,6 @@ class _NewHomePageState extends State<NewHomePage> {
         );
 
     // ignore: use_build_context_synchronously
-    context
-        .read<RoomBloc>()
-        .add(RoomLoadEvent(chatAnywhereRoomId, cascading: false));
+    context.read<RoomBloc>().add(RoomLoadEvent(chatAnywhereRoomId, cascading: false));
   }
 }
