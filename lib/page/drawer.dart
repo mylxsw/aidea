@@ -44,11 +44,11 @@ class _LeftDrawerState extends State<LeftDrawer> {
                 child: Column(
                   children: [
                     SizedBox(
-                      height: 150,
+                      height: 180,
                       child: DrawerHeader(
                         padding: PlatformTool.isMacOS()
                             ? const EdgeInsets.only(top: kToolbarHeight)
-                            : const EdgeInsets.all(0),
+                            : const EdgeInsets.only(top: 20),
                         margin: const EdgeInsets.all(0),
                         // decoration: BoxDecoration(
                         //   color: Colors.white,
