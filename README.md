@@ -40,7 +40,7 @@ git checkout v1.x
 
 - 微信技术交流群：
 
-    <img src="https://ssl.aicode.cc/mweb/20241220/17346847070027.jpg" width="400"/>
+    <img src="https://github.com/user-attachments/assets/379d0b66-b806-4ed4-ae2e-30fccd9de50e" width="400"/>
 
     如果无法加入，请添加微信号 `x-prometheus` 为好友，拉你进群。
 
