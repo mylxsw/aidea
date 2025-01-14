@@ -1191,8 +1191,8 @@ class APIServer {
   /// 创建房间
   Future<int> createRoom({
     required String name,
-    required String model,
-    required String vendor,
+    String? model,
+    String? vendor,
     String? description,
     String? systemPrompt,
     String? avatarUrl,
@@ -1224,8 +1224,8 @@ class APIServer {
   Future<RoomInServer> updateRoom({
     required int roomId,
     required String name,
-    required String model,
-    required String vendor,
+    String? model,
+    String? vendor,
     String? description,
     String? systemPrompt,
     String? avatarUrl,

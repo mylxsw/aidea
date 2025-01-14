@@ -131,12 +131,19 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
       try {
         int id = 0;
         if (Ability().isUserLogon()) {
-          final segs = event.model.split(':');
+          String? model;
+          String? vendor;
+
+          if (event.model != null) {
+            final segs = event.model!.split(':');
+            model = event.model!.startsWith('v2@') ? event.model! : (segs.length > 1 ? segs.last : event.model);
+            vendor = event.model!.startsWith('v2@') ? '' : (segs.length > 1 ? segs.first : '');
+          }
 
           id = await APIServer().createRoom(
             name: event.name,
-            vendor: event.model.startsWith('v2@') ? '' : (segs.length > 1 ? segs.first : ''),
-            model: event.model.startsWith('v2@') ? event.model : (segs.length > 1 ? segs.last : event.model),
+            vendor: vendor,
+            model: model,
             systemPrompt: event.prompt,
             avatarId: event.avatarId,
             avatarUrl: event.avatarUrl,
@@ -147,7 +154,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
           final room = await chatMsgRepo.createRoom(
             name: event.name,
             category: 'chat',
-            model: event.model,
+            model: event.model ?? 'gpt-4o',
             systemPrompt: event.prompt,
             userId: APIServer().localUserID(),
             maxContext: event.maxContext,
@@ -193,8 +200,10 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
           final room = await APIServer().updateRoom(
             roomId: event.roomId,
             name: event.name!,
-            model: event.model!.startsWith('v2@') ? event.model! : event.model!.split(':').last,
-            vendor: event.model!.startsWith('v2@') ? '' : event.model!.split(':').first,
+            model: event.model != null
+                ? (event.model!.startsWith('v2@') ? event.model! : event.model!.split(':').last)
+                : null,
+            vendor: event.model != null ? (event.model!.startsWith('v2@') ? '' : event.model!.split(':').first) : null,
             systemPrompt: event.prompt!,
             avatarId: event.avatarId,
             avatarUrl: event.avatarUrl,

@@ -1,6 +1,6 @@
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/lang/lang.dart';
-import 'package:askaide/page/chat/room_create.dart';
+import 'package:askaide/page/chat/character_create.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +30,6 @@ class ModelSwitcher extends StatelessWidget {
         onSelected(selected);
       },
       initValue: initValue?.uid(),
-      title: AppLocale.switchModelTitle.getString(context),
       withCustom: true,
     );
   }

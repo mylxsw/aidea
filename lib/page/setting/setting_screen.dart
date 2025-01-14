@@ -482,8 +482,6 @@ class _SettingScreenState extends State<SettingScreen> {
   Future<List<SelectorItem<String>>> _defaultServerList() async {
     return [
       SelectorItem(const Text('官方正式服务器'), apiServerURL),
-      SelectorItem(const Text('官方预发布服务器'), 'https://uat.aicode.cc'),
-      SelectorItem(const Text('官方测试服务器'), 'https://test.chatllm.app'),
       SelectorItem(const Text('本地开发环境'), 'http://localhost:8080'),
     ];
   }

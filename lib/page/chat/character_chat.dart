@@ -5,7 +5,6 @@ import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/model.dart';
 import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
-import 'package:askaide/page/chat/component/model_switcher.dart';
 import 'package:askaide/page/chat/component/stop_button.dart';
 import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/background_container.dart';
@@ -40,12 +39,12 @@ import 'package:askaide/repo/model/model.dart' as mm;
 
 import '../component/dialog.dart';
 
-class RoomChatPage extends StatefulWidget {
+class CharacterChatPage extends StatefulWidget {
   final int roomId;
   final MessageStateManager stateManager;
   final SettingRepository setting;
 
-  const RoomChatPage({
+  const CharacterChatPage({
     super.key,
     required this.roomId,
     required this.stateManager,
@@ -53,10 +52,10 @@ class RoomChatPage extends StatefulWidget {
   });
 
   @override
-  State<RoomChatPage> createState() => _RoomChatPageState();
+  State<CharacterChatPage> createState() => _CharacterChatPageState();
 }
 
-class _RoomChatPageState extends State<RoomChatPage> {
+class _CharacterChatPageState extends State<CharacterChatPage> {
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<bool> _inputEnabled = ValueNotifier(true);
   final ChatPreviewController _chatPreviewController = ChatPreviewController();
@@ -228,18 +227,6 @@ class _RoomChatPageState extends State<RoomChatPage> {
                           },
                           onStopGenerate: () {
                             context.read<ChatMessageBloc>().add(ChatMessageStopEvent());
-                          },
-                          leftSideToolsBuilder: () {
-                            return [
-                              ModelSwitcher(
-                                onSelected: (selected) {
-                                  setState(() {
-                                    tempModel = selected;
-                                  });
-                                },
-                                value: tempModel,
-                              ),
-                            ];
                           },
                         ),
                 ),
@@ -768,8 +755,8 @@ Widget buildChatMoreMenu(
       ),
       if (withSetting)
         EnhancedPopupMenuItem(
-          title: AppLocale.settings.getString(context),
-          icon: Icons.settings,
+          title: AppLocale.configure.getString(context),
+          icon: Icons.edit,
           iconColor: customColors.linkColor,
           onTap: (_) {
             context.push('/room/$chatRoomId/setting');

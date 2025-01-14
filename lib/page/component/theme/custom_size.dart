@@ -13,6 +13,18 @@ class CustomSize {
   static const Radius radius = Radius.circular(radiusValue);
   static const BorderRadius borderRadiusAll = BorderRadius.all(radius);
 
+  static double get markdownTextSize {
+    if (PlatformTool.isMacOS() || PlatformTool.isWindows()) {
+      return 15;
+    }
+
+    return 16;
+  }
+
+  static double get markdownCodeSize {
+    return 13;
+  }
+
   static double get toolbarHeight {
     if (PlatformTool.isMacOS()) {
       return kToolbarHeight + 30;

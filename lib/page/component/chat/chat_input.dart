@@ -71,7 +71,8 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
   /// 用于监听键盘事件，实现回车发送消息，Shift+Enter换行
   late final FocusNode _focusNode = FocusNode(
     onKeyEvent: (node, event) {
-      if (!HardwareKeyboard.instance.isShiftPressed && event.logicalKey.keyLabel == 'Enter') {
+      if (!HardwareKeyboard.instance.isShiftPressed &&
+          event.logicalKey.keyLabel == 'Enter') {
         if (event is KeyDownEvent && widget.enableNotifier.value) {
           _handleSubmited(_textController.text.trim());
         }
@@ -84,14 +85,12 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
   );
 
   final maxLength = 150000;
-
-  /// Maximum height of the chat input box
-  var maxLines = 5;
-  var minLines = 1;
   var hasCamera = false;
 
   // Whether to display the bottom tool bar
   var showBottomTools = false;
+  // Whether the input box is focused
+  var inputFocused = false;
 
   @override
   void initState() {
@@ -133,28 +132,34 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
       Ability().supportWebSocket;
 
   // Whether the user can upload files
-  bool get canUploadFile => widget.enableFileUpload && Ability().supportWebSocket;
+  bool get canUploadFile =>
+      widget.enableFileUpload && Ability().supportWebSocket;
 
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      decoration: BoxDecoration(color: customColors.chatInputPanelBackground),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        color: customColors.chatInputAreaBackground,
+        borderRadius: CustomSize.borderRadius,
+      ),
       child: Builder(builder: (context) {
         final setting = context.read<SettingRepository>();
         return SafeArea(
           child: Column(
             children: [
               // 选中的图片预览
-              if (widget.selectedImageFiles != null && widget.selectedImageFiles!.isNotEmpty)
+              if (widget.selectedImageFiles != null &&
+                  widget.selectedImageFiles!.isNotEmpty)
                 buildSelectedImagePreview(customColors),
               // 选中文件预览
-              if (widget.selectedFile != null) buildSelectedFilePreview(customColors),
+              if (widget.selectedFile != null)
+                buildSelectedFilePreview(customColors),
               // 工具栏
               if (widget.toolbar != null) widget.toolbar!,
-              // if (widget.toolbar != null)
-              const SizedBox(height: 8),
+              if (widget.toolbar != null) const SizedBox(height: 8),
               // 聊天内容输入栏
               SingleChildScrollView(
                 child: Slidable(
@@ -176,65 +181,67 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                           ],
                         )
                       : null,
-                  child: Row(
+                  child: Column(
                     children: [
-                      // 聊天功能按钮
                       Row(
                         children: [
-                          if (widget.leftSideToolsBuilder != null) ...widget.leftSideToolsBuilder!(),
-                          if (widget.enableNotifier.value && (canUploadImage || canUploadFile))
-                            buildUploadButtons(context, setting, customColors),
-                        ],
-                      ),
-                      // 聊天输入框
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: customColors.chatInputAreaBackground, borderRadius: CustomSize.borderRadius),
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Focus(
-                                  onFocusChange: (hasFocus) {
-                                    setState(() {
-                                      if (hasFocus) {
-                                        maxLines = 10;
-                                        minLines = 3;
-                                      } else {
-                                        maxLines = 3;
-                                        minLines = 1;
-                                      }
-                                    });
+                          // 聊天功能按钮
+                          if (_textController.text == '')
+                            buildLeftMenu(context, setting, customColors),
+                          // 聊天输入框
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Focus(
+                                    onFocusChange: (hasFocus) {
+                                      setState(() {
+                                        inputFocused = hasFocus;
+                                      });
 
-                                    widget.onFocusChange?.call(hasFocus);
-                                  },
-                                  child: TextFormField(
-                                    keyboardType: TextInputType.multiline,
-                                    textInputAction: TextInputAction.newline,
-                                    maxLines: maxLines,
-                                    minLines: minLines,
-                                    maxLength: maxLength,
-                                    focusNode: _focusNode,
-                                    controller: _textController,
-                                    style: const TextStyle(fontSize: CustomSize.defaultHintTextSize),
-                                    decoration: InputDecoration(
-                                      hintText: widget.hintText,
-                                      hintStyle: const TextStyle(
-                                        fontSize: CustomSize.defaultHintTextSize,
+                                      widget.onFocusChange?.call(hasFocus);
+                                    },
+                                    child: TextFormField(
+                                      keyboardType: TextInputType.multiline,
+                                      textInputAction: TextInputAction.newline,
+                                      maxLines: inputFocused ? 10 : 3,
+                                      minLines: inputFocused ? 1 : 1,
+                                      maxLength: maxLength,
+                                      focusNode: _focusNode,
+                                      controller: _textController,
+                                      style: const TextStyle(
+                                          fontSize:
+                                              CustomSize.defaultHintTextSize),
+                                      decoration: InputDecoration(
+                                        hintText: widget.hintText,
+                                        hintStyle: const TextStyle(
+                                          fontSize:
+                                              CustomSize.defaultHintTextSize,
+                                        ),
+                                        border: InputBorder.none,
+                                        counterText: '',
                                       ),
-                                      border: InputBorder.none,
-                                      counterText: '',
                                     ),
                                   ),
                                 ),
-                              ),
-                              // 聊天发送按钮
-                              _buildSendOrVoiceButton(context, customColors),
-                            ],
+                                // 聊天发送按钮
+                                if (_textController.text == '')
+                                  _buildSendOrVoiceButton(
+                                      context, customColors),
+                              ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
+                      if (_textController.text != '') const SizedBox(height: 8),
+                      if (_textController.text != '')
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            buildUploadButtons(context, setting, customColors),
+                            _buildSendOrVoiceButton(context, customColors),
+                          ],
+                        ),
                     ],
                   ),
                 ),
@@ -243,6 +250,18 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
           ),
         );
       }),
+    );
+  }
+
+  Row buildLeftMenu(BuildContext context, SettingRepository setting,
+      CustomColors customColors) {
+    return Row(
+      children: [
+        if (widget.leftSideToolsBuilder != null)
+          ...widget.leftSideToolsBuilder!(),
+        if (widget.enableNotifier.value && (canUploadImage || canUploadFile))
+          buildUploadButtons(context, setting, customColors),
+      ],
     );
   }
 
@@ -335,18 +354,24 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                           onTap: () {
                             setState(() {
                               widget.selectedImageFiles!.remove(e);
-                              widget.onImageSelected?.call(widget.selectedImageFiles!);
+                              widget.onImageSelected
+                                  ?.call(widget.selectedImageFiles!);
                             });
                           },
                           child: Container(
                             padding: const EdgeInsets.all(3),
                             decoration: BoxDecoration(
-                              borderRadius: CustomSize.borderRadius,
+                              borderRadius: CustomSize.borderRadius * 3,
                               color: customColors.chatRoomBackground,
+                              border: Border.all(
+                                color:
+                                    customColors.weakTextColor ?? Colors.white,
+                                width: 1,
+                              ),
                             ),
                             child: Icon(
                               Icons.close,
-                              size: 10,
+                              size: 14,
                               color: customColors.weakTextColor,
                             ),
                           ),
@@ -419,7 +444,9 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
             onPressed: () => _handleSubmited(_textController.text.trim()),
             icon: Icon(
               Icons.send,
-              color: _textController.text.trim().isNotEmpty ? const Color.fromARGB(255, 70, 165, 73) : null,
+              color: _textController.text.trim().isNotEmpty
+                  ? const Color.fromARGB(255, 70, 165, 73)
+                  : null,
             ),
             splashRadius: 20,
             tooltip: AppLocale.send.getString(context),
@@ -430,7 +457,8 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
   // Image upload button event
   void onImageUploadButtonPressed() async {
     HapticFeedbackHelper.mediumImpact();
-    if (widget.selectedImageFiles != null && widget.selectedImageFiles!.length >= 4) {
+    if (widget.selectedImageFiles != null &&
+        widget.selectedImageFiles!.length >= 4) {
       showSuccessMessage(AppLocale.uploadImageLimit4.getString(context));
       return;
     }
@@ -443,7 +471,8 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
     if (result != null && result.files.isNotEmpty) {
       final files = widget.selectedImageFiles ?? [];
       files.addAll(result.files.map((e) => FileUpload(file: e)).toList());
-      widget.onImageSelected?.call(files.sublist(0, files.length > 4 ? 4 : files.length));
+      widget.onImageSelected
+          ?.call(files.sublist(0, files.length > 4 ? 4 : files.length));
     }
   }
 
@@ -471,26 +500,6 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
     SettingRepository setting,
     CustomColors customColors,
   ) {
-    if (canUploadImage && !canUploadFile && !hasCamera) {
-      return IconButton(
-        onPressed: onImageUploadButtonPressed,
-        icon: const Icon(Icons.camera_alt),
-        color: customColors.chatInputPanelText,
-        splashRadius: 20,
-        tooltip: AppLocale.photoLibrary.getString(context),
-      );
-    }
-
-    if (!canUploadImage && canUploadFile && !hasCamera) {
-      return IconButton(
-        onPressed: onFileUploadButtonPressed,
-        icon: const Icon(Icons.upload_file),
-        color: customColors.chatInputPanelText,
-        splashRadius: 20,
-        tooltip: AppLocale.fileLibrary.getString(context),
-      );
-    }
-
     return Listener(
       onPointerDown: (_) async {
         if (FocusScope.of(context).hasFocus) {
@@ -524,7 +533,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
         },
         itemBuilder: (context) {
           return <PopupMenuItem>[
-            if (canUploadImage)
+            if (canUploadImage && hasCamera)
               PopupMenuItem(
                 value: 'take_photo',
                 child: Row(
@@ -573,7 +582,8 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
   }
 
   // Take a photo
-  void onTakePhotoButtonPressed(BuildContext context, CustomColors customColors) {
+  void onTakePhotoButtonPressed(
+      BuildContext context, CustomColors customColors) {
     HapticFeedbackHelper.mediumImpact();
     Navigator.push(
       context,
@@ -597,7 +607,8 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
 
                 final files = widget.selectedImageFiles ?? [];
                 files.add(file);
-                widget.onImageSelected?.call(files.sublist(0, files.length > 4 ? 4 : files.length));
+                widget.onImageSelected?.call(
+                    files.sublist(0, files.length > 4 ? 4 : files.length));
 
                 if (context.mounted) {
                   context.pop();

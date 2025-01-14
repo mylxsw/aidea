@@ -38,6 +38,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     this.linkColor,
     this.weakLinkColor,
     this.weakTextColor,
+    this.weakTextColorLess,
     this.weakTextColorPlus,
     this.weakTextColorPlusPlus,
     this.dialogDefaultTextColor,
@@ -57,6 +58,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     this.paymentItemPriceColor,
     this.paymentItemDateColor,
     this.paymentItemDescriptionColor,
+    this.settingsSectionBackground,
   });
 
   final String? appBarBackgroundImage;
@@ -101,6 +103,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
   final Color? linkColor;
   final Color? weakLinkColor;
   final Color? weakTextColor;
+  final Color? weakTextColorLess;
   final Color? weakTextColorPlus;
   final Color? weakTextColorPlusPlus;
 
@@ -124,6 +127,8 @@ class CustomColors extends ThemeExtension<CustomColors> {
   final Color? paymentItemPriceColor;
   final Color? paymentItemDateColor;
   final Color? paymentItemDescriptionColor;
+
+  final Color? settingsSectionBackground;
 
   @override
   ThemeExtension<CustomColors> lerp(
@@ -172,6 +177,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
       iconButtonColor: Color.lerp(iconButtonColor, other.iconButtonColor, t),
       weakLinkColor: Color.lerp(weakLinkColor, other.weakLinkColor, t),
       weakTextColor: Color.lerp(weakTextColor, other.weakTextColor, t),
+      weakTextColorLess: Color.lerp(weakTextColorLess, other.weakTextColorLess, t),
       weakTextColorPlus: Color.lerp(weakTextColorPlus, other.weakTextColorPlus, t),
       weakTextColorPlusPlus: Color.lerp(weakTextColorPlusPlus, other.weakTextColorPlusPlus, t),
       dialogDefaultTextColor: Color.lerp(dialogDefaultTextColor, other.dialogDefaultTextColor, t),
@@ -191,6 +197,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
       paymentItemPriceColor: Color.lerp(paymentItemPriceColor, other.paymentItemPriceColor, t),
       paymentItemDateColor: Color.lerp(paymentItemDateColor, other.paymentItemDateColor, t),
       paymentItemDescriptionColor: Color.lerp(paymentItemDescriptionColor, other.paymentItemDescriptionColor, t),
+      settingsSectionBackground: Color.lerp(settingsSectionBackground, other.settingsSectionBackground, t),
     );
   }
 
@@ -229,6 +236,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     linkColor: Color.fromARGB(255, 9, 185, 85),
     weakLinkColor: Color.fromARGB(255, 75, 75, 75),
     weakTextColor: Color.fromARGB(255, 75, 75, 75),
+    weakTextColorLess: Color.fromARGB(255, 146, 146, 146),
     weakTextColorPlus: Color.fromARGB(255, 146, 146, 146),
     weakTextColorPlusPlus: Color.fromARGB(255, 29, 29, 29),
     dialogDefaultTextColor: Color.fromARGB(195, 0, 0, 0),
@@ -240,7 +248,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     textfieldHintDeepColor: Color.fromARGB(255, 94, 94, 94),
     textfieldLabelColor: Color.fromARGB(255, 66, 66, 66),
     textfieldValueColor: Color.fromARGB(255, 108, 108, 108),
-    textfieldBackgroundColor: Color.fromARGB(255, 244, 244, 244),
+    textfieldBackgroundColor: Color.fromARGB(255, 230, 230, 230),
     textfieldSelectorColor: Color.fromARGB(255, 9, 185, 85),
     paymentItemBorderColor: Color.fromARGB(255, 228, 228, 228),
     paymentItemBackgroundColor: Color.fromARGB(255, 245, 245, 245),
@@ -248,6 +256,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     paymentItemPriceColor: Color.fromARGB(255, 66, 66, 66),
     paymentItemDateColor: Color.fromARGB(255, 117, 117, 117),
     paymentItemDescriptionColor: Color.fromARGB(255, 117, 117, 117),
+    settingsSectionBackground: Color.fromARGB(255, 255, 255, 255),
   );
 
   static const dark = CustomColors(
@@ -285,6 +294,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     linkColor: Color.fromARGB(255, 9, 185, 85),
     weakLinkColor: Color.fromARGB(255, 218, 218, 218),
     weakTextColor: Color.fromARGB(255, 130, 130, 130),
+    weakTextColorLess: Color.fromARGB(255, 146, 146, 146),
     weakTextColorPlus: Color.fromARGB(255, 137, 137, 137),
     weakTextColorPlusPlus: Color.fromARGB(255, 173, 173, 173),
     dialogDefaultTextColor: Color.fromARGB(195, 255, 255, 255),
@@ -304,6 +314,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     paymentItemPriceColor: Color.fromARGB(255, 218, 218, 218),
     paymentItemDateColor: Color.fromARGB(255, 218, 218, 218),
     paymentItemDescriptionColor: Color.fromARGB(255, 218, 218, 218),
+    settingsSectionBackground: Color.fromARGB(255, 44, 44, 46),
   );
 
   @override
@@ -342,6 +353,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     Color? linkColor,
     Color? weakLinkColor,
     Color? weakTextColor,
+    Color? weakTextColorLess,
     Color? weakTextColorPlus,
     Color? weakTextColorPlusPlus,
     Color? dialogDefaultTextColor,
@@ -361,6 +373,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     Color? paymentItemPriceColor,
     Color? paymentItemDateColor,
     Color? paymentItemDescriptionColor,
+    Color? settingsSectionBackground,
   }) {
     return CustomColors(
       appBarBackgroundImage: appBarBackgroundImage ?? this.appBarBackgroundImage,
@@ -398,6 +411,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
       linkColor: linkColor ?? this.linkColor,
       weakLinkColor: weakLinkColor ?? this.weakLinkColor,
       weakTextColor: weakTextColor ?? this.weakTextColor,
+      weakTextColorLess: weakTextColorLess ?? this.weakTextColorLess,
       weakTextColorPlus: weakTextColorPlus ?? this.weakTextColorPlus,
       weakTextColorPlusPlus: weakTextColorPlusPlus ?? this.weakTextColorPlusPlus,
       dialogDefaultTextColor: dialogDefaultTextColor ?? this.dialogDefaultTextColor,
@@ -417,6 +431,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
       paymentItemPriceColor: paymentItemPriceColor ?? this.paymentItemPriceColor,
       paymentItemDateColor: paymentItemDateColor ?? this.paymentItemDateColor,
       paymentItemDescriptionColor: paymentItemDescriptionColor ?? this.paymentItemDescriptionColor,
+      settingsSectionBackground: settingsSectionBackground ?? this.settingsSectionBackground,
     );
   }
 }

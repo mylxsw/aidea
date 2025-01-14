@@ -46,10 +46,10 @@ class Markdown extends StatelessWidget {
       selectable: false,
       styleSheetTheme: md.MarkdownStyleSheetBaseTheme.material,
       styleSheet: md.MarkdownStyleSheet(
-        p: textStyle ?? const TextStyle(fontSize: 16, height: 1.5),
-        listBullet: textStyle ?? const TextStyle(fontSize: 16, height: 1.5),
+        p: textStyle ?? TextStyle(fontSize: CustomSize.markdownTextSize, height: 1.5),
+        listBullet: textStyle ?? TextStyle(fontSize: CustomSize.markdownTextSize, height: 1.5),
         code: TextStyle(
-          fontSize: 14,
+          fontSize: CustomSize.markdownCodeSize,
           color: customColors.markdownCodeColor,
           backgroundColor: Colors.transparent,
         ),
@@ -121,7 +121,7 @@ class MarkdownPlus extends StatelessWidget {
   MarkdownConfig _buildMarkdownConfig(CustomColors customColors) {
     return MarkdownConfig(
       configs: [
-        PConfig(textStyle: textStyle ?? const TextStyle(fontSize: 16)),
+        PConfig(textStyle: textStyle ?? TextStyle(fontSize: CustomSize.markdownTextSize)),
         // 链接配置
         LinkConfig(
           style: TextStyle(
@@ -138,7 +138,7 @@ class MarkdownPlus extends StatelessWidget {
           decoration: const BoxDecoration(borderRadius: CustomSize.borderRadiusAll),
           margin: const EdgeInsets.symmetric(vertical: 0.0),
           padding: const EdgeInsets.only(top: 28, left: 10, right: 10, bottom: 10),
-          textStyle: const TextStyle(fontSize: 13),
+          textStyle: TextStyle(fontSize: CustomSize.markdownCodeSize),
           wrapper: (child, code, language) {
             return Stack(
               children: [
@@ -167,7 +167,7 @@ class MarkdownPlus extends StatelessWidget {
         // 代码配置
         CodeConfig(
           style: TextStyle(
-            fontSize: 13,
+            fontSize: CustomSize.markdownCodeSize,
             color: customColors.markdownCodeColor,
           ),
         ),

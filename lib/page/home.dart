@@ -11,7 +11,7 @@ import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/chat/component/model_switcher.dart';
 import 'package:askaide/page/chat/component/stop_button.dart';
-import 'package:askaide/page/chat/room_chat.dart';
+import 'package:askaide/page/chat/character_chat.dart';
 import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/chat/chat_input.dart';
 import 'package:askaide/page/component/chat/chat_preview.dart';
@@ -661,6 +661,7 @@ class _NewHomePageState extends State<NewHomePage> {
               chatHistoryId: chatId,
               images: selectedImageFiles.where((e) => e.uploaded).map((e) => e.url!).toList(),
             ),
+            tempModel: selectedModel?.id,
             index: index,
             isResent: isResent,
           ),

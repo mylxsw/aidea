@@ -17,7 +17,7 @@ class BottomSheetBox extends StatelessWidget {
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.vertical(top: CustomSize.radius, bottom: CustomSize.radius),
-            color: customColors.backgroundContainerColor,
+            color: customColors.backgroundColor,
           ),
           padding: const EdgeInsets.only(top: 0, left: 10, right: 10),
           child: child,

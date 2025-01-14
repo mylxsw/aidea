@@ -291,14 +291,14 @@ Widget buildSettingsList(
       },
       child: SettingsList(
         platform: DevicePlatform.iOS,
-        lightTheme: const SettingsThemeData(
+        lightTheme: SettingsThemeData(
           settingsListBackground: Colors.transparent,
-          settingsSectionBackground: Color.fromARGB(255, 255, 255, 255),
+          settingsSectionBackground: customColors.settingsSectionBackground,
         ),
-        darkTheme: const SettingsThemeData(
+        darkTheme: SettingsThemeData(
           settingsListBackground: Colors.transparent,
-          settingsSectionBackground: Color.fromARGB(255, 44, 44, 46),
-          titleTextColor: Color.fromARGB(255, 239, 239, 239),
+          settingsSectionBackground: customColors.settingsSectionBackground,
+          titleTextColor: const Color.fromARGB(255, 239, 239, 239),
         ),
         sections: sections,
         contentPadding: const EdgeInsets.all(0),

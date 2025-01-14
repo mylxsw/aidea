@@ -6,6 +6,7 @@ mixin AppLocale {
   static const String chatAnywhere = 'chat_anywhere';
   static const String creativeIsland = 'creative_island';
   static const String settings = 'settings';
+  static const String configure = 'configure';
   static const String language = 'language';
   static const String themeMode = 'theme_mode';
   static const String accountInfo = 'account_info';
@@ -338,8 +339,8 @@ mixin AppLocale {
     continueMessage: '继续',
     messageInputTips: '有问题尽管问我',
     takePhoto: '拍照',
-    photoLibrary: '照片图库',
-    fileLibrary: '文档',
+    photoLibrary: '附加照片',
+    fileLibrary: '附加文档',
     upload: '上传',
     longPressSpeak: '长按说话',
     send: '发送',
@@ -355,6 +356,7 @@ mixin AppLocale {
     homeTitle: '自定义角色',
     creativeIsland: '创作岛',
     settings: '设置',
+    configure: '配置',
     language: '语言',
     themeMode: '主题外观',
     accountInfo: '账号信息',
@@ -448,7 +450,7 @@ mixin AppLocale {
     promptHint: '设定角色和技能，以便为你提供更精准有效的信息。',
     confirmClearCache: '确定要清除缓存吗？',
     confirmSignOut: '确定要退出登录吗？',
-    askMeAnyQuestion: '有问题尽管问我',
+    askMeAnyQuestion: '消息',
     askMeLikeThis: '可以这样问我:',
     refresh: '换一批',
     fastAndCostEffective: '速度快，成本低',
@@ -565,7 +567,7 @@ mixin AppLocale {
     selectMember: '选择本次对话成员',
     members: '成员',
     createGroupChat: '创建群聊',
-    advanced: '高级选项',
+    advanced: '更多选项',
     collapseOptions: '收起选项',
     welcomeMessage: '引导语',
     welcomeMessageTips: '每次开始新对话时，系统将会以 AI 的身份自动发送引导语。',
@@ -653,6 +655,7 @@ mixin AppLocale {
     homeTitle: 'Characters',
     creativeIsland: 'Creative',
     settings: 'Setting',
+    configure: 'Configure',
     language: 'Language',
     themeMode: 'Theme',
     accountInfo: 'Account Info',
@@ -749,7 +752,7 @@ mixin AppLocale {
         'Set the role and skills of the character so that it can provide more accurate and effective information for you.',
     confirmClearCache: 'Confirm to clear cache?',
     confirmSignOut: 'Confirm to sign out?',
-    askMeAnyQuestion: 'Feel free to ask ~',
+    askMeAnyQuestion: 'Message',
     askMeLikeThis: 'You can ask me like this:',
     refresh: 'Refresh',
     fastAndCostEffective: 'Fast & Cost-Effective',
@@ -867,7 +870,7 @@ mixin AppLocale {
     selectMember: 'Select member',
     members: 'Members',
     createGroupChat: 'Create group chat',
-    advanced: 'Advanced',
+    advanced: 'More Options',
     collapseOptions: 'Collapse',
     welcomeMessage: 'Welcome Message',
     welcomeMessageTips: 'The system will automatically send a welcome message each time a new chat is started.',
