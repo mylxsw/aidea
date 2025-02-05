@@ -54,8 +54,8 @@ class GroupListWidget<T> extends StatelessWidget {
                 child: Text(
                   groups.keys.elementAt(i),
                   style: TextStyle(
-                    color: customColors.dialogDefaultTextColor,
-                    fontSize: 14,
+                    color: customColors.weakTextColor,
+                    fontSize: 10,
                   ),
                 ),
               ),

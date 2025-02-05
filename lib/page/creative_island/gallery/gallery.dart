@@ -58,6 +58,14 @@ class _GalleryScreenState extends State<GalleryScreen> {
           color: customColors.backgroundInvertedColor,
         ),
       ),
+      actions: [
+        IconButton(
+          onPressed: () {
+            context.push('/creative-draw');
+          },
+          icon: const Icon(Icons.palette_outlined),
+        ),
+      ],
       backgroundImage: Image.asset(
         customColors.appBarBackgroundImageDiscovery!,
         fit: BoxFit.cover,

@@ -96,7 +96,7 @@ class _ModelItemState extends State<ModelItem> {
             children: [
               // Search
               Container(
-                padding: const EdgeInsets.all(3),
+                margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
                 decoration: BoxDecoration(
                   color: customColors.textfieldBackgroundColor,
                   borderRadius: CustomSize.borderRadius,
@@ -106,9 +106,7 @@ class _ModelItemState extends State<ModelItem> {
                   style: TextStyle(color: customColors.dialogDefaultTextColor),
                   decoration: InputDecoration(
                     hintText: AppLocale.search.getString(context),
-                    hintStyle: TextStyle(
-                      color: customColors.weakTextColor?.withAlpha(150),
-                    ),
+                    hintStyle: TextStyle(color: customColors.textfieldHintColor),
                     prefixIcon: Icon(
                       Icons.search,
                       color: customColors.weakTextColor?.withAlpha(150),
@@ -137,6 +135,7 @@ class _ModelItemState extends State<ModelItem> {
                     padding: const EdgeInsets.only(bottom: 15),
                     child: GroupListWidget(
                       items: models,
+                      showTitle: true,
                       groupKey: (item) {
                         return item.category;
                       },
@@ -433,7 +432,7 @@ class _ModelItemState extends State<ModelItem> {
     Color? tagTextColor,
   }) {
     return Container(
-      padding: const EdgeInsets.only(left: 5),
+      padding: const EdgeInsets.only(right: 5),
       child: Text(
         "#$tag",
         style: TextStyle(

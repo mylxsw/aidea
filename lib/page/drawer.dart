@@ -43,48 +43,38 @@ class _LeftDrawerState extends State<LeftDrawer> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: 160,
-                      child: DrawerHeader(
-                        padding: PlatformTool.isMacOS()
-                            ? const EdgeInsets.only(top: kToolbarHeight)
-                            : const EdgeInsets.only(top: 20),
-                        margin: const EdgeInsets.all(0),
-                        // decoration: BoxDecoration(
-                        //   color: Colors.white,
-                        //   image: DecorationImage(
-                        //     image: CachedNetworkImageProviderEnhanced(
-                        //       "https://ssl.aicode.cc/ai-server/assets/quota-card-bg.webp-thumb1000",
-                        //     ),
-                        //     fit: BoxFit.cover,
-                        //   ),
-                        // ),
-                        child: BlocBuilder<AccountBloc, AccountState>(
-                          builder: (_, state) {
-                            UserInfo? userInfo;
-                            if (state is AccountLoaded) {
-                              userInfo = state.user;
-                            }
-
-                            return AccountQuotaCard(
-                              userInfo: userInfo,
-                              noBorder: true,
-                              onPaymentReturn: () {
-                                if (userInfo != null) {
-                                  context
-                                      .read<AccountBloc>()
-                                      .add(AccountLoadEvent(cache: false));
-                                }
-                              },
-                            );
-                          },
-                        ),
-                      ),
+                    SafeArea(
+                      child: SizedBox(height: PlatformTool.isMacOS() ? kToolbarHeight : 20),
                     ),
-                    const SizedBox(height: 15),
+                    ListTile(
+                      leading: const Icon(Icons.group_outlined),
+                      title: Text(AppLocale.homeTitle.getString(context)),
+                      onTap: () {
+                        context.push('/characters');
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.auto_awesome_outlined),
+                      title: Text(AppLocale.discover.getString(context)),
+                      onTap: () {
+                        context.push('/creative-gallery');
+                      },
+                    ),
+                    // ListTile(
+                    //   leading: const Icon(Icons.palette_outlined),
+                    //   title: Text(AppLocale.creativeIsland.getString(context)),
+                    //   onTap: () {
+                    //     context.push('/creative-draw');
+                    //   },
+                    // ),
+                    Divider(
+                      color: customColors.weakTextColor?.withAlpha(50),
+                      height: 10,
+                      indent: 10,
+                      endIndent: 10,
+                    ),
                     BlocBuilder<ChatChatBloc, ChatChatState>(
-                      buildWhen: (previous, current) =>
-                          current is ChatChatRecentHistoriesLoaded,
+                      buildWhen: (previous, current) => current is ChatChatRecentHistoriesLoaded,
                       builder: (_, state) {
                         if (state is ChatChatRecentHistoriesLoaded) {
                           return ListView.builder(
@@ -95,8 +85,6 @@ class _LeftDrawerState extends State<LeftDrawer> {
                             itemBuilder: (context, index) {
                               final item = state.histories[index];
                               return ListTile(
-                                leading:
-                                    const Icon(Icons.question_answer_outlined),
                                 title: Text(
                                   item.title ?? 'Unknown',
                                   maxLines: 1,
@@ -114,55 +102,20 @@ class _LeftDrawerState extends State<LeftDrawer> {
                         return const SizedBox();
                       },
                     ),
+                    Divider(
+                      color: customColors.weakTextColor?.withAlpha(50),
+                      height: 10,
+                      indent: 10,
+                      endIndent: 10,
+                    ),
                     ListTile(
-                      leading: const Icon(Icons.history),
                       title: Text(AppLocale.moreHistories.getString(context)),
                       onTap: () {
                         context.push('/chat-chat/history').whenComplete(() {
-                          context
-                              .read<ChatChatBloc>()
-                              .add(ChatChatLoadRecentHistories());
+                          if (context.mounted) {
+                            context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
+                          }
                         });
-                      },
-                    ),
-                    Divider(
-                      color: customColors.weakTextColor?.withAlpha(50),
-                      height: 10,
-                      indent: 10,
-                      endIndent: 10,
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.group_outlined),
-                      title: Text(AppLocale.homeTitle.getString(context)),
-                      onTap: () {
-                        context.push('/characters');
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.auto_awesome_outlined),
-                      title: Text(AppLocale.discover.getString(context)),
-                      onTap: () {
-                        context.push('/creative-gallery');
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.palette_outlined),
-                      title: Text(AppLocale.creativeIsland.getString(context)),
-                      onTap: () {
-                        context.push('/creative-draw');
-                      },
-                    ),
-                    Divider(
-                      color: customColors.weakTextColor?.withAlpha(50),
-                      height: 10,
-                      indent: 10,
-                      endIndent: 10,
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.settings_outlined),
-                      title: Text(AppLocale.settings.getString(context)),
-                      onTap: () {
-                        context.push('/setting');
                       },
                     ),
                   ],
@@ -172,97 +125,139 @@ class _LeftDrawerState extends State<LeftDrawer> {
             Container(
               height: 90,
               padding: const EdgeInsets.only(left: 20, right: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        "${AppLocale.socialMedia.getString(context)} ",
-                        style: TextStyle(
-                          color: customColors.weakTextColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Transform.rotate(
-                        angle: 90 * 3.1415926535897932 / 180,
-                        child: Icon(
-                          Icons.turn_right,
-                          color: customColors.weakTextColor,
-                          size: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          launchUrlString(
-                            'https://ai.aicode.cc/social/home',
-                            mode: LaunchMode.externalApplication,
-                          );
-                        },
-                        child: Image.asset('assets/app-256-transparent.png',
-                            width: 25),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          launchUrlString(
-                            'https://weibo.com/code404',
-                            mode: LaunchMode.externalApplication,
-                          );
-                        },
-                        child: Image.asset('assets/weibo.png', width: 25),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          launchUrlString(
-                            'https://ai.aicode.cc/social/github',
-                            mode: LaunchMode.externalApplication,
-                          );
-                        },
-                        child: Image.asset('assets/github.png', width: 25),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          launchUrlString(
-                            'https://ai.aicode.cc/social/wechat-platform',
-                            mode: LaunchMode.externalApplication,
-                          );
-                        },
-                        child: Image.asset('assets/wechat.png', width: 25),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          launchUrlString(
-                            'https://ai.aicode.cc/social/x',
-                            mode: LaunchMode.externalApplication,
-                          );
-                        },
-                        child: Image.asset('assets/x.png', width: 25),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          launchUrlString(
-                            'https://ai.aicode.cc/social/xiaohongshu',
-                            mode: LaunchMode.externalApplication,
-                          );
-                        },
-                        child: Image.asset('assets/xiaohongshu.png', width: 25),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 15),
-                ],
-              ),
+              child: buildAccountCard(context),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildAccountCard(BuildContext context) {
+    return Stack(
+      children: [
+        Positioned(
+          right: 0,
+          top: 10,
+          child: IconButton(
+            onPressed: () {
+              context.push('/setting');
+            },
+            icon: const Icon(Icons.more_horiz),
+            tooltip: AppLocale.settings.getString(context),
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 15),
+          child: BlocBuilder<AccountBloc, AccountState>(
+            builder: (_, state) {
+              UserInfo? userInfo;
+              if (state is AccountLoaded) {
+                userInfo = state.user;
+              }
+
+              return AccountQuotaCard(
+                userInfo: userInfo,
+                noBorder: true,
+                onPaymentReturn: () {
+                  if (userInfo != null) {
+                    context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
+                  }
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildSocialMedia(BuildContext context, CustomColors customColors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              "${AppLocale.socialMedia.getString(context)} ",
+              style: TextStyle(
+                color: customColors.weakTextColor,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Transform.rotate(
+              angle: 90 * 3.1415926535897932 / 180,
+              child: Icon(
+                Icons.turn_right,
+                color: customColors.weakTextColor,
+                size: 16,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GestureDetector(
+              onTap: () {
+                launchUrlString(
+                  'https://ai.aicode.cc/social/home',
+                  mode: LaunchMode.externalApplication,
+                );
+              },
+              child: Image.asset('assets/app-256-transparent.png', width: 25),
+            ),
+            GestureDetector(
+              onTap: () {
+                launchUrlString(
+                  'https://weibo.com/code404',
+                  mode: LaunchMode.externalApplication,
+                );
+              },
+              child: Image.asset('assets/weibo.png', width: 25),
+            ),
+            GestureDetector(
+              onTap: () {
+                launchUrlString(
+                  'https://ai.aicode.cc/social/github',
+                  mode: LaunchMode.externalApplication,
+                );
+              },
+              child: Image.asset('assets/github.png', width: 25),
+            ),
+            GestureDetector(
+              onTap: () {
+                launchUrlString(
+                  'https://ai.aicode.cc/social/wechat-platform',
+                  mode: LaunchMode.externalApplication,
+                );
+              },
+              child: Image.asset('assets/wechat.png', width: 25),
+            ),
+            GestureDetector(
+              onTap: () {
+                launchUrlString(
+                  'https://ai.aicode.cc/social/x',
+                  mode: LaunchMode.externalApplication,
+                );
+              },
+              child: Image.asset('assets/x.png', width: 25),
+            ),
+            GestureDetector(
+              onTap: () {
+                launchUrlString(
+                  'https://ai.aicode.cc/social/xiaohongshu',
+                  mode: LaunchMode.externalApplication,
+                );
+              },
+              child: Image.asset('assets/xiaohongshu.png', width: 25),
+            ),
+          ],
+        ),
+        const SizedBox(height: 15),
+      ],
     );
   }
 }

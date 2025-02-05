@@ -110,7 +110,6 @@ class _ItemSearchSelectorState extends State<ItemSearchSelector> {
         // 搜索框
         if (widget.enableSearch)
           Container(
-            padding: const EdgeInsets.all(1),
             margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
             decoration: BoxDecoration(
               color: customColors.textfieldBackgroundColor,
@@ -119,7 +118,7 @@ class _ItemSearchSelectorState extends State<ItemSearchSelector> {
             child: TextField(
               controller: _searchController,
               textAlignVertical: TextAlignVertical.center,
-              style: TextStyle(color: customColors.dialogDefaultTextColor),
+              style: TextStyle(color: customColors.textfieldHintColor),
               decoration: InputDecoration(
                 hintText: AppLocale.search.getString(context),
                 hintStyle: TextStyle(

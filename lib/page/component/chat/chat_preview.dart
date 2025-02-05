@@ -198,6 +198,21 @@ class _ChatPreviewState extends State<ChatPreview> {
 
     final extra = index == 0 ? message.decodeExtra() : null;
     final extraInfo = extra != null ? extra['info'] ?? '' : '';
+    final states = extra != null ? extra['states'] ?? [] : [];
+
+    final stateWidgets = <Widget>[];
+
+    if (states.isNotEmpty) {
+      final lastState = states[states.length - 1];
+      switch (lastState) {
+        case 'thinking':
+          stateWidgets.add(LoadingAnimationWidget.waveDots(
+            color: customColors.weakLinkColor!,
+            size: 25,
+          ));
+        default:
+      }
+    }
 
     // 普通消息
     return Align(
@@ -208,6 +223,7 @@ class _ChatPreviewState extends State<ChatPreview> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            // 文件
             if (message.file != null)
               Container(
                 margin: message.role == Role.sender
@@ -237,6 +253,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                   }
                 }),
               ),
+            // 图片
             if (message.images != null && message.images!.isNotEmpty)
               Container(
                 margin: message.role == Role.sender
@@ -250,6 +267,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                 ),
                 child: FileUploadPreview(images: message.images ?? []),
               ),
+            // 消息主体
             Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,6 +302,18 @@ class _ChatPreviewState extends State<ChatPreview> {
                           // 错误指示器
                           if (message.role == Role.sender && message.statusIsFailed())
                             buildErrorIndicator(message, state, context, index),
+                          // 消息过程状态
+                          if (states.isNotEmpty)
+                            Container(
+                              margin: const EdgeInsets.only(left: 10),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: stateWidgets,
+                              ),
+                            ),
+
                           // 消息主体
                           GestureDetector(
                             // 选择模式下，单击切换选择与否
@@ -340,13 +370,6 @@ class _ChatPreviewState extends State<ChatPreview> {
                                   ),
                                   child: Builder(
                                     builder: (context) {
-                                      if ((message.statusPending() || !message.isReady) && message.text.isEmpty) {
-                                        return LoadingAnimationWidget.waveDots(
-                                          color: customColors.weakLinkColor!,
-                                          size: 25,
-                                        );
-                                      }
-
                                       var text = message.text;
                                       if (!message.isReady && text != '') {
                                         text += ' ▌';

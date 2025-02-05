@@ -38,6 +38,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
+import 'package:go_router/go_router.dart';
 
 class HomeChatPage extends StatefulWidget {
   /// 聊天内容窗口状态管理器
@@ -259,6 +260,12 @@ class _HomeChatPageState extends State<HomeChatPage> {
       centerTitle: true,
       elevation: 0,
       toolbarHeight: CustomSize.toolbarHeight,
+      leading: IconButton(
+        onPressed: () {
+          context.pop();
+        },
+        icon: const Icon(Icons.close),
+      ),
       title: BlocBuilder<ChatMessageBloc, ChatMessageState>(
         buildWhen: (previous, current) => current is ChatMessagesLoaded,
         builder: (context, state) {

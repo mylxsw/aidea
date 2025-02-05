@@ -83,9 +83,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       userId: APIServer().localUserID(),
     );
 
-    if (lastMessage != null &&
-        (lastMessage.type == MessageType.contextBreak ||
-            lastMessage.isInitMessage())) {
+    if (lastMessage != null && (lastMessage.type == MessageType.contextBreak || lastMessage.isInitMessage())) {
       return;
     }
 
@@ -218,8 +216,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
         emit(ChatAnywhereInited(chatHistory.id!));
       } else {
         if (localChatHistoryId > 0) {
-          localChatHistory =
-              await chatMsgRepo.getChatHistory(localChatHistoryId);
+          localChatHistory = await chatMsgRepo.getChatHistory(localChatHistoryId);
         }
       }
     }
@@ -252,9 +249,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       chatHistoryId: localChatHistoryId,
       userId: APIServer().localUserID(),
     );
-    if (last == null ||
-        last.ts == null ||
-        DateTime.now().difference(last.ts!).inMinutes > 60 * 3) {
+    if (last == null || last.ts == null || DateTime.now().difference(last.ts!).inMinutes > 60 * 3) {
       // 发送时间线消息
       await chatMsgRepo.sendMessage(
         roomId,
@@ -288,10 +283,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
     // 记录当前消息
     var sentMessageId = 0;
-    if (event.isResent &&
-        event.index == 0 &&
-        last != null &&
-        last.type == MessageType.text) {
+    if (event.isResent && event.index == 0 && last != null && last.type == MessageType.text) {
       // 如果当前是消息重发，同时重发的是最后一条消息，则不会重新生成该消息，直接生成答案即可
       sentMessageId = last.id!;
       if (last.statusIsFailed()) {
@@ -330,6 +322,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       userId: APIServer().localUserID(),
       refId: sentMessageId,
       chatHistoryId: localChatHistoryId,
+      extra: '{}',
     );
 
     // 回写消息 ID
@@ -365,42 +358,52 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
                 //     - quota_consumed: 消耗的配额
                 //     - token: 消耗的 token
                 //     - info: 提示信息
+                //
+                // type=thinking
+                // type=thinking-done
                 final cmd = jsonDecode(element.content);
 
-                message.serverId = cmd['question_id'];
-                waitMessage.serverId = cmd['answer_id'];
+                switch (cmd['type']) {
+                  case 'summary':
+                    message.serverId = cmd['question_id'];
+                    waitMessage.serverId = cmd['answer_id'];
 
-                final quotaConsumed = cmd['quota_consumed'] ?? 0;
-                final tokenConsumed = cmd['token'] ?? 0;
+                    final quotaConsumed = cmd['quota_consumed'] ?? 0;
+                    final tokenConsumed = cmd['token'] ?? 0;
 
-                final info = cmd['info'] ?? '';
-                if (info != '') {
-                  waitMessage.setExtra({'info': info});
+                    final info = cmd['info'] ?? '';
+                    if (info != '') {
+                      waitMessage.updateExtra({'info': info});
+                    }
+
+                    if (quotaConsumed == 0 && tokenConsumed == 0) {
+                      continue;
+                    }
+
+                    waitMessage.quotaConsumed = quotaConsumed;
+                    waitMessage.tokenConsumed = tokenConsumed;
+                    break;
+                  case 'thinking':
+                    waitMessage.pushExtra('states', 'thinking');
+                    break;
+                  case 'thinking-done':
+                    waitMessage.pushExtra('states', 'thinking-done');
+                    break;
+                  default:
                 }
-
-                if (quotaConsumed == 0 && tokenConsumed == 0) {
-                  continue;
-                }
-
-                waitMessage.quotaConsumed = quotaConsumed;
-                waitMessage.tokenConsumed = tokenConsumed;
               } catch (e) {
                 // ignore: avoid_print
               }
             }
           }
 
-          waitMessage.text += items
-              .where((e) => e.role != 'system')
-              .map((e) => e.content)
-              .join('');
+          waitMessage.text += items.where((e) => e.role != 'system').map((e) => e.content).join('');
           emit(ChatMessageUpdated(waitMessage, processing: true));
 
           // 失败处理
           for (var e in items) {
             if (e.code != null && e.code! > 0) {
-              error = RequestFailedException(
-                  e.error ?? 'Request processing failure', e.code!);
+              error = RequestFailedException(e.error ?? 'Request processing failure', e.code!);
             }
           }
         });
@@ -427,8 +430,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
         }
       } catch (e) {
         if (waitMessage.text.isEmpty) {
-          Logger.instance
-              .e('An error occurred during the response process: $e');
+          Logger.instance.e('An error occurred during the response process: $e');
           rethrow;
         }
       }
@@ -450,12 +452,9 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
         sentMessageParts,
       );
 
-      if (room.id == chatAnywhereRoomId &&
-          localChatHistoryId != null &&
-          localChatHistoryId > 0) {
+      if (room.id == chatAnywhereRoomId && localChatHistoryId != null && localChatHistoryId > 0) {
         // 更新聊天历史纪录最后一条消息
-        final chatHistory =
-            await chatMsgRepo.getChatHistory(localChatHistoryId);
+        final chatHistory = await chatMsgRepo.getChatHistory(localChatHistoryId);
         if (chatHistory != null) {
           chatHistory.lastMessage = waitMessage.text;
           // 异步处理就好，不需要等待
@@ -525,8 +524,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
   }
 }
 
-Future<Room?> queryRoomById(
-    ChatMessageRepository chatMsgRepo, int roomId) async {
+Future<Room?> queryRoomById(ChatMessageRepository chatMsgRepo, int roomId) async {
   Room? room;
   if (Ability().isUserLogon()) {
     final roomInServer = await APIServer().room(roomId: roomId);

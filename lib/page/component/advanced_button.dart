@@ -19,11 +19,11 @@ class AdvancedButton extends StatelessWidget {
         width: 100,
         backgroundColor: Colors.transparent,
         color: customColors.weakTextColorLess,
-        fontSize: 13,
+        fontSize: 12,
         icon: Icon(
           showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
           color: customColors.weakTextColorLess,
-          size: 13,
+          size: 12,
         ),
         onPressed: () {
           onPressed(!showAdvancedOptions);
