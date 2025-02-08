@@ -53,14 +53,18 @@ class ChatMessageRepository {
   }
 
   /// 返回 room 中最近的消息
-  Future<List<Message>> getRecentMessages(
-    int roomId, {
+  Future<List<Message>> getRecentMessages({
+    int? roomId,
     int? userId,
     int? chatHistoryId,
   }) async {
+    if (chatHistoryId != null && chatHistoryId > 0) {
+      roomId = null;
+    }
+
     return (await _chatMsgDataProvider.getRecentMessages(
-      roomId,
       chatMessagePerPage,
+      roomId: roomId,
       userId: userId,
       chatHistoryId: chatHistoryId,
     ))
@@ -144,14 +148,12 @@ class ChatMessageRepository {
   }
 
   Future<List<ChatHistory>> recentChatHistories(
-    int roomId,
     int count, {
     String? keyword,
     int? userId,
     int? offset,
   }) async {
     return await _chatHistoryProvider.getChatHistories(
-      roomId,
       count,
       keyword: keyword,
       userId: userId,

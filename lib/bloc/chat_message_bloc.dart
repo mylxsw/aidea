@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:askaide/bloc/bloc_manager.dart';
 import 'package:askaide/helper/ability.dart';
-import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/error.dart';
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/helper/model_resolver.dart';
@@ -45,7 +44,20 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     on<ChatMessageStopEvent>(_stopEventHandler);
   }
 
+  Future<int> fixRoomId(int? chatHistoryId) async {
+    if (chatHistoryId != null && chatHistoryId > 0) {
+      final his = await chatMsgRepo.getChatHistory(chatHistoryId);
+      if (his != null) {
+        return his.roomId ?? roomId;
+      }
+    }
+
+    return roomId;
+  }
+
   Future<void> _deleteMessageEventHandler(event, emit) async {
+    final roomId = await fixRoomId(event.chatHistoryId);
+
     await chatMsgRepo.removeMessage(roomId, event.ids);
 
     ChatHistory? his;
@@ -55,7 +67,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
     emit(ChatMessagesLoaded(
       await chatMsgRepo.getRecentMessages(
-        roomId,
+        roomId: roomId,
         userId: APIServer().localUserID(),
         chatHistoryId: event.chatHistoryId,
       ),
@@ -65,12 +77,14 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
   /// 设置上下文清理标识
   Future<void> _breakContextEventHandler(event, emit) async {
+    final roomId = await fixRoomId(event.chatHistoryId);
+
     // 查询当前 Room 信息
     final room = await queryRoomById(chatMsgRepo, roomId);
     if (room == null) {
       emit(ChatMessagesLoaded(
         await chatMsgRepo.getRecentMessages(
-          roomId,
+          roomId: roomId,
           userId: APIServer().localUserID(),
         ),
         error: 'The selected item does not exist',
@@ -114,7 +128,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     }
 
     final messages = await chatMsgRepo.getRecentMessages(
-      roomId,
+      roomId: roomId,
       userId: APIServer().localUserID(),
     );
     emit(ChatMessagesLoaded(messages));
@@ -123,12 +137,14 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
   /// 清空消息事件处理
   Future<void> _clearAllEventHandler(event, emit) async {
+    final roomId = await fixRoomId(event.chatHistoryId);
+
     // 查询当前 Room 信息
     final room = await queryRoomById(chatMsgRepo, roomId);
     if (room == null) {
       emit(ChatMessagesLoaded(
         await chatMsgRepo.getRecentMessages(
-          roomId,
+          roomId: roomId,
           userId: APIServer().localUserID(),
         ),
         error: 'The selected item does not exist',
@@ -156,24 +172,26 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     }
 
     emit(ChatMessagesLoaded(await chatMsgRepo.getRecentMessages(
-      roomId,
+      roomId: roomId,
       userId: APIServer().localUserID(),
     )));
   }
 
   /// 页面加载事件处理
   Future<void> _getRecentEventHandler(event, emit) async {
+    final roomId = await fixRoomId(event.chatHistoryId);
+
     ChatHistory? his;
     if (event.chatHistoryId != null && event.chatHistoryId! > 0) {
       his = await chatMsgRepo.getChatHistory(event.chatHistoryId!);
     }
 
-    if (roomId == chatAnywhereRoomId && his == null) {
+    if (his == null) {
       emit(ChatMessagesLoaded(const []));
     } else {
       emit(ChatMessagesLoaded(
         await chatMsgRepo.getRecentMessages(
-          roomId,
+          roomId: roomId,
           userId: APIServer().localUserID(),
           chatHistoryId: event.chatHistoryId,
         ),
@@ -189,6 +207,23 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     }
   }
 
+  Future<ChatHistory?> resolveChatHistory(Message message, int roomId) async {
+    // 如果是聊一聊，自动创建聊天记录历史
+    if (message.chatHistoryId == null || message.chatHistoryId! <= 0) {
+      final chatHistory = await chatMsgRepo.createChatHistory(
+        title: message.text,
+        userId: APIServer().localUserID(),
+        roomId: roomId,
+        model: message.model,
+        lastMessage: message.text,
+      );
+
+      return chatHistory;
+    }
+
+    return await chatMsgRepo.getChatHistory(message.chatHistoryId!);
+  }
+
   /// Message sending event processing
   Future<void> _messageSendEventHandler(event, emit) async {
     if (event.message is! Message) {
@@ -196,39 +231,20 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     }
 
     Message message = event.message as Message;
-    ChatHistory? localChatHistory;
-    int? localChatHistoryId = message.chatHistoryId;
+    final roomId = await fixRoomId(message.chatHistoryId);
 
-    // 如果是聊一聊，自动创建聊天记录历史
-    if (roomId == chatAnywhereRoomId) {
-      if (localChatHistoryId == null || localChatHistoryId <= 0) {
-        final chatHistory = await chatMsgRepo.createChatHistory(
-          title: event.message.text,
-          userId: APIServer().localUserID(),
-          roomId: roomId,
-          model: event.message.model,
-          lastMessage: message.text,
-        );
-
-        localChatHistory = chatHistory;
-        localChatHistoryId = chatHistory.id;
-        message.chatHistoryId = chatHistory.id;
-        emit(ChatAnywhereInited(chatHistory.id!));
-      } else {
-        if (localChatHistoryId > 0) {
-          localChatHistory = await chatMsgRepo.getChatHistory(localChatHistoryId);
-        }
-      }
-    }
+    ChatHistory localChatHistory = (await resolveChatHistory(message, roomId))!;
+    message.chatHistoryId = localChatHistory.id;
+    emit(ChatHistoryInited(localChatHistory.id!));
 
     // 查询当前 Room 信息
     final room = await queryRoomById(chatMsgRepo, roomId);
     if (room == null) {
       emit(ChatMessagesLoaded(
         await chatMsgRepo.getRecentMessages(
-          roomId,
+          roomId: roomId,
           userId: APIServer().localUserID(),
-          chatHistoryId: localChatHistoryId,
+          chatHistoryId: localChatHistory.id,
         ),
         error: 'The selected item does not exist',
         chatHistory: localChatHistory,
@@ -236,7 +252,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       return;
     }
 
-    if (localChatHistory != null && localChatHistory.model != null) {
+    if (localChatHistory.model != null) {
       room.model = localChatHistory.model!;
     }
 
@@ -246,7 +262,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     //  2. 最后一条消息的时间距离当前时间超过 3 小时
     var last = await chatMsgRepo.getLastMessage(
       roomId,
-      chatHistoryId: localChatHistoryId,
+      chatHistoryId: localChatHistory.id,
       userId: APIServer().localUserID(),
     );
     if (last == null || last.ts == null || DateTime.now().difference(last.ts!).inMinutes > 60 * 3) {
@@ -260,7 +276,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
           ts: DateTime.now(),
           roomId: roomId,
           userId: APIServer().localUserID(),
-          chatHistoryId: localChatHistoryId,
+          chatHistoryId: localChatHistory.id,
         ),
       );
     }
@@ -306,9 +322,9 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
     // 重新查询消息列表，此时包含了刚刚发送的消息+机器人思考中消息
     final messages = await chatMsgRepo.getRecentMessages(
-      roomId,
+      roomId: roomId,
       userId: APIServer().localUserID(),
-      chatHistoryId: localChatHistoryId,
+      chatHistoryId: localChatHistory.id,
     );
 
     // 创建机器人思考中系统消息
@@ -321,7 +337,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
       roomId: roomId,
       userId: APIServer().localUserID(),
       refId: sentMessageId,
-      chatHistoryId: localChatHistoryId,
+      chatHistoryId: localChatHistory.id,
       extra: '{}',
     );
 
@@ -415,6 +431,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
               contextMessages: messages.sublist(0, messages.length - 1),
               onMessage: queue.add,
               maxTokens: room.maxTokens,
+              historyId: localChatHistory.id,
             )
             .whenComplete(queue.finish);
 
@@ -452,22 +469,20 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
         sentMessageParts,
       );
 
-      if (room.id == chatAnywhereRoomId && localChatHistoryId != null && localChatHistoryId > 0) {
-        // 更新聊天历史纪录最后一条消息
-        final chatHistory = await chatMsgRepo.getChatHistory(localChatHistoryId);
-        if (chatHistory != null) {
-          chatHistory.lastMessage = waitMessage.text;
-          // 异步处理就好，不需要等待
-          chatMsgRepo.updateChatHistory(localChatHistoryId, chatHistory);
-        }
+      // 更新聊天历史纪录最后一条消息
+      final chatHistory = await chatMsgRepo.getChatHistory(localChatHistory.id!);
+      if (chatHistory != null) {
+        chatHistory.lastMessage = waitMessage.text;
+        // 异步处理就好，不需要等待
+        chatMsgRepo.updateChatHistory(localChatHistory.id!, chatHistory);
       }
 
       // 重新查询消息列表，此时包含了刚刚发送的消息+机器人应答消息
       emit(ChatMessagesLoaded(
         await chatMsgRepo.getRecentMessages(
-          roomId,
+          roomId: roomId,
           userId: APIServer().localUserID(),
-          chatHistoryId: localChatHistoryId,
+          chatHistoryId: localChatHistory.id,
         ),
         chatHistory: localChatHistory,
       ));
@@ -495,7 +510,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
               type: MessageType.system,
               roomId: roomId,
               userId: APIServer().localUserID(),
-              chatHistoryId: localChatHistoryId,
+              chatHistoryId: localChatHistory.id,
               model: tempModel ?? originalModel,
             ),
           );
@@ -506,9 +521,9 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
 
       emit(ChatMessagesLoaded(
         await chatMsgRepo.getRecentMessages(
-          roomId,
+          roomId: roomId,
           userId: APIServer().localUserID(),
-          chatHistoryId: localChatHistoryId,
+          chatHistoryId: localChatHistory.id,
         ),
         error: error,
         chatHistory: localChatHistory,

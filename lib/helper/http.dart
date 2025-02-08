@@ -40,6 +40,7 @@ class HttpClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
+    Logger.instance.d('API Request: [GET] $url');
     return await dio.get(url, queryParameters: queryParameters, options: options);
   }
 
@@ -53,6 +54,7 @@ class HttpClient {
   }) async {
     options ??= Options();
 
+    Logger.instance.d('API Request: [GET with cache] $url');
     final resp = await dio.get(
       url,
       queryParameters: queryParameters,
@@ -82,6 +84,7 @@ class HttpClient {
     Map<String, dynamic>? formData,
     Options? options,
   }) async {
+    Logger.instance.d('API Request: [POST] $url');
     final resp = await dio.post(
       url,
       queryParameters: queryParameters,
@@ -101,6 +104,7 @@ class HttpClient {
     Map<String, dynamic>? data,
     Options? options,
   }) async {
+    Logger.instance.d('API Request: [POST JSON] $url');
     final resp = await dio.post(
       url,
       queryParameters: queryParameters,
@@ -120,6 +124,7 @@ class HttpClient {
     Map<String, dynamic>? formData,
     Options? options,
   }) async {
+    Logger.instance.d('API Request: [PUT] $url');
     return await dio.put(
       url,
       queryParameters: queryParameters,
@@ -134,6 +139,7 @@ class HttpClient {
     Map<String, dynamic>? data,
     Options? options,
   }) async {
+    Logger.instance.d('API Request: [PUT JSON] $url');
     return await dio.put(
       url,
       queryParameters: queryParameters,
@@ -148,6 +154,7 @@ class HttpClient {
     Map<String, dynamic>? formData,
     Options? options,
   }) async {
+    Logger.instance.d('API Request: [DELETE] $url');
     return await dio.delete(
       url,
       queryParameters: queryParameters,

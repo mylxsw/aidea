@@ -1,5 +1,6 @@
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/event.dart';
+import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/bloc/room_bloc.dart';
 import 'package:askaide/page/component/background_container.dart';
@@ -86,6 +87,10 @@ class _CharactersPageState extends State<CharactersPage> {
               if (state is RoomOperationResult) {
                 if (!state.success) {
                   showErrorMessageEnhanced(context, state.error ?? AppLocale.operateFailed.getString(context));
+                } else {
+                  if (state.redirect != null) {
+                    context.push(state.redirect!);
+                  }
                 }
               }
             },
@@ -207,7 +212,10 @@ class _CharactersPageState extends State<CharactersPage> {
               ),
               decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
               child: CharacterBoxItem(
-                onTap: () {},
+                onTap: () {
+                  HapticFeedbackHelper.lightImpact();
+                  context.read<RoomBloc>().add(GalleryRoomCopyEvent([state.suggests[index].id]));
+                },
                 name: state.suggests[index].name,
                 desc: state.suggests[index].description,
                 avatarUrl: state.suggests[index].avatarUrl,

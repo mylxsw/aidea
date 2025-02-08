@@ -1,4 +1,3 @@
-import 'package:askaide/helper/constant.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/chat_message_repo.dart';
 import 'package:askaide/repo/model/chat_history.dart';
@@ -15,7 +14,6 @@ class ChatChatBloc extends Bloc<ChatChatEvent, ChatChatState> {
     // 加载最近的历史记录
     on<ChatChatLoadRecentHistories>((event, emit) async {
       final histories = await _chatMessageRepository.recentChatHistories(
-        chatAnywhereRoomId,
         event.count,
         userId: APIServer().localUserID(),
       );

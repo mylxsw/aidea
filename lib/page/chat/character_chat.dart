@@ -10,11 +10,9 @@ import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/chat/empty.dart';
 import 'package:askaide/page/component/chat/file_upload.dart';
-import 'package:askaide/page/component/chat/help_tips.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
 import 'package:askaide/page/component/chat/role_avatar.dart';
 import 'package:askaide/page/component/effect/glass.dart';
-import 'package:askaide/page/component/enhanced_popup_menu.dart';
 import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/loading.dart';
@@ -74,12 +72,14 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
   // 全量模型列表
   List<mm.Model> supportModels = [];
 
+  // 聊天室 ID，当没有值时，会在第一个聊天消息发送后自动设置新值
+  int? chatId;
+
   @override
   void initState() {
     super.initState();
 
-    context.read<ChatMessageBloc>().add(ChatMessageGetRecentEvent());
-    context.read<RoomBloc>().add(RoomLoadEvent(widget.roomId, cascading: true));
+    reloadPage();
 
     _chatPreviewController.addListener(() {
       setState(() {});
@@ -102,11 +102,16 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
     };
 
     // 加载模型列表，用于查询模型名称
-    ModelAggregate.models(withCustom: true).then((value) {
+    ModelAggregate.models().then((value) {
       setState(() {
         supportModels = value;
       });
     });
+  }
+
+  reloadPage() {
+    context.read<ChatMessageBloc>().add(ChatMessageGetRecentEvent(chatHistoryId: chatId));
+    context.read<RoomBloc>().add(RoomLoadEvent(widget.roomId, cascading: true));
   }
 
   @override
@@ -220,7 +225,6 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
                             });
                           },
                           selectedFile: selectedFile,
-                          onNewChat: () => handleResetContext(context),
                           hintText: AppLocale.askMeAnyQuestion.getString(context),
                           onVoiceRecordTappedEvent: () {
                             _audioPlayerController.stop();
@@ -247,6 +251,12 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
   ) {
     return BlocConsumer<ChatMessageBloc, ChatMessageState>(
       listener: (context, state) {
+        if (state is ChatHistoryInited) {
+          setState(() {
+            chatId = state.chatId;
+          });
+        }
+
         if (state is ChatMessagesLoaded && state.error == null) {
           setState(() {
             selectedImageFiles = [];
@@ -282,7 +292,7 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
       buildWhen: (prv, cur) => cur is ChatMessagesLoaded,
       builder: (context, state) {
         if (state is ChatMessagesLoaded) {
-          final loadedMessages = state.messages as List<Message>;
+          final loadedMessages = List<Message>.from(state.messages);
           if (room.room.initMessage != null && room.room.initMessage != '' && loadedMessages.isEmpty) {
             loadedMessages.add(
               Message(
@@ -355,9 +365,8 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
               );
             },
             onDeleteMessage: (id) {
-              handleDeleteMessage(context, id);
+              handleDeleteMessage(context, id, chatHistoryId: chatId);
             },
-            onResetContext: () => handleResetContext(context),
             onSpeakEvent: (message) {
               _audioPlayerController.playAudio(message.text);
             },
@@ -365,14 +374,6 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
               _scrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
               _handleSubmit(message.text, messagetType: message.type, index: index, isResent: true);
             },
-            helpWidgets: state.processing || loadedMessages.last.isInitMessage()
-                ? null
-                : [
-                    HelpTips(
-                      onSubmitMessage: _handleSubmit,
-                      onNewChat: () => handleResetContext(context),
-                    )
-                  ],
           );
         }
         return const Center(child: CircularProgressIndicator());
@@ -418,35 +419,6 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
                         state.room.name,
                         style: const TextStyle(fontSize: 16),
                       ),
-                      // BlocBuilder<FreeCountBloc, FreeCountState>(
-                      //   buildWhen: (previous, current) =>
-                      //       current is FreeCountLoadedState,
-                      //   builder: (context, freeState) {
-                      //     if (freeState is FreeCountLoadedState) {
-                      //       final matched = freeState.model(state.room.model);
-                      //       if (matched != null &&
-                      //           matched.leftCount > 0 &&
-                      //           matched.maxCount > 0) {
-                      //         return Text(
-                      //           '今日剩余免费 ${matched.leftCount} 次',
-                      //           style: TextStyle(
-                      //             color: customColors.weakTextColor,
-                      //             fontSize: 12,
-                      //           ),
-                      //         );
-                      //       }
-                      //     }
-                      //     return const SizedBox();
-                      //   },
-                      // ),
-                      // 模型名称
-                      // Text(
-                      //   state.room.model.split(':').last,
-                      //   style: TextStyle(
-                      //     fontSize: 12,
-                      //     color: Theme.of(context).textTheme.bodySmall!.color,
-                      //   ),
-                      // ),
                     ],
                   );
                 }
@@ -455,10 +427,21 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
               },
             ),
             actions: [
-              buildChatMoreMenu(context, widget.roomId),
+              IconButton(
+                icon: const Icon(Icons.maps_ugc_outlined),
+                onPressed: createNewChat,
+              ),
             ],
             toolbarHeight: CustomSize.toolbarHeight,
           );
+  }
+
+  /// 创建新的聊天
+  void createNewChat() {
+    setState(() {
+      chatId = null;
+    });
+    reloadPage();
   }
 
   /// 提交新消息
@@ -569,6 +552,7 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
                       'url': selectedFile!.url,
                     })
                   : null,
+              chatHistoryId: chatId,
             ),
             index: index,
             isResent: isResent,
@@ -579,7 +563,7 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
     // ignore: use_build_context_synchronously
     context.read<NotifyBloc>().add(NotifyResetEvent());
     // ignore: use_build_context_synchronously
-    context.read<RoomBloc>().add(RoomLoadEvent(widget.roomId, cascading: false));
+    context.read<RoomBloc>().add(RoomLoadEvent(widget.roomId, cascading: false, chatHistoryId: chatId));
   }
 }
 
@@ -589,32 +573,6 @@ void handleDeleteMessage(BuildContext context, int id, {int? chatHistoryId}) {
     context,
     AppLocale.confirmDelete.getString(context),
     () => context.read<ChatMessageBloc>().add(ChatMessageDeleteEvent([id], chatHistoryId: chatHistoryId)),
-    danger: true,
-  );
-}
-
-/// 重置上下文
-void handleResetContext(BuildContext context) {
-  // openConfirmDialog(
-  //   context,
-  //   AppLocale.confirmStartNewChat.getString(context),
-  //   () {
-  context.read<ChatMessageBloc>().add(ChatMessageBreakContextEvent());
-  HapticFeedbackHelper.mediumImpact();
-  //   },
-  // );
-}
-
-/// 清空历史消息
-void handleClearHistory(BuildContext context) {
-  openConfirmDialog(
-    context,
-    AppLocale.confirmClearMessages.getString(context),
-    () {
-      context.read<ChatMessageBloc>().add(ChatMessageClearAllEvent());
-      showSuccessMessage(AppLocale.operateSuccess.getString(context));
-      HapticFeedbackHelper.mediumImpact();
-    },
     danger: true,
   );
 }
@@ -723,45 +681,5 @@ void handleOpenExampleQuestion(
         ),
       );
     },
-  );
-}
-
-/// 构建聊天设置下拉菜单
-Widget buildChatMoreMenu(
-  BuildContext context,
-  int chatRoomId, {
-  bool useLocalContext = true,
-  bool withSetting = true,
-}) {
-  var customColors = Theme.of(context).extension<CustomColors>()!;
-
-  return EnhancedPopupMenu(
-    items: [
-      EnhancedPopupMenuItem(
-        title: AppLocale.newChat.getString(context),
-        icon: Icons.post_add,
-        iconColor: Colors.blue,
-        onTap: (ctx) {
-          handleResetContext(useLocalContext ? ctx : context);
-        },
-      ),
-      EnhancedPopupMenuItem(
-        title: AppLocale.clearChatHistory.getString(context),
-        icon: Icons.delete_forever,
-        iconColor: Colors.red,
-        onTap: (ctx) {
-          handleClearHistory(useLocalContext ? ctx : context);
-        },
-      ),
-      if (withSetting)
-        EnhancedPopupMenuItem(
-          title: AppLocale.configure.getString(context),
-          icon: Icons.edit,
-          iconColor: customColors.linkColor,
-          onTap: (_) {
-            context.push('/room/$chatRoomId/setting');
-          },
-        ),
-    ],
   );
 }

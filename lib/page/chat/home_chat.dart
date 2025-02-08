@@ -139,7 +139,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
     };
 
     // 加载模型列表，用于查询模型名称
-    ModelAggregate.models(withCustom: true).then((value) {
+    ModelAggregate.models().then((value) {
       setState(() {
         supportModels = value;
       });
@@ -360,7 +360,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
             children: [
               BlocConsumer<ChatMessageBloc, ChatMessageState>(
                 listener: (context, state) {
-                  if (state is ChatAnywhereInited) {
+                  if (state is ChatHistoryInited) {
                     setState(() {
                       chatId = state.chatId;
                     });
@@ -572,7 +572,6 @@ class _HomeChatPageState extends State<HomeChatPage> {
       onDeleteMessage: (id) {
         handleDeleteMessage(context, id, chatHistoryId: chatId);
       },
-      onResetContext: () => handleResetContext(context),
       onResentEvent: (message, index) {
         scrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
 

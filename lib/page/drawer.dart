@@ -23,6 +23,10 @@ class _LeftDrawerState extends State<LeftDrawer> {
   void initState() {
     super.initState();
 
+    reload();
+  }
+
+  void reload() {
     context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
     context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
   }
@@ -50,14 +54,14 @@ class _LeftDrawerState extends State<LeftDrawer> {
                       leading: const Icon(Icons.group_outlined),
                       title: Text(AppLocale.homeTitle.getString(context)),
                       onTap: () {
-                        context.push('/characters');
+                        context.push('/characters').whenComplete(reload);
                       },
                     ),
                     ListTile(
                       leading: const Icon(Icons.auto_awesome_outlined),
                       title: Text(AppLocale.discover.getString(context)),
                       onTap: () {
-                        context.push('/creative-gallery');
+                        context.push('/creative-gallery').whenComplete(reload);
                       },
                     ),
                     // ListTile(

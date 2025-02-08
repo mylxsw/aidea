@@ -483,7 +483,7 @@ class APIServer {
   }
 
   /// 获取模型列表
-  Future<List<Model>> models({bool cache = true, bool withCustom = false}) async {
+  Future<List<Model>> models({bool cache = true}) async {
     return sendCachedGetRequest(
       '/v2/models',
       (resp) {
@@ -493,9 +493,6 @@ class APIServer {
         }
 
         return models;
-      },
-      queryParameters: {
-        "with-custom": withCustom,
       },
       subKey: _cacheSubKey(),
       forceRefresh: !cache,
@@ -1551,11 +1548,18 @@ class APIServer {
     );
   }
 
-  Future<void> copyRoomGallery({required List<int> ids}) async {
+  Future<List<int>> copyRoomGallery({required List<int> ids}) async {
     return sendPostRequest(
       '/v1/room-galleries/copy',
       formData: {'ids': ids.join(',')},
-      (resp) {},
+      (resp) {
+        var ids = <int>[];
+        for (var item in resp.data['ids']) {
+          ids.add(item);
+        }
+
+        return ids;
+      },
     );
   }
 

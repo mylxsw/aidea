@@ -25,18 +25,16 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
     // 加载指定聊天室信息
     on<RoomLoadEvent>((event, emit) async {
       try {
-        if (event.roomId == 1) {
-          // 加快首屏加载速度，避免加载中状态
-          emit(RoomLoaded(
-            Room(
-              '',
-              'chat',
-              id: event.roomId,
-            ),
-            const <String, MessageState>{},
-            cascading: false,
-          ));
-        }
+        // 加快首屏加载速度，避免加载中状态
+        emit(RoomLoaded(
+          Room(
+            '',
+            'chat',
+            id: event.roomId,
+          ),
+          const <String, MessageState>{},
+          cascading: false,
+        ));
 
         if (Ability().isUserLogon()) {
           final room = await APIServer().room(roomId: event.roomId);
@@ -276,8 +274,11 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
       }
 
       try {
-        await APIServer().copyRoomGallery(ids: event.ids);
+        final ids = await APIServer().copyRoomGallery(ids: event.ids);
         emit(await createRoomsLoadedState(cache: false));
+        if (ids.isNotEmpty) {
+          emit(RoomOperationResult(true, redirect: '/room/${ids.first}/chat'));
+        }
       } catch (e) {
         emit(RoomCreateError(e));
       }

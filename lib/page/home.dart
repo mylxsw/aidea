@@ -118,7 +118,7 @@ class _NewHomePageState extends State<NewHomePage> {
 
   /// 加载模型列表，用于查询模型名称
   Future<void> reloadModels({bool cache = true}) async {
-    var value = await ModelAggregate.models(cache: cache, withCustom: true);
+    var value = await ModelAggregate.models(cache: cache);
     setState(() {
       supportModels = value;
     });
@@ -371,7 +371,7 @@ class _NewHomePageState extends State<NewHomePage> {
             children: [
               BlocConsumer<ChatMessageBloc, ChatMessageState>(
                 listener: (context, state) {
-                  if (state is ChatAnywhereInited) {
+                  if (state is ChatHistoryInited) {
                     updateCurrentChat(state.chatId);
                   }
 
@@ -577,7 +577,6 @@ class _NewHomePageState extends State<NewHomePage> {
       onDeleteMessage: (id) {
         handleDeleteMessage(context, id, chatHistoryId: chatId);
       },
-      onResetContext: () => handleResetContext(context),
       onResentEvent: (message, index) {
         scrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
 
