@@ -18,6 +18,27 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
   final ChatMessageRepository chatMsgRepo;
   final MessageStateManager stateManager;
 
+  Future<int?> fixRoomId(int? chatHistoryId) async {
+    if (chatHistoryId != null && chatHistoryId > 0) {
+      final his = await chatMsgRepo.getChatHistory(chatHistoryId);
+      if (his != null) {
+        return his.roomId;
+      }
+    }
+
+    return null;
+  }
+
+  /// 加载房间信息，如果房间不存在，则加载默认房间
+  Future<RoomInServer> loadRoom(int roomId) async {
+    try {
+      final room = await APIServer().room(roomId: roomId);
+      return room;
+    } catch (e) {
+      return await APIServer().room(roomId: chatAnywhereRoomId);
+    }
+  }
+
   RoomBloc({
     required this.chatMsgRepo,
     required this.stateManager,
@@ -36,8 +57,10 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
           cascading: false,
         ));
 
+        final roomId = await fixRoomId(event.chatHistoryId) ?? event.roomId;
+
         if (Ability().isUserLogon()) {
-          final room = await APIServer().room(roomId: event.roomId);
+          final room = await loadRoom(roomId);
           if (event.chatHistoryId != null && event.chatHistoryId! > 0) {
             final chatHistory = await chatMsgRepo.getChatHistory(event.chatHistoryId!);
             if (chatHistory != null && chatHistory.model != null) {
@@ -66,7 +89,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
             cascading: false,
           ));
 
-          final states = await stateManager.loadRoomStates(event.roomId);
+          final states = await stateManager.loadRoomStates(roomId);
           emit(RoomLoaded(
             Room(
               room.name,
@@ -94,9 +117,9 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
           return;
         }
 
-        final room = await chatMsgRepo.room(event.roomId);
+        final room = await chatMsgRepo.room(roomId);
         if (room != null) {
-          final states = await stateManager.loadRoomStates(event.roomId);
+          final states = await stateManager.loadRoomStates(roomId);
           emit(RoomLoaded(
             room,
             states,
@@ -327,6 +350,15 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
         emit(GroupRoomUpdateResultState(true));
       } catch (e) {
         emit(GroupRoomUpdateResultState(false, error: e));
+      }
+    });
+
+    on<RoomsRecentLoadEvent>((event, emit) async {
+      try {
+        final rooms = await APIServer().recentRooms();
+        emit(RoomsRecentLoaded(rooms));
+      } catch (e) {
+        emit(RoomsRecentLoaded(const [], error: e));
       }
     });
   }

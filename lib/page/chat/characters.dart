@@ -180,7 +180,7 @@ class _CharactersPageState extends State<CharactersPage> {
 
     if (state.rooms.isNotEmpty) {
       children.addAll([
-        buildColumnTitle(context, customColors, AppLocale.character.getString(context)),
+        buildColumnTitle(context, customColors, AppLocale.myCharacters.getString(context)),
         ListView.builder(
           padding: const EdgeInsets.all(5),
           itemCount: state.rooms.length,

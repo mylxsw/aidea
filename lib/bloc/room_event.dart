@@ -9,6 +9,10 @@ class RoomsLoadEvent extends RoomEvent {
   RoomsLoadEvent({this.forceRefresh = false});
 }
 
+class RoomsRecentLoadEvent extends RoomEvent {
+  RoomsRecentLoadEvent();
+}
+
 class RoomCreateEvent extends RoomEvent {
   final String name;
   final String? model;

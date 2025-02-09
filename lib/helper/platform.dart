@@ -7,6 +7,10 @@ class PlatformTool {
     return isWindows() || isLinux() || isMacOS();
   }
 
+  static bool isMobile() {
+    return isIOS() || isAndroid();
+  }
+
   static bool isIOS() {
     try {
       return Platform.isIOS;

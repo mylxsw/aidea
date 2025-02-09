@@ -1131,6 +1131,21 @@ class APIServer {
     );
   }
 
+  /// 获取最近使用过的角色
+  Future<List<RoomInServer>> recentRooms() async {
+    return sendGetRequest(
+      '/v2/rooms/recent',
+      (resp) {
+        var res = <RoomInServer>[];
+        for (var item in resp.data['data']) {
+          res.add(RoomInServer.fromJson(item));
+        }
+
+        return res;
+      },
+    );
+  }
+
   /// 获取单个房间信息
   Future<RoomInServer> room({required roomId, bool cache = true}) async {
     return sendCachedGetRequest(

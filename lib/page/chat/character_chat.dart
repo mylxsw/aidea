@@ -5,6 +5,7 @@ import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/model.dart';
 import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/chat/component/model_switcher.dart';
 import 'package:askaide/page/chat/component/stop_button.dart';
 import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/background_container.dart';
@@ -146,6 +147,7 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
           ModelAggregate.model(state.room.model).then((value) {
             setState(() {
               roomModel = value;
+              tempModel = tempModel ?? roomModel;
             });
           });
         }
@@ -305,13 +307,14 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
           }
 
           if (loadedMessages.isEmpty) {
-            return Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
-              child: EmptyPreview(
+            // 聊天内容为空时，显示示例页面
+            if (loadedMessages.isEmpty) {
+              return EmptyPreview(
                 examples: room.examples ?? [],
                 onSubmit: _handleSubmit,
-              ),
-            );
+                cardMode: true,
+              );
+            }
           }
 
           final messages = loadedMessages.map((e) {
@@ -356,7 +359,7 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
                 margin: const EdgeInsets.fromLTRB(0, 0, 10, 7),
                 padding: const EdgeInsets.symmetric(horizontal: 13),
                 child: Text(
-                  message.senderName!,
+                  room.room.name,
                   style: TextStyle(
                     color: customColors.weakTextColor,
                     fontSize: 12,
@@ -411,15 +414,24 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
               buildWhen: (previous, current) => current is RoomLoaded,
               builder: (context, state) {
                 if (state is RoomLoaded) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // 房间名称
-                      Text(
-                        state.room.name,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ],
+                  return GestureDetector(
+                    onTap: () {
+                      ModelSwitcher.openActionDialog(
+                        context: context,
+                        onSelected: (selected) {
+                          setState(() {
+                            tempModel = selected;
+                          });
+                        },
+                        initValue: tempModel,
+                      );
+                    },
+                    child: Text(
+                      state.room.name,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+                    ),
                   );
                 }
 

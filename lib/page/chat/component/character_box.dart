@@ -73,22 +73,18 @@ class CharacterBox extends StatelessWidget {
   }
 
   Widget buildItem(CustomColors customColors, BuildContext context) {
-    return Material(
-      borderRadius: CustomSize.borderRadius,
-      color: customColors.backgroundContainerColor,
-      child: CharacterBoxItem(
-        onTap: () {
-          HapticFeedbackHelper.lightImpact();
-          final chatRoomBloc = context.read<RoomBloc>();
-          context.push('/room/${room.id}/chat').then((value) {
-            chatRoomBloc.add(RoomsLoadEvent(forceRefresh: true));
-          });
-        },
-        name: room.name,
-        desc: room.description ?? room.systemPrompt,
-        model: room.model,
-        avatarUrl: room.avatarUrl,
-      ),
+    return CharacterBoxItem(
+      onTap: () {
+        HapticFeedbackHelper.lightImpact();
+        final chatRoomBloc = context.read<RoomBloc>();
+        context.push('/room/${room.id}/chat').then((value) {
+          chatRoomBloc.add(RoomsLoadEvent(forceRefresh: true));
+        });
+      },
+      name: room.name,
+      desc: room.description ?? room.systemPrompt,
+      model: room.model,
+      avatarUrl: room.avatarUrl,
     );
   }
 }
@@ -112,12 +108,15 @@ class CharacterBoxItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Material(
-      borderRadius: CustomSize.borderRadius,
-      color: customColors.backgroundContainerColor,
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: CustomSize.borderRadius,
+        color: customColors.listTileBackgroundColor,
+      ),
       child: InkWell(
         borderRadius: CustomSize.borderRadiusAll,
         onTap: onTap,
+        overlayColor: WidgetStateProperty.all(Colors.transparent),
         child: Stack(
           children: [
             Row(

@@ -63,7 +63,7 @@ class GroupListWidget<T> extends StatelessWidget {
               margin: margin,
               padding: padding,
               decoration: BoxDecoration(
-                color: customColors.settingsSectionBackground,
+                color: customColors.listTileBackgroundColor,
                 borderRadius: CustomSize.borderRadius,
               ),
               child: ListView.separated(

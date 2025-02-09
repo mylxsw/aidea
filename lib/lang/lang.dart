@@ -79,6 +79,7 @@ mixin AppLocale {
   static const String switchModel = 'switch-model';
   static const String switchModelTitle = 'switch-model-title';
 
+  static const String myCharacters = 'my-characters';
   static const String character = "character";
   static const String createRoom = "create-room";
   static const String model = "model";
@@ -313,6 +314,15 @@ mixin AppLocale {
   static const String perRequest = 'per-request';
   static const String info = 'info';
 
+  static const String recently = 'recently';
+  static const String daysAgo = 'days-ago';
+  static const String lastWeek = 'last-week';
+  static const String weeksAgo = 'weeks-ago';
+  static const String lastMonth = 'last-month';
+  static const String monthsAgo = 'months-ago';
+  static const String lastYear = 'last-year';
+  static const String longTimeAgo = 'long-time-ago';
+
   static const Map<String, dynamic> zh = {
     required: '必填',
     systemInfo: '系统信息',
@@ -380,6 +390,7 @@ mixin AppLocale {
     usedUp: '已用完',
     expired: '已过期',
     character: '角色',
+    myCharacters: '我的角色',
     createRoom: '创建角色',
     model: 'AI 模型',
     selectModel: '选择模型',
@@ -610,6 +621,14 @@ mixin AppLocale {
     output: '输出',
     perRequest: '每次',
     info: '详情',
+    recently: '最近',
+    daysAgo: '天前',
+    lastWeek: '上周',
+    weeksAgo: '周前',
+    lastMonth: '上个月',
+    monthsAgo: '月前',
+    lastYear: '去年',
+    longTimeAgo: '很久以前',
   };
 
   static const Map<String, dynamic> en = {
@@ -679,6 +698,7 @@ mixin AppLocale {
     usedUp: 'Used Up',
     expired: 'Expired',
     character: 'Character',
+    myCharacters: 'My Characters',
     createRoom: 'Create Character',
     model: 'AI Model',
     selectModel: 'Select Model',
@@ -913,6 +933,14 @@ mixin AppLocale {
     output: 'Output',
     perRequest: 'Per',
     info: 'Detail',
+    recently: 'Recently',
+    lastWeek: 'Last Week',
+    lastMonth: 'Last Month',
+    daysAgo: 'Days Ago',
+    monthsAgo: 'Months Ago',
+    lastYear: 'Last Year',
+    longTimeAgo: 'Long Time Ago',
+    weeksAgo: 'Weeks Ago',
   };
 }
 

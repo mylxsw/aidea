@@ -38,7 +38,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
-import 'package:go_router/go_router.dart';
 
 class HomeChatPage extends StatefulWidget {
   /// 聊天内容窗口状态管理器
@@ -260,12 +259,6 @@ class _HomeChatPageState extends State<HomeChatPage> {
       centerTitle: true,
       elevation: 0,
       toolbarHeight: CustomSize.toolbarHeight,
-      leading: IconButton(
-        onPressed: () {
-          context.pop();
-        },
-        icon: const Icon(Icons.close),
-      ),
       title: BlocBuilder<ChatMessageBloc, ChatMessageState>(
         buildWhen: (previous, current) => current is ChatMessagesLoaded,
         builder: (context, state) {
@@ -282,36 +275,11 @@ class _HomeChatPageState extends State<HomeChatPage> {
                   initValue: selectedModel,
                 );
               },
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width / 2,
-                child: Column(
-                  children: [
-                    Text(
-                      widget.title ?? AppLocale.chatAnywhere.getString(context),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
-                    ),
-                    if (selectedModel != null)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            selectedModel!.name,
-                            style: TextStyle(
-                              color: customColors.weakTextColor,
-                              fontSize: 10,
-                            ),
-                          ),
-                          Icon(
-                            Icons.unfold_more,
-                            color: customColors.backgroundInvertedColor,
-                            size: CustomSize.appBarTitleSize * 0.6,
-                          ),
-                        ],
-                      )
-                  ],
-                ),
+              child: Text(
+                widget.title ?? AppLocale.chatAnywhere.getString(context),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
               ),
             );
           }
@@ -319,23 +287,6 @@ class _HomeChatPageState extends State<HomeChatPage> {
           return const SizedBox();
         },
       ),
-      // flexibleSpace: SizedBox(
-      //   width: double.infinity,
-      //   child: ShaderMask(
-      //     shaderCallback: (rect) {
-      //       return const LinearGradient(
-      //         begin: Alignment.topCenter,
-      //         end: Alignment.bottomCenter,
-      //         colors: [Colors.black, Colors.transparent],
-      //       ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
-      //     },
-      //     blendMode: BlendMode.dstIn,
-      //     child: Image.asset(
-      //       customColors.appBarBackgroundImage!,
-      //       fit: BoxFit.cover,
-      //     ),
-      //   ),
-      // ),
     );
   }
 
@@ -561,7 +512,7 @@ class _HomeChatPageState extends State<HomeChatPage> {
           margin: const EdgeInsets.fromLTRB(0, 0, 10, 7),
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Text(
-            message.senderName!,
+            room.room.id != null && room.room.id! > 1 ? room.room.name : message.senderName!,
             style: TextStyle(
               color: customColors.weakTextColor,
               fontSize: 12,

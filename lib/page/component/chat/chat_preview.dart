@@ -6,6 +6,7 @@ import 'package:askaide/bloc/room_bloc.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
+import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/attached_button_panel.dart';
 import 'package:askaide/page/component/chat/chat_share.dart';
@@ -326,6 +327,10 @@ class _ChatPreviewState extends State<ChatPreview> {
                             },
                             // 长按或者双击显示上下文菜单
                             onLongPressStart: (detail) {
+                              if (PlatformTool.isDesktop()) {
+                                return;
+                              }
+
                               _handleMessageTapControl(
                                 context,
                                 detail.globalPosition,
@@ -335,6 +340,10 @@ class _ChatPreviewState extends State<ChatPreview> {
                               );
                             },
                             onDoubleTapDown: (details) {
+                              if (PlatformTool.isDesktop()) {
+                                return;
+                              }
+
                               _handleMessageTapControl(
                                 context,
                                 details.globalPosition,
@@ -569,7 +578,7 @@ class _ChatPreviewState extends State<ChatPreview> {
     }
 
     if (widget.robotAvatar != null) {
-      if (message.role == Role.receiver && message.avatarUrl != null) {
+      if (message.role == Role.receiver && message.avatarUrl != null && (message.roomId ?? 1) <= 1) {
         return avatarWrap(RemoteAvatar(
           avatarUrl: message.avatarUrl!,
           size: 30,

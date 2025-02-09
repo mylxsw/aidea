@@ -33,6 +33,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     this.backgroundColor,
     this.backgroundInvertedColor,
     this.backgroundContainerColor,
+    this.listTileBackgroundColor,
     this.textFieldBorderColor,
     this.iconButtonColor,
     this.linkColor,
@@ -96,6 +97,8 @@ class CustomColors extends ThemeExtension<CustomColors> {
   final Color? backgroundColor;
   final Color? backgroundInvertedColor;
   final Color? backgroundContainerColor;
+
+  final Color? listTileBackgroundColor;
 
   final Color? textFieldBorderColor;
   final Color? iconButtonColor;
@@ -173,6 +176,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
       backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t),
       backgroundInvertedColor: Color.lerp(backgroundInvertedColor, other.backgroundInvertedColor, t),
       backgroundContainerColor: Color.lerp(backgroundContainerColor, other.backgroundContainerColor, t),
+      listTileBackgroundColor: Color.lerp(listTileBackgroundColor, other.listTileBackgroundColor, t),
       textFieldBorderColor: Color.lerp(textFieldBorderColor, other.textFieldBorderColor, t),
       iconButtonColor: Color.lerp(iconButtonColor, other.iconButtonColor, t),
       weakLinkColor: Color.lerp(weakLinkColor, other.weakLinkColor, t),
@@ -231,6 +235,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     backgroundColor: Color.fromARGB(255, 242, 242, 242),
     backgroundInvertedColor: Color.fromARGB(255, 72, 72, 72),
     backgroundContainerColor: Color.fromARGB(255, 255, 255, 255),
+    listTileBackgroundColor: Color.fromARGB(60, 217, 217, 217),
     textFieldBorderColor: Color.fromARGB(255, 228, 228, 228),
     iconButtonColor: Color.fromARGB(255, 117, 117, 117),
     linkColor: Color.fromARGB(255, 9, 185, 85),
@@ -276,7 +281,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     tagsBackgroundHover: Color.fromARGB(255, 106, 106, 106),
     tagsText: Color.fromARGB(255, 218, 218, 218),
     chatInputPanelBackground: Color.fromARGB(255, 0, 0, 0),
-    chatInputPanelText: Color.fromARGB(255, 255, 255, 255),
+    chatInputPanelText: Color.fromARGB(124, 255, 255, 255),
     chatInputAreaBackground: Color.fromARGB(255, 32, 32, 32),
     chatExampleItemBackground: Color.fromARGB(255, 80, 80, 80),
     chatExampleItemBackgroundHover: Color.fromARGB(255, 69, 69, 69),
@@ -289,6 +294,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     backgroundColor: Color.fromARGB(255, 30, 30, 30),
     backgroundInvertedColor: Color.fromARGB(255, 233, 233, 233),
     backgroundContainerColor: Color.fromARGB(255, 0, 0, 0),
+    listTileBackgroundColor: Color.fromARGB(25, 0, 0, 0),
     textFieldBorderColor: Color.fromARGB(106, 107, 107, 107),
     iconButtonColor: Color.fromARGB(255, 218, 218, 218),
     linkColor: Color.fromARGB(255, 9, 185, 85),
@@ -301,7 +307,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     dialogBackgroundColor: Colors.black,
     columnBlockBorderColor: Color.fromARGB(255, 72, 72, 72),
     columnBlockBackgroundColor: Color.fromARGB(255, 44, 44, 46),
-    columnBlockDividerColor: Color.fromARGB(160, 60, 60, 60),
+    columnBlockDividerColor: Color.fromARGB(57, 60, 60, 60),
     textfieldHintColor: Color.fromARGB(255, 105, 105, 105),
     textfieldHintDeepColor: Color.fromARGB(255, 170, 170, 170),
     textfieldLabelColor: Color.fromARGB(255, 218, 218, 218),
@@ -348,6 +354,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     Color? backgroundColor,
     Color? backgroundInvertedColor,
     Color? backgroundContainerColor,
+    Color? listTileBackgroundColor,
     Color? textFieldBorderColor,
     Color? iconButtonColor,
     Color? linkColor,
@@ -406,6 +413,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
       backgroundColor: backgroundColor ?? this.backgroundColor,
       backgroundInvertedColor: backgroundInvertedColor ?? this.backgroundInvertedColor,
       backgroundContainerColor: backgroundContainerColor ?? this.backgroundContainerColor,
+      listTileBackgroundColor: listTileBackgroundColor ?? this.listTileBackgroundColor,
       textFieldBorderColor: textFieldBorderColor ?? this.textFieldBorderColor,
       iconButtonColor: iconButtonColor ?? this.iconButtonColor,
       linkColor: linkColor ?? this.linkColor,

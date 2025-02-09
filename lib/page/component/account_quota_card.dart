@@ -60,6 +60,23 @@ class AccountQuotaCard extends StatelessWidget {
                                 color: customColors.weakTextColor?.withAlpha(150),
                               ),
                             ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                context.push('/quota-usage-statistics');
+                              },
+                              borderRadius: CustomSize.borderRadiusAll,
+                              child: Credit(
+                                count: userInfo!.quota.quotaRemain(),
+                                color: customColors.backgroundInvertedColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
                             const SizedBox(width: 5),
                             if (Ability().enablePayment)
                               TextButton(
@@ -78,18 +95,7 @@ class AccountQuotaCard extends StatelessWidget {
                                 ),
                               ),
                           ],
-                        ),
-                        const SizedBox(height: 5),
-                        InkWell(
-                          onTap: () {
-                            context.push('/quota-usage-statistics');
-                          },
-                          borderRadius: CustomSize.borderRadiusAll,
-                          child: Credit(
-                            count: userInfo!.quota.quotaRemain(),
-                            color: customColors.backgroundInvertedColor,
-                          ),
-                        ),
+                        )
                       ],
                     )
                   : const SizedBox(),

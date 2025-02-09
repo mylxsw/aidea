@@ -137,30 +137,62 @@ class MarkdownPlus extends StatelessWidget {
           theme: codeTheme(),
           decoration: const BoxDecoration(borderRadius: CustomSize.borderRadiusAll),
           margin: const EdgeInsets.symmetric(vertical: 0.0),
-          padding: const EdgeInsets.only(top: 28, left: 10, right: 10, bottom: 10),
+          padding: const EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 10),
           textStyle: TextStyle(fontSize: CustomSize.markdownCodeSize),
           wrapper: (child, code, language) {
-            return Stack(
-              children: [
-                child,
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: IconButton(
-                    tooltip: 'Copy code',
-                    icon: Icon(
-                      Icons.copy,
-                      size: 10,
-                      color: customColors.weakLinkColor,
+            return Card(
+              elevation: 0,
+              color: customColors.markdownPreColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: CustomSize.borderRadius,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    decoration: BoxDecoration(
+                      color: customColors.listTileBackgroundColor,
+                      borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, topRight: CustomSize.radius),
                     ),
-                    onPressed: () {
-                      FlutterClipboard.copy(code).then((value) {
-                        showSuccessMessage('Copied to clipboard');
-                      });
-                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          language,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: customColors.weakTextColor,
+                          ),
+                        ),
+                        TextButton.icon(
+                          icon: Icon(
+                            Icons.copy,
+                            size: 14,
+                            color: customColors.weakTextColorLess,
+                          ),
+                          label: Text(
+                            'Copy',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: customColors.weakTextColorLess,
+                            ),
+                          ),
+                          onPressed: () {
+                            FlutterClipboard.copy(code).then((value) {
+                              showSuccessMessage('Copied to clipboard');
+                            });
+                          },
+                          style: ButtonStyle(
+                            overlayColor: WidgetStateProperty.all(Colors.transparent),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  child,
+                ],
+              ),
             );
           },
         ),
