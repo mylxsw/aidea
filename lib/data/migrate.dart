@@ -39,10 +39,8 @@ Future<void> migrate(db, oldVersion, newVersion) async {
   }
 
   if (oldVersion < 7) {
-    await db.execute(
-        'ALTER TABLE creative_island_history ADD COLUMN task_id TEXT NULL;');
-    await db.execute(
-        'ALTER TABLE creative_island_history ADD COLUMN status TEXT NULL;');
+    await db.execute('ALTER TABLE creative_island_history ADD COLUMN task_id TEXT NULL;');
+    await db.execute('ALTER TABLE creative_island_history ADD COLUMN status TEXT NULL;');
   }
 
   if (oldVersion < 10) {
@@ -59,35 +57,27 @@ Future<void> migrate(db, oldVersion, newVersion) async {
   }
 
   if (oldVersion < 12) {
-    await db
-        .execute('''ALTER TABLE chat_room ADD COLUMN user_id INTEGER NULL;''');
-    await db.execute(
-        '''ALTER TABLE creative_island_history ADD COLUMN user_id INTEGER NULL;''');
+    await db.execute('''ALTER TABLE chat_room ADD COLUMN user_id INTEGER NULL;''');
+    await db.execute('''ALTER TABLE creative_island_history ADD COLUMN user_id INTEGER NULL;''');
   }
 
   if (oldVersion < 13) {
-    await db.execute(
-        '''ALTER TABLE chat_message ADD COLUMN user_id INTEGER NULL;''');
+    await db.execute('''ALTER TABLE chat_message ADD COLUMN user_id INTEGER NULL;''');
   }
 
   if (oldVersion < 14) {
-    await db.execute(
-        '''ALTER TABLE chat_message ADD COLUMN ref_id INTEGER NULL;''');
-    await db.execute(
-        '''ALTER TABLE chat_message ADD COLUMN token_consumed INTEGER NULL;''');
-    await db.execute(
-        '''ALTER TABLE chat_message ADD COLUMN quota_consumed INTEGER NULL;''');
+    await db.execute('''ALTER TABLE chat_message ADD COLUMN ref_id INTEGER NULL;''');
+    await db.execute('''ALTER TABLE chat_message ADD COLUMN token_consumed INTEGER NULL;''');
+    await db.execute('''ALTER TABLE chat_message ADD COLUMN quota_consumed INTEGER NULL;''');
   }
 
   if (oldVersion < 15) {
     await db.execute('''ALTER TABLE chat_room ADD COLUMN init_message TEXT;''');
-    await db.execute(
-        '''ALTER TABLE chat_room ADD COLUMN max_context INTEGER DEFAULT 10;''');
+    await db.execute('''ALTER TABLE chat_room ADD COLUMN max_context INTEGER DEFAULT 10;''');
   }
 
   if (oldVersion < 20) {
-    await db.execute(
-        '''ALTER TABLE chat_message ADD COLUMN chat_history_id INTEGER NULL;''');
+    await db.execute('''ALTER TABLE chat_message ADD COLUMN chat_history_id INTEGER NULL;''');
     await db.execute('''
         CREATE TABLE chat_history (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -106,13 +96,11 @@ Future<void> migrate(db, oldVersion, newVersion) async {
   }
 
   if (oldVersion < 24) {
-    await db
-        .execute('ALTER TABLE chat_message ADD COLUMN server_id INTEGER NULL;');
+    await db.execute('ALTER TABLE chat_message ADD COLUMN server_id INTEGER NULL;');
   }
 
   if (oldVersion < 25) {
-    await db.execute(
-        'ALTER TABLE chat_message ADD COLUMN status INTEGER DEFAULT 1;');
+    await db.execute('ALTER TABLE chat_message ADD COLUMN status INTEGER DEFAULT 1;');
   }
 
   if (oldVersion < 26) {
@@ -121,6 +109,10 @@ Future<void> migrate(db, oldVersion, newVersion) async {
 
   if (oldVersion < 27) {
     await db.execute('ALTER TABLE chat_message ADD COLUMN file TEXT NULL;');
+  }
+
+  if (oldVersion < 28) {
+    await db.execute('ALTER TABLE chat_message ADD COLUMN flags TEXT NULL;');
   }
 }
 
@@ -169,6 +161,7 @@ void initDatabase(db, version) async {
           model TEXT,
           images TEXT NULL,
           file TEXT NULL,
+          flags TEXT NULL,
           ts INTEGER NOT NULL
         )
       ''');

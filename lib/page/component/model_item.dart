@@ -60,14 +60,16 @@ class _ModelItemState extends State<ModelItem> {
         uniqueTags.add(AppLocale.visionTag.getString(context));
       }
 
-      if (model.modelPrice.isFree) {
-        uniqueTags.add(AppLocale.free.getString(context));
+      if (model.supportReasoning) {
+        uniqueTags.add(AppLocale.reasoning.getString(context));
       }
 
-      if (model.id.startsWith('v2@rooms')) {
-        uniqueTags.add(AppLocale.character.getString(context));
-      } else {
-        uniqueTags.add(AppLocale.model.getString(context));
+      if (model.supportSearch) {
+        uniqueTags.add(AppLocale.search.getString(context));
+      }
+
+      if (model.modelPrice.isFree) {
+        uniqueTags.add(AppLocale.free.getString(context));
       }
     }
 
@@ -186,6 +188,22 @@ class _ModelItemState extends State<ModelItem> {
       ));
     }
 
+    if (item.supportReasoning) {
+      tags.add(buildTag(
+        customColors,
+        AppLocale.reasoning.getString(context),
+        tagTextColor: widget.initValue == item.uid() ? customColors.linkColor : null,
+      ));
+    }
+
+    if (item.supportSearch) {
+      tags.add(buildTag(
+        customColors,
+        AppLocale.search.getString(context),
+        tagTextColor: widget.initValue == item.uid() ? customColors.linkColor : null,
+      ));
+    }
+
     if (item.isNew) {
       tags.add(buildTag(
         customColors,
@@ -194,71 +212,32 @@ class _ModelItemState extends State<ModelItem> {
       ));
     }
 
-    return InkWell(
-      child: Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        decoration: BoxDecoration(
-          // color: widget.initValue == item.uid() ? customColors.dialogBackgroundColor : null,
-          borderRadius: CustomSize.borderRadius,
+    return ListTile(
+      leading: buildAvatar(avatarUrl: item.avatarUrl, size: 50),
+      contentPadding: EdgeInsets.zero,
+      title: AutoSizeText(
+        item.name,
+        minFontSize: 10,
+        maxFontSize: 15,
+        maxLines: 1,
+        style: TextStyle(
+          color: widget.initValue == item.uid() ? customColors.linkColor : null,
+          fontWeight: widget.initValue == item.uid() ? FontWeight.bold : null,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (item.avatarUrl != null) ...[
-              buildAvatar(avatarUrl: item.avatarUrl, size: 60),
-              const SizedBox(width: 15),
-            ],
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          alignment: item.avatarUrl != null ? Alignment.centerLeft : Alignment.center,
-                          child: AutoSizeText(
-                            item.name,
-                            minFontSize: 10,
-                            maxFontSize: 15,
-                            maxLines: 1,
-                            style: TextStyle(
-                              color: widget.initValue == item.uid() ? customColors.linkColor : null,
-                              fontWeight: widget.initValue == item.uid() ? FontWeight.bold : null,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 3),
-                      child: Row(children: formatTags(tags)),
-                    ),
-                  ),
-                  if (!modelPrice.isFree) buildPriceBlock(customColors, item, modelPrice),
-
-                  // if (item.description != null && item.description != '')
-                  //   Text(
-                  //     item.description!,
-                  //     maxLines: 2,
-                  //     overflow: TextOverflow.ellipsis,
-                  //     style: TextStyle(
-                  //       fontSize: 12,
-                  //       color: widget.initValue == item.uid()
-                  //           ? customColors.linkColor
-                  //           : customColors.weakTextColor,
-                  //     ),
-                  //   ),
-                ],
-              ),
+      ),
+      subtitle: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 3),
+              child: Row(children: formatTags(tags)),
             ),
-          ],
-        ),
+          ),
+          buildPriceBlock(customColors, item, modelPrice),
+        ],
       ),
       onTap: () {
         widget.onSelected(item);
@@ -297,14 +276,16 @@ class _ModelItemState extends State<ModelItem> {
               matchText += 'recommend推荐';
             }
 
-            if (e.modelPrice.isFree) {
-              matchText += 'free免费';
+            if (e.supportReasoning) {
+              matchText += 'reasoning推理';
             }
 
-            if (e.id.startsWith('v2@rooms')) {
-              matchText += 'character角色';
-            } else {
-              matchText += 'model模型';
+            if (e.supportSearch) {
+              matchText += 'search搜索';
+            }
+
+            if (e.modelPrice.isFree) {
+              matchText += 'free免费';
             }
 
             return matchText.toLowerCase().contains(keyword);
@@ -327,6 +308,14 @@ class _ModelItemState extends State<ModelItem> {
 
         if (e.supportVision) {
           tags.add(AppLocale.visionTag.getString(context));
+        }
+
+        if (e.supportReasoning) {
+          tags.add(AppLocale.reasoning.getString(context));
+        }
+
+        if (e.supportSearch) {
+          tags.add(AppLocale.search.getString(context));
         }
 
         if (e.modelPrice.isFree) {

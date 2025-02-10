@@ -1,6 +1,7 @@
 import 'package:askaide/bloc/account_bloc.dart';
 import 'package:askaide/bloc/chat_chat_bloc.dart';
 import 'package:askaide/bloc/room_bloc.dart';
+import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/account_quota_card.dart';
@@ -152,69 +153,75 @@ class _LeftDrawerState extends State<LeftDrawer> {
                             groups.putIfAbsent(groupKey, () => []).add(history);
                           }
 
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            padding: const EdgeInsets.all(0),
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: groups.entries.fold(0, (sum, entry) => (sum ?? 0) + entry.value.length + 1),
-                            itemBuilder: (context, index) {
-                              int itemCount = 0;
-                              for (var entry in groups.entries) {
-                                if (index == itemCount) {
-                                  return Container(
-                                    padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
-                                    child: Text(
-                                      entry.key,
-                                      style: TextStyle(
-                                        color: Theme.of(context).colorScheme.secondary,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  );
-                                }
+                          return Column(
+                            children: [
+                              ListView.builder(
+                                shrinkWrap: true,
+                                padding: const EdgeInsets.all(0),
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: groups.entries.fold(0, (sum, entry) => (sum ?? 0) + entry.value.length + 1),
+                                itemBuilder: (context, index) {
+                                  int itemCount = 0;
+                                  for (var entry in groups.entries) {
+                                    if (index == itemCount) {
+                                      return Container(
+                                        padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+                                        child: Text(
+                                          entry.key,
+                                          style: TextStyle(
+                                            color: Theme.of(context).colorScheme.secondary,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      );
+                                    }
 
-                                itemCount += 1;
+                                    itemCount += 1;
 
-                                if (index < itemCount + entry.value.length) {
-                                  final item = entry.value[index - itemCount];
-                                  return ListTile(
-                                    title: Text(
-                                      item.title ?? 'Unknown',
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    onTap: () {
-                                      context.push(
-                                          '/chat-anywhere?chat_id=${item.id}&model=${item.model}&title=${item.title}');
-                                    },
-                                  );
-                                }
+                                    if (index < itemCount + entry.value.length) {
+                                      final item = entry.value[index - itemCount];
+                                      return ListTile(
+                                        title: Text(
+                                          item.title ?? 'Unknown',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        onTap: () {
+                                          context.push(
+                                              '/chat-anywhere?chat_id=${item.id}&model=${item.model}&title=${item.title}');
+                                        },
+                                      );
+                                    }
 
-                                itemCount += entry.value.length;
-                              }
+                                    itemCount += entry.value.length;
+                                  }
 
-                              return const SizedBox();
-                            },
+                                  return const SizedBox();
+                                },
+                              ),
+                              if (state.histories.length >= defaultChatHistoryCount) ...[
+                                Divider(
+                                  color: customColors.weakTextColor?.withAlpha(50),
+                                  height: 10,
+                                  indent: 10,
+                                  endIndent: 10,
+                                ),
+                                ListTile(
+                                  title: Text(AppLocale.moreHistories.getString(context)),
+                                  onTap: () {
+                                    context.push('/chat-chat/history').whenComplete(() {
+                                      if (context.mounted) {
+                                        context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
+                                      }
+                                    });
+                                  },
+                                ),
+                              ],
+                            ],
                           );
                         }
 
                         return const SizedBox();
-                      },
-                    ),
-                    Divider(
-                      color: customColors.weakTextColor?.withAlpha(50),
-                      height: 10,
-                      indent: 10,
-                      endIndent: 10,
-                    ),
-                    ListTile(
-                      title: Text(AppLocale.moreHistories.getString(context)),
-                      onTap: () {
-                        context.push('/chat-chat/history').whenComplete(() {
-                          if (context.mounted) {
-                            context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
-                          }
-                        });
                       },
                     ),
                   ],

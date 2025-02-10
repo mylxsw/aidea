@@ -14,6 +14,7 @@ import 'package:askaide/page/chat/component/stop_button.dart';
 import 'package:askaide/page/chat/character_chat.dart';
 import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/chat/chat_input.dart';
+import 'package:askaide/page/component/chat/chat_input_button.dart';
 import 'package:askaide/page/component/chat/chat_preview.dart';
 import 'package:askaide/page/component/chat/empty.dart';
 import 'package:askaide/page/component/chat/file_upload.dart';
@@ -84,6 +85,12 @@ class _NewHomePageState extends State<NewHomePage> {
   List<mm.Model> supportModels = [];
   // 当前聊天所使用的模型（v2）
   HomeModelV2? currentModelV2;
+
+  /// 是否启用搜索
+  bool enableSearch = false;
+
+  /// 是否启用推理
+  bool enableReasoning = false;
 
   @override
   void initState() {
@@ -452,17 +459,25 @@ class _NewHomePageState extends State<NewHomePage> {
               buildWhen: (previous, current) => current is ChatMessagesLoaded,
               builder: (context, state) {
                 var enableImageUpload = false;
+                var showReasoning = false;
+                var showSearch = false;
                 if (state is ChatMessagesLoaded) {
                   if (currentModelV2 != null) {
                     enableImageUpload = currentModelV2?.supportVision ?? false;
+                    showReasoning = currentModelV2?.supportReasoning ?? false;
+                    showSearch = currentModelV2?.supportSearch ?? false;
                   } else {
                     var model = state.chatHistory?.model ?? room.room.model;
                     final cur = supportModels.where((e) => e.id == model).firstOrNull;
                     enableImageUpload = cur?.supportVision ?? false;
+                    showReasoning = cur?.supportReasoning ?? false;
+                    showSearch = cur?.supportSearch ?? false;
                   }
                 }
 
                 enableImageUpload = selectedModel == null ? enableImageUpload : (selectedModel?.supportVision ?? false);
+                showReasoning = selectedModel == null ? showReasoning : (selectedModel?.supportReasoning ?? false);
+                showSearch = selectedModel == null ? showSearch : (selectedModel?.supportSearch ?? false);
 
                 return ChatInput(
                   enableNotifier: enableInput,
@@ -483,6 +498,32 @@ class _NewHomePageState extends State<NewHomePage> {
                   },
                   onStopGenerate: () {
                     context.read<ChatMessageBloc>().add(ChatMessageStopEvent());
+                  },
+                  toolsBuilder: () {
+                    return [
+                      if (showSearch)
+                        ChatInputButton(
+                          text: AppLocale.search.getString(context),
+                          icon: Icons.language_outlined,
+                          onPressed: () {
+                            setState(() {
+                              enableSearch = !enableSearch;
+                            });
+                          },
+                          isActive: enableSearch,
+                        ),
+                      if (showReasoning)
+                        ChatInputButton(
+                          text: AppLocale.reasoning.getString(context),
+                          icon: Icons.tips_and_updates_outlined,
+                          onPressed: () {
+                            setState(() {
+                              enableReasoning = !enableReasoning;
+                            });
+                          },
+                          isActive: enableReasoning,
+                        ),
+                    ];
                   },
                 );
               },
@@ -659,6 +700,10 @@ class _NewHomePageState extends State<NewHomePage> {
               type: messagetType,
               chatHistoryId: chatId,
               images: selectedImageFiles.where((e) => e.uploaded).map((e) => e.url!).toList(),
+              flags: [
+                if (enableSearch) 'search',
+                if (enableReasoning) 'reasoning',
+              ],
             ),
             tempModel: selectedModel?.id,
             index: index,

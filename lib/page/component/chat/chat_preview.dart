@@ -13,6 +13,7 @@ import 'package:askaide/page/component/chat/chat_share.dart';
 import 'package:askaide/page/component/chat/enhanced_selectable_text.dart';
 import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
+import 'package:askaide/page/component/chat/thinking_card.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/file_preview.dart';
 import 'package:askaide/page/component/random_avatar.dart';
@@ -170,6 +171,8 @@ class _ChatPreviewState extends State<ChatPreview> {
     return message.message;
   }
 
+  final Map<int, bool> _displayThinkingProcess = {};
+
   /// 构建消息框
   Widget _buildMessageBox(
     BuildContext context,
@@ -197,8 +200,9 @@ class _ChatPreviewState extends State<ChatPreview> {
 
     final showTranslate = state.showTranslate && state.translateText != null && state.translateText != '';
 
-    final extra = index == 0 ? message.decodeExtra() : null;
-    final extraInfo = extra != null ? extra['info'] ?? '' : '';
+    final extra = message.decodeExtra();
+    final extraInfo = index == 0 && extra != null ? extra['info'] ?? '' : '';
+    final reasoning = extra != null ? extra['reasoning'] ?? '' : '';
     final states = extra != null ? extra['states'] ?? [] : [];
 
     final stateWidgets = <Widget>[];
@@ -207,10 +211,34 @@ class _ChatPreviewState extends State<ChatPreview> {
       final lastState = states[states.length - 1];
       switch (lastState) {
         case 'thinking':
-          stateWidgets.add(LoadingAnimationWidget.waveDots(
-            color: customColors.weakLinkColor!,
-            size: 25,
-          ));
+          if (reasoning != '') {
+            stateWidgets.add(ThinkingCard(
+              content: reasoning,
+              title: AppLocale.thinkingProcess.getString(context),
+              isExpanded: true,
+              onTap: (displayThinkingProcess) {},
+            ));
+          } else {
+            stateWidgets.add(LoadingAnimationWidget.waveDots(
+              color: customColors.weakTextColorLess!,
+              size: 25,
+            ));
+          }
+        case 'thinking-done':
+          if (reasoning != '') {
+            final timeConsumed = extra != null ? extra['thinking_time_consumed'] ?? 0.0 : 0.0;
+            stateWidgets.add(ThinkingCard(
+              content: reasoning,
+              title: AppLocale.thinkingProcess.getString(context),
+              timeConsumed: timeConsumed.toDouble(),
+              isExpanded: _displayThinkingProcess[message.id ?? -1] ?? false,
+              onTap: (displayThinkingProcess) {
+                setState(() {
+                  _displayThinkingProcess[message.id ?? -1] = displayThinkingProcess;
+                });
+              },
+            ));
+          }
         default:
       }
     }
@@ -287,7 +315,6 @@ class _ChatPreviewState extends State<ChatPreview> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
                 // 消息内容部分
                 ConstrainedBox(
                   constraints: BoxConstraints(

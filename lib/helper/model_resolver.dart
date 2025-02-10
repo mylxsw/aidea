@@ -49,6 +49,7 @@ class ModelResolver {
     int? maxTokens,
     String? tempModel,
     int? historyId,
+    List<String>? flags,
   }) async {
     if (room.modelCategory() == modelTypeDeepAI) {
       return await _deepAIModel(
@@ -76,6 +77,7 @@ class ModelResolver {
         maxTokens: maxTokens,
         tempModel: tempModel,
         historyId: historyId,
+        flags: flags,
       );
     }
   }
@@ -156,6 +158,7 @@ class ModelResolver {
     int? maxTokens,
     String? tempModel,
     int? historyId,
+    List<String>? flags,
   }) async {
     // 图像模式
     if (OpenAIRepository.isImageModel(room.modelName())) {
@@ -176,6 +179,7 @@ class ModelResolver {
       maxTokens: maxTokens,
       roomId: room.isLocalRoom ? null : room.id,
       historyId: historyId,
+      flags: flags,
     );
   }
 

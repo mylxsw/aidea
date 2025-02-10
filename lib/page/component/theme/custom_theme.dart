@@ -33,6 +33,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     this.backgroundColor,
     this.backgroundInvertedColor,
     this.backgroundContainerColor,
+    this.backgroundForDialogListItem,
     this.listTileBackgroundColor,
     this.textFieldBorderColor,
     this.iconButtonColor,
@@ -97,6 +98,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
   final Color? backgroundColor;
   final Color? backgroundInvertedColor;
   final Color? backgroundContainerColor;
+  final Color? backgroundForDialogListItem;
 
   final Color? listTileBackgroundColor;
 
@@ -176,6 +178,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
       backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t),
       backgroundInvertedColor: Color.lerp(backgroundInvertedColor, other.backgroundInvertedColor, t),
       backgroundContainerColor: Color.lerp(backgroundContainerColor, other.backgroundContainerColor, t),
+      backgroundForDialogListItem: Color.lerp(backgroundForDialogListItem, other.backgroundForDialogListItem, t),
       listTileBackgroundColor: Color.lerp(listTileBackgroundColor, other.listTileBackgroundColor, t),
       textFieldBorderColor: Color.lerp(textFieldBorderColor, other.textFieldBorderColor, t),
       iconButtonColor: Color.lerp(iconButtonColor, other.iconButtonColor, t),
@@ -223,10 +226,10 @@ class CustomColors extends ThemeExtension<CustomColors> {
     tagsText: Colors.black,
     chatInputPanelBackground: Colors.transparent,
     chatInputPanelText: Color.fromARGB(255, 0, 0, 0),
-    chatInputAreaBackground: Color.fromARGB(255, 245, 245, 245),
+    chatInputAreaBackground: Color.fromARGB(255, 255, 255, 255),
     chatExampleItemBackground: Color.fromARGB(194, 221, 221, 221),
     chatExampleItemBackgroundHover: Color.fromARGB(255, 223, 223, 223),
-    chatExampleItemText: Color.fromARGB(255, 66, 66, 66),
+    chatExampleItemText: Color.fromARGB(255, 255, 255, 255),
     chatExampleTitleText: Color.fromARGB(255, 66, 66, 66),
     markdownLinkColor: Colors.blue,
     markdownPreColor: Color.fromARGB(255, 247, 247, 247),
@@ -235,6 +238,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     backgroundColor: Color.fromARGB(255, 242, 242, 242),
     backgroundInvertedColor: Color.fromARGB(255, 72, 72, 72),
     backgroundContainerColor: Color.fromARGB(255, 255, 255, 255),
+    backgroundForDialogListItem: Color.fromARGB(255, 255, 255, 255),
     listTileBackgroundColor: Color.fromARGB(60, 217, 217, 217),
     textFieldBorderColor: Color.fromARGB(255, 228, 228, 228),
     iconButtonColor: Color.fromARGB(255, 117, 117, 117),
@@ -294,6 +298,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     backgroundColor: Color.fromARGB(255, 30, 30, 30),
     backgroundInvertedColor: Color.fromARGB(255, 233, 233, 233),
     backgroundContainerColor: Color.fromARGB(255, 0, 0, 0),
+    backgroundForDialogListItem: Color.fromARGB(23, 0, 0, 0),
     listTileBackgroundColor: Color.fromARGB(25, 0, 0, 0),
     textFieldBorderColor: Color.fromARGB(106, 107, 107, 107),
     iconButtonColor: Color.fromARGB(255, 218, 218, 218),
@@ -354,6 +359,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     Color? backgroundColor,
     Color? backgroundInvertedColor,
     Color? backgroundContainerColor,
+    Color? backgroundForDialogListItem,
     Color? listTileBackgroundColor,
     Color? textFieldBorderColor,
     Color? iconButtonColor,
@@ -413,6 +419,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
       backgroundColor: backgroundColor ?? this.backgroundColor,
       backgroundInvertedColor: backgroundInvertedColor ?? this.backgroundInvertedColor,
       backgroundContainerColor: backgroundContainerColor ?? this.backgroundContainerColor,
+      backgroundForDialogListItem: backgroundForDialogListItem ?? this.backgroundForDialogListItem,
       listTileBackgroundColor: listTileBackgroundColor ?? this.listTileBackgroundColor,
       textFieldBorderColor: textFieldBorderColor ?? this.textFieldBorderColor,
       iconButtonColor: iconButtonColor ?? this.iconButtonColor,

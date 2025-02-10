@@ -34,6 +34,8 @@ class ModelAggregate {
               tag: e.tag,
               avatarUrl: e.avatarUrl,
               supportVision: e.supportVision,
+              supportReasoning: e.supportReasoning,
+              supportSearch: e.supportSearch,
               tagTextColor: e.tagTextColor,
               tagBgColor: e.tagBgColor,
               isNew: e.isNew,

@@ -5,7 +5,7 @@ abstract class ChatChatEvent {}
 
 class ChatChatLoadRecentHistories extends ChatChatEvent {
   final int count;
-  ChatChatLoadRecentHistories({this.count = 50});
+  ChatChatLoadRecentHistories({this.count = defaultChatHistoryCount});
 }
 
 class ChatChatNewChat extends ChatChatEvent {

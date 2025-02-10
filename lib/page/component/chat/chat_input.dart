@@ -17,7 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -25,14 +24,13 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 class ChatInput extends StatefulWidget {
   final Function(String value) onSubmit;
   final ValueNotifier<bool> enableNotifier;
-  final Widget? toolbar;
   final bool enableImageUpload;
   final Function(List<FileUpload> files)? onImageSelected;
   final List<FileUpload>? selectedImageFiles;
   final Function()? onNewChat;
   final String hintText;
   final Function()? onVoiceRecordTappedEvent;
-  final List<Widget> Function()? leftSideToolsBuilder;
+  final List<Widget> Function()? toolsBuilder;
   final Function()? onStopGenerate;
   final Function(bool hasFocus)? onFocusChange;
 
@@ -47,11 +45,10 @@ class ChatInput extends StatefulWidget {
     required this.onSubmit,
     required this.enableNotifier,
     this.enableImageUpload = true,
-    this.toolbar,
     this.onNewChat,
     this.hintText = '',
     this.onVoiceRecordTappedEvent,
-    this.leftSideToolsBuilder,
+    this.toolsBuilder,
     this.onImageSelected,
     this.selectedImageFiles,
     this.onStopGenerate,
@@ -137,120 +134,87 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return SafeArea(
+      bottom: false,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
         decoration: BoxDecoration(
           color: customColors.chatInputAreaBackground,
-          borderRadius: CustomSize.borderRadius,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(CustomSize.radiusValue * 2),
+            topRight: Radius.circular(CustomSize.radiusValue * 2),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              offset: const Offset(-1, -1),
+              blurRadius: CustomSize.radiusValue,
+            ),
+          ],
         ),
         child: Builder(builder: (context) {
           final setting = context.read<SettingRepository>();
-          return Column(
-            children: [
-              // 选中的图片预览
-              if (widget.selectedImageFiles != null && widget.selectedImageFiles!.isNotEmpty)
-                buildSelectedImagePreview(customColors),
-              // 选中文件预览
-              if (widget.selectedFile != null) buildSelectedFilePreview(customColors),
-              // 工具栏
-              if (widget.toolbar != null) widget.toolbar!,
-              if (widget.toolbar != null) const SizedBox(height: 8),
-              // 聊天内容输入栏
-              SingleChildScrollView(
-                child: Slidable(
-                  startActionPane: widget.onNewChat != null
-                      ? ActionPane(
-                          extentRatio: 0.3,
-                          motion: const ScrollMotion(),
-                          children: [
-                            SlidableAction(
-                              autoClose: true,
-                              label: AppLocale.newChat.getString(context),
-                              backgroundColor: Colors.blue,
-                              borderRadius: CustomSize.borderRadiusAll,
-                              onPressed: (_) {
-                                widget.onNewChat!();
-                              },
-                            ),
-                            const SizedBox(width: 10),
-                          ],
-                        )
-                      : null,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          // 聊天功能按钮
-                          if (_textController.text == '') buildLeftMenu(context, setting, customColors),
-                          // 聊天输入框
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Focus(
-                                    onFocusChange: (hasFocus) {
-                                      setState(() {
-                                        inputFocused = hasFocus;
-                                      });
+          return SafeArea(
+            child: Column(
+              children: [
+                // 选中的图片预览
+                if (widget.selectedImageFiles != null && widget.selectedImageFiles!.isNotEmpty)
+                  buildSelectedImagePreview(customColors),
+                // 选中文件预览
+                if (widget.selectedFile != null) buildSelectedFilePreview(customColors),
+                // 聊天内容输入栏
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Focus(
+                      onFocusChange: (hasFocus) {
+                        setState(() {
+                          inputFocused = hasFocus;
+                        });
 
-                                      widget.onFocusChange?.call(hasFocus);
-                                    },
-                                    child: TextFormField(
-                                      keyboardType: TextInputType.multiline,
-                                      textInputAction: TextInputAction.newline,
-                                      maxLines: inputFocused ? 10 : 3,
-                                      minLines: inputFocused ? 1 : 1,
-                                      maxLength: maxLength,
-                                      focusNode: _focusNode,
-                                      controller: _textController,
-                                      style: const TextStyle(fontSize: CustomSize.defaultHintTextSize),
-                                      decoration: InputDecoration(
-                                        hintText: widget.hintText,
-                                        hintStyle: TextStyle(
-                                          fontSize: CustomSize.defaultHintTextSize,
-                                          color: customColors.textfieldHintColor,
-                                        ),
-                                        border: InputBorder.none,
-                                        counterText: '',
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                // 聊天发送按钮
-                                if (_textController.text == '') _buildSendOrVoiceButton(context, customColors),
-                              ],
-                            ),
+                        widget.onFocusChange?.call(hasFocus);
+                      },
+                      child: TextFormField(
+                        keyboardType: TextInputType.multiline,
+                        textInputAction: TextInputAction.newline,
+                        maxLines: inputFocused ? 10 : 3,
+                        minLines: 1,
+                        maxLength: maxLength,
+                        focusNode: _focusNode,
+                        controller: _textController,
+                        style: const TextStyle(fontSize: CustomSize.defaultHintTextSize),
+                        decoration: InputDecoration(
+                          hintText: widget.hintText,
+                          hintStyle: TextStyle(
+                            fontSize: CustomSize.defaultHintTextSize,
+                            color: customColors.textfieldHintColor,
                           ),
-                        ],
+                          border: InputBorder.none,
+                          counterText: '',
+                        ),
                       ),
-                      if (_textController.text != '') const SizedBox(height: 8),
-                      if (_textController.text != '')
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            buildUploadButtons(context, setting, customColors),
-                            _buildSendOrVoiceButton(context, customColors),
+                            if (widget.enableNotifier.value && (canUploadImage || canUploadFile))
+                              buildUploadButtons(context, setting, customColors),
+                            if (widget.toolsBuilder != null) ...widget.toolsBuilder!(),
                           ],
                         ),
-                    ],
-                  ),
+                        _buildSendOrVoiceButton(context, customColors),
+                      ],
+                    ),
+                    if (inputFocused) const SizedBox(height: 8),
+                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         }),
       ),
-    );
-  }
-
-  Row buildLeftMenu(BuildContext context, SettingRepository setting, CustomColors customColors) {
-    return Row(
-      children: [
-        if (widget.leftSideToolsBuilder != null) ...widget.leftSideToolsBuilder!(),
-        if (widget.enableNotifier.value && (canUploadImage || canUploadFile))
-          buildUploadButtons(context, setting, customColors),
-      ],
     );
   }
 
@@ -401,8 +365,8 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
     }
 
     return _textController.text == '' && !PlatformTool.isWeb()
-        ? InkWell(
-            onTap: () {
+        ? IconButton(
+            onPressed: () {
               HapticFeedbackHelper.mediumImpact();
 
               openModalBottomSheet(
@@ -422,10 +386,12 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                 heightFactor: 0.8,
               );
             },
-            child: Icon(
-              Icons.mic_none,
+            icon: Icon(
+              Icons.mic_none_outlined,
               color: customColors.chatInputPanelText,
             ),
+            splashRadius: 20,
+            color: customColors.chatInputPanelText,
           )
         : IconButton(
             onPressed: () => _handleSubmited(_textController.text.trim()),
@@ -434,7 +400,6 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
               color: customColors.chatInputPanelText,
             ),
             splashRadius: 20,
-            tooltip: AppLocale.send.getString(context),
             color: customColors.chatInputPanelText,
           );
   }
@@ -494,9 +459,20 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
       child: PopupMenuButton(
         key: _menuKey,
         enabled: false,
-        icon: Icon(Icons.add, color: customColors.chatInputPanelText),
-        splashRadius: 20,
-        elevation: 0,
+        padding: EdgeInsets.zero,
+        icon: Container(
+          decoration: BoxDecoration(
+            color: customColors.tagsBackgroundHover,
+            shape: BoxShape.circle,
+          ),
+          padding: const EdgeInsets.all(4),
+          child: Icon(
+            Icons.add,
+            color: customColors.chatInputPanelText,
+            size: 18,
+          ),
+        ),
+        splashRadius: CustomSize.radiusValue,
         enableFeedback: true,
         color: customColors.backgroundColor,
         shape: RoundedRectangleBorder(borderRadius: CustomSize.borderRadius),

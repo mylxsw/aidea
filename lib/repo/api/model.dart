@@ -8,6 +8,8 @@ class HomeModelV2 {
   String? modelId;
   String? modelName;
   bool supportVision;
+  bool supportReasoning;
+  bool supportSearch;
 
   HomeModelV2({
     required this.type,
@@ -17,6 +19,8 @@ class HomeModelV2 {
     this.modelId,
     this.modelName,
     this.avatarUrl,
+    this.supportReasoning = false,
+    this.supportSearch = false,
   });
 
   String get uniqueKey {
@@ -31,6 +35,8 @@ class HomeModelV2 {
       modelId: json['model_id'],
       modelName: json['model_name'],
       supportVision: json['support_vision'] ?? false,
+      supportReasoning: json['support_reasoning'] ?? false,
+      supportSearch: json['support_search'] ?? false,
       avatarUrl: json['avatar_url'],
     );
   }
@@ -42,6 +48,8 @@ class HomeModelV2 {
         'model_id': modelId,
         'model_name': modelName,
         'support_vision': supportVision,
+        'support_reasoning': supportReasoning,
+        'support_search': supportSearch,
         'avatar_url': avatarUrl,
       };
 }

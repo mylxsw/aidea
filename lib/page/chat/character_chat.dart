@@ -9,6 +9,7 @@ import 'package:askaide/page/chat/component/model_switcher.dart';
 import 'package:askaide/page/chat/component/stop_button.dart';
 import 'package:askaide/page/component/audio_player.dart';
 import 'package:askaide/page/component/background_container.dart';
+import 'package:askaide/page/component/chat/chat_input_button.dart';
 import 'package:askaide/page/component/chat/empty.dart';
 import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
@@ -75,6 +76,12 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
 
   // 聊天室 ID，当没有值时，会在第一个聊天消息发送后自动设置新值
   int? chatId;
+
+  /// 是否启用搜索
+  bool enableSearch = false;
+
+  /// 是否启用推理
+  bool enableReasoning = false;
 
   @override
   void initState() {
@@ -147,7 +154,6 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
           ModelAggregate.model(state.room.model).then((value) {
             setState(() {
               roomModel = value;
-              tempModel = tempModel ?? roomModel;
             });
           });
         }
@@ -157,6 +163,11 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
         if (room is RoomLoaded) {
           final enableImageUpload =
               tempModel == null ? (roomModel != null && roomModel!.supportVision) : (tempModel?.supportVision ?? false);
+          final showReasoning = tempModel == null
+              ? (roomModel != null && roomModel!.supportReasoning)
+              : (tempModel?.supportReasoning ?? false);
+          final showSearch =
+              tempModel == null ? (roomModel != null && roomModel!.supportSearch) : (tempModel?.supportSearch ?? false);
           return SafeArea(
             top: false,
             bottom: false,
@@ -233,6 +244,32 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
                           },
                           onStopGenerate: () {
                             context.read<ChatMessageBloc>().add(ChatMessageStopEvent());
+                          },
+                          toolsBuilder: () {
+                            return [
+                              if (showSearch)
+                                ChatInputButton(
+                                  text: AppLocale.search.getString(context),
+                                  icon: Icons.language_outlined,
+                                  onPressed: () {
+                                    setState(() {
+                                      enableSearch = !enableSearch;
+                                    });
+                                  },
+                                  isActive: enableSearch,
+                                ),
+                              if (showReasoning)
+                                ChatInputButton(
+                                  text: AppLocale.reasoning.getString(context),
+                                  icon: Icons.tips_and_updates_outlined,
+                                  onPressed: () {
+                                    setState(() {
+                                      enableReasoning = !enableReasoning;
+                                    });
+                                  },
+                                  isActive: enableReasoning,
+                                ),
+                            ];
                           },
                         ),
                 ),
@@ -548,6 +585,8 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
       }
     }
 
+    // showSuccessMessage('Model: ${roomModel?.id}/${tempModel?.id}');
+
     // ignore: use_build_context_synchronously
     context.read<ChatMessageBloc>().add(
           ChatMessageSendEvent(
@@ -565,6 +604,11 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
                     })
                   : null,
               chatHistoryId: chatId,
+              model: roomModel?.id,
+              flags: [
+                if (enableSearch) 'search',
+                if (enableReasoning) 'reasoning',
+              ],
             ),
             index: index,
             isResent: isResent,
@@ -574,8 +618,6 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
 
     // ignore: use_build_context_synchronously
     context.read<NotifyBloc>().add(NotifyResetEvent());
-    // ignore: use_build_context_synchronously
-    context.read<RoomBloc>().add(RoomLoadEvent(widget.roomId, cascading: false, chatHistoryId: chatId));
   }
 }
 

@@ -29,6 +29,7 @@ mixin AppLocale {
   static const String account = 'account';
   static const String usedUp = 'used_up';
   static const String expired = 'expired';
+  static const String timeConsume = 'time-consume';
 
   static const String save = 'save';
   static const String ok = 'ok';
@@ -65,6 +66,7 @@ mixin AppLocale {
   static const String text = 'text';
   static const String uploading = 'uploading';
   static const String robotIsThinkingMessage = 'robot-is-thinking-message';
+  static const String thinkingProcess = 'thinking-process';
   static const String robotHasSomeError = 'robot-has-some-error';
   static const String questionExamples = 'question-examples';
   static const String noRecords = 'no-records';
@@ -90,6 +92,7 @@ mixin AppLocale {
   static const String prompt = "prompt";
   static const String optional = "optional";
   static const String search = "search";
+  static const String reasoning = "reasoning";
   static const String background = "background";
   static const String backgroundSetting = "background-setting";
   static const String roomSetting = "room-setting";
@@ -360,6 +363,7 @@ mixin AppLocale {
     text: '文本',
     uploading: '上传中...',
     robotIsThinkingMessage: '正在思考中...',
+    thinkingProcess: '深度思考',
     robotHasSomeError: '发送失败，重发该消息？',
     appName: 'AIdea',
     chatAnywhere: '聊一聊',
@@ -389,6 +393,7 @@ mixin AppLocale {
     account: '账号',
     usedUp: '已用完',
     expired: '已过期',
+    timeConsume: '用时',
     character: '角色',
     myCharacters: '我的角色',
     createRoom: '创建角色',
@@ -400,6 +405,7 @@ mixin AppLocale {
     prompt: '角色设定',
     optional: '可选',
     search: '搜索',
+    reasoning: '推理',
     background: '背景',
     backgroundSetting: '背景图',
     roomSetting: '设置',
@@ -668,6 +674,7 @@ mixin AppLocale {
     text: 'Text',
     uploading: 'Uploading...',
     robotIsThinkingMessage: 'Thinking...',
+    thinkingProcess: 'Deep Thinking',
     robotHasSomeError: 'There seems to be something wrong, Do you want to resend the message?',
     appName: 'AIdea',
     chatAnywhere: 'Chat',
@@ -697,6 +704,7 @@ mixin AppLocale {
     account: 'Account',
     usedUp: 'Used Up',
     expired: 'Expired',
+    timeConsume: 'Cost',
     character: 'Character',
     myCharacters: 'My Characters',
     createRoom: 'Create Character',
@@ -708,6 +716,7 @@ mixin AppLocale {
     prompt: 'Prompt',
     optional: 'Optional',
     search: 'Search',
+    reasoning: 'Reasoning',
     background: 'Background',
     backgroundSetting: 'Background Setting',
     roomSetting: 'Setting',

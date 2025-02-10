@@ -99,7 +99,7 @@ class _EmptyPreviewState extends State<EmptyPreview> {
                       width: 200,
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: customColors.chatInputAreaBackground,
+                        color: customColors.backgroundColor,
                         borderRadius: CustomSize.borderRadius,
                       ),
                       alignment: Alignment.center,

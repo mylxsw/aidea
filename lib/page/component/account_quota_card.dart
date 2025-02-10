@@ -29,13 +29,13 @@ class AccountQuotaCard extends StatelessWidget {
                 horizontal: 20,
                 vertical: 30,
               ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: userInfo != null
-                  ? Column(
+        child: userInfo != null
+            ? Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
@@ -97,11 +97,30 @@ class AccountQuotaCard extends StatelessWidget {
                           ],
                         )
                       ],
-                    )
-                  : const SizedBox(),
-            ),
-          ],
-        ),
+                    ),
+                  ),
+                ],
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    alignment: Alignment.centerLeft,
+                    icon: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.account_circle),
+                        const SizedBox(width: 5),
+                        Text(AppLocale.signIn.getString(context)),
+                      ],
+                    ),
+                    onPressed: () {
+                      context.go('/login');
+                    },
+                  ),
+                  const SizedBox(width: 10),
+                ],
+              ),
       ),
     );
   }

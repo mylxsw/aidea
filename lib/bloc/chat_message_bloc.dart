@@ -360,6 +360,8 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
     try {
       RequestFailedException? error;
       try {
+        var isThinking = false;
+        var reasoningContent = '';
         var listener = queue.listen(const Duration(milliseconds: 10), (items) {
           final systemCmds = items.where((e) => e.role == 'system').toList();
           if (systemCmds.isNotEmpty) {
@@ -376,7 +378,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
                 //     - info: 提示信息
                 //
                 // type=thinking
-                // type=thinking-done
+                // type=thinking-done: [time_consumed]
                 final cmd = jsonDecode(element.content);
 
                 switch (cmd['type']) {
@@ -401,9 +403,12 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
                     break;
                   case 'thinking':
                     waitMessage.pushExtra('states', 'thinking');
+                    isThinking = true;
                     break;
                   case 'thinking-done':
                     waitMessage.pushExtra('states', 'thinking-done');
+                    waitMessage.updateExtra({'thinking_time_consumed': cmd['time_consumed'] ?? 0});
+                    isThinking = false;
                     break;
                   default:
                 }
@@ -413,7 +418,14 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
             }
           }
 
-          waitMessage.text += items.where((e) => e.role != 'system').map((e) => e.content).join('');
+          final newContent = items.where((e) => e.role != 'system').map((e) => e.content).join('');
+          if (isThinking && newContent.isNotEmpty) {
+            reasoningContent += newContent;
+            waitMessage.updateExtra({'reasoning': reasoningContent});
+          } else {
+            waitMessage.text += newContent;
+          }
+
           emit(ChatMessageUpdated(waitMessage, processing: true));
 
           // 失败处理
@@ -432,6 +444,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
               onMessage: queue.add,
               maxTokens: room.maxTokens,
               historyId: localChatHistory.id,
+              flags: message.flags,
             )
             .whenComplete(queue.finish);
 

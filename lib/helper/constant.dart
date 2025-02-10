@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // 客户端应用版本号
 const clientVersion = '2.0.0';
 // 本地数据库版本号
-const databaseVersion = 27;
+const databaseVersion = 28;
 
 const settingAPIServerToken = 'api-token';
 const settingUserInfo = 'user-info';
@@ -44,6 +44,8 @@ const defaultChatModel = 'gpt-3.5-turbo';
 const defaultChatModelName = 'GPT-3.5';
 const defaultImageModel = 'DALL·E';
 const defaultModelNotChatDesc = '该模型不支持上下文，只能一问一答';
+
+const defaultChatHistoryCount = 50;
 
 // AI 模型类型
 const modelTypeOpenAI = 'openai';

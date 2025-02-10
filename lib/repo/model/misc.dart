@@ -603,6 +603,8 @@ class Model {
   bool disabled;
   String? avatarUrl;
   bool supportVision;
+  bool supportReasoning;
+  bool supportSearch;
 
   String category;
   String? tag;
@@ -628,6 +630,8 @@ class Model {
     this.tag,
     this.avatarUrl,
     this.supportVision = false,
+    this.supportReasoning = false,
+    this.supportSearch = false,
     this.tagBgColor,
     this.tagTextColor,
     this.isNew = false,
@@ -647,6 +651,8 @@ class Model {
         'tag': tag,
         'avatar_url': avatarUrl,
         'support_vision': supportVision,
+        'support_reasoning': supportReasoning,
+        'support_search': supportSearch,
         'tag_bg_color': tagBgColor,
         'tag_text_color': tagTextColor,
         'is_new': isNew,
@@ -667,6 +673,8 @@ class Model {
       tag: json['tag'],
       avatarUrl: json['avatar_url'],
       supportVision: json['support_vision'] ?? false,
+      supportReasoning: json['support_reasoning'] ?? false,
+      supportSearch: json['support_search'] ?? false,
       tagBgColor: json['tag_bg_color'],
       tagTextColor: json['tag_text_color'],
       isNew: json['is_new'] ?? false,

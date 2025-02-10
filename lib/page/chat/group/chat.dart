@@ -184,7 +184,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
                             onVoiceRecordTappedEvent: () {
                               _audioPlayerController.stop();
                             },
-                            leftSideToolsBuilder: () {
+                            toolsBuilder: () {
                               return [
                                 Stack(
                                   children: [

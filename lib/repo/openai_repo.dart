@@ -98,7 +98,6 @@ class OpenAIRepository {
       'openai',
       category: modelTypeOpenAI,
       isChatModel: true,
-      description: '3.5 升级版，支持 16K 长文本',
       shortName: 'GPT-3.5 Turbo 16K',
       tag: 'local',
       avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt35.png',
@@ -109,68 +108,40 @@ class OpenAIRepository {
       'openai',
       category: modelTypeOpenAI,
       isChatModel: true,
-      description: '能力强，更精准',
       shortName: 'GPT-4',
       tag: 'local',
       avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt4.png',
     ),
-
     'gpt-4-32k': mm.Model(
       'gpt-4-32k',
       'GPT-4 32k',
       'openai',
       category: modelTypeOpenAI,
       isChatModel: true,
-      description: '基于 GPT-4，但是支持4倍的内容长度',
       shortName: 'GPT-4 32K',
       tag: 'local',
       avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt4.png',
     ),
-
-    // 'gpt-4-0314': Model(
-    //   'gpt-4-0314',
-    //   'openai',
-    //   category: modelTypeOpenAI,
-    //   isChatModel: true,
-    // ),
-    // 'gpt-4-32k-0314': Model(
-    //   'gpt-4-32k-0314',
-    //   'openai',
-    //   category: modelTypeOpenAI,
-    //   isChatModel: true,
-    // ),
-    //// gpt-3.5-turbo-0301 将在 2023年6月1日停止服务
-    // 'gpt-3.5-turbo-0301': Model(
-    //   'gpt-3.5-turbo-0301',
-    //   'openai',
-    //   category: modelTypeOpenAI,
-    //   isChatModel: true,
-    // ),
-    // 'text-davinci-003': Model(
-    //   'text-davinci-003',
-    //   'openai',
-    //   category: modelTypeOpenAI,
-    // ),
-    // 'text-davinci-002': Model(
-    //   'text-davinci-002',
-    //   'openai',
-    //   category: modelTypeOpenAI,
-    // ),
-    // 'text-curie-001': Model(
-    //   'text-curie-001',
-    //   'openai',
-    //   category: modelTypeOpenAI,
-    // ),
-    // 'text-babbage-001': Model(
-    //   'text-babbage-001',
-    //   'openai',
-    //   category: modelTypeOpenAI,
-    // ),
-    // 'text-ada-001': Model(
-    //   'text-ada-001',
-    //   'openai',
-    //   category: modelTypeOpenAI,
-    // ),
+    'gpt-4o': mm.Model(
+      'gpt-4o',
+      'GPT-4o',
+      'openai',
+      category: modelTypeOpenAI,
+      isChatModel: true,
+      shortName: 'GPT-4o',
+      tag: 'local',
+      avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt4.png',
+    ),
+    'gpt-4o-mini': mm.Model(
+      'gpt-4o-mini',
+      'GPT-4o-mini',
+      'openai',
+      category: modelTypeOpenAI,
+      isChatModel: true,
+      shortName: 'GPT-4o-mini',
+      tag: 'local',
+      avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt4.png',
+    ),
   };
 
   /// 支持的模型
@@ -253,6 +224,7 @@ class OpenAIRepository {
     int? historyId,
     int? maxTokens,
     String? tempModel,
+    List<String>? flags,
   }) async {
     var completer = Completer<void>();
 
@@ -352,6 +324,7 @@ class OpenAIRepository {
               ? null
               : roomId, // n 参数暂时用不到，复用作为 roomId
           'history_id': historyId,
+          'flags': flags,
         });
 
         Logger.instance.d('send chat request: $data');
@@ -424,11 +397,13 @@ class ChatStreamRespData {
   final String content;
   final int? code;
   final String? error;
+  final String? reasoningContent;
 
   ChatStreamRespData({
     this.role,
     required this.content,
     this.code,
     this.error,
+    this.reasoningContent,
   });
 }

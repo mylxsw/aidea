@@ -66,6 +66,8 @@ class Message {
   // Uploaded file by user (json(name, url))
   String? file;
 
+  List<String>? flags;
+
   Message(
     this.role,
     this.text, {
@@ -87,6 +89,7 @@ class Message {
     this.senderName,
     this.images,
     this.file,
+    this.flags,
   });
 
   /// 设置消息附加信息
@@ -191,6 +194,7 @@ class Message {
       'quota_consumed': quotaConsumed,
       'images': images != null ? jsonEncode(images) : null,
       'file': file,
+      'flags': flags != null ? jsonEncode(flags) : null,
     };
   }
 
@@ -212,7 +216,8 @@ class Message {
         ts = map['ts'] == null ? null : DateTime.fromMillisecondsSinceEpoch(map['ts'] as int),
         roomId = map['room_id'] as int?,
         images = map['images'] == null ? null : (jsonDecode(map['images'] as String) as List<dynamic>).cast<String>(),
-        file = map['file'] as String?;
+        file = map['file'] as String?,
+        flags = map['flags'] == null ? null : (jsonDecode(map['flags'] as String) as List<dynamic>).cast<String>();
 }
 
 enum Role {
