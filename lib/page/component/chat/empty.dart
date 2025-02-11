@@ -2,6 +2,7 @@ import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/model/misc.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:lottie/lottie.dart';
@@ -24,6 +25,8 @@ class EmptyPreview extends StatefulWidget {
 
 class _EmptyPreviewState extends State<EmptyPreview> {
   final ScrollController _scrollController = ScrollController();
+
+  final displayCount = 6;
 
   @override
   void dispose() {
@@ -59,10 +62,10 @@ class _EmptyPreviewState extends State<EmptyPreview> {
             alignment: Alignment.center,
             child: ListView.separated(
               controller: _scrollController,
-              itemCount: (widget.examples.length > 4 ? 4 : widget.examples.length) + 1,
+              itemCount: (widget.examples.length > displayCount ? displayCount : widget.examples.length) + 1,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
-                if (index == (widget.examples.length > 4 ? 4 : widget.examples.length)) {
+                if (index == (widget.examples.length > displayCount ? displayCount : widget.examples.length)) {
                   return Container(
                     width: 60,
                     padding: const EdgeInsets.all(10),
@@ -96,16 +99,16 @@ class _EmptyPreviewState extends State<EmptyPreview> {
                       widget.onSubmit(widget.examples[index].text);
                     },
                     child: Container(
-                      width: 200,
+                      width: 150,
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: customColors.backgroundColor,
                         borderRadius: CustomSize.borderRadius,
                       ),
                       alignment: Alignment.center,
-                      child: Text(
+                      child: AutoSizeText(
                         widget.examples[index].title,
-                        maxLines: 2,
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 13,
@@ -162,7 +165,7 @@ class _EmptyPreviewState extends State<EmptyPreview> {
                 const SizedBox(height: 20),
                 Expanded(
                   child: ListView.separated(
-                    itemCount: widget.examples.length > 4 ? 4 : widget.examples.length,
+                    itemCount: widget.examples.length > displayCount ? displayCount : widget.examples.length,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       return ListTextItem(

@@ -1,6 +1,7 @@
 import 'package:askaide/bloc/account_bloc.dart';
 import 'package:askaide/bloc/chat_chat_bloc.dart';
 import 'package:askaide/bloc/room_bloc.dart';
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
@@ -31,7 +32,10 @@ class _LeftDrawerState extends State<LeftDrawer> {
   }
 
   void reload() {
-    context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
+    if (Ability().isUserLogon()) {
+      context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
+    }
+
     context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
     context.read<RoomBloc>().add(RoomsRecentLoadEvent());
   }
@@ -56,13 +60,14 @@ class _LeftDrawerState extends State<LeftDrawer> {
                       child: SizedBox(height: PlatformTool.isMacOS() ? kToolbarHeight : 20),
                     ),
 
-                    ListTile(
-                      leading: const Icon(Icons.group_outlined),
-                      title: Text(AppLocale.homeTitle.getString(context)),
-                      onTap: () {
-                        context.push('/characters').whenComplete(reload);
-                      },
-                    ),
+                    if (Ability().isUserLogon())
+                      ListTile(
+                        leading: const Icon(Icons.group_outlined),
+                        title: Text(AppLocale.homeTitle.getString(context)),
+                        onTap: () {
+                          context.push('/characters').whenComplete(reload);
+                        },
+                      ),
 
                     BlocBuilder<RoomBloc, RoomState>(
                       buildWhen: (previous, current) => current is RoomsRecentLoaded,

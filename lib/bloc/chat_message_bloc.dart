@@ -451,7 +451,7 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
         await listener;
 
         waitMessage.text = waitMessage.text.trim();
-        if (waitMessage.text.isEmpty) {
+        if (error == null && waitMessage.text.isEmpty) {
           error = RequestFailedException('The answer is empty', 500);
         }
 

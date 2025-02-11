@@ -141,8 +141,8 @@ class _NewHomePageState extends State<NewHomePage> {
 
     if (selectedModel == null && supportModels.isNotEmpty) {
       setState(() {
-        selectedModel = supportModels.where((e) => e.isDefault).firstOrNull;
-        selectedModel ??= supportModels.firstOrNull;
+        selectedModel = supportModels.where((e) => e.isDefault && !e.userNoPermission).firstOrNull;
+        selectedModel ??= supportModels.where((e) => !e.userNoPermission).firstOrNull;
       });
     }
 

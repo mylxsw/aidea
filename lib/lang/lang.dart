@@ -326,6 +326,8 @@ mixin AppLocale {
   static const String lastYear = 'last-year';
   static const String longTimeAgo = 'long-time-ago';
 
+  static const String modelNeedSignIn = 'model-need-sign-in';
+
   static const Map<String, dynamic> zh = {
     required: '必填',
     systemInfo: '系统信息',
@@ -635,6 +637,7 @@ mixin AppLocale {
     monthsAgo: '月前',
     lastYear: '去年',
     longTimeAgo: '很久以前',
+    modelNeedSignIn: '该模型需要登录后使用',
   };
 
   static const Map<String, dynamic> en = {
@@ -950,6 +953,7 @@ mixin AppLocale {
     lastYear: 'Last Year',
     longTimeAgo: 'Long Time Ago',
     weeksAgo: 'Weeks Ago',
+    modelNeedSignIn: 'The model needs to be signed in to use',
   };
 }
 

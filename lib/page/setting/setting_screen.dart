@@ -119,7 +119,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       // 语言设置
                       _buildCommonLanguageSetting(),
                       // OpenAI 自定义配置
-                      if (Ability().enableOpenAI) _buildOpenAISelfHostedSetting(customColors),
+                      // if (Ability().enableOpenAI) _buildOpenAISelfHostedSetting(customColors),
                       // 用户 API Keys 配置
                       if (state is AccountLoaded && state.user != null && Ability().supportAPIKeys)
                         _buildUserAPIKeySetting(customColors),
@@ -483,6 +483,7 @@ class _SettingScreenState extends State<SettingScreen> {
     return [
       SelectorItem(const Text('官方正式服务器'), apiServerURL),
       SelectorItem(const Text('本地开发环境'), 'http://localhost:8080'),
+      SelectorItem(const Text('局域网开发环境'), 'http://192.168.31.217:8080'),
     ];
   }
 

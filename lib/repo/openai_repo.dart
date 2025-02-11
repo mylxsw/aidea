@@ -229,18 +229,7 @@ class OpenAIRepository {
     var completer = Completer<void>();
 
     try {
-      bool canUseWebsocket = true;
-      if (Ability().enableLocalOpenAI) {
-        if (supportForChat.containsKey(model) || model.startsWith('openai:')) {
-          canUseWebsocket = false;
-        }
-      }
-
-      if (!Ability().isUserLogon()) {
-        canUseWebsocket = false;
-      }
-
-      if (Ability().supportWebSocket && canUseWebsocket) {
+      if (Ability().supportWebSocket) {
         var serverURL = settings.getDefault(settingServerURL, apiServerURL);
         if (PlatformTool.isWeb() && (serverURL == '' || serverURL == '/')) {
           serverURL = '${Uri.base.scheme}://${Uri.base.host}${Uri.base.hasPort ? ':${Uri.base.port}' : ''}';
