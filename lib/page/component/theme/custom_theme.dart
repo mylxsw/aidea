@@ -33,11 +33,14 @@ class CustomColors extends ThemeExtension<CustomColors> {
     this.backgroundColor,
     this.backgroundInvertedColor,
     this.backgroundContainerColor,
+    this.backgroundForDialogListItem,
+    this.listTileBackgroundColor,
     this.textFieldBorderColor,
     this.iconButtonColor,
     this.linkColor,
     this.weakLinkColor,
     this.weakTextColor,
+    this.weakTextColorLess,
     this.weakTextColorPlus,
     this.weakTextColorPlusPlus,
     this.dialogDefaultTextColor,
@@ -57,6 +60,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     this.paymentItemPriceColor,
     this.paymentItemDateColor,
     this.paymentItemDescriptionColor,
+    this.settingsSectionBackground,
   });
 
   final String? appBarBackgroundImage;
@@ -94,6 +98,9 @@ class CustomColors extends ThemeExtension<CustomColors> {
   final Color? backgroundColor;
   final Color? backgroundInvertedColor;
   final Color? backgroundContainerColor;
+  final Color? backgroundForDialogListItem;
+
+  final Color? listTileBackgroundColor;
 
   final Color? textFieldBorderColor;
   final Color? iconButtonColor;
@@ -101,6 +108,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
   final Color? linkColor;
   final Color? weakLinkColor;
   final Color? weakTextColor;
+  final Color? weakTextColorLess;
   final Color? weakTextColorPlus;
   final Color? weakTextColorPlusPlus;
 
@@ -124,6 +132,8 @@ class CustomColors extends ThemeExtension<CustomColors> {
   final Color? paymentItemPriceColor;
   final Color? paymentItemDateColor;
   final Color? paymentItemDescriptionColor;
+
+  final Color? settingsSectionBackground;
 
   @override
   ThemeExtension<CustomColors> lerp(
@@ -168,10 +178,13 @@ class CustomColors extends ThemeExtension<CustomColors> {
       backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t),
       backgroundInvertedColor: Color.lerp(backgroundInvertedColor, other.backgroundInvertedColor, t),
       backgroundContainerColor: Color.lerp(backgroundContainerColor, other.backgroundContainerColor, t),
+      backgroundForDialogListItem: Color.lerp(backgroundForDialogListItem, other.backgroundForDialogListItem, t),
+      listTileBackgroundColor: Color.lerp(listTileBackgroundColor, other.listTileBackgroundColor, t),
       textFieldBorderColor: Color.lerp(textFieldBorderColor, other.textFieldBorderColor, t),
       iconButtonColor: Color.lerp(iconButtonColor, other.iconButtonColor, t),
       weakLinkColor: Color.lerp(weakLinkColor, other.weakLinkColor, t),
       weakTextColor: Color.lerp(weakTextColor, other.weakTextColor, t),
+      weakTextColorLess: Color.lerp(weakTextColorLess, other.weakTextColorLess, t),
       weakTextColorPlus: Color.lerp(weakTextColorPlus, other.weakTextColorPlus, t),
       weakTextColorPlusPlus: Color.lerp(weakTextColorPlusPlus, other.weakTextColorPlusPlus, t),
       dialogDefaultTextColor: Color.lerp(dialogDefaultTextColor, other.dialogDefaultTextColor, t),
@@ -191,6 +204,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
       paymentItemPriceColor: Color.lerp(paymentItemPriceColor, other.paymentItemPriceColor, t),
       paymentItemDateColor: Color.lerp(paymentItemDateColor, other.paymentItemDateColor, t),
       paymentItemDescriptionColor: Color.lerp(paymentItemDescriptionColor, other.paymentItemDescriptionColor, t),
+      settingsSectionBackground: Color.lerp(settingsSectionBackground, other.settingsSectionBackground, t),
     );
   }
 
@@ -212,23 +226,26 @@ class CustomColors extends ThemeExtension<CustomColors> {
     tagsText: Colors.black,
     chatInputPanelBackground: Colors.transparent,
     chatInputPanelText: Color.fromARGB(255, 0, 0, 0),
-    chatInputAreaBackground: Color.fromARGB(255, 245, 245, 245),
+    chatInputAreaBackground: Color.fromARGB(255, 255, 255, 255),
     chatExampleItemBackground: Color.fromARGB(194, 221, 221, 221),
     chatExampleItemBackgroundHover: Color.fromARGB(255, 223, 223, 223),
-    chatExampleItemText: Color.fromARGB(255, 66, 66, 66),
+    chatExampleItemText: Color.fromARGB(255, 255, 255, 255),
     chatExampleTitleText: Color.fromARGB(255, 66, 66, 66),
     markdownLinkColor: Colors.blue,
     markdownPreColor: Color.fromARGB(255, 247, 247, 247),
     markdownCodeColor: Color.fromARGB(255, 167, 100, 153),
     boxShadowColor: Color.fromARGB(149, 232, 232, 232),
-    backgroundColor: Color.fromARGB(255, 242, 242, 246),
+    backgroundColor: Color.fromARGB(255, 242, 242, 242),
     backgroundInvertedColor: Color.fromARGB(255, 72, 72, 72),
     backgroundContainerColor: Color.fromARGB(255, 255, 255, 255),
+    backgroundForDialogListItem: Color.fromARGB(255, 255, 255, 255),
+    listTileBackgroundColor: Color.fromARGB(60, 217, 217, 217),
     textFieldBorderColor: Color.fromARGB(255, 228, 228, 228),
     iconButtonColor: Color.fromARGB(255, 117, 117, 117),
     linkColor: Color.fromARGB(255, 9, 185, 85),
     weakLinkColor: Color.fromARGB(255, 75, 75, 75),
     weakTextColor: Color.fromARGB(255, 75, 75, 75),
+    weakTextColorLess: Color.fromARGB(255, 146, 146, 146),
     weakTextColorPlus: Color.fromARGB(255, 146, 146, 146),
     weakTextColorPlusPlus: Color.fromARGB(255, 29, 29, 29),
     dialogDefaultTextColor: Color.fromARGB(195, 0, 0, 0),
@@ -236,11 +253,11 @@ class CustomColors extends ThemeExtension<CustomColors> {
     columnBlockBorderColor: Color.fromARGB(255, 236, 236, 236),
     columnBlockBackgroundColor: Color.fromARGB(255, 255, 255, 255),
     columnBlockDividerColor: Color.fromARGB(255, 241, 241, 241),
-    textfieldHintColor: Color.fromARGB(255, 227, 227, 227),
+    textfieldHintColor: Color.fromARGB(255, 181, 181, 181),
     textfieldHintDeepColor: Color.fromARGB(255, 94, 94, 94),
     textfieldLabelColor: Color.fromARGB(255, 66, 66, 66),
     textfieldValueColor: Color.fromARGB(255, 108, 108, 108),
-    textfieldBackgroundColor: Color.fromARGB(255, 244, 244, 244),
+    textfieldBackgroundColor: Color.fromARGB(255, 230, 230, 230),
     textfieldSelectorColor: Color.fromARGB(255, 9, 185, 85),
     paymentItemBorderColor: Color.fromARGB(255, 228, 228, 228),
     paymentItemBackgroundColor: Color.fromARGB(255, 245, 245, 245),
@@ -248,6 +265,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     paymentItemPriceColor: Color.fromARGB(255, 66, 66, 66),
     paymentItemDateColor: Color.fromARGB(255, 117, 117, 117),
     paymentItemDescriptionColor: Color.fromARGB(255, 117, 117, 117),
+    settingsSectionBackground: Color.fromARGB(255, 255, 255, 255),
   );
 
   static const dark = CustomColors(
@@ -267,7 +285,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     tagsBackgroundHover: Color.fromARGB(255, 106, 106, 106),
     tagsText: Color.fromARGB(255, 218, 218, 218),
     chatInputPanelBackground: Color.fromARGB(255, 0, 0, 0),
-    chatInputPanelText: Color.fromARGB(255, 255, 255, 255),
+    chatInputPanelText: Color.fromARGB(124, 255, 255, 255),
     chatInputAreaBackground: Color.fromARGB(255, 32, 32, 32),
     chatExampleItemBackground: Color.fromARGB(255, 80, 80, 80),
     chatExampleItemBackgroundHover: Color.fromARGB(255, 69, 69, 69),
@@ -280,23 +298,26 @@ class CustomColors extends ThemeExtension<CustomColors> {
     backgroundColor: Color.fromARGB(255, 30, 30, 30),
     backgroundInvertedColor: Color.fromARGB(255, 233, 233, 233),
     backgroundContainerColor: Color.fromARGB(255, 0, 0, 0),
+    backgroundForDialogListItem: Color.fromARGB(23, 0, 0, 0),
+    listTileBackgroundColor: Color.fromARGB(25, 0, 0, 0),
     textFieldBorderColor: Color.fromARGB(106, 107, 107, 107),
     iconButtonColor: Color.fromARGB(255, 218, 218, 218),
     linkColor: Color.fromARGB(255, 9, 185, 85),
     weakLinkColor: Color.fromARGB(255, 218, 218, 218),
     weakTextColor: Color.fromARGB(255, 130, 130, 130),
+    weakTextColorLess: Color.fromARGB(198, 146, 146, 146),
     weakTextColorPlus: Color.fromARGB(255, 137, 137, 137),
     weakTextColorPlusPlus: Color.fromARGB(255, 173, 173, 173),
     dialogDefaultTextColor: Color.fromARGB(195, 255, 255, 255),
     dialogBackgroundColor: Colors.black,
     columnBlockBorderColor: Color.fromARGB(255, 72, 72, 72),
     columnBlockBackgroundColor: Color.fromARGB(255, 44, 44, 46),
-    columnBlockDividerColor: Color.fromARGB(160, 60, 60, 60),
+    columnBlockDividerColor: Color.fromARGB(57, 60, 60, 60),
     textfieldHintColor: Color.fromARGB(255, 105, 105, 105),
     textfieldHintDeepColor: Color.fromARGB(255, 170, 170, 170),
     textfieldLabelColor: Color.fromARGB(255, 218, 218, 218),
     textfieldValueColor: Color.fromARGB(255, 207, 207, 207),
-    textfieldBackgroundColor: Color.fromARGB(255, 88, 88, 88),
+    textfieldBackgroundColor: Color.fromARGB(255, 44, 44, 44),
     textfieldSelectorColor: Color.fromARGB(255, 9, 185, 85),
     paymentItemBorderColor: Color.fromARGB(255, 69, 69, 69),
     paymentItemBackgroundColor: Color.fromARGB(255, 29, 29, 29),
@@ -304,6 +325,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     paymentItemPriceColor: Color.fromARGB(255, 218, 218, 218),
     paymentItemDateColor: Color.fromARGB(255, 218, 218, 218),
     paymentItemDescriptionColor: Color.fromARGB(255, 218, 218, 218),
+    settingsSectionBackground: Color.fromARGB(255, 44, 44, 46),
   );
 
   @override
@@ -337,11 +359,14 @@ class CustomColors extends ThemeExtension<CustomColors> {
     Color? backgroundColor,
     Color? backgroundInvertedColor,
     Color? backgroundContainerColor,
+    Color? backgroundForDialogListItem,
+    Color? listTileBackgroundColor,
     Color? textFieldBorderColor,
     Color? iconButtonColor,
     Color? linkColor,
     Color? weakLinkColor,
     Color? weakTextColor,
+    Color? weakTextColorLess,
     Color? weakTextColorPlus,
     Color? weakTextColorPlusPlus,
     Color? dialogDefaultTextColor,
@@ -361,6 +386,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     Color? paymentItemPriceColor,
     Color? paymentItemDateColor,
     Color? paymentItemDescriptionColor,
+    Color? settingsSectionBackground,
   }) {
     return CustomColors(
       appBarBackgroundImage: appBarBackgroundImage ?? this.appBarBackgroundImage,
@@ -393,11 +419,14 @@ class CustomColors extends ThemeExtension<CustomColors> {
       backgroundColor: backgroundColor ?? this.backgroundColor,
       backgroundInvertedColor: backgroundInvertedColor ?? this.backgroundInvertedColor,
       backgroundContainerColor: backgroundContainerColor ?? this.backgroundContainerColor,
+      backgroundForDialogListItem: backgroundForDialogListItem ?? this.backgroundForDialogListItem,
+      listTileBackgroundColor: listTileBackgroundColor ?? this.listTileBackgroundColor,
       textFieldBorderColor: textFieldBorderColor ?? this.textFieldBorderColor,
       iconButtonColor: iconButtonColor ?? this.iconButtonColor,
       linkColor: linkColor ?? this.linkColor,
       weakLinkColor: weakLinkColor ?? this.weakLinkColor,
       weakTextColor: weakTextColor ?? this.weakTextColor,
+      weakTextColorLess: weakTextColorLess ?? this.weakTextColorLess,
       weakTextColorPlus: weakTextColorPlus ?? this.weakTextColorPlus,
       weakTextColorPlusPlus: weakTextColorPlusPlus ?? this.weakTextColorPlusPlus,
       dialogDefaultTextColor: dialogDefaultTextColor ?? this.dialogDefaultTextColor,
@@ -417,6 +446,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
       paymentItemPriceColor: paymentItemPriceColor ?? this.paymentItemPriceColor,
       paymentItemDateColor: paymentItemDateColor ?? this.paymentItemDateColor,
       paymentItemDescriptionColor: paymentItemDescriptionColor ?? this.paymentItemDescriptionColor,
+      settingsSectionBackground: settingsSectionBackground ?? this.settingsSectionBackground,
     );
   }
 }

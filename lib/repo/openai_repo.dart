@@ -37,8 +37,7 @@ class OpenAIRepository {
   void _reloadServerConfig() {
     // 自己的 OpenAI 服务器
     if (selfHosted) {
-      OpenAI.baseUrl =
-          settings.getDefault(settingOpenAIURL, defaultOpenAIServerURL);
+      OpenAI.baseUrl = settings.getDefault(settingOpenAIURL, defaultOpenAIServerURL);
       OpenAI.organization = settings.get(settingOpenAIOrganization);
       OpenAI.apiKey = settings.getDefault(settingOpenAIAPIToken, '');
       OpenAI.externalHeaders = {};
@@ -64,11 +63,8 @@ class OpenAIRepository {
     int n = 1,
     OpenAIImageSize size = OpenAIImageSize.size1024,
   }) async {
-    var model = await OpenAI.instance.image.create(
-        prompt: prompt,
-        n: n,
-        size: size,
-        responseFormat: OpenAIImageResponseFormat.url);
+    var model = await OpenAI.instance.image
+        .create(prompt: prompt, n: n, size: size, responseFormat: OpenAIImageResponseFormat.url);
     return model.data.map((e) => e.url).toList();
   }
 
@@ -102,7 +98,6 @@ class OpenAIRepository {
       'openai',
       category: modelTypeOpenAI,
       isChatModel: true,
-      description: '3.5 升级版，支持 16K 长文本',
       shortName: 'GPT-3.5 Turbo 16K',
       tag: 'local',
       avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt35.png',
@@ -113,68 +108,40 @@ class OpenAIRepository {
       'openai',
       category: modelTypeOpenAI,
       isChatModel: true,
-      description: '能力强，更精准',
       shortName: 'GPT-4',
       tag: 'local',
       avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt4.png',
     ),
-
     'gpt-4-32k': mm.Model(
       'gpt-4-32k',
       'GPT-4 32k',
       'openai',
       category: modelTypeOpenAI,
       isChatModel: true,
-      description: '基于 GPT-4，但是支持4倍的内容长度',
       shortName: 'GPT-4 32K',
       tag: 'local',
       avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt4.png',
     ),
-
-    // 'gpt-4-0314': Model(
-    //   'gpt-4-0314',
-    //   'openai',
-    //   category: modelTypeOpenAI,
-    //   isChatModel: true,
-    // ),
-    // 'gpt-4-32k-0314': Model(
-    //   'gpt-4-32k-0314',
-    //   'openai',
-    //   category: modelTypeOpenAI,
-    //   isChatModel: true,
-    // ),
-    //// gpt-3.5-turbo-0301 将在 2023年6月1日停止服务
-    // 'gpt-3.5-turbo-0301': Model(
-    //   'gpt-3.5-turbo-0301',
-    //   'openai',
-    //   category: modelTypeOpenAI,
-    //   isChatModel: true,
-    // ),
-    // 'text-davinci-003': Model(
-    //   'text-davinci-003',
-    //   'openai',
-    //   category: modelTypeOpenAI,
-    // ),
-    // 'text-davinci-002': Model(
-    //   'text-davinci-002',
-    //   'openai',
-    //   category: modelTypeOpenAI,
-    // ),
-    // 'text-curie-001': Model(
-    //   'text-curie-001',
-    //   'openai',
-    //   category: modelTypeOpenAI,
-    // ),
-    // 'text-babbage-001': Model(
-    //   'text-babbage-001',
-    //   'openai',
-    //   category: modelTypeOpenAI,
-    // ),
-    // 'text-ada-001': Model(
-    //   'text-ada-001',
-    //   'openai',
-    //   category: modelTypeOpenAI,
-    // ),
+    'gpt-4o': mm.Model(
+      'gpt-4o',
+      'GPT-4o',
+      'openai',
+      category: modelTypeOpenAI,
+      isChatModel: true,
+      shortName: 'GPT-4o',
+      tag: 'local',
+      avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt4.png',
+    ),
+    'gpt-4o-mini': mm.Model(
+      'gpt-4o-mini',
+      'GPT-4o-mini',
+      'openai',
+      category: modelTypeOpenAI,
+      isChatModel: true,
+      shortName: 'GPT-4o-mini',
+      tag: 'local',
+      avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt4.png',
+    ),
   };
 
   /// 支持的模型
@@ -254,8 +221,10 @@ class OpenAIRepository {
     user = 'user',
     String model = defaultChatModel,
     int? roomId,
+    int? historyId,
     int? maxTokens,
     String? tempModel,
+    List<String>? flags,
   }) async {
     var completer = Completer<void>();
 
@@ -274,22 +243,21 @@ class OpenAIRepository {
       if (Ability().supportWebSocket && canUseWebsocket) {
         var serverURL = settings.getDefault(settingServerURL, apiServerURL);
         if (PlatformTool.isWeb() && (serverURL == '' || serverURL == '/')) {
-          serverURL =
-              '${Uri.base.scheme}://${Uri.base.host}${Uri.base.hasPort ? ':${Uri.base.port}' : ''}';
+          serverURL = '${Uri.base.scheme}://${Uri.base.host}${Uri.base.hasPort ? ':${Uri.base.port}' : ''}';
         }
 
         final wsURL = serverURL.startsWith('https://')
             ? serverURL.replaceFirst('https://', 'wss://')
             : serverURL.replaceFirst('http://', 'ws://');
-        final wsUri = Uri.parse('$wsURL/v1/chat/completions');
+        final wsUriBase = Uri.parse('$wsURL/v1/chat/completions');
 
         final apiToken = settings.getDefault(settingAPIServerToken, '');
 
-        var channel = WebSocketChannel.connect(Uri(
-          scheme: wsUri.scheme,
-          host: wsUri.host,
-          port: wsUri.port,
-          path: wsUri.path,
+        final wsUri = Uri(
+          scheme: wsUriBase.scheme,
+          host: wsUriBase.host,
+          port: wsUriBase.port,
+          path: wsUriBase.path,
           queryParameters: {
             'ws': 'true',
             'authorization': apiToken,
@@ -298,7 +266,10 @@ class OpenAIRepository {
             'platform': PlatformTool.operatingSystem(),
             'language': language,
           },
-        ));
+        );
+        Logger.instance.d('wsURL: ${wsUri.toString()}');
+
+        var channel = WebSocketChannel.connect(wsUri);
 
         await channel.ready;
 
@@ -349,10 +320,11 @@ class OpenAIRepository {
           'temperature': temperature,
           'user': user,
           'max_tokens': maxTokens,
-          'n': Ability().enableLocalOpenAI &&
-                  (model.startsWith('openai:') || model.startsWith('gpt-'))
+          'n': Ability().enableLocalOpenAI && (model.startsWith('openai:') || model.startsWith('gpt-'))
               ? null
               : roomId, // n 参数暂时用不到，复用作为 roomId
+          'history_id': historyId,
+          'flags': flags,
         });
 
         Logger.instance.d('send chat request: $data');
@@ -365,9 +337,7 @@ class OpenAIRepository {
           temperature: temperature,
           user: user,
           maxTokens: maxTokens,
-          n: Ability().enableLocalOpenAI
-              ? null
-              : roomId, // n 参数暂时用不到，复用作为 roomId
+          n: Ability().enableLocalOpenAI ? null : roomId, // n 参数暂时用不到，复用作为 roomId
         );
 
         chatStream.listen(
@@ -427,11 +397,13 @@ class ChatStreamRespData {
   final String content;
   final int? code;
   final String? error;
+  final String? reasoningContent;
 
   ChatStreamRespData({
     this.role,
     required this.content,
     this.code,
     this.error,
+    this.reasoningContent,
   });
 }

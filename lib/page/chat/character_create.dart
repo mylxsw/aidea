@@ -6,6 +6,7 @@ import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/component/advanced_button.dart';
 import 'package:askaide/page/component/avatar_selector.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
@@ -16,17 +17,13 @@ import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/random_avatar.dart';
-import 'package:askaide/page/component/room_card.dart';
-import 'package:askaide/page/component/weak_text_button.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
-import 'package:askaide/repo/api/room_gallery.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
-import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/model.dart';
 import 'package:askaide/page/component/model_item.dart';
 import 'package:askaide/page/component/dialog.dart';
@@ -35,18 +32,17 @@ import 'package:askaide/repo/model/model.dart' as mm;
 import 'package:go_router/go_router.dart';
 
 /// 创建聊天室对话框
-class RoomCreatePage extends StatefulWidget {
+class CharacterCreatePage extends StatefulWidget {
   final SettingRepository setting;
-  const RoomCreatePage({super.key, required this.setting});
+  const CharacterCreatePage({super.key, required this.setting});
 
   @override
-  State<RoomCreatePage> createState() => _RoomCreatePageState();
+  State<CharacterCreatePage> createState() => _CharacterCreatePageState();
 }
 
-class _RoomCreatePageState extends State<RoomCreatePage> {
+class _CharacterCreatePageState extends State<CharacterCreatePage> {
   final _nameController = TextEditingController(text: '');
   final _promptController = TextEditingController(text: '');
-  final _initMessageController = TextEditingController(text: '');
 
   final randomSeed = Random().nextInt(10000);
 
@@ -68,7 +64,6 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
 
   mm.Model? _selectedModel;
 
-  List<RoomGallery> selectedSuggestions = [];
   List<String> tags = [];
 
   @override
@@ -79,8 +74,6 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
       APIServer().avatars().then((value) {
         avatarPresets = value;
       });
-
-      context.read<RoomBloc>().add(RoomGalleriesLoadEvent());
     }
   }
 
@@ -88,7 +81,6 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
   void dispose() {
     _nameController.dispose();
     _promptController.dispose();
-    _initMessageController.dispose();
     super.dispose();
   }
 
@@ -118,7 +110,9 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
               if (state.success) {
                 if (state.redirect != null) {
                   context.push(state.redirect!).then((value) {
-                    context.read<RoomBloc>().add(RoomsLoadEvent());
+                    if (context.mounted) {
+                      context.read<RoomBloc>().add(RoomsLoadEvent());
+                    }
                   });
                 }
               } else {
@@ -128,154 +122,14 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Ability().isUserLogon()
-                ? SafeArea(
-                    top: false,
-                    child: DefaultTabController(
-                      length: tags.length + (selectedSuggestions.isEmpty ? 1 : 0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Theme(
-                            data: Theme.of(context).copyWith(
-                              colorScheme:
-                                  Theme.of(context).colorScheme.copyWith(surfaceContainerHighest: Colors.transparent),
-                            ),
-                            child: TabBar(
-                              tabs: [
-                                for (var tag in tags) Tab(text: tag),
-                                if (selectedSuggestions.isEmpty) Tab(text: AppLocale.custom.getString(context)),
-                              ],
-                              isScrollable: true,
-                              labelColor: customColors.linkColor,
-                              indicator: const BoxDecoration(),
-                              labelPadding: const EdgeInsets.only(right: 5, left: 10),
-                              overlayColor: WidgetStateProperty.all(Colors.transparent),
-                              tabAlignment: TabAlignment.center,
-                            ),
-                          ),
-                          Expanded(
-                            child: BlocConsumer<RoomBloc, RoomState>(
-                              listenWhen: (previous, current) => current is RoomGalleriesLoaded,
-                              listener: (context, state) {
-                                if (state is RoomGalleriesLoaded) {
-                                  if (state.error != null) {
-                                    showErrorMessageEnhanced(context, state.error!);
-                                  }
-
-                                  if (state.galleries.isNotEmpty) {
-                                    tags = state.tags;
-
-                                    setState(() {});
-                                  }
-                                }
-                              },
-                              buildWhen: (previous, current) => current is RoomGalleriesLoaded,
-                              builder: (context, state) {
-                                if (state is RoomGalleriesLoaded) {
-                                  return TabBarView(
-                                    children: [
-                                      for (var tag in tags)
-                                        buildSuggestTab(
-                                          customColors,
-                                          context,
-                                          state.galleries.where((element) => element.tags.contains(tag)).toList(),
-                                        ),
-                                      if (selectedSuggestions.isEmpty) buildCustomTab(customColors, context),
-                                    ],
-                                  );
-                                }
-
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              },
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  )
-                : buildCustomTab(customColors, context),
+            child: buildCustomCharacter(customColors, context),
           ),
         ),
       ),
-      bottomNavigationBar: selectedSuggestions.isNotEmpty
-          ? SafeArea(
-              child: Container(
-                height: 70,
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                child: Row(
-                  children: [
-                    WeakTextButton(
-                      title: AppLocale.cancel.getString(context),
-                      onPressed: () {
-                        selectedSuggestions.clear();
-                        setState(() {});
-                      },
-                    ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: EnhancedButton(
-                        title: AppLocale.ok.getString(context),
-                        onPressed: () {
-                          context
-                              .read<RoomBloc>()
-                              .add(GalleryRoomCopyEvent(selectedSuggestions.map((e) => e.id).toList()));
-                          showSuccessMessage(AppLocale.operateSuccess.getString(context));
-                          context.pop();
-                        },
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            )
-          : null,
     );
   }
 
-  Widget buildSuggestTab(
-    CustomColors customColors,
-    BuildContext context,
-    List<RoomGallery> galleries,
-  ) {
-    return GridView.count(
-      shrinkWrap: true,
-      crossAxisCount: _calculateSuggestCrossAxisCount(),
-      childAspectRatio: 0.8,
-      crossAxisSpacing: 10,
-      mainAxisSpacing: 2,
-      padding: const EdgeInsets.all(10),
-      children: galleries
-          .map(
-            (item) => RoomCard(
-              item: item,
-              onItemSelected: onItemSelected,
-              selected: selectedSuggestions.contains(item),
-              fontsize: 15,
-              stopAllEvents: true,
-            ),
-          )
-          .toList(),
-    );
-  }
-
-  void onItemSelected(RoomGallery item) {
-    if (selectedSuggestions.contains(item)) {
-      selectedSuggestions.remove(item);
-    } else {
-      selectedSuggestions.add(item);
-    }
-
-    setState(() {});
-  }
-
-  Widget buildCustomTab(CustomColors customColors, BuildContext context) {
+  Widget buildCustomCharacter(CustomColors customColors, BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -367,38 +221,8 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
           ),
           ColumnBlock(
             innerPanding: 10,
+            padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
             children: [
-              if (_selectedModel != null && !_selectedModel!.isChatModel)
-                Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                  child: Text(
-                    defaultModelNotChatDesc,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(fontSize: 14, color: const Color.fromARGB(255, 244, 155, 54)),
-                  ),
-                ),
-
-              // 模型
-              EnhancedInputSimple(
-                title: AppLocale.model.getString(context),
-                padding: const EdgeInsets.only(top: 10, bottom: 10),
-                onPressed: () {
-                  openSelectModelDialog(
-                    context,
-                    (selected) {
-                      setState(() {
-                        _selectedModel = selected;
-                      });
-                    },
-                    initValue: _selectedModel?.uid(),
-                  );
-                },
-                value: _selectedModel != null ? _selectedModel!.name : AppLocale.select.getString(context),
-              ),
               // 提示语
               EnhancedTextField(
                 fontSize: 12,
@@ -442,15 +266,22 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
               innerPanding: 10,
               padding: const EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 5),
               children: [
-                EnhancedTextField(
-                  customColors: customColors,
-                  controller: _initMessageController,
-                  labelText: AppLocale.welcomeMessage.getString(context),
-                  labelPosition: LabelPosition.top,
-                  hintText: AppLocale.welcomeMessageTips.getString(context),
-                  maxLines: 3,
-                  showCounter: false,
-                  maxLength: 1000,
+                // 模型
+                EnhancedInputSimple(
+                  title: AppLocale.model.getString(context),
+                  padding: const EdgeInsets.only(top: 10, bottom: 10),
+                  onPressed: () {
+                    openSelectModelDialog(
+                      context,
+                      (selected) {
+                        setState(() {
+                          _selectedModel = selected;
+                        });
+                      },
+                      initValue: _selectedModel?.uid(),
+                    );
+                  },
+                  value: _selectedModel != null ? _selectedModel!.name : AppLocale.select.getString(context),
                 ),
                 EnhancedInput(
                   title: Text(
@@ -503,99 +334,65 @@ class _RoomCreatePageState extends State<RoomCreatePage> {
                 ),
               ],
             ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              EnhancedButton(
-                title: showAdvancedOptions
-                    ? AppLocale.collapseOptions.getString(context)
-                    : AppLocale.advanced.getString(context),
-                width: 100,
-                backgroundColor: Colors.transparent,
-                color: customColors.weakLinkColor,
-                fontSize: 15,
-                icon: Icon(
-                  showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
-                  color: customColors.weakLinkColor,
-                  size: 15,
-                ),
-                onPressed: () {
-                  setState(() {
-                    showAdvancedOptions = !showAdvancedOptions;
-                  });
-                },
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: EnhancedButton(
-                  title: AppLocale.ok.getString(context),
-                  onPressed: () async {
-                    if (_nameController.text == '') {
-                      showErrorMessage(AppLocale.nameRequiredMessage.getString(context));
-                      return;
-                    }
+          AdvancedButton(
+            showAdvancedOptions: showAdvancedOptions,
+            onPressed: (value) {
+              setState(() {
+                showAdvancedOptions = value;
+              });
+            },
+          ),
+          const SizedBox(height: 10),
+          EnhancedButton(
+            title: AppLocale.ok.getString(context),
+            onPressed: () async {
+              if (_nameController.text == '') {
+                showErrorMessage(AppLocale.nameRequiredMessage.getString(context));
+                return;
+              }
 
-                    if (_selectedModel == null) {
-                      showErrorMessage(AppLocale.modelRequiredMessage.getString(context));
-                      return;
-                    }
+              if (_promptController.text == '') {
+                showErrorMessage(AppLocale.charactorPromptRequiredMessage.getString(context));
+                return;
+              }
 
-                    if (_promptController.text == '') {
-                      showErrorMessage(AppLocale.charactorPromptRequiredMessage.getString(context));
-                      return;
-                    }
+              if (_avatarUrl != null) {
+                if (!(_avatarUrl!.startsWith('http://') || _avatarUrl!.startsWith('https://'))) {
+                  // 上传文件，获取 URL
+                  final cancel = BotToast.showCustomLoading(
+                    toastBuilder: (cancel) {
+                      return LoadingIndicator(
+                        message: AppLocale.imageUploading.getString(context),
+                      );
+                    },
+                    allowClick: false,
+                  );
 
-                    if (_avatarUrl != null) {
-                      if (!(_avatarUrl!.startsWith('http://') || _avatarUrl!.startsWith('https://'))) {
-                        // 上传文件，获取 URL
-                        final cancel = BotToast.showCustomLoading(
-                          toastBuilder: (cancel) {
-                            return LoadingIndicator(
-                              message: AppLocale.imageUploading.getString(context),
-                            );
-                          },
-                          allowClick: false,
-                        );
+                  final uploadRes = await ImageUploader(widget.setting)
+                      .upload(_avatarUrl!, usage: 'avatar')
+                      .whenComplete(() => cancel());
+                  _avatarUrl = uploadRes.url;
+                }
+              }
 
-                        final uploadRes = await ImageUploader(widget.setting)
-                            .upload(_avatarUrl!, usage: 'avatar')
-                            .whenComplete(() => cancel());
-                        _avatarUrl = uploadRes.url;
-                      }
-                    }
-
-                    if (context.mounted) {
-                      context.read<RoomBloc>().add(
-                            RoomCreateEvent(
-                              _nameController.text,
-                              _selectedModel!.uid(),
-                              _promptController.text,
-                              avatarId: _avatarId,
-                              avatarUrl: _avatarUrl,
-                              maxContext: maxContext,
-                              initMessage: _initMessageController.text,
-                            ),
-                          );
-                    }
-                  },
-                ),
-              ),
-            ],
+              if (context.mounted) {
+                context.read<RoomBloc>().add(
+                      RoomCreateEvent(
+                        _nameController.text,
+                        _promptController.text,
+                        model: _selectedModel?.uid(),
+                        avatarId: _avatarId,
+                        avatarUrl: _avatarUrl,
+                        maxContext: maxContext,
+                      ),
+                    );
+              }
+            },
           ),
           const SizedBox(height: 15),
         ],
       ),
     );
-  }
-
-  int _calculateSuggestCrossAxisCount() {
-    var width = MediaQuery.of(context).size.width;
-    if (width > CustomSize.maxWindowSize) {
-      width = CustomSize.maxWindowSize;
-    }
-
-    final crossAxisCount = (width / 160).floor();
-    return crossAxisCount > 7 ? 7 : crossAxisCount;
   }
 }
 
@@ -609,7 +406,7 @@ void openSelectModelDialog(
   bool withCustom = false,
 }) {
   future() async {
-    final models = await ModelAggregate.models(cache: true, withCustom: withCustom);
+    final models = await ModelAggregate.models(cache: true);
 
     if (priorityModelId != null) {
       // 将 models 中，id 与 priorityModelId 相同的元素排序到最前面
@@ -624,7 +421,7 @@ void openSelectModelDialog(
     }
 
     // 再请求一次，用于异步更新 Cache，下次打开时将显示最新数据
-    ModelAggregate.models(cache: false, withCustom: withCustom);
+    ModelAggregate.models(cache: false);
 
     return models;
   }
@@ -655,7 +452,7 @@ void openSelectModelDialog(
             );
           });
     },
-    heightFactor: 0.85,
+    heightFactor: 0.9,
     title: title,
   );
 }
@@ -715,7 +512,7 @@ void openSystemPromptSelectDialog(
         },
       );
     },
-    heightFactor: 0.7,
+    heightFactor: 0.9,
   );
 }
 

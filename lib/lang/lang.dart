@@ -6,6 +6,7 @@ mixin AppLocale {
   static const String chatAnywhere = 'chat_anywhere';
   static const String creativeIsland = 'creative_island';
   static const String settings = 'settings';
+  static const String configure = 'configure';
   static const String language = 'language';
   static const String themeMode = 'theme_mode';
   static const String accountInfo = 'account_info';
@@ -28,6 +29,7 @@ mixin AppLocale {
   static const String account = 'account';
   static const String usedUp = 'used_up';
   static const String expired = 'expired';
+  static const String timeConsume = 'time-consume';
 
   static const String save = 'save';
   static const String ok = 'ok';
@@ -64,6 +66,7 @@ mixin AppLocale {
   static const String text = 'text';
   static const String uploading = 'uploading';
   static const String robotIsThinkingMessage = 'robot-is-thinking-message';
+  static const String thinkingProcess = 'thinking-process';
   static const String robotHasSomeError = 'robot-has-some-error';
   static const String questionExamples = 'question-examples';
   static const String noRecords = 'no-records';
@@ -78,6 +81,7 @@ mixin AppLocale {
   static const String switchModel = 'switch-model';
   static const String switchModelTitle = 'switch-model-title';
 
+  static const String myCharacters = 'my-characters';
   static const String character = "character";
   static const String createRoom = "create-room";
   static const String model = "model";
@@ -88,6 +92,7 @@ mixin AppLocale {
   static const String prompt = "prompt";
   static const String optional = "optional";
   static const String search = "search";
+  static const String reasoning = "reasoning";
   static const String background = "background";
   static const String backgroundSetting = "background-setting";
   static const String roomSetting = "room-setting";
@@ -312,6 +317,15 @@ mixin AppLocale {
   static const String perRequest = 'per-request';
   static const String info = 'info';
 
+  static const String recently = 'recently';
+  static const String daysAgo = 'days-ago';
+  static const String lastWeek = 'last-week';
+  static const String weeksAgo = 'weeks-ago';
+  static const String lastMonth = 'last-month';
+  static const String monthsAgo = 'months-ago';
+  static const String lastYear = 'last-year';
+  static const String longTimeAgo = 'long-time-ago';
+
   static const Map<String, dynamic> zh = {
     required: '必填',
     systemInfo: '系统信息',
@@ -338,8 +352,8 @@ mixin AppLocale {
     continueMessage: '继续',
     messageInputTips: '有问题尽管问我',
     takePhoto: '拍照',
-    photoLibrary: '照片图库',
-    fileLibrary: '文档',
+    photoLibrary: '附加照片',
+    fileLibrary: '附加文档',
     upload: '上传',
     longPressSpeak: '长按说话',
     send: '发送',
@@ -349,12 +363,14 @@ mixin AppLocale {
     text: '文本',
     uploading: '上传中...',
     robotIsThinkingMessage: '正在思考中...',
+    thinkingProcess: '深度思考',
     robotHasSomeError: '发送失败，重发该消息？',
     appName: 'AIdea',
     chatAnywhere: '聊一聊',
     homeTitle: '自定义角色',
     creativeIsland: '创作岛',
     settings: '设置',
+    configure: '配置',
     language: '语言',
     themeMode: '主题外观',
     accountInfo: '账号信息',
@@ -377,7 +393,9 @@ mixin AppLocale {
     account: '账号',
     usedUp: '已用完',
     expired: '已过期',
+    timeConsume: '用时',
     character: '角色',
+    myCharacters: '我的角色',
     createRoom: '创建角色',
     model: 'AI 模型',
     selectModel: '选择模型',
@@ -387,6 +405,7 @@ mixin AppLocale {
     prompt: '角色设定',
     optional: '可选',
     search: '搜索',
+    reasoning: '推理',
     background: '背景',
     backgroundSetting: '背景图',
     roomSetting: '设置',
@@ -448,7 +467,7 @@ mixin AppLocale {
     promptHint: '设定角色和技能，以便为你提供更精准有效的信息。',
     confirmClearCache: '确定要清除缓存吗？',
     confirmSignOut: '确定要退出登录吗？',
-    askMeAnyQuestion: '有问题尽管问我',
+    askMeAnyQuestion: '消息',
     askMeLikeThis: '可以这样问我:',
     refresh: '换一批',
     fastAndCostEffective: '速度快，成本低',
@@ -565,7 +584,7 @@ mixin AppLocale {
     selectMember: '选择本次对话成员',
     members: '成员',
     createGroupChat: '创建群聊',
-    advanced: '高级选项',
+    advanced: '更多选项',
     collapseOptions: '收起选项',
     welcomeMessage: '引导语',
     welcomeMessageTips: '每次开始新对话时，系统将会以 AI 的身份自动发送引导语。',
@@ -608,6 +627,14 @@ mixin AppLocale {
     output: '输出',
     perRequest: '每次',
     info: '详情',
+    recently: '最近',
+    daysAgo: '天前',
+    lastWeek: '上周',
+    weeksAgo: '周前',
+    lastMonth: '上个月',
+    monthsAgo: '月前',
+    lastYear: '去年',
+    longTimeAgo: '很久以前',
   };
 
   static const Map<String, dynamic> en = {
@@ -647,12 +674,14 @@ mixin AppLocale {
     text: 'Text',
     uploading: 'Uploading...',
     robotIsThinkingMessage: 'Thinking...',
+    thinkingProcess: 'Deep Thinking',
     robotHasSomeError: 'There seems to be something wrong, Do you want to resend the message?',
     appName: 'AIdea',
     chatAnywhere: 'Chat',
     homeTitle: 'Characters',
     creativeIsland: 'Creative',
     settings: 'Setting',
+    configure: 'Configure',
     language: 'Language',
     themeMode: 'Theme',
     accountInfo: 'Account Info',
@@ -675,7 +704,9 @@ mixin AppLocale {
     account: 'Account',
     usedUp: 'Used Up',
     expired: 'Expired',
+    timeConsume: 'Cost',
     character: 'Character',
+    myCharacters: 'My Characters',
     createRoom: 'Create Character',
     model: 'AI Model',
     selectModel: 'Select Model',
@@ -685,6 +716,7 @@ mixin AppLocale {
     prompt: 'Prompt',
     optional: 'Optional',
     search: 'Search',
+    reasoning: 'Reasoning',
     background: 'Background',
     backgroundSetting: 'Background Setting',
     roomSetting: 'Setting',
@@ -749,7 +781,7 @@ mixin AppLocale {
         'Set the role and skills of the character so that it can provide more accurate and effective information for you.',
     confirmClearCache: 'Confirm to clear cache?',
     confirmSignOut: 'Confirm to sign out?',
-    askMeAnyQuestion: 'Feel free to ask ~',
+    askMeAnyQuestion: 'Message',
     askMeLikeThis: 'You can ask me like this:',
     refresh: 'Refresh',
     fastAndCostEffective: 'Fast & Cost-Effective',
@@ -867,7 +899,7 @@ mixin AppLocale {
     selectMember: 'Select member',
     members: 'Members',
     createGroupChat: 'Create group chat',
-    advanced: 'Advanced',
+    advanced: 'More Options',
     collapseOptions: 'Collapse',
     welcomeMessage: 'Welcome Message',
     welcomeMessageTips: 'The system will automatically send a welcome message each time a new chat is started.',
@@ -910,6 +942,14 @@ mixin AppLocale {
     output: 'Output',
     perRequest: 'Per',
     info: 'Detail',
+    recently: 'Recently',
+    lastWeek: 'Last Week',
+    lastMonth: 'Last Month',
+    daysAgo: 'Days Ago',
+    monthsAgo: 'Months Ago',
+    lastYear: 'Last Year',
+    longTimeAgo: 'Long Time Ago',
+    weeksAgo: 'Weeks Ago',
   };
 }
 

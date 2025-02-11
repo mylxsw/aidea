@@ -5,7 +5,8 @@ import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/model.dart';
 import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
-import 'package:askaide/page/chat/room_create.dart';
+import 'package:askaide/page/chat/character_create.dart';
+import 'package:askaide/page/component/advanced_button.dart';
 import 'package:askaide/page/component/avatar_selector.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
@@ -29,19 +30,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
 
-class RoomEditPage extends StatefulWidget {
+class CharacterEditPage extends StatefulWidget {
   final int roomId;
   final SettingRepository setting;
-  const RoomEditPage({super.key, required this.roomId, required this.setting});
+  const CharacterEditPage({super.key, required this.roomId, required this.setting});
 
   @override
-  State<RoomEditPage> createState() => _RoomEditPageState();
+  State<CharacterEditPage> createState() => _CharacterEditPageState();
 }
 
-class _RoomEditPageState extends State<RoomEditPage> {
+class _CharacterEditPageState extends State<CharacterEditPage> {
   final _nameController = TextEditingController();
   final _promptController = TextEditingController(text: '');
-  final _initMessageController = TextEditingController(text: '');
 
   final randomSeed = Random().nextInt(10000);
 
@@ -94,7 +94,7 @@ class _RoomEditPageState extends State<RoomEditPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocale.roomSetting.getString(context),
+          AppLocale.configure.getString(context),
           style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
@@ -111,7 +111,6 @@ class _RoomEditPageState extends State<RoomEditPage> {
               _nameController.text = state.room.name;
               _promptController.text = state.room.systemPrompt ?? '';
               maxContext = state.room.maxContext;
-              _initMessageController.text = state.room.initMessage ?? '';
 
               ModelAggregate.model(state.room.model).then((value) {
                 setState(() {
@@ -258,25 +257,8 @@ class _RoomEditPageState extends State<RoomEditPage> {
 
                       ColumnBlock(
                         innerPanding: 10,
+                        padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
                         children: [
-                          // 模型
-                          EnhancedInputSimple(
-                            title: AppLocale.model.getString(context),
-                            padding: const EdgeInsets.only(top: 10, bottom: 0),
-                            onPressed: () {
-                              openSelectModelDialog(
-                                context,
-                                (selected) {
-                                  setState(() {
-                                    _selectedModel = selected;
-                                  });
-                                },
-                                initValue: _selectedModel?.uid(),
-                                reservedModels: reservedModel != null ? [reservedModel!] : [],
-                              );
-                            },
-                            value: _selectedModel != null ? _selectedModel!.name : AppLocale.select.getString(context),
-                          ),
                           // 提示语
                           EnhancedTextField(
                             fontSize: 12,
@@ -318,17 +300,26 @@ class _RoomEditPageState extends State<RoomEditPage> {
                       if (showAdvancedOptions)
                         ColumnBlock(
                           innerPanding: 10,
-                          padding: const EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 5),
+                          padding: const EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 0),
                           children: [
-                            EnhancedTextField(
-                              customColors: customColors,
-                              controller: _initMessageController,
-                              labelText: AppLocale.welcomeMessage.getString(context),
-                              labelPosition: LabelPosition.top,
-                              hintText: AppLocale.welcomeMessageTips.getString(context),
-                              maxLines: 3,
-                              showCounter: false,
-                              maxLength: 1000,
+                            // 模型
+                            EnhancedInputSimple(
+                              title: AppLocale.model.getString(context),
+                              padding: const EdgeInsets.only(top: 10, bottom: 0),
+                              onPressed: () {
+                                openSelectModelDialog(
+                                  context,
+                                  (selected) {
+                                    setState(() {
+                                      _selectedModel = selected;
+                                    });
+                                  },
+                                  initValue: _selectedModel?.uid(),
+                                  reservedModels: reservedModel != null ? [reservedModel!] : [],
+                                );
+                              },
+                              value:
+                                  _selectedModel != null ? _selectedModel!.name : AppLocale.select.getString(context),
                             ),
                             EnhancedInput(
                               title: Text(
@@ -381,87 +372,63 @@ class _RoomEditPageState extends State<RoomEditPage> {
                             ),
                           ],
                         ),
-                      const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          EnhancedButton(
-                            title: showAdvancedOptions
-                                ? AppLocale.collapseOptions.getString(context)
-                                : AppLocale.advanced.getString(context),
-                            width: 100,
-                            backgroundColor: Colors.transparent,
-                            color: customColors.weakLinkColor,
-                            fontSize: 15,
-                            icon: Icon(
-                              showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
-                              color: customColors.weakLinkColor,
-                              size: 15,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                showAdvancedOptions = !showAdvancedOptions;
-                              });
-                            },
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: EnhancedButton(
-                              title: AppLocale.save.getString(context),
-                              onPressed: () async {
-                                if (_nameController.text == '') {
-                                  showErrorMessage(AppLocale.nameRequiredMessage.getString(context));
-                                  return;
-                                }
+                      AdvancedButton(
+                        showAdvancedOptions: showAdvancedOptions,
+                        onPressed: (value) {
+                          setState(() {
+                            showAdvancedOptions = value;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      EnhancedButton(
+                        title: AppLocale.save.getString(context),
+                        onPressed: () async {
+                          if (_nameController.text == '') {
+                            showErrorMessage(AppLocale.nameRequiredMessage.getString(context));
+                            return;
+                          }
 
-                                if (_selectedModel == null) {
-                                  showErrorMessage(AppLocale.modelRequiredMessage.getString(context));
-                                  return;
-                                }
+                          if (_promptController.text == '') {
+                            showErrorMessage(AppLocale.charactorPromptRequiredMessage.getString(context));
+                            return;
+                          }
 
-                                if (_promptController.text == '') {
-                                  showErrorMessage(AppLocale.charactorPromptRequiredMessage.getString(context));
-                                  return;
-                                }
+                          if (_avatarUrl != null) {
+                            if (!(_avatarUrl!.startsWith('http://') || _avatarUrl!.startsWith('https://'))) {
+                              // 上传文件，获取 URL
+                              final cancel = BotToast.showCustomLoading(
+                                toastBuilder: (cancel) {
+                                  return LoadingIndicator(
+                                    message: AppLocale.imageUploading.getString(context),
+                                  );
+                                },
+                                allowClick: false,
+                              );
 
-                                if (_avatarUrl != null) {
-                                  if (!(_avatarUrl!.startsWith('http://') || _avatarUrl!.startsWith('https://'))) {
-                                    // 上传文件，获取 URL
-                                    final cancel = BotToast.showCustomLoading(
-                                      toastBuilder: (cancel) {
-                                        return LoadingIndicator(
-                                          message: AppLocale.imageUploading.getString(context),
-                                        );
-                                      },
-                                      allowClick: false,
-                                    );
+                              final uploadRes = await ImageUploader(widget.setting)
+                                  .upload(_avatarUrl!, usage: 'avatar')
+                                  .whenComplete(() => cancel());
+                              _avatarUrl = uploadRes.url;
+                            }
+                          }
 
-                                    final uploadRes = await ImageUploader(widget.setting)
-                                        .upload(_avatarUrl!, usage: 'avatar')
-                                        .whenComplete(() => cancel());
-                                    _avatarUrl = uploadRes.url;
-                                  }
-                                }
+                          if (context.mounted) {
+                            context.read<RoomBloc>().add(
+                                  RoomUpdateEvent(
+                                    widget.roomId,
+                                    name: _nameController.text,
+                                    model: _selectedModel?.uid(),
+                                    prompt: _promptController.text,
+                                    avatarUrl: _avatarUrl,
+                                    avatarId: _avatarId,
+                                    maxContext: maxContext,
+                                  ),
+                                );
 
-                                if (context.mounted) {
-                                  context.read<RoomBloc>().add(
-                                        RoomUpdateEvent(
-                                          widget.roomId,
-                                          name: _nameController.text,
-                                          model: _selectedModel!.uid(),
-                                          prompt: _promptController.text,
-                                          avatarUrl: _avatarUrl,
-                                          avatarId: _avatarId,
-                                          maxContext: maxContext,
-                                          initMessage: _initMessageController.text,
-                                        ),
-                                      );
-
-                                  showSuccessMessage(AppLocale.operateSuccess.getString(context));
-                                }
-                              },
-                            ),
-                          ),
-                        ],
+                            showSuccessMessage(AppLocale.operateSuccess.getString(context));
+                          }
+                        },
                       ),
                     ],
                   ),

@@ -1,10 +1,14 @@
 import 'package:askaide/bloc/account_bloc.dart';
 import 'package:askaide/bloc/chat_chat_bloc.dart';
+import 'package:askaide/bloc/room_bloc.dart';
+import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/account_quota_card.dart';
+import 'package:askaide/page/component/chat/role_avatar.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/user.dart';
+import 'package:askaide/repo/model/chat_history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
@@ -23,8 +27,13 @@ class _LeftDrawerState extends State<LeftDrawer> {
   void initState() {
     super.initState();
 
+    reload();
+  }
+
+  void reload() {
     context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
     context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
+    context.read<RoomBloc>().add(RoomsRecentLoadEvent());
   }
 
   @override
@@ -43,64 +52,40 @@ class _LeftDrawerState extends State<LeftDrawer> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: 160,
-                      child: DrawerHeader(
-                        padding: PlatformTool.isMacOS()
-                            ? const EdgeInsets.only(top: kToolbarHeight)
-                            : const EdgeInsets.only(top: 20),
-                        margin: const EdgeInsets.all(0),
-                        // decoration: BoxDecoration(
-                        //   color: Colors.white,
-                        //   image: DecorationImage(
-                        //     image: CachedNetworkImageProviderEnhanced(
-                        //       "https://ssl.aicode.cc/ai-server/assets/quota-card-bg.webp-thumb1000",
-                        //     ),
-                        //     fit: BoxFit.cover,
-                        //   ),
-                        // ),
-                        child: BlocBuilder<AccountBloc, AccountState>(
-                          builder: (_, state) {
-                            UserInfo? userInfo;
-                            if (state is AccountLoaded) {
-                              userInfo = state.user;
-                            }
-
-                            return AccountQuotaCard(
-                              userInfo: userInfo,
-                              noBorder: true,
-                              onPaymentReturn: () {
-                                if (userInfo != null) {
-                                  context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
-                                }
-                              },
-                            );
-                          },
-                        ),
-                      ),
+                    SafeArea(
+                      child: SizedBox(height: PlatformTool.isMacOS() ? kToolbarHeight : 20),
                     ),
-                    const SizedBox(height: 15),
-                    BlocBuilder<ChatChatBloc, ChatChatState>(
-                      buildWhen: (previous, current) => current is ChatChatRecentHistoriesLoaded,
+
+                    ListTile(
+                      leading: const Icon(Icons.group_outlined),
+                      title: Text(AppLocale.homeTitle.getString(context)),
+                      onTap: () {
+                        context.push('/characters').whenComplete(reload);
+                      },
+                    ),
+
+                    BlocBuilder<RoomBloc, RoomState>(
+                      buildWhen: (previous, current) => current is RoomsRecentLoaded,
                       builder: (_, state) {
-                        if (state is ChatChatRecentHistoriesLoaded) {
+                        if (state is RoomsRecentLoaded) {
                           return ListView.builder(
                             shrinkWrap: true,
                             padding: const EdgeInsets.all(0),
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: state.histories.length,
+                            itemCount: state.rooms.length,
                             itemBuilder: (context, index) {
-                              final item = state.histories[index];
+                              final item = state.rooms[index];
                               return ListTile(
-                                leading: const Icon(Icons.question_answer_outlined),
-                                title: Text(
-                                  item.title ?? 'Unknown',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                contentPadding: const EdgeInsets.only(left: 30),
+                                dense: true,
+                                leading: RoleAvatar(
+                                  avatarUrl: item.avatarUrl,
+                                  name: item.name,
+                                  avatarSize: 25,
                                 ),
+                                title: Text(item.name),
                                 onTap: () {
-                                  context.push(
-                                      '/chat-anywhere?chat_id=${item.id}&model=${item.model}&title=${item.title}');
+                                  context.push('/room/${item.id}/chat').whenComplete(reload);
                                 },
                               );
                             },
@@ -111,52 +96,132 @@ class _LeftDrawerState extends State<LeftDrawer> {
                       },
                     ),
                     ListTile(
-                      leading: const Icon(Icons.history),
-                      title: Text(AppLocale.moreHistories.getString(context)),
-                      onTap: () {
-                        context.push('/chat-chat/history').whenComplete(() {
-                          context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
-                        });
-                      },
-                    ),
-                    Divider(
-                      color: customColors.weakTextColor?.withAlpha(50),
-                      height: 10,
-                      indent: 10,
-                      endIndent: 10,
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.group_outlined),
-                      title: Text(AppLocale.homeTitle.getString(context)),
-                      onTap: () {
-                        context.push('/characters');
-                      },
-                    ),
-                    ListTile(
                       leading: const Icon(Icons.auto_awesome_outlined),
                       title: Text(AppLocale.discover.getString(context)),
                       onTap: () {
-                        context.push('/creative-gallery');
+                        context.push('/creative-gallery').whenComplete(reload);
                       },
                     ),
-                    ListTile(
-                      leading: const Icon(Icons.palette_outlined),
-                      title: Text(AppLocale.creativeIsland.getString(context)),
-                      onTap: () {
-                        context.push('/creative-draw');
-                      },
-                    ),
+                    // ListTile(
+                    //   leading: const Icon(Icons.palette_outlined),
+                    //   title: Text(AppLocale.creativeIsland.getString(context)),
+                    //   onTap: () {
+                    //     context.push('/creative-draw');
+                    //   },
+                    // ),
                     Divider(
                       color: customColors.weakTextColor?.withAlpha(50),
                       height: 10,
                       indent: 10,
                       endIndent: 10,
                     ),
-                    ListTile(
-                      leading: const Icon(Icons.settings_outlined),
-                      title: Text(AppLocale.settings.getString(context)),
-                      onTap: () {
-                        context.push('/setting');
+                    BlocBuilder<ChatChatBloc, ChatChatState>(
+                      buildWhen: (previous, current) => current is ChatChatRecentHistoriesLoaded,
+                      builder: (_, state) {
+                        if (state is ChatChatRecentHistoriesLoaded) {
+                          // Group histories by time
+                          final now = DateTime.now();
+                          final groups = <String, List<ChatHistory>>{};
+
+                          for (var history in state.histories) {
+                            final created = DateTime.fromMillisecondsSinceEpoch(
+                                (history.createdAt ?? DateTime.now()).millisecondsSinceEpoch);
+                            final difference = now.difference(created);
+
+                            String groupKey;
+                            if (difference.inDays < 4) {
+                              groupKey = AppLocale.recently.getString(context);
+                            } else if (difference.inDays < 7) {
+                              groupKey = '4 ${AppLocale.daysAgo.getString(context)}';
+                            } else if (difference.inDays < 14) {
+                              groupKey = AppLocale.lastWeek.getString(context);
+                            } else if (difference.inDays < 30) {
+                              final weeks = (difference.inDays / 7).floor();
+                              groupKey = '$weeks ${AppLocale.weeksAgo.getString(context)}';
+                            } else if (difference.inDays < 365) {
+                              if (difference.inDays < 60) {
+                                groupKey = AppLocale.lastMonth.getString(context);
+                              }
+                              final months = (difference.inDays / 30).floor();
+                              groupKey = '$months ${AppLocale.monthsAgo.getString(context)}';
+                            } else if (difference.inDays < 730) {
+                              groupKey = AppLocale.lastYear.getString(context);
+                            } else {
+                              groupKey = AppLocale.longTimeAgo.getString(context);
+                            }
+
+                            groups.putIfAbsent(groupKey, () => []).add(history);
+                          }
+
+                          return Column(
+                            children: [
+                              ListView.builder(
+                                shrinkWrap: true,
+                                padding: const EdgeInsets.all(0),
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: groups.entries.fold(0, (sum, entry) => (sum ?? 0) + entry.value.length + 1),
+                                itemBuilder: (context, index) {
+                                  int itemCount = 0;
+                                  for (var entry in groups.entries) {
+                                    if (index == itemCount) {
+                                      return Container(
+                                        padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+                                        child: Text(
+                                          entry.key,
+                                          style: TextStyle(
+                                            color: Theme.of(context).colorScheme.secondary,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      );
+                                    }
+
+                                    itemCount += 1;
+
+                                    if (index < itemCount + entry.value.length) {
+                                      final item = entry.value[index - itemCount];
+                                      return ListTile(
+                                        title: Text(
+                                          item.title ?? 'Unknown',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        onTap: () {
+                                          context.push(
+                                              '/chat-anywhere?chat_id=${item.id}&model=${item.model}&title=${item.title}');
+                                        },
+                                      );
+                                    }
+
+                                    itemCount += entry.value.length;
+                                  }
+
+                                  return const SizedBox();
+                                },
+                              ),
+                              if (state.histories.length >= defaultChatHistoryCount) ...[
+                                Divider(
+                                  color: customColors.weakTextColor?.withAlpha(50),
+                                  height: 10,
+                                  indent: 10,
+                                  endIndent: 10,
+                                ),
+                                ListTile(
+                                  title: Text(AppLocale.moreHistories.getString(context)),
+                                  onTap: () {
+                                    context.push('/chat-chat/history').whenComplete(() {
+                                      if (context.mounted) {
+                                        context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
+                                      }
+                                    });
+                                  },
+                                ),
+                              ],
+                            ],
+                          );
+                        }
+
+                        return const SizedBox();
                       },
                     ),
                   ],
@@ -164,98 +229,141 @@ class _LeftDrawerState extends State<LeftDrawer> {
               ),
             ),
             Container(
-              height: 90,
+              height: 100,
               padding: const EdgeInsets.only(left: 20, right: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        "${AppLocale.socialMedia.getString(context)} ",
-                        style: TextStyle(
-                          color: customColors.weakTextColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Transform.rotate(
-                        angle: 90 * 3.1415926535897932 / 180,
-                        child: Icon(
-                          Icons.turn_right,
-                          color: customColors.weakTextColor,
-                          size: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          launchUrlString(
-                            'https://ai.aicode.cc/social/home',
-                            mode: LaunchMode.externalApplication,
-                          );
-                        },
-                        child: Image.asset('assets/app-256-transparent.png', width: 25),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          launchUrlString(
-                            'https://weibo.com/code404',
-                            mode: LaunchMode.externalApplication,
-                          );
-                        },
-                        child: Image.asset('assets/weibo.png', width: 25),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          launchUrlString(
-                            'https://ai.aicode.cc/social/github',
-                            mode: LaunchMode.externalApplication,
-                          );
-                        },
-                        child: Image.asset('assets/github.png', width: 25),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          launchUrlString(
-                            'https://ai.aicode.cc/social/wechat-platform',
-                            mode: LaunchMode.externalApplication,
-                          );
-                        },
-                        child: Image.asset('assets/wechat.png', width: 25),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          launchUrlString(
-                            'https://ai.aicode.cc/social/x',
-                            mode: LaunchMode.externalApplication,
-                          );
-                        },
-                        child: Image.asset('assets/x.png', width: 25),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          launchUrlString(
-                            'https://ai.aicode.cc/social/xiaohongshu',
-                            mode: LaunchMode.externalApplication,
-                          );
-                        },
-                        child: Image.asset('assets/xiaohongshu.png', width: 25),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 15),
-                ],
-              ),
+              child: buildAccountCard(context),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildAccountCard(BuildContext context) {
+    return Stack(
+      children: [
+        Positioned(
+          right: 0,
+          top: 6,
+          child: IconButton(
+            onPressed: () {
+              context.push('/setting');
+            },
+            icon: const Icon(Icons.more_horiz),
+            tooltip: AppLocale.settings.getString(context),
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 15),
+          child: BlocBuilder<AccountBloc, AccountState>(
+            builder: (_, state) {
+              UserInfo? userInfo;
+              if (state is AccountLoaded) {
+                userInfo = state.user;
+              }
+
+              return AccountQuotaCard(
+                userInfo: userInfo,
+                noBorder: true,
+                onPaymentReturn: () {
+                  if (userInfo != null) {
+                    context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
+                  }
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildSocialMedia(BuildContext context, CustomColors customColors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              "${AppLocale.socialMedia.getString(context)} ",
+              style: TextStyle(
+                color: customColors.weakTextColor,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Transform.rotate(
+              angle: 90 * 3.1415926535897932 / 180,
+              child: Icon(
+                Icons.turn_right,
+                color: customColors.weakTextColor,
+                size: 16,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GestureDetector(
+              onTap: () {
+                launchUrlString(
+                  'https://ai.aicode.cc/social/home',
+                  mode: LaunchMode.externalApplication,
+                );
+              },
+              child: Image.asset('assets/app-256-transparent.png', width: 25),
+            ),
+            GestureDetector(
+              onTap: () {
+                launchUrlString(
+                  'https://weibo.com/code404',
+                  mode: LaunchMode.externalApplication,
+                );
+              },
+              child: Image.asset('assets/weibo.png', width: 25),
+            ),
+            GestureDetector(
+              onTap: () {
+                launchUrlString(
+                  'https://ai.aicode.cc/social/github',
+                  mode: LaunchMode.externalApplication,
+                );
+              },
+              child: Image.asset('assets/github.png', width: 25),
+            ),
+            GestureDetector(
+              onTap: () {
+                launchUrlString(
+                  'https://ai.aicode.cc/social/wechat-platform',
+                  mode: LaunchMode.externalApplication,
+                );
+              },
+              child: Image.asset('assets/wechat.png', width: 25),
+            ),
+            GestureDetector(
+              onTap: () {
+                launchUrlString(
+                  'https://ai.aicode.cc/social/x',
+                  mode: LaunchMode.externalApplication,
+                );
+              },
+              child: Image.asset('assets/x.png', width: 25),
+            ),
+            GestureDetector(
+              onTap: () {
+                launchUrlString(
+                  'https://ai.aicode.cc/social/xiaohongshu',
+                  mode: LaunchMode.externalApplication,
+                );
+              },
+              child: Image.asset('assets/xiaohongshu.png', width: 25),
+            ),
+          ],
+        ),
+        const SizedBox(height: 15),
+      ],
     );
   }
 }

@@ -1,4 +1,6 @@
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/component/group_list_widget.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
@@ -67,8 +69,7 @@ class _ItemSearchSelectorState extends State<ItemSearchSelector> {
               (item) => ListTile(
                 title: Container(
                   alignment: Alignment.center,
-                  padding: widget.innerPadding ??
-                      const EdgeInsets.symmetric(vertical: 5),
+                  padding: widget.innerPadding ?? const EdgeInsets.symmetric(vertical: 5),
                   child: widget.value != null
                       ? Column(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -86,8 +87,7 @@ class _ItemSearchSelectorState extends State<ItemSearchSelector> {
                               height: 10,
                               child: Icon(
                                 Icons.check,
-                                color: (widget.value != null &&
-                                        widget.value == item.value)
+                                color: (widget.value != null && widget.value == item.value)
                                     ? customColors.linkColor
                                     : Colors.transparent,
                               ),
@@ -110,20 +110,23 @@ class _ItemSearchSelectorState extends State<ItemSearchSelector> {
         // 搜索框
         if (widget.enableSearch)
           Container(
-            alignment: Alignment.center,
-            margin: const EdgeInsets.symmetric(horizontal: 10),
+            margin: const EdgeInsets.only(bottom: 10, left: 5, right: 5),
+            decoration: BoxDecoration(
+              color: customColors.textfieldBackgroundColor,
+              borderRadius: CustomSize.borderRadius,
+            ),
             child: TextField(
               controller: _searchController,
               textAlignVertical: TextAlignVertical.center,
-              style: TextStyle(color: customColors.dialogDefaultTextColor),
+              style: TextStyle(color: customColors.textfieldHintColor),
               decoration: InputDecoration(
                 hintText: AppLocale.search.getString(context),
                 hintStyle: TextStyle(
-                  color: customColors.dialogDefaultTextColor,
+                  color: customColors.weakTextColor?.withAlpha(150),
                 ),
                 prefixIcon: Icon(
                   Icons.search,
-                  color: customColors.dialogDefaultTextColor,
+                  color: customColors.weakTextColor?.withAlpha(150),
                 ),
                 isDense: true,
                 border: InputBorder.none,
@@ -132,10 +135,10 @@ class _ItemSearchSelectorState extends State<ItemSearchSelector> {
           ),
         // 列表部分
         Expanded(
-          child: ListView.separated(
-            itemCount: items.length,
-            itemBuilder: (context, i) {
-              var item = items[i];
+          child: GroupListWidget(
+            items: items,
+            groupKey: (item) => '',
+            itemBuilder: (item) {
               return ListTile(
                 title: Container(
                   alignment: Alignment.center,
@@ -158,8 +161,7 @@ class _ItemSearchSelectorState extends State<ItemSearchSelector> {
                               width: 10,
                               child: Icon(
                                 Icons.check,
-                                color: (widget.value != null &&
-                                        widget.value == item.value)
+                                color: (widget.value != null && widget.value == item.value)
                                     ? customColors.linkColor
                                     : Colors.transparent,
                               ),
@@ -171,12 +173,6 @@ class _ItemSearchSelectorState extends State<ItemSearchSelector> {
                 onTap: () {
                   if (widget.onSelected(item)) context.pop();
                 },
-              );
-            },
-            separatorBuilder: (BuildContext context, int index) {
-              return Divider(
-                height: 1,
-                color: customColors.columnBlockDividerColor,
               );
             },
           ),

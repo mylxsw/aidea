@@ -78,6 +78,12 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
   /// 是否是推荐模型
   bool isRecommended = false;
 
+  /// 是否启用搜索
+  bool enableSearch = false;
+
+  /// 是否启用推理
+  bool enableReasoning = false;
+
   /// Tag
   final TextEditingController tagController = TextEditingController();
   String? tagTextColor;
@@ -211,6 +217,8 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                   isNew = state.model.meta!.isNew ?? false;
                   isRecommended = state.model.meta!.isRecommend ?? false;
                   categoryController.value = TextEditingValue(text: state.model.meta!.category ?? '');
+                  enableSearch = state.model.meta!.search ?? false;
+                  enableReasoning = state.model.meta!.reasoning ?? false;
 
                   setState(() {});
                 }
@@ -795,6 +803,84 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            Row(
+                              children: [
+                                const Text(
+                                  'Reasoning',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 5),
+                                InkWell(
+                                  onTap: () {
+                                    showBeautyDialog(
+                                      context,
+                                      type: QuickAlertType.info,
+                                      text: 'Whether to enable reasoning for the current model.',
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
+                                      showCancelBtn: false,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.help_outline,
+                                    size: 16,
+                                    color: customColors.weakLinkColor?.withAlpha(150),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            CupertinoSwitch(
+                              activeColor: customColors.linkColor,
+                              value: enableReasoning,
+                              onChanged: (value) {
+                                setState(() {
+                                  enableReasoning = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Text(
+                                  'Search',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 5),
+                                InkWell(
+                                  onTap: () {
+                                    showBeautyDialog(
+                                      context,
+                                      type: QuickAlertType.info,
+                                      text: 'Whether to enable search for the current model.',
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
+                                      showCancelBtn: false,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.help_outline,
+                                    size: 16,
+                                    color: customColors.weakLinkColor?.withAlpha(150),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            CupertinoSwitch(
+                              activeColor: customColors.linkColor,
+                              value: enableSearch,
+                              onChanged: (value) {
+                                setState(() {
+                                  enableSearch = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
                             const Text(
                               'Enabled',
                               style: TextStyle(fontSize: 16),
@@ -923,6 +1009,8 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
         tagBgColor: tagBgColor,
         isNew: isNew,
         isRecommend: isRecommended,
+        search: enableSearch,
+        reasoning: enableReasoning,
       ),
       status: modelEnabled ? 1 : 2,
       providers: ps,

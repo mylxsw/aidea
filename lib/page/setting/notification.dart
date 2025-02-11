@@ -75,7 +75,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   String msg = '';
                   switch (status) {
                     case IndicatorStatus.noMoreLoad:
-                      msg = '~ No more left ~';
+                      msg = '';
                       break;
                     case IndicatorStatus.loadingMoreBusying:
                       msg = 'Loading...';

@@ -11,7 +11,8 @@ class Model {
   bool disabled;
   String? avatarUrl;
   bool supportVision = false;
-
+  bool supportReasoning = false;
+  bool supportSearch = false;
   String? tag;
   String? tagTextColor;
   String? tagBgColor;
@@ -34,6 +35,8 @@ class Model {
     this.tag,
     this.avatarUrl,
     this.supportVision = false,
+    this.supportReasoning = false,
+    this.supportSearch = false,
     this.tagTextColor,
     this.tagBgColor,
     this.isNew = false,
@@ -56,6 +59,8 @@ class Model {
     bool? disabled,
     String? avatarUrl,
     bool? supportVision,
+    bool? supportReasoning,
+    bool? supportSearch,
     String? tag,
     String? tagTextColor,
     String? tagBgColor,
@@ -75,6 +80,8 @@ class Model {
       disabled: disabled ?? this.disabled,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       supportVision: supportVision ?? this.supportVision,
+      supportReasoning: supportReasoning ?? this.supportReasoning,
+      supportSearch: supportSearch ?? this.supportSearch,
       tag: tag ?? this.tag,
       tagTextColor: tagTextColor ?? this.tagTextColor,
       tagBgColor: tagBgColor ?? this.tagBgColor,

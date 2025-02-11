@@ -6,12 +6,14 @@ import 'package:askaide/bloc/room_bloc.dart';
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
+import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/attached_button_panel.dart';
 import 'package:askaide/page/component/chat/chat_share.dart';
 import 'package:askaide/page/component/chat/enhanced_selectable_text.dart';
 import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
+import 'package:askaide/page/component/chat/thinking_card.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/file_preview.dart';
 import 'package:askaide/page/component/random_avatar.dart';
@@ -169,6 +171,8 @@ class _ChatPreviewState extends State<ChatPreview> {
     return message.message;
   }
 
+  final Map<int, bool> _displayThinkingProcess = {};
+
   /// 构建消息框
   Widget _buildMessageBox(
     BuildContext context,
@@ -196,8 +200,48 @@ class _ChatPreviewState extends State<ChatPreview> {
 
     final showTranslate = state.showTranslate && state.translateText != null && state.translateText != '';
 
-    final extra = index == 0 ? message.decodeExtra() : null;
-    final extraInfo = extra != null ? extra['info'] ?? '' : '';
+    final extra = message.decodeExtra();
+    final extraInfo = index == 0 && extra != null ? extra['info'] ?? '' : '';
+    final reasoning = extra != null ? extra['reasoning'] ?? '' : '';
+    final states = extra != null ? extra['states'] ?? [] : [];
+
+    final stateWidgets = <Widget>[];
+
+    if (states.isNotEmpty) {
+      final lastState = states[states.length - 1];
+      switch (lastState) {
+        case 'thinking':
+          if (reasoning != '') {
+            stateWidgets.add(ThinkingCard(
+              content: reasoning,
+              title: AppLocale.thinkingProcess.getString(context),
+              isExpanded: true,
+              onTap: (displayThinkingProcess) {},
+            ));
+          } else {
+            stateWidgets.add(LoadingAnimationWidget.waveDots(
+              color: customColors.weakTextColorLess!,
+              size: 25,
+            ));
+          }
+        case 'thinking-done':
+          if (reasoning != '') {
+            final timeConsumed = extra != null ? extra['thinking_time_consumed'] ?? 0.0 : 0.0;
+            stateWidgets.add(ThinkingCard(
+              content: reasoning,
+              title: AppLocale.thinkingProcess.getString(context),
+              timeConsumed: timeConsumed.toDouble(),
+              isExpanded: _displayThinkingProcess[message.id ?? -1] ?? false,
+              onTap: (displayThinkingProcess) {
+                setState(() {
+                  _displayThinkingProcess[message.id ?? -1] = displayThinkingProcess;
+                });
+              },
+            ));
+          }
+        default:
+      }
+    }
 
     // 普通消息
     return Align(
@@ -208,6 +252,7 @@ class _ChatPreviewState extends State<ChatPreview> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            // 文件
             if (message.file != null)
               Container(
                 margin: message.role == Role.sender
@@ -237,6 +282,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                   }
                 }),
               ),
+            // 图片
             if (message.images != null && message.images!.isNotEmpty)
               Container(
                 margin: message.role == Role.sender
@@ -250,6 +296,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                 ),
                 child: FileUploadPreview(images: message.images ?? []),
               ),
+            // 消息主体
             Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -268,7 +315,6 @@ class _ChatPreviewState extends State<ChatPreview> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
                 // 消息内容部分
                 ConstrainedBox(
                   constraints: BoxConstraints(
@@ -284,6 +330,18 @@ class _ChatPreviewState extends State<ChatPreview> {
                           // 错误指示器
                           if (message.role == Role.sender && message.statusIsFailed())
                             buildErrorIndicator(message, state, context, index),
+                          // 消息过程状态
+                          if (states.isNotEmpty)
+                            Container(
+                              margin: const EdgeInsets.only(left: 10),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: stateWidgets,
+                              ),
+                            ),
+
                           // 消息主体
                           GestureDetector(
                             // 选择模式下，单击切换选择与否
@@ -296,6 +354,10 @@ class _ChatPreviewState extends State<ChatPreview> {
                             },
                             // 长按或者双击显示上下文菜单
                             onLongPressStart: (detail) {
+                              if (PlatformTool.isDesktop()) {
+                                return;
+                              }
+
                               _handleMessageTapControl(
                                 context,
                                 detail.globalPosition,
@@ -305,6 +367,10 @@ class _ChatPreviewState extends State<ChatPreview> {
                               );
                             },
                             onDoubleTapDown: (details) {
+                              if (PlatformTool.isDesktop()) {
+                                return;
+                              }
+
                               _handleMessageTapControl(
                                 context,
                                 details.globalPosition,
@@ -340,13 +406,6 @@ class _ChatPreviewState extends State<ChatPreview> {
                                   ),
                                   child: Builder(
                                     builder: (context) {
-                                      if ((message.statusPending() || !message.isReady) && message.text.isEmpty) {
-                                        return LoadingAnimationWidget.waveDots(
-                                          color: customColors.weakLinkColor!,
-                                          size: 25,
-                                        );
-                                      }
-
                                       var text = message.text;
                                       if (!message.isReady && text != '') {
                                         text += ' ▌';
@@ -546,7 +605,7 @@ class _ChatPreviewState extends State<ChatPreview> {
     }
 
     if (widget.robotAvatar != null) {
-      if (message.role == Role.receiver && message.avatarUrl != null) {
+      if (message.role == Role.receiver && message.avatarUrl != null && (message.roomId ?? 1) <= 1) {
         return avatarWrap(RemoteAvatar(
           avatarUrl: message.avatarUrl!,
           size: 30,

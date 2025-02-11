@@ -12,6 +12,7 @@ class RoleAvatar extends StatefulWidget {
   final String? alternativeAvatarUrl;
   final String? name;
   final ChatHistory? his;
+  final int avatarSize;
 
   const RoleAvatar({
     super.key,
@@ -19,6 +20,7 @@ class RoleAvatar extends StatefulWidget {
     this.alternativeAvatarUrl,
     this.his,
     this.name,
+    this.avatarSize = 30,
   });
 
   @override
@@ -35,29 +37,29 @@ class _RoleAvatarState extends State<RoleAvatar> {
     if (widget.avatarUrl != null && widget.avatarUrl!.startsWith('http')) {
       return RemoteAvatar(
         avatarUrl: imageURL(widget.avatarUrl!, qiniuImageTypeAvatar),
-        size: 30,
+        size: widget.avatarSize,
       );
     }
 
     if (widget.alternativeAvatarUrl != null) {
       return RemoteAvatar(
         avatarUrl: imageURL(widget.alternativeAvatarUrl!, qiniuImageTypeAvatar),
-        size: 30,
+        size: widget.avatarSize,
       );
     }
 
     if (widget.his != null && widget.his!.model != null) {
       return FutureBuilder(
-        future: ModelAggregate.models(withCustom: true),
+        future: ModelAggregate.models(),
         builder: (context, snapshot) {
           if (!snapshot.hasError && snapshot.hasData) {
             var mod = snapshot.data!.where((e) => e.id == widget.his!.model!).firstOrNull;
             if (mod != null && mod.avatarUrl != null && mod.avatarUrl != '') {
-              return RemoteAvatar(avatarUrl: mod.avatarUrl!, size: 30);
+              return RemoteAvatar(avatarUrl: mod.avatarUrl!, size: widget.avatarSize);
             }
           }
 
-          return const LocalAvatar(assetName: 'assets/app.png', size: 30);
+          return LocalAvatar(assetName: 'assets/app.png', size: widget.avatarSize);
         },
       );
     }
@@ -65,12 +67,12 @@ class _RoleAvatarState extends State<RoleAvatar> {
     if (widget.name != null && widget.name!.isNotEmpty) {
       return Initicon(
         text: widget.name!.split('、').join(' '),
-        size: 30,
+        size: widget.avatarSize.toDouble(),
         backgroundColor: Colors.grey.withAlpha(100),
         borderRadius: CustomSize.borderRadiusAll,
       );
     }
 
-    return const LocalAvatar(assetName: 'assets/app.png', size: 30);
+    return LocalAvatar(assetName: 'assets/app.png', size: widget.avatarSize);
   }
 }

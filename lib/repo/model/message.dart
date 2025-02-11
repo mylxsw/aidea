@@ -66,6 +66,8 @@ class Message {
   // Uploaded file by user (json(name, url))
   String? file;
 
+  List<String>? flags;
+
   Message(
     this.role,
     this.text, {
@@ -87,11 +89,36 @@ class Message {
     this.senderName,
     this.images,
     this.file,
+    this.flags,
   });
 
-  /// 获取消息附加信息
+  /// 设置消息附加信息
   void setExtra(dynamic data) {
     extra = jsonEncode(data);
+  }
+
+  /// 更新消息附加信息
+  void updateExtra(dynamic data) {
+    // 需要将 data merge 到 extra 中
+    final extraData = decodeExtra();
+    if (extraData != null) {
+      data = <String, dynamic>{...extraData, ...data};
+    }
+
+    extra = jsonEncode(data);
+  }
+
+  // 将值添加到附加信息的某个数组键中
+  void pushExtra(String key, dynamic value) {
+    var extraData = decodeExtra();
+    extraData ??= <String, dynamic>{};
+
+    if (!extraData.containsKey(key)) {
+      extraData[key] = [];
+    }
+
+    extraData[key]!.add(value);
+    extra = jsonEncode(extraData);
   }
 
   /// 获取消息附加信息
@@ -105,9 +132,7 @@ class Message {
 
   /// 是否是系统消息，包括时间线
   bool isSystem() {
-    return type == MessageType.system ||
-        type == MessageType.timeline ||
-        type == MessageType.contextBreak;
+    return type == MessageType.system || type == MessageType.timeline || type == MessageType.contextBreak;
   }
 
   /// 是否是初始消息
@@ -169,6 +194,7 @@ class Message {
       'quota_consumed': quotaConsumed,
       'images': images != null ? jsonEncode(images) : null,
       'file': file,
+      'flags': flags != null ? jsonEncode(flags) : null,
     };
   }
 
@@ -187,15 +213,11 @@ class Message {
         status = (map['status'] ?? 1) as int,
         tokenConsumed = map['token_consumed'] as int?,
         quotaConsumed = map['quota_consumed'] as int?,
-        ts = map['ts'] == null
-            ? null
-            : DateTime.fromMillisecondsSinceEpoch(map['ts'] as int),
+        ts = map['ts'] == null ? null : DateTime.fromMillisecondsSinceEpoch(map['ts'] as int),
         roomId = map['room_id'] as int?,
-        images = map['images'] == null
-            ? null
-            : (jsonDecode(map['images'] as String) as List<dynamic>)
-                .cast<String>(),
-        file = map['file'] as String?;
+        images = map['images'] == null ? null : (jsonDecode(map['images'] as String) as List<dynamic>).cast<String>(),
+        file = map['file'] as String?,
+        flags = map['flags'] == null ? null : (jsonDecode(map['flags'] as String) as List<dynamic>).cast<String>();
 }
 
 enum Role {

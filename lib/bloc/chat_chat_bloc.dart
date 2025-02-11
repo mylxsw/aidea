@@ -15,7 +15,6 @@ class ChatChatBloc extends Bloc<ChatChatEvent, ChatChatState> {
     // 加载最近的历史记录
     on<ChatChatLoadRecentHistories>((event, emit) async {
       final histories = await _chatMessageRepository.recentChatHistories(
-        chatAnywhereRoomId,
         event.count,
         userId: APIServer().localUserID(),
       );
