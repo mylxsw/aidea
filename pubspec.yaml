@@ -63,8 +63,12 @@ dependencies:
   cached_network_image: ^3.2.3
   photo_view: ^0.14.0
   flutter_image_compress: ^2.3.0
-  isolate_image_compress: ^2.0.0
-  image: 4.1.7
+  isolate_image_compress: 
+    git:
+      url: https://github.com/mylxsw/isolate_flutter
+      ref: customized
+      path: isolate_image_compress
+  image: 4.2.0
   flutter_cache_manager: ^3.3.0
   file_saver: 
     git:
@@ -147,23 +151,9 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
-  flutter_launcher_icons: "^0.12.0"
+  flutter_launcher_icons: "^0.14.2"
   build_runner: ^2.3.3
   msix: ^3.9.1
-
-flutter_icons:
-  image_path: "assets/app.png"
-  
-  macos:
-    generate: true
-  web:
-    generate: true
-  windows:
-    generate: true
-  ios: true
-  remove_alpha_ios: true
-  android: "launcher_icon"
-  adaptive_icon_background: '#FFFFFF'
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -179,6 +169,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/app.png
+    - assets/app-macos.png
     - assets/image-broken.png
     - assets/wechat.png
     - assets/friendroom.png
