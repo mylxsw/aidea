@@ -86,7 +86,7 @@ class _EmptyPreviewState extends State<EmptyPreview> {
                       child: Container(
                         padding: const EdgeInsets.all(5),
                         alignment: Alignment.center,
-                        child: Icon(Icons.refresh, color: customColors.weakTextColor),
+                        child: Icon(Icons.refresh, color: customColors.chatInputPanelText),
                       ),
                     ),
                   );
@@ -112,7 +112,7 @@ class _EmptyPreviewState extends State<EmptyPreview> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 13,
-                          color: customColors.weakTextColor,
+                          color: customColors.chatInputPanelText,
                         ),
                       ),
                     ),

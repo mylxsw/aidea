@@ -504,7 +504,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: customColors.tagsBackgroundHover,
+          color: customColors.tagsBackground,
           shape: BoxShape.circle,
         ),
         padding: const EdgeInsets.all(4),

@@ -415,12 +415,10 @@ class _ChatPreviewState extends State<ChatPreview> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           state.showMarkdown
-                                              ? (message.role == Role.sender
-                                                  ? Text(text.trim())
-                                                  : Markdown(
-                                                      data: text.trim(),
-                                                      onUrlTap: (value) => onMarkdownUrlTap(value),
-                                                    ))
+                                              ? Markdown(
+                                                  data: text.trim(),
+                                                  onUrlTap: (value) => onMarkdownUrlTap(value),
+                                                )
                                               : SelectableText(
                                                   text,
                                                   style: TextStyle(
