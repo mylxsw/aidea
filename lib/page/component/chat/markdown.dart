@@ -43,7 +43,7 @@ class Markdown extends StatelessWidget {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return md.MarkdownBody(
       shrinkWrap: true,
-      selectable: false,
+      selectable: true,
       styleSheetTheme: md.MarkdownStyleSheetBaseTheme.material,
       styleSheet: md.MarkdownStyleSheet(
         p: textStyle ?? TextStyle(fontSize: CustomSize.markdownTextSize, height: 1.5),
@@ -96,7 +96,7 @@ class Markdown extends StatelessWidget {
       ),
       data: data,
       builders: {
-        'code': CodeElementBuilder(),
+        'code': CodeElementBuilder(customColors),
         'latex': LatexElementBuilder(),
       },
     );

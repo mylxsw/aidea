@@ -69,6 +69,7 @@ class _PaymentHistoriesPageState extends State<PaymentHistoriesPage> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: Column(
           children: [
             Container(

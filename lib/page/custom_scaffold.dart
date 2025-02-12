@@ -1,5 +1,6 @@
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
 
@@ -32,15 +33,16 @@ class CustomScaffold extends StatefulWidget {
 class _CustomScaffoldState extends State<CustomScaffold> {
   @override
   Widget build(BuildContext context) {
-    return BackgroundContainer(
-      setting: widget.settings,
-      maxWidth: double.infinity,
-      child: Scaffold(
-        appBar: buildAppBar(),
-        backgroundColor: Colors.transparent,
-        body: widget.body,
-        drawer: widget.drawer,
+    final customColors = Theme.of(context).extension<CustomColors>()!;
+    return Scaffold(
+      appBar: buildAppBar(),
+      backgroundColor: customColors.backgroundContainerColor,
+      body: BackgroundContainer(
+        setting: widget.settings,
+        maxWidth: CustomSize.maxWindowSize,
+        child: widget.body,
       ),
+      drawer: widget.drawer,
     );
   }
 

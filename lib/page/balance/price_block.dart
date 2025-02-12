@@ -33,7 +33,7 @@ class PriceBlock extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: customColors.backgroundContainerColor,
+            color: customColors.listTileBackgroundColor,
             border: Border.all(
               color: (selectedProduct != null && selectedProduct!.id == detail.id)
                   ? customColors.linkColor ?? Colors.green

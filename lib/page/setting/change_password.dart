@@ -53,6 +53,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
+        backgroundColor: customColors.backgroundColor,
         enabled: false,
         child: Container(
           padding: const EdgeInsets.all(10),

@@ -142,19 +142,28 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
       child: SafeArea(
         bottom: false,
         child: Container(
+          margin: PlatformTool.isDesktop() ? const EdgeInsets.all(8) : null,
           padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
           decoration: BoxDecoration(
             color: customColors.chatInputAreaBackground,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(CustomSize.radiusValue * 2),
-              topRight: Radius.circular(CustomSize.radiusValue * 2),
-            ),
+            borderRadius: PlatformTool.isDesktop()
+                ? BorderRadius.circular(CustomSize.radiusValue)
+                : const BorderRadius.only(
+                    topLeft: Radius.circular(CustomSize.radiusValue * 2),
+                    topRight: Radius.circular(CustomSize.radiusValue * 2),
+                  ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.08),
                 offset: const Offset(-1, -1),
                 blurRadius: CustomSize.radiusValue,
               ),
+              if (PlatformTool.isDesktop())
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  offset: const Offset(-1, -1),
+                  blurRadius: CustomSize.radiusValue,
+                ),
             ],
           ),
           child: Builder(builder: (context) {
@@ -247,7 +256,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                           ),
                         ),
                       ),
-                      SizedBox(height: inputFocused ? 8 : 6),
+                      SizedBox(height: PlatformTool.isMobile() && inputFocused ? 8 : 6),
                     ],
                   ),
                 ],

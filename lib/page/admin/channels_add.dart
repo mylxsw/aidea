@@ -95,6 +95,7 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: BlocListener<ChannelBloc, ChannelState>(
           listenWhen: (previous, current) => current is ChannelOperationResult,
           listener: (context, state) {

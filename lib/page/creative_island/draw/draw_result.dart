@@ -34,130 +34,133 @@ class _DrawResultPageState extends State<DrawResultPage> {
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
-    return Align(
-      alignment: Alignment.topCenter,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: CustomSize.smallWindowSize),
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              AppLocale.generateResult.getString(context),
-              style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+    return Container(
+      color: customColors.backgroundColor,
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: CustomSize.smallWindowSize),
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(
+                AppLocale.generateResult.getString(context),
+                style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+              ),
+              toolbarHeight: CustomSize.toolbarHeight,
+              centerTitle: true,
+              leading: IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () {
+                  if (loading) {
+                    openConfirmDialog(
+                      context,
+                      AppLocale.generateExitConfirm.getString(context),
+                      () => Navigator.pop(context),
+                    );
+                  } else {
+                    Navigator.pop(context);
+                  }
+                },
+              ),
             ),
-            toolbarHeight: CustomSize.toolbarHeight,
-            centerTitle: true,
-            leading: IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () {
-                if (loading) {
-                  openConfirmDialog(
-                    context,
-                    AppLocale.generateExitConfirm.getString(context),
-                    () => Navigator.pop(context),
-                  );
-                } else {
-                  Navigator.pop(context);
+            backgroundColor: customColors.backgroundColor,
+            body: FutureBuilder(
+              future: widget.future,
+              builder: (context, snapshot) {
+                if (snapshot.hasData || snapshot.hasError) {
+                  HapticFeedbackHelper.mediumImpact();
+                  loading = false;
                 }
-              },
-            ),
-          ),
-          backgroundColor: customColors.backgroundColor,
-          body: FutureBuilder(
-            future: widget.future,
-            builder: (context, snapshot) {
-              if (snapshot.hasData || snapshot.hasError) {
-                HapticFeedbackHelper.mediumImpact();
-                loading = false;
-              }
 
-              if (snapshot.hasError) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          size: 50,
+                          color: Colors.red,
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          '创作失败',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Text(
+                            resolveError(context, snapshot.error!),
+                            style: TextStyle(
+                              color: customColors.weakTextColor,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                if (snapshot.hasData) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: CreativeIslandContentPreview(
+                          result: snapshot.data!,
+                          customColors: customColors,
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                    ],
+                  );
+                }
+
                 return Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
-                        Icons.error_outline,
-                        size: 50,
-                        color: Colors.red,
+                      CountDownProgressBar(
+                        duration: widget.waitDuration,
+                        controller: controller,
+                        onComplete: (controller) {
+                          if (!loading) {
+                            return;
+                          }
+
+                          if (restartCounterValue == defaultCounterRestartValue) {
+                            showSuccessMessage('当前排队人数较多，还需要等待一下哦');
+                          }
+
+                          controller.restart(duration: restartCounterValue);
+                          setState(() {
+                            restartCounterValue += 1;
+                          });
+                        },
                       ),
                       const SizedBox(height: 10),
-                      const Text(
-                        '创作失败',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                      const SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child: Text(
-                          resolveError(context, snapshot.error!),
-                          style: TextStyle(
-                            color: customColors.weakTextColor,
-                            fontSize: 10,
-                          ),
+                      Text(
+                        '正在打造神奇...',
+                        style: TextStyle(
+                          color: customColors.backgroundInvertedColor,
                         ),
                       ),
+                      const SizedBox(height: 5),
+                      Text(
+                        '如队列太长，将会有数分钟等待时间',
+                        style: TextStyle(
+                          color: customColors.backgroundInvertedColor?.withAlpha(150),
+                          fontSize: 10,
+                        ),
+                      )
                     ],
                   ),
                 );
-              }
-
-              if (snapshot.hasData) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: CreativeIslandContentPreview(
-                        result: snapshot.data!,
-                        customColors: customColors,
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                  ],
-                );
-              }
-
-              return Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CountDownProgressBar(
-                      duration: widget.waitDuration,
-                      controller: controller,
-                      onComplete: (controller) {
-                        if (!loading) {
-                          return;
-                        }
-
-                        if (restartCounterValue == defaultCounterRestartValue) {
-                          showSuccessMessage('当前排队人数较多，还需要等待一下哦');
-                        }
-
-                        controller.restart(duration: restartCounterValue);
-                        setState(() {
-                          restartCounterValue += 1;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      '正在打造神奇...',
-                      style: TextStyle(
-                        color: customColors.backgroundInvertedColor,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      '如队列太长，将会有数分钟等待时间',
-                      style: TextStyle(
-                        color: customColors.backgroundInvertedColor?.withAlpha(150),
-                        fontSize: 10,
-                      ),
-                    )
-                  ],
-                ),
-              );
-            },
+              },
+            ),
           ),
         ),
       ),

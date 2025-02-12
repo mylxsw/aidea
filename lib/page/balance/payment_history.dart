@@ -38,6 +38,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: Container(
           padding: const EdgeInsets.all(16),
           child: FutureBuilder(
@@ -96,7 +97,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                         right: 16,
                       ),
                       decoration: BoxDecoration(
-                        color: customColors.backgroundContainerColor,
+                        color: customColors.listTileBackgroundColor,
                         borderRadius: CustomSize.borderRadius,
                       ),
                       child: Column(

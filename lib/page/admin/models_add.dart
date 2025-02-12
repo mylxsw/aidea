@@ -151,6 +151,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: SingleChildScrollView(
           child: BlocListener<ModelBloc, ModelState>(
             listenWhen: (previous, current) => current is ModelOperationResult,

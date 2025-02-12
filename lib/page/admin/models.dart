@@ -100,6 +100,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: Column(
           children: [
             Container(

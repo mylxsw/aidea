@@ -67,91 +67,94 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
-    return BackgroundContainer(
-      setting: widget.setting,
-      child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: CustomSize.toolbarHeight,
-          title: Text(
-            AppLocale.errorLog.getString(context),
-            style: const TextStyle(
-              fontSize: CustomSize.appBarTitleSize,
+    return Scaffold(
+      backgroundColor: customColors.backgroundColor,
+      appBar: AppBar(
+        toolbarHeight: CustomSize.toolbarHeight,
+        title: Text(
+          AppLocale.errorLog.getString(context),
+          style: const TextStyle(
+            fontSize: CustomSize.appBarTitleSize,
+          ),
+        ),
+        centerTitle: true,
+        actions: [
+          TextButton(
+            onPressed: () {
+              openConfirmDialog(
+                context,
+                'This action will erase all settings and data, do you want to proceed?',
+                () async {
+                  final databasePath = (await databaseFactory.getDatabasesPath()).replaceAll('\\', '/');
+
+                  Logger.instance.d('databasePath: $databasePath');
+
+                  try {
+                    // 删除数据库目录
+                    await Directory(databasePath).delete(
+                      recursive: true,
+                    );
+
+                    showSuccessMessage(
+                      // ignore: use_build_context_synchronously
+                      AppLocale.operateSuccess.getString(context),
+                    );
+
+                    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+                  } catch (e) {
+                    Logger.instance.e(e);
+                    showBeautyDialog(
+                      // ignore: use_build_context_synchronously
+                      context,
+                      type: QuickAlertType.error,
+                      text:
+                          'Data file deletion failed. Please close the application first, manually delete the directory $databasePath, and then restart the application.',
+                    );
+                  }
+                },
+                danger: true,
+              );
+            },
+            child: Text(
+              '重置系统',
+              style: TextStyle(
+                color: isUploaded ? customColors.weakTextColor?.withAlpha(100) : customColors.weakLinkColor,
+                fontSize: 12,
+              ),
             ),
           ),
-          centerTitle: true,
-          actions: [
+          if (diagnosisInfo.isNotEmpty)
             TextButton(
               onPressed: () {
-                openConfirmDialog(
-                  context,
-                  'This action will erase all settings and data, do you want to proceed?',
-                  () async {
-                    final databasePath = (await databaseFactory.getDatabasesPath()).replaceAll('\\', '/');
+                if (isUploaded) {
+                  showSuccessMessage('已上报');
+                  return;
+                }
 
-                    Logger.instance.d('databasePath: $databasePath');
-
-                    try {
-                      // 删除数据库目录
-                      await Directory(databasePath).delete(
-                        recursive: true,
-                      );
-
-                      showSuccessMessage(
-                        // ignore: use_build_context_synchronously
-                        AppLocale.operateSuccess.getString(context),
-                      );
-
-                      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-                    } catch (e) {
-                      Logger.instance.e(e);
-                      showBeautyDialog(
-                        // ignore: use_build_context_synchronously
-                        context,
-                        type: QuickAlertType.error,
-                        text:
-                            'Data file deletion failed. Please close the application first, manually delete the directory $databasePath, and then restart the application.',
-                      );
-                    }
-                  },
-                  danger: true,
-                );
+                APIServer().diagnosisUpload(data: diagnosisInfo).then((value) {
+                  showSuccessMessage('上报成功');
+                  setState(() {
+                    isUploaded = true;
+                  });
+                }).onError((error, stackTrace) {
+                  showErrorMessageEnhanced(context, error!);
+                });
               },
               child: Text(
-                '重置系统',
+                AppLocale.report.getString(context),
                 style: TextStyle(
                   color: isUploaded ? customColors.weakTextColor?.withAlpha(100) : customColors.weakLinkColor,
                   fontSize: 12,
                 ),
               ),
             ),
-            if (diagnosisInfo.isNotEmpty)
-              TextButton(
-                onPressed: () {
-                  if (isUploaded) {
-                    showSuccessMessage('已上报');
-                    return;
-                  }
-
-                  APIServer().diagnosisUpload(data: diagnosisInfo).then((value) {
-                    showSuccessMessage('上报成功');
-                    setState(() {
-                      isUploaded = true;
-                    });
-                  }).onError((error, stackTrace) {
-                    showErrorMessageEnhanced(context, error!);
-                  });
-                },
-                child: Text(
-                  AppLocale.report.getString(context),
-                  style: TextStyle(
-                    color: isUploaded ? customColors.weakTextColor?.withAlpha(100) : customColors.weakLinkColor,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-          ],
-        ),
-        body: Container(
+        ],
+      ),
+      body: BackgroundContainer(
+        setting: widget.setting,
+        backgroundColor: customColors.backgroundColor,
+        enabled: false,
+        child: Container(
           padding: const EdgeInsets.all(10),
           child: SingleChildScrollView(
             controller: _controller,

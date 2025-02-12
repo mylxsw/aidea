@@ -12,8 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 
-import 'web/payment_element.dart'
-    if (dart.library.js) 'web/payment_element_web.dart';
+import 'web/payment_element.dart' if (dart.library.js) 'web/payment_element_web.dart';
 
 class WebPaymentProxy extends StatefulWidget {
   final SettingRepository setting;
@@ -63,6 +62,7 @@ class _WebPaymentProxyState extends State<WebPaymentProxy> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         maxWidth: CustomSize.smallWindowSize,
         child: Center(
           child: FutureBuilder(
@@ -101,8 +101,7 @@ class _WebPaymentProxyState extends State<WebPaymentProxy> {
                           final cancel = BotToast.showCustomLoading(
                             toastBuilder: (cancel) {
                               return LoadingIndicator(
-                                message:
-                                    AppLocale.processingWait.getString(context),
+                                message: AppLocale.processingWait.getString(context),
                               );
                             },
                             allowClick: false,

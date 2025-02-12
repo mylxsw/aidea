@@ -53,6 +53,7 @@ class _QuotaUsageStatisticsScreenState extends State<QuotaUsageStatisticsScreen>
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: Container(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -112,7 +113,7 @@ class _QuotaUsageStatisticsScreenState extends State<QuotaUsageStatisticsScreen>
                   margin: const EdgeInsets.symmetric(vertical: 6),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: customColors.backgroundContainerColor,
+                    color: customColors.listTileBackgroundColor,
                     borderRadius: CustomSize.borderRadius,
                   ),
                   child: InkWell(

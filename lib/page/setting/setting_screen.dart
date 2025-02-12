@@ -56,43 +56,45 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return BackgroundContainer(
-      setting: widget.settings,
-      child: Scaffold(
-        backgroundColor: customColors.backgroundColor,
-        body: SliverComponent(
-          title: Text(
-            AppLocale.settings.getString(context),
-            style: TextStyle(
-              fontSize: CustomSize.appBarTitleSize,
-              color: customColors.backgroundInvertedColor,
-            ),
+    return Scaffold(
+      backgroundColor: customColors.backgroundColor,
+      body: SliverComponent(
+        title: Text(
+          AppLocale.settings.getString(context),
+          style: TextStyle(
+            fontSize: CustomSize.appBarTitleSize,
+            color: customColors.backgroundInvertedColor,
           ),
-          actions: [
-            BlocBuilder<AccountBloc, AccountState>(
-              buildWhen: (previous, current) => current is AccountLoaded,
-              builder: (context, state) {
-                if (userHasLabPermission(state)) {
-                  return IconButton(
-                    onPressed: () {
-                      context.push('/admin/dashboard');
-                    },
-                    icon: const Icon(Icons.developer_board_outlined),
-                    tooltip: 'Admin Dashboard',
-                  );
-                }
+        ),
+        actions: [
+          BlocBuilder<AccountBloc, AccountState>(
+            buildWhen: (previous, current) => current is AccountLoaded,
+            builder: (context, state) {
+              if (userHasLabPermission(state)) {
+                return IconButton(
+                  onPressed: () {
+                    context.push('/admin/dashboard');
+                  },
+                  icon: const Icon(Icons.developer_board_outlined),
+                  tooltip: 'Admin Dashboard',
+                );
+              }
 
-                return const SizedBox();
-              },
-            ),
-            IconButton(
-              onPressed: () {
-                context.push('/notifications');
-              },
-              icon: const Icon(Icons.notifications_outlined),
-              tooltip: 'Notifications',
-            ),
-          ],
+              return const SizedBox();
+            },
+          ),
+          IconButton(
+            onPressed: () {
+              context.push('/notifications');
+            },
+            icon: const Icon(Icons.notifications_outlined),
+            tooltip: 'Notifications',
+          ),
+        ],
+        child: BackgroundContainer(
+          setting: widget.settings,
+          enabled: false,
+          backgroundColor: customColors.backgroundColor,
           child: BlocBuilder<AccountBloc, AccountState>(
             builder: (_, state) {
               return buildSettingsList(
@@ -294,19 +296,6 @@ class _SettingScreenState extends State<SettingScreen> {
                     SettingsSection(
                       title: Text(AppLocale.lab.getString(context)),
                       tiles: [
-                        if (userHasLabPermission(state))
-                          SettingsTile(
-                            title: const Text('Draw Board'),
-                            trailing: const Icon(
-                              CupertinoIcons.chevron_forward,
-                              size: 18,
-                              color: Colors.grey,
-                            ),
-                            onPressed: (context) {
-                              context.push('/lab/draw-board');
-                            },
-                          ),
-
                         // 自定义服务器
                         _buildServerSelfHostedSetting(customColors),
                         // 诊断
@@ -664,7 +653,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
   SettingsTile _buildServerSelfHostedSetting(CustomColors customColors) {
     return SettingsTile(
-      title: const Text('Custom server'),
+      title: const Text('Custom API Server'),
       trailing: const Icon(
         CupertinoIcons.chevron_forward,
         size: 18,

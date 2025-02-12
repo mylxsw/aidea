@@ -68,6 +68,7 @@ class _CreativeModelScreenState extends State<CreativeModelScreen> {
       backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
+        backgroundColor: customColors.backgroundColor,
         enabled: false,
         child: Column(
           children: [

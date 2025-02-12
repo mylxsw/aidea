@@ -230,10 +230,6 @@ class _NewHomePageState extends State<NewHomePage> {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return CustomScaffold(
       settings: widget.settings,
-      // appBarBackground: Image.asset(
-      //   customColors.appBarBackgroundImage!,
-      //   fit: BoxFit.cover,
-      // ),
       showBackAppBar: chatPreviewController.selectMode,
       backAppBar: AppBar(
         title: Text(

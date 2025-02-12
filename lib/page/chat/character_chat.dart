@@ -134,12 +134,12 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return BackgroundContainer(
-      setting: widget.setting,
-      child: Scaffold(
-        appBar: _buildAppBar(context, customColors),
-        backgroundColor: Colors.transparent,
-        body: _buildChatComponents(customColors),
+    return Scaffold(
+      appBar: _buildAppBar(context, customColors),
+      backgroundColor: customColors.backgroundContainerColor,
+      body: BackgroundContainer(
+        setting: widget.setting,
+        child: _buildChatComponents(customColors),
       ),
     );
   }

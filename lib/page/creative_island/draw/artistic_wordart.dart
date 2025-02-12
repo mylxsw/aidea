@@ -146,6 +146,7 @@ class _ArtisticWordArtScreenState extends State<ArtisticWordArtScreen> {
         setting: widget.setting,
         enabled: false,
         maxWidth: CustomSize.smallWindowSize,
+        backgroundColor: customColors.backgroundColor,
         child: Column(
           children: [
             if (Ability().showGlobalAlert) const GlobalAlert(pageKey: 'creative_create'),

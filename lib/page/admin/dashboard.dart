@@ -22,19 +22,21 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return BackgroundContainer(
-      setting: widget.setting,
-      child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: CustomSize.toolbarHeight,
-          title: const Text(
-            'Dashboard',
-            style: TextStyle(fontSize: CustomSize.appBarTitleSize),
-          ),
-          centerTitle: true,
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: CustomSize.toolbarHeight,
+        title: const Text(
+          'Dashboard',
+          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
+        centerTitle: true,
+      ),
+      backgroundColor: customColors.backgroundColor,
+      body: BackgroundContainer(
+        setting: widget.setting,
         backgroundColor: customColors.backgroundColor,
-        body: Column(
+        enabled: false,
+        child: Column(
           children: [
             Expanded(
               child: SettingsList(

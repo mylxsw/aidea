@@ -47,6 +47,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
+        backgroundColor: customColors.backgroundColor,
         enabled: false,
         child: SafeArea(
           top: false,
@@ -148,7 +149,7 @@ class NotifyMessageItem extends StatelessWidget {
           ],
         ),
         child: Material(
-          color: customColors.backgroundContainerColor,
+          color: customColors.listTileBackgroundColor,
           borderRadius: CustomSize.borderRadius,
           child: InkWell(
             child: ListTile(
