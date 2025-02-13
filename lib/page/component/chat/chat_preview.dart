@@ -219,9 +219,21 @@ class _ChatPreviewState extends State<ChatPreview> {
               onTap: (displayThinkingProcess) {},
             ));
           } else {
-            stateWidgets.add(LoadingAnimationWidget.waveDots(
-              color: customColors.weakTextColorLess!,
-              size: 25,
+            stateWidgets.add(Row(
+              children: [
+                Text(
+                  AppLocale.robotIsThinkingMessage.getString(context),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: customColors.weakTextColorLess!,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                LoadingAnimationWidget.waveDots(
+                  color: customColors.weakTextColorLess!,
+                  size: 16,
+                ),
+              ],
             ));
           }
         case 'thinking-done':
@@ -330,6 +342,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                           // 错误指示器
                           if (message.role == Role.sender && message.statusIsFailed())
                             buildErrorIndicator(message, state, context, index),
+
                           // 消息过程状态
                           if (states.isNotEmpty)
                             Container(

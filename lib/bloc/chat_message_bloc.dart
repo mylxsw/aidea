@@ -363,9 +363,8 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
         var isThinking = false;
         var reasoningContent = '';
         var listener = queue.listen(const Duration(milliseconds: 10), (items) {
-          final systemCmds = items.where((e) => e.role == 'system').toList();
-          if (systemCmds.isNotEmpty) {
-            for (var element in systemCmds) {
+          for (var element in items) {
+            if (element.role == 'system') {
               try {
                 // SYSTEM 命令
                 // - type: 命令类型
@@ -415,15 +414,22 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
               } catch (e) {
                 // ignore: avoid_print
               }
-            }
-          }
+            } else {
+              if (isThinking) {
+                reasoningContent = (reasoningContent + element.content).trim();
+                if (reasoningContent.contains('</think>')) {
+                  final allParts = reasoningContent.split('</think>');
+                  final parts = [allParts[0], allParts.skip(1).join('</think>')];
 
-          final newContent = items.where((e) => e.role != 'system').map((e) => e.content).join('');
-          if (isThinking && newContent.isNotEmpty) {
-            reasoningContent += newContent;
-            waitMessage.updateExtra({'reasoning': reasoningContent});
-          } else {
-            waitMessage.text += newContent;
+                  reasoningContent = parts[0].trim();
+                  waitMessage.text += parts[1].trim();
+                }
+
+                waitMessage.updateExtra({'reasoning': reasoningContent.replaceAll(RegExp('</?think>'), '')});
+              } else {
+                waitMessage.text += element.content;
+              }
+            }
           }
 
           emit(ChatMessageUpdated(waitMessage, processing: true));
