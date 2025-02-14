@@ -115,6 +115,8 @@ class _CharacterCreatePageState extends State<CharacterCreatePage> {
                       context.read<RoomBloc>().add(RoomsLoadEvent());
                     }
                   });
+                } else {
+                  context.pop();
                 }
               } else {
                 showErrorMessageEnhanced(context, state.error ?? AppLocale.operateFailed.getString(context));
