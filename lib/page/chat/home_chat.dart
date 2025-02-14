@@ -206,14 +206,15 @@ class _HomeChatPageState extends State<HomeChatPage> {
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
-    return BackgroundContainer(
-      setting: widget.setting,
-      child: Scaffold(
-        // AppBar
-        appBar: buildAppBar(context, customColors),
-        backgroundColor: Colors.transparent,
-        // 聊天内容窗口
-        body: BlocConsumer<RoomBloc, RoomState>(
+    return Scaffold(
+      // AppBar
+      appBar: buildAppBar(context, customColors),
+      backgroundColor: customColors.backgroundContainerColor,
+      // 聊天内容窗口
+      body: BackgroundContainer(
+        setting: widget.setting,
+        // maxWidth: double.infinity,
+        child: BlocConsumer<RoomBloc, RoomState>(
           listenWhen: (previous, current) => current is RoomLoaded,
           listener: (context, state) async {
             if (state is RoomLoaded && currentModelV2 == null) {

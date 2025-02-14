@@ -72,6 +72,7 @@ class _ChannelsPageState extends State<ChannelsPage> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: RefreshIndicator(
           color: customColors.linkColor,
           onRefresh: () async {

@@ -46,6 +46,7 @@ class _FreeStatisticsPageState extends State<FreeStatisticsPage> {
       backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
+        backgroundColor: customColors.backgroundColor,
         enabled: false,
         child: RefreshIndicator(
           displacement: 20,

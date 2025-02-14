@@ -68,6 +68,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
       body: BackgroundContainer(
         setting: widget.settings,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: SafeArea(
           top: false,
           child: Container(

@@ -27,8 +27,7 @@ class DestroyAccountScreen extends StatefulWidget {
 
 class _DestroyAccountScreenState extends State<DestroyAccountScreen> {
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _verificationCodeController =
-      TextEditingController();
+  final TextEditingController _verificationCodeController = TextEditingController();
 
   String verifyCodeId = '';
 
@@ -56,6 +55,7 @@ class _DestroyAccountScreenState extends State<DestroyAccountScreen> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: Container(
           padding: const EdgeInsets.all(10),
           child: Column(
@@ -67,8 +67,7 @@ class _DestroyAccountScreenState extends State<DestroyAccountScreen> {
               ),
               const SizedBox(height: 15),
               ColumnBlock(
-                padding: const EdgeInsets.only(
-                    top: 20, left: 10, right: 10, bottom: 20),
+                padding: const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 20),
                 children: [
                   VerifyCodeInput(
                     inColumnBlock: false,
@@ -89,8 +88,7 @@ class _DestroyAccountScreenState extends State<DestroyAccountScreen> {
               Container(
                 height: 45,
                 width: double.infinity,
-                decoration: BoxDecoration(
-                    color: Colors.red, borderRadius: CustomSize.borderRadius),
+                decoration: BoxDecoration(color: Colors.red, borderRadius: CustomSize.borderRadius),
                 child: TextButton(
                   onPressed: onDestroySubmit,
                   child: Text(

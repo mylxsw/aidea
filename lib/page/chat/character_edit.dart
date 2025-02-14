@@ -101,10 +101,11 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         elevation: 0,
         toolbarHeight: CustomSize.toolbarHeight,
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: BlocConsumer<RoomBloc, RoomState>(
           listener: (context, state) {
             if (state is RoomLoaded) {

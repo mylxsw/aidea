@@ -285,7 +285,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
     tagsBackgroundHover: Color.fromARGB(255, 106, 106, 106),
     tagsText: Color.fromARGB(255, 218, 218, 218),
     chatInputPanelBackground: Color.fromARGB(255, 0, 0, 0),
-    chatInputPanelText: Color.fromARGB(124, 255, 255, 255),
+    chatInputPanelText: Color.fromARGB(255, 255, 255, 255),
     chatInputAreaBackground: Color.fromARGB(255, 32, 32, 32),
     chatExampleItemBackground: Color.fromARGB(255, 80, 80, 80),
     chatExampleItemBackgroundHover: Color.fromARGB(255, 69, 69, 69),

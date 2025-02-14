@@ -102,7 +102,8 @@ class _CharacterCreatePageState extends State<CharacterCreatePage> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
-        maxWidth: 0,
+        maxWidth: CustomSize.maxWindowSize,
+        backgroundColor: customColors.backgroundColor,
         child: BlocListener<RoomBloc, RoomState>(
           listenWhen: (previous, current) => current is RoomOperationResult,
           listener: (context, state) {

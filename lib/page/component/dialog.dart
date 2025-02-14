@@ -552,6 +552,7 @@ openTextFieldDialog(
   showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
+    isScrollControlled: true,
     builder: (context) {
       return BottomSheetBox(
         child: Column(

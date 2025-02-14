@@ -152,7 +152,7 @@ class _ModelItemState extends State<ModelItem> {
           )
         : const Center(
             child: Text(
-              'No model available\nPlease login or configure OpenAI\'s Keys first!',
+              'No model available\nPlease login first!',
               textAlign: TextAlign.center,
             ),
           );
@@ -213,7 +213,25 @@ class _ModelItemState extends State<ModelItem> {
     }
 
     return ListTile(
-      leading: buildAvatar(avatarUrl: item.avatarUrl, size: 50),
+      leading: Stack(
+        children: [
+          buildAvatar(avatarUrl: item.avatarUrl, size: 50),
+          if (item.userNoPermission)
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.4),
+                borderRadius: CustomSize.borderRadiusAll,
+              ),
+              child: const Icon(
+                Icons.lock_outline,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+        ],
+      ),
       contentPadding: EdgeInsets.zero,
       title: AutoSizeText(
         item.name,
@@ -221,7 +239,9 @@ class _ModelItemState extends State<ModelItem> {
         maxFontSize: 15,
         maxLines: 1,
         style: TextStyle(
-          color: widget.initValue == item.uid() ? customColors.linkColor : null,
+          color: widget.initValue == item.uid()
+              ? customColors.linkColor
+              : (item.userNoPermission ? customColors.weakTextColorLess : null),
           fontWeight: widget.initValue == item.uid() ? FontWeight.bold : null,
         ),
       ),
@@ -240,6 +260,11 @@ class _ModelItemState extends State<ModelItem> {
         ],
       ),
       onTap: () {
+        if (item.userNoPermission) {
+          showErrorMessage(AppLocale.modelNeedSignIn.getString(context));
+          return;
+        }
+
         widget.onSelected(item);
       },
       onLongPress: () {

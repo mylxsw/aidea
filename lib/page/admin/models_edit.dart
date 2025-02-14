@@ -160,6 +160,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: SingleChildScrollView(
           child: BlocListener<ModelBloc, ModelState>(
             listenWhen: (previous, current) => current is ModelOperationResult || current is ModelLoaded,

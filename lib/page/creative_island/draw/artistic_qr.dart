@@ -170,6 +170,7 @@ class _ArtisticQRScreenState extends State<ArtisticQRScreen> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         maxWidth: CustomSize.smallWindowSize,
         child: Column(
           children: [

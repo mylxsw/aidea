@@ -54,6 +54,7 @@ class _HomeChatHistoryPageState extends State<HomeChatHistoryPage> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: SafeArea(
           top: false,
           left: false,

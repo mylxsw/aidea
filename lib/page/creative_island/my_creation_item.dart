@@ -78,6 +78,7 @@ class _MyCreationItemPageState extends State<MyCreationItemPage> with SingleTick
             body: BackgroundContainer(
               setting: widget.setting,
               enabled: false,
+              backgroundColor: customColors.backgroundColor,
               maxWidth: CustomSize.smallWindowSize,
               child: SafeArea(
                 child: SingleChildScrollView(

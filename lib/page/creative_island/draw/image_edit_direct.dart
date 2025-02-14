@@ -176,6 +176,7 @@ class _ImageEditDirectScreenState extends State<ImageEditDirectScreen> {
         setting: widget.setting,
         enabled: false,
         maxWidth: CustomSize.smallWindowSize,
+        backgroundColor: customColors.backgroundColor,
         child: Column(
           children: [
             if (Ability().showGlobalAlert) const GlobalAlert(pageKey: 'creative_create'),

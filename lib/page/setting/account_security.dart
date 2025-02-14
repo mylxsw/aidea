@@ -82,33 +82,35 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return BackgroundContainer(
-      setting: widget.settings,
-      child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: CustomSize.toolbarHeight,
-          title: Text(
-            AppLocale.accountSettings.getString(context),
-            style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
-          ),
-          centerTitle: true,
-          actions: [
-            EnhancedPopupMenu(
-              items: [
-                EnhancedPopupMenuItem(
-                  title: AppLocale.deleteAccount.getString(context),
-                  icon: Icons.delete_forever,
-                  iconColor: Colors.red,
-                  onTap: (ctx) {
-                    context.push('/user/destroy');
-                  },
-                ),
-              ],
-            )
-          ],
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: CustomSize.toolbarHeight,
+        title: Text(
+          AppLocale.accountSettings.getString(context),
+          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
+        centerTitle: true,
+        actions: [
+          EnhancedPopupMenu(
+            items: [
+              EnhancedPopupMenuItem(
+                title: AppLocale.deleteAccount.getString(context),
+                icon: Icons.delete_forever,
+                iconColor: Colors.red,
+                onTap: (ctx) {
+                  context.push('/user/destroy');
+                },
+              ),
+            ],
+          )
+        ],
+      ),
+      backgroundColor: customColors.backgroundColor,
+      body: BackgroundContainer(
+        setting: widget.settings,
         backgroundColor: customColors.backgroundColor,
-        body: SafeArea(
+        enabled: false,
+        child: SafeArea(
           child: BlocConsumer<AccountBloc, AccountState>(
             listenWhen: (previous, current) => current is AccountLoaded,
             listener: (context, state) {

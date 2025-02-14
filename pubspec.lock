@@ -358,10 +358,10 @@ packages:
     dependency: transitive
     description:
       name: cli_util
-      sha256: "66f86e916d285c1a93d3b79587d94bd71984a66aac4ff74e524cfa7877f1395c"
+      sha256: ff6785f7e9e3c38ac98b2fb035701789de90154024a75b6cb926445e83197d1c
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.5"
+    version: "0.4.2"
   clipboard:
     dependency: "direct main"
     description:
@@ -734,10 +734,10 @@ packages:
     dependency: "direct dev"
     description:
       name: flutter_launcher_icons
-      sha256: "02dcaf49d405f652b7160e882bacfc02cb497041bb2eab2a49b1c393cf9aac12"
+      sha256: bfa04787c85d80ecb3f8777bde5fc10c3de809240c48fa061a2c2bf15ea5211c
       url: "https://pub.dev"
     source: hosted
-    version: "0.12.0"
+    version: "0.14.3"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -973,10 +973,10 @@ packages:
     dependency: "direct main"
     description:
       name: image
-      sha256: "4c68bfd5ae83e700b5204c1e74451e7bf3cf750e6843c6e158289cf56bda018e"
+      sha256: "2237616a36c0d69aef7549ab439b833fb7f9fb9fc861af2cc9ac3eedddd69ca8"
       url: "https://pub.dev"
     source: hosted
-    version: "4.1.7"
+    version: "4.2.0"
   image_gallery_saver:
     dependency: "direct main"
     description:
@@ -1044,10 +1044,11 @@ packages:
   isolate_image_compress:
     dependency: "direct main"
     description:
-      name: isolate_image_compress
-      sha256: c11d022e99be5af9519ad11868c7ba78b6457ad45da382cfa1016e78c2167ac1
-      url: "https://pub.dev"
-    source: hosted
+      path: isolate_image_compress
+      ref: customized
+      resolved-ref: c2f80522ee25c03d6c0b6d0a26e005a3a6b9305c
+      url: "https://github.com/mylxsw/isolate_flutter"
+    source: git
     version: "2.0.0"
   js:
     dependency: transitive
@@ -1278,10 +1279,10 @@ packages:
     dependency: "direct dev"
     description:
       name: msix
-      sha256: "68679afc7d7117467250363dea4fb62db7520a23a9490bf4b65794655235a1d5"
+      sha256: c50d6bd1aafe0d071a3c1e5a5ccb056404502935cb0a549e3178c4aae16caf33
       url: "https://pub.dev"
     source: hosted
-    version: "3.9.1"
+    version: "3.16.8"
   nested:
     dependency: transitive
     description:
