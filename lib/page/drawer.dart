@@ -70,7 +70,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
                         child: SizedBox(height: PlatformTool.isMacOS() ? kToolbarHeight : 20),
                       ),
 
-                      if (Ability().isUserLogon())
+                      if (Ability().isUserLogon() && Ability().enableDigitalHuman)
                         ListTile(
                           leading: const Icon(Icons.group_outlined),
                           title: Text(AppLocale.homeTitle.getString(context)),
@@ -79,37 +79,38 @@ class _LeftDrawerState extends State<LeftDrawer> {
                           },
                         ),
 
-                      BlocBuilder<RoomBloc, RoomState>(
-                        buildWhen: (previous, current) => current is RoomsRecentLoaded,
-                        builder: (_, state) {
-                          if (state is RoomsRecentLoaded) {
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              padding: const EdgeInsets.all(0),
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: state.rooms.length,
-                              itemBuilder: (context, index) {
-                                final item = state.rooms[index];
-                                return ListTile(
-                                  contentPadding: const EdgeInsets.only(left: 30),
-                                  dense: true,
-                                  leading: RoleAvatar(
-                                    avatarUrl: item.avatarUrl,
-                                    name: item.name,
-                                    avatarSize: 25,
-                                  ),
-                                  title: Text(item.name),
-                                  onTap: () {
-                                    context.push('/room/${item.id}/chat').whenComplete(reload);
-                                  },
-                                );
-                              },
-                            );
-                          }
+                      if (Ability().isUserLogon() && Ability().enableDigitalHuman)
+                        BlocBuilder<RoomBloc, RoomState>(
+                          buildWhen: (previous, current) => current is RoomsRecentLoaded,
+                          builder: (_, state) {
+                            if (state is RoomsRecentLoaded) {
+                              return ListView.builder(
+                                shrinkWrap: true,
+                                padding: const EdgeInsets.all(0),
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: state.rooms.length,
+                                itemBuilder: (context, index) {
+                                  final item = state.rooms[index];
+                                  return ListTile(
+                                    contentPadding: const EdgeInsets.only(left: 30),
+                                    dense: true,
+                                    leading: RoleAvatar(
+                                      avatarUrl: item.avatarUrl,
+                                      name: item.name,
+                                      avatarSize: 25,
+                                    ),
+                                    title: Text(item.name),
+                                    onTap: () {
+                                      context.push('/room/${item.id}/chat').whenComplete(reload);
+                                    },
+                                  );
+                                },
+                              );
+                            }
 
-                          return const SizedBox();
-                        },
-                      ),
+                            return const SizedBox();
+                          },
+                        ),
                       if (Ability().enableGallery)
                         ListTile(
                           leading: const Icon(Icons.auto_awesome_outlined),
@@ -125,12 +126,13 @@ class _LeftDrawerState extends State<LeftDrawer> {
                       //     context.push('/creative-draw');
                       //   },
                       // ),
-                      Divider(
-                        color: customColors.weakTextColor?.withAlpha(50),
-                        height: 10,
-                        indent: 10,
-                        endIndent: 10,
-                      ),
+                      if (Ability().enableGallery || (Ability().isUserLogon() && Ability().enableDigitalHuman))
+                        Divider(
+                          color: customColors.weakTextColor?.withAlpha(50),
+                          height: 10,
+                          indent: 10,
+                          endIndent: 10,
+                        ),
                       BlocBuilder<ChatChatBloc, ChatChatState>(
                         buildWhen: (previous, current) => current is ChatChatRecentHistoriesLoaded,
                         builder: (_, state) {

@@ -150,7 +150,6 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
       emit(RoomsLoading());
 
       try {
-        int id = 0;
         if (Ability().isUserLogon()) {
           String? model;
           String? vendor;
@@ -161,7 +160,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
             vendor = event.model!.startsWith('v2@') ? '' : (segs.length > 1 ? segs.first : '');
           }
 
-          id = await APIServer().createRoom(
+          await APIServer().createRoom(
             name: event.name,
             vendor: vendor,
             model: model,
@@ -172,7 +171,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
             initMessage: event.initMessage,
           );
         } else {
-          final room = await chatMsgRepo.createRoom(
+          await chatMsgRepo.createRoom(
             name: event.name,
             category: 'chat',
             model: event.model ?? 'gpt-4o',
@@ -180,11 +179,9 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
             userId: APIServer().localUserID(),
             maxContext: event.maxContext,
           );
-
-          id = room.id!;
         }
 
-        emit(RoomOperationResult(true, redirect: '/room/$id/chat'));
+        emit(RoomOperationResult(true));
         emit(await createRoomsLoadedState(cache: false));
       } catch (e) {
         emit(RoomOperationResult(false, error: e.toString()));
