@@ -43,13 +43,9 @@ class _DrawListScreenState extends State<DrawListScreen> {
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
-    return BackgroundContainer(
-      setting: widget.setting,
-      enabled: false,
-      child: Scaffold(
-        backgroundColor: customColors.backgroundColor,
-        body: _buildIslandItems(customColors),
-      ),
+    return Scaffold(
+      backgroundColor: customColors.backgroundColor,
+      body: _buildIslandItems(customColors),
     );
   }
 
@@ -77,96 +73,97 @@ class _DrawListScreenState extends State<DrawListScreen> {
           icon: const Icon(Icons.crop_original),
         ),
       ],
-      backgroundImage: Image.asset(
-        customColors.appBarBackgroundImageForCreativeIsland!,
-        fit: BoxFit.cover,
-      ),
-      child: BlocBuilder<CreativeIslandBloc, CreativeIslandState>(
-        buildWhen: (previous, current) => current is CreativeIslandItemsV2Loaded,
-        builder: (context, state) {
-          if (state is CreativeIslandItemsV2Loaded) {
-            final items = state.items
-                .map((e) => CreativeItem(
-                      imageURL: e.previewImage,
-                      title: e.title,
-                      titleColor: stringToColor(e.titleColor),
-                      tag: e.tag,
-                      onTap: () {
-                        var uri = Uri.tryParse(e.routeUri);
-                        if (e.note != null && e.note != '') {
-                          uri = uri!.replace(
-                              queryParameters: <String, String>{
-                            'note': e.note!,
-                          }..addAll(uri.queryParameters));
-                        }
+      child: BackgroundContainer(
+        setting: widget.setting,
+        enabled: false,
+        backgroundColor: customColors.backgroundColor,
+        child: BlocBuilder<CreativeIslandBloc, CreativeIslandState>(
+          buildWhen: (previous, current) => current is CreativeIslandItemsV2Loaded,
+          builder: (context, state) {
+            if (state is CreativeIslandItemsV2Loaded) {
+              final items = state.items
+                  .map((e) => CreativeItem(
+                        imageURL: e.previewImage,
+                        title: e.title,
+                        titleColor: stringToColor(e.titleColor),
+                        tag: e.tag,
+                        onTap: () {
+                          var uri = Uri.tryParse(e.routeUri);
+                          if (e.note != null && e.note != '') {
+                            uri = uri!.replace(
+                                queryParameters: <String, String>{
+                              'note': e.note!,
+                            }..addAll(uri.queryParameters));
+                          }
 
-                        context.push(uri.toString());
-                      },
-                      size: e.size,
-                    ))
-                .toList();
-            final largeItems = items.where((e) => e.size == 'large').toList();
-            final mediumItems = items.where((e) => e.size == 'medium').toList();
-            final otherItems = items.where((e) => e.size != 'large' && e.size != 'medium').toList();
+                          context.push(uri.toString());
+                        },
+                        size: e.size,
+                      ))
+                  .toList();
+              final largeItems = items.where((e) => e.size == 'large').toList();
+              final mediumItems = items.where((e) => e.size == 'medium').toList();
+              final otherItems = items.where((e) => e.size != 'large' && e.size != 'medium').toList();
 
-            return RefreshIndicator(
-              onRefresh: () async {
-                context.read<CreativeIslandBloc>().add(CreativeIslandItemsV2LoadEvent(forceRefresh: true));
-              },
-              color: customColors.linkColor,
-              displacement: 20,
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    GridView.count(
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: const EdgeInsets.only(top: 0, left: 10, right: 10),
-                      crossAxisCount: _calCrossAxisCount(context),
-                      childAspectRatio: 2,
-                      shrinkWrap: true,
-                      children: largeItems
-                          .map((e) => Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                                child: e,
-                              ))
-                          .toList(),
-                    ),
-                    GridView.count(
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
-                      crossAxisCount: _calCrossAxisCount(context) * 2,
-                      childAspectRatio: 1,
-                      shrinkWrap: true,
-                      children: mediumItems
-                          .map((e) => Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                                child: e,
-                              ))
-                          .toList(),
-                    ),
-                    GridView.count(
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
-                      crossAxisCount: _calCrossAxisCount(context) * 2,
-                      childAspectRatio: 2,
-                      shrinkWrap: true,
-                      children: otherItems
-                          .map((e) => Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                                child: e,
-                              ))
-                          .toList(),
-                    ),
-                  ],
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<CreativeIslandBloc>().add(CreativeIslandItemsV2LoadEvent(forceRefresh: true));
+                },
+                color: customColors.linkColor,
+                displacement: 20,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      GridView.count(
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(top: 0, left: 10, right: 10),
+                        crossAxisCount: _calCrossAxisCount(context),
+                        childAspectRatio: 2,
+                        shrinkWrap: true,
+                        children: largeItems
+                            .map((e) => Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                                  child: e,
+                                ))
+                            .toList(),
+                      ),
+                      GridView.count(
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
+                        crossAxisCount: _calCrossAxisCount(context) * 2,
+                        childAspectRatio: 1,
+                        shrinkWrap: true,
+                        children: mediumItems
+                            .map((e) => Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                                  child: e,
+                                ))
+                            .toList(),
+                      ),
+                      GridView.count(
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(top: 5, left: 10, right: 10),
+                        crossAxisCount: _calCrossAxisCount(context) * 2,
+                        childAspectRatio: 2,
+                        shrinkWrap: true,
+                        children: otherItems
+                            .map((e) => Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                                  child: e,
+                                ))
+                            .toList(),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }
+              );
+            }
 
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
       ),
     );
   }

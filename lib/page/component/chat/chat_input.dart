@@ -4,6 +4,7 @@ import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/component/chat/chat_input_button.dart';
 import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/voice_record.dart';
 import 'package:askaide/page/component/dialog.dart';
@@ -82,6 +83,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
 
   final maxLength = 150000;
   var hasCamera = false;
+  var showExtensionButtons = false;
 
   // Whether to display the bottom tool bar
   var showBottomTools = false;
@@ -133,87 +135,135 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
-    return SafeArea(
-      bottom: false,
-      child: Container(
-        padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
-        decoration: BoxDecoration(
-          color: customColors.chatInputAreaBackground,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(CustomSize.radiusValue * 2),
-            topRight: Radius.circular(CustomSize.radiusValue * 2),
+    return GestureDetector(
+      onTap: () {
+        _focusNode.requestFocus();
+      },
+      child: SafeArea(
+        bottom: false,
+        child: Container(
+          margin: PlatformTool.isDesktop() ? const EdgeInsets.all(8) : null,
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+          decoration: BoxDecoration(
+            color: customColors.chatInputAreaBackground,
+            borderRadius: PlatformTool.isDesktop()
+                ? BorderRadius.circular(CustomSize.radiusValue)
+                : const BorderRadius.only(
+                    topLeft: Radius.circular(CustomSize.radiusValue * 2),
+                    topRight: Radius.circular(CustomSize.radiusValue * 2),
+                  ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                offset: const Offset(-1, -1),
+                blurRadius: CustomSize.radiusValue,
+              ),
+              if (PlatformTool.isDesktop())
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  offset: const Offset(-1, -1),
+                  blurRadius: CustomSize.radiusValue,
+                ),
+            ],
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              offset: const Offset(-1, -1),
-              blurRadius: CustomSize.radiusValue,
-            ),
-          ],
-        ),
-        child: Builder(builder: (context) {
-          final setting = context.read<SettingRepository>();
-          return SafeArea(
-            child: Column(
-              children: [
-                // 选中的图片预览
-                if (widget.selectedImageFiles != null && widget.selectedImageFiles!.isNotEmpty)
-                  buildSelectedImagePreview(customColors),
-                // 选中文件预览
-                if (widget.selectedFile != null) buildSelectedFilePreview(customColors),
-                // 聊天内容输入栏
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Focus(
-                      onFocusChange: (hasFocus) {
-                        setState(() {
-                          inputFocused = hasFocus;
-                        });
+          child: Builder(builder: (context) {
+            final setting = context.read<SettingRepository>();
+            return SafeArea(
+              child: Column(
+                children: [
+                  // 选中的图片预览
+                  if (widget.selectedImageFiles != null && widget.selectedImageFiles!.isNotEmpty)
+                    buildSelectedImagePreview(customColors),
+                  // 选中文件预览
+                  if (widget.selectedFile != null) buildSelectedFilePreview(customColors),
+                  // 聊天内容输入栏
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Focus(
+                        onFocusChange: (hasFocus) {
+                          setState(() {
+                            inputFocused = hasFocus;
+                          });
 
-                        widget.onFocusChange?.call(hasFocus);
-                      },
-                      child: TextFormField(
-                        keyboardType: TextInputType.multiline,
-                        textInputAction: TextInputAction.newline,
-                        maxLines: inputFocused ? 10 : 3,
-                        minLines: 1,
-                        maxLength: maxLength,
-                        focusNode: _focusNode,
-                        controller: _textController,
-                        style: const TextStyle(fontSize: CustomSize.defaultHintTextSize),
-                        decoration: InputDecoration(
-                          hintText: widget.hintText,
-                          hintStyle: TextStyle(
-                            fontSize: CustomSize.defaultHintTextSize,
-                            color: customColors.textfieldHintColor,
+                          widget.onFocusChange?.call(hasFocus);
+                        },
+                        child: TextFormField(
+                          keyboardType: TextInputType.multiline,
+                          textInputAction: TextInputAction.newline,
+                          maxLines: inputFocused ? 10 : 3,
+                          minLines: 1,
+                          maxLength: maxLength,
+                          focusNode: _focusNode,
+                          controller: _textController,
+                          style: const TextStyle(fontSize: CustomSize.defaultHintTextSize),
+                          decoration: InputDecoration(
+                            hintText: widget.hintText,
+                            hintStyle: TextStyle(
+                              fontSize: CustomSize.defaultHintTextSize,
+                              color: customColors.textfieldHintColor,
+                            ),
+                            border: InputBorder.none,
+                            counterText: '',
                           ),
-                          border: InputBorder.none,
-                          counterText: '',
                         ),
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            if (widget.enableNotifier.value && (canUploadImage || canUploadFile))
-                              buildUploadButtons(context, setting, customColors),
-                            if (widget.toolsBuilder != null) ...widget.toolsBuilder!(),
-                          ],
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              if (widget.enableNotifier.value && (canUploadImage || canUploadFile))
+                                buildUploadButtons(context, setting, customColors),
+                              if (widget.toolsBuilder != null) ...widget.toolsBuilder!(),
+                            ],
+                          ),
+                          _buildSendOrVoiceButton(context, customColors),
+                        ],
+                      ),
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        height: showExtensionButtons && widget.enableNotifier.value ? 80 : 0,
+                        child: SingleChildScrollView(
+                          child: Row(
+                            children: [
+                              if (canUploadImage && hasCamera)
+                                ChatInputSquareButton(
+                                  icon: Icons.camera_alt,
+                                  onPressed: () {
+                                    onTakePhotoButtonPressed(context, customColors);
+                                  },
+                                  text: AppLocale.takePhoto.getString(context),
+                                ),
+                              if (canUploadImage)
+                                ChatInputSquareButton(
+                                  icon: Icons.photo_library,
+                                  onPressed: () {
+                                    onImageUploadButtonPressed();
+                                  },
+                                  text: AppLocale.photoLibrary.getString(context),
+                                ),
+                              if (canUploadFile)
+                                ChatInputSquareButton(
+                                  icon: Icons.upload_file_sharp,
+                                  onPressed: () {
+                                    onFileUploadButtonPressed();
+                                  },
+                                  text: AppLocale.fileLibrary.getString(context),
+                                ),
+                            ],
+                          ),
                         ),
-                        _buildSendOrVoiceButton(context, customColors),
-                      ],
-                    ),
-                    if (inputFocused) const SizedBox(height: 8),
-                  ],
-                ),
-              ],
-            ),
-          );
-        }),
+                      ),
+                      SizedBox(height: PlatformTool.isMobile() && inputFocused ? 8 : 6),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          }),
+        ),
       ),
     );
   }
@@ -440,102 +490,33 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
     }
   }
 
-  final _menuKey = GlobalKey<PopupMenuButtonState>();
-
   /// Build image or file upload button
   Widget buildUploadButtons(
     BuildContext context,
     SettingRepository setting,
     CustomColors customColors,
   ) {
-    return Listener(
-      onPointerDown: (_) async {
-        if (FocusScope.of(context).hasFocus) {
-          FocusScope.of(context).unfocus();
-          await Future.delayed(const Duration(milliseconds: 200));
-        }
-        _menuKey.currentState?.showButtonMenu();
+    return InkWell(
+      onTap: () {
+        setState(() {
+          showExtensionButtons = !showExtensionButtons;
+        });
       },
-      child: PopupMenuButton(
-        key: _menuKey,
-        enabled: false,
-        padding: EdgeInsets.zero,
-        icon: Container(
-          decoration: BoxDecoration(
-            color: customColors.tagsBackgroundHover,
-            shape: BoxShape.circle,
-          ),
-          padding: const EdgeInsets.all(4),
+      child: Container(
+        decoration: BoxDecoration(
+          color: customColors.tagsBackground,
+          shape: BoxShape.circle,
+        ),
+        padding: const EdgeInsets.all(4),
+        child: AnimatedRotation(
+          turns: showExtensionButtons ? 0.125 : 0,
+          duration: const Duration(milliseconds: 200),
           child: Icon(
             Icons.add,
             color: customColors.chatInputPanelText,
             size: 18,
           ),
         ),
-        splashRadius: CustomSize.radiusValue,
-        enableFeedback: true,
-        color: customColors.backgroundColor,
-        shape: RoundedRectangleBorder(borderRadius: CustomSize.borderRadius),
-        position: PopupMenuPosition.under,
-        onSelected: (value) {
-          switch (value) {
-            case 'take_photo':
-              onTakePhotoButtonPressed(context, customColors);
-              break;
-            case 'photo_library':
-              onImageUploadButtonPressed();
-              break;
-            case 'file_library':
-              onFileUploadButtonPressed();
-              break;
-          }
-        },
-        itemBuilder: (context) {
-          return <PopupMenuItem>[
-            if (canUploadImage && hasCamera)
-              PopupMenuItem(
-                value: 'take_photo',
-                child: Row(
-                  children: [
-                    const Icon(Icons.camera_alt),
-                    const SizedBox(width: 10),
-                    Text(
-                      AppLocale.takePhoto.getString(context),
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ],
-                ),
-              ),
-            if (canUploadImage)
-              PopupMenuItem(
-                value: 'photo_library',
-                child: Row(
-                  children: [
-                    const Icon(Icons.photo_library),
-                    const SizedBox(width: 10),
-                    Text(
-                      AppLocale.photoLibrary.getString(context),
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ],
-                ),
-              ),
-            if (canUploadFile)
-              PopupMenuItem(
-                value: 'file_library',
-                child: Row(
-                  children: [
-                    const Icon(Icons.upload_file_sharp),
-                    const SizedBox(width: 10),
-                    Text(
-                      AppLocale.fileLibrary.getString(context),
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ],
-                ),
-              ),
-          ];
-        },
       ),
     );
   }

@@ -55,7 +55,8 @@ class _MyCreationScreenState extends State<MyCreationScreen> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
-        maxWidth: 0,
+        maxWidth: CustomSize.maxWindowSize,
+        backgroundColor: customColors.backgroundColor,
         child: SafeArea(
           child: RefreshIndicator(
             color: customColors.linkColor,

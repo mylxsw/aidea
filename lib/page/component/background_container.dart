@@ -16,6 +16,7 @@ class BackgroundContainer extends StatefulWidget {
   final bool pureColorMode;
   final double maxWidth;
   final bool clickGrapFocus;
+  final Color? backgroundColor;
 
   const BackgroundContainer({
     super.key,
@@ -26,6 +27,7 @@ class BackgroundContainer extends StatefulWidget {
     this.pureColorMode = false,
     this.maxWidth = CustomSize.maxWindowSize,
     this.clickGrapFocus = true,
+    this.backgroundColor,
   });
 
   @override
@@ -89,13 +91,16 @@ class _BackgroundContainerState extends State<BackgroundContainer> {
           }
         }
       },
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: widget.maxWidth > 0 ? widget.maxWidth : double.infinity,
+      child: Container(
+        color: widget.backgroundColor ?? customColors.backgroundContainerColor,
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: widget.maxWidth > 0 ? widget.maxWidth : double.infinity,
+            ),
+            child: _buildChild(customColors),
           ),
-          child: _buildChild(customColors),
         ),
       ),
     );

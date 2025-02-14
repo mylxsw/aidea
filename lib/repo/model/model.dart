@@ -21,7 +21,7 @@ class Model {
   String category;
 
   bool isDefault;
-
+  bool userNoPermission;
   Model(
     this.id,
     this.name,
@@ -42,6 +42,7 @@ class Model {
     this.isNew = false,
     this.isRecommend = false,
     this.isDefault = false,
+    this.userNoPermission = false,
   });
 
   String uid() {
@@ -68,6 +69,7 @@ class Model {
     bool? isRecommend,
     String? category,
     bool? isDefault,
+    bool? userNoPermission,
   }) {
     return Model(
       id ?? this.id,
@@ -89,6 +91,7 @@ class Model {
       isRecommend: isRecommend ?? this.isRecommend,
       category: category ?? this.category,
       isDefault: isDefault ?? false,
+      userNoPermission: userNoPermission ?? this.userNoPermission,
     );
   }
 

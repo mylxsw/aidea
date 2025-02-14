@@ -227,6 +227,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.all(10),

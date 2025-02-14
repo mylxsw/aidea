@@ -141,8 +141,8 @@ class _NewHomePageState extends State<NewHomePage> {
 
     if (selectedModel == null && supportModels.isNotEmpty) {
       setState(() {
-        selectedModel = supportModels.where((e) => e.isDefault).firstOrNull;
-        selectedModel ??= supportModels.firstOrNull;
+        selectedModel = supportModels.where((e) => e.isDefault && !e.userNoPermission).firstOrNull;
+        selectedModel ??= supportModels.where((e) => !e.userNoPermission).firstOrNull;
       });
     }
 
@@ -230,10 +230,6 @@ class _NewHomePageState extends State<NewHomePage> {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return CustomScaffold(
       settings: widget.settings,
-      // appBarBackground: Image.asset(
-      //   customColors.appBarBackgroundImage!,
-      //   fit: BoxFit.cover,
-      // ),
       showBackAppBar: chatPreviewController.selectMode,
       backAppBar: AppBar(
         title: Text(

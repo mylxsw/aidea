@@ -72,6 +72,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: Column(
           children: [
             Container(

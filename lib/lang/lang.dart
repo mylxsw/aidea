@@ -326,6 +326,8 @@ mixin AppLocale {
   static const String lastYear = 'last-year';
   static const String longTimeAgo = 'long-time-ago';
 
+  static const String modelNeedSignIn = 'model-need-sign-in';
+
   static const Map<String, dynamic> zh = {
     required: '必填',
     systemInfo: '系统信息',
@@ -362,7 +364,7 @@ mixin AppLocale {
     selectText: '选择文本',
     text: '文本',
     uploading: '上传中...',
-    robotIsThinkingMessage: '正在思考中...',
+    robotIsThinkingMessage: '正在思考中，请耐心等待',
     thinkingProcess: '深度思考',
     robotHasSomeError: '发送失败，重发该消息？',
     appName: 'AIdea',
@@ -635,6 +637,7 @@ mixin AppLocale {
     monthsAgo: '月前',
     lastYear: '去年',
     longTimeAgo: '很久以前',
+    modelNeedSignIn: '该模型需要登录后使用',
   };
 
   static const Map<String, dynamic> en = {
@@ -674,7 +677,7 @@ mixin AppLocale {
     text: 'Text',
     uploading: 'Uploading...',
     robotIsThinkingMessage: 'Thinking...',
-    thinkingProcess: 'Deep Thinking',
+    thinkingProcess: 'Thinking, please be patient',
     robotHasSomeError: 'There seems to be something wrong, Do you want to resend the message?',
     appName: 'AIdea',
     chatAnywhere: 'Chat',
@@ -950,6 +953,7 @@ mixin AppLocale {
     lastYear: 'Last Year',
     longTimeAgo: 'Long Time Ago',
     weeksAgo: 'Weeks Ago',
+    modelNeedSignIn: 'The model needs to be signed in to use',
   };
 }
 

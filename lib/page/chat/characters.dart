@@ -65,6 +65,7 @@ class _CharactersPageState extends State<CharactersPage> {
       backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
+        backgroundColor: customColors.backgroundColor,
         enabled: false,
         child: SafeArea(
           top: false,

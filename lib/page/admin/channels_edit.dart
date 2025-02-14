@@ -102,6 +102,7 @@ class _ChannelEditPageState extends State<ChannelEditPage> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: BlocListener<ChannelBloc, ChannelState>(
           listenWhen: (previous, current) => current is ChannelOperationResult || current is ChannelLoaded,
           listener: (context, state) {

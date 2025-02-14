@@ -104,6 +104,7 @@ class _BindPhoneScreenState extends State<BindPhoneScreen> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: BlocBuilder<AccountBloc, AccountState>(
           buildWhen: (previous, current) => current is AccountLoaded,
           builder: (context, state) {

@@ -1,11 +1,13 @@
 import 'package:askaide/bloc/account_bloc.dart';
 import 'package:askaide/bloc/chat_chat_bloc.dart';
 import 'package:askaide/bloc/room_bloc.dart';
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/account_quota_card.dart';
 import 'package:askaide/page/component/chat/role_avatar.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/user.dart';
 import 'package:askaide/repo/model/chat_history.dart';
@@ -31,209 +33,226 @@ class _LeftDrawerState extends State<LeftDrawer> {
   }
 
   void reload() {
-    context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
+    if (Ability().isUserLogon()) {
+      context.read<AccountBloc>().add(AccountLoadEvent(cache: false));
+    }
+
     context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
     context.read<RoomBloc>().add(RoomsRecentLoadEvent());
+  }
+
+  double maxDrawerWidth() {
+    final width = MediaQuery.of(context).size.width * 0.85;
+    return width > 334.0 ? 334.0 : width;
   }
 
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return Drawer(
+      width: maxDrawerWidth(),
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.zero,
+        borderRadius: CustomSize.borderRadiusAll,
       ),
-      backgroundColor: customColors.backgroundColor,
+      backgroundColor: customColors.backgroundContainerColor,
+      shadowColor: customColors.backgroundInvertedColor,
       child: SafeArea(
         top: false,
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    SafeArea(
-                      child: SizedBox(height: PlatformTool.isMacOS() ? kToolbarHeight : 20),
-                    ),
+        child: Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SafeArea(
+                        child: SizedBox(height: PlatformTool.isMacOS() ? kToolbarHeight : 20),
+                      ),
 
-                    ListTile(
-                      leading: const Icon(Icons.group_outlined),
-                      title: Text(AppLocale.homeTitle.getString(context)),
-                      onTap: () {
-                        context.push('/characters').whenComplete(reload);
-                      },
-                    ),
+                      if (Ability().isUserLogon())
+                        ListTile(
+                          leading: const Icon(Icons.group_outlined),
+                          title: Text(AppLocale.homeTitle.getString(context)),
+                          onTap: () {
+                            context.push('/characters').whenComplete(reload);
+                          },
+                        ),
 
-                    BlocBuilder<RoomBloc, RoomState>(
-                      buildWhen: (previous, current) => current is RoomsRecentLoaded,
-                      builder: (_, state) {
-                        if (state is RoomsRecentLoaded) {
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            padding: const EdgeInsets.all(0),
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: state.rooms.length,
-                            itemBuilder: (context, index) {
-                              final item = state.rooms[index];
-                              return ListTile(
-                                contentPadding: const EdgeInsets.only(left: 30),
-                                dense: true,
-                                leading: RoleAvatar(
-                                  avatarUrl: item.avatarUrl,
-                                  name: item.name,
-                                  avatarSize: 25,
-                                ),
-                                title: Text(item.name),
-                                onTap: () {
-                                  context.push('/room/${item.id}/chat').whenComplete(reload);
-                                },
-                              );
-                            },
-                          );
-                        }
-
-                        return const SizedBox();
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.auto_awesome_outlined),
-                      title: Text(AppLocale.discover.getString(context)),
-                      onTap: () {
-                        context.push('/creative-gallery').whenComplete(reload);
-                      },
-                    ),
-                    // ListTile(
-                    //   leading: const Icon(Icons.palette_outlined),
-                    //   title: Text(AppLocale.creativeIsland.getString(context)),
-                    //   onTap: () {
-                    //     context.push('/creative-draw');
-                    //   },
-                    // ),
-                    Divider(
-                      color: customColors.weakTextColor?.withAlpha(50),
-                      height: 10,
-                      indent: 10,
-                      endIndent: 10,
-                    ),
-                    BlocBuilder<ChatChatBloc, ChatChatState>(
-                      buildWhen: (previous, current) => current is ChatChatRecentHistoriesLoaded,
-                      builder: (_, state) {
-                        if (state is ChatChatRecentHistoriesLoaded) {
-                          // Group histories by time
-                          final now = DateTime.now();
-                          final groups = <String, List<ChatHistory>>{};
-
-                          for (var history in state.histories) {
-                            final created = DateTime.fromMillisecondsSinceEpoch(
-                                (history.createdAt ?? DateTime.now()).millisecondsSinceEpoch);
-                            final difference = now.difference(created);
-
-                            String groupKey;
-                            if (difference.inDays < 4) {
-                              groupKey = AppLocale.recently.getString(context);
-                            } else if (difference.inDays < 7) {
-                              groupKey = '4 ${AppLocale.daysAgo.getString(context)}';
-                            } else if (difference.inDays < 14) {
-                              groupKey = AppLocale.lastWeek.getString(context);
-                            } else if (difference.inDays < 30) {
-                              final weeks = (difference.inDays / 7).floor();
-                              groupKey = '$weeks ${AppLocale.weeksAgo.getString(context)}';
-                            } else if (difference.inDays < 365) {
-                              if (difference.inDays < 60) {
-                                groupKey = AppLocale.lastMonth.getString(context);
-                              }
-                              final months = (difference.inDays / 30).floor();
-                              groupKey = '$months ${AppLocale.monthsAgo.getString(context)}';
-                            } else if (difference.inDays < 730) {
-                              groupKey = AppLocale.lastYear.getString(context);
-                            } else {
-                              groupKey = AppLocale.longTimeAgo.getString(context);
-                            }
-
-                            groups.putIfAbsent(groupKey, () => []).add(history);
+                      BlocBuilder<RoomBloc, RoomState>(
+                        buildWhen: (previous, current) => current is RoomsRecentLoaded,
+                        builder: (_, state) {
+                          if (state is RoomsRecentLoaded) {
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              padding: const EdgeInsets.all(0),
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: state.rooms.length,
+                              itemBuilder: (context, index) {
+                                final item = state.rooms[index];
+                                return ListTile(
+                                  contentPadding: const EdgeInsets.only(left: 30),
+                                  dense: true,
+                                  leading: RoleAvatar(
+                                    avatarUrl: item.avatarUrl,
+                                    name: item.name,
+                                    avatarSize: 25,
+                                  ),
+                                  title: Text(item.name),
+                                  onTap: () {
+                                    context.push('/room/${item.id}/chat').whenComplete(reload);
+                                  },
+                                );
+                              },
+                            );
                           }
 
-                          return Column(
-                            children: [
-                              ListView.builder(
-                                shrinkWrap: true,
-                                padding: const EdgeInsets.all(0),
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: groups.entries.fold(0, (sum, entry) => (sum ?? 0) + entry.value.length + 1),
-                                itemBuilder: (context, index) {
-                                  int itemCount = 0;
-                                  for (var entry in groups.entries) {
-                                    if (index == itemCount) {
-                                      return Container(
-                                        padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
-                                        child: Text(
-                                          entry.key,
-                                          style: TextStyle(
-                                            color: Theme.of(context).colorScheme.secondary,
-                                            fontSize: 12,
+                          return const SizedBox();
+                        },
+                      ),
+                      if (Ability().enableGallery)
+                        ListTile(
+                          leading: const Icon(Icons.auto_awesome_outlined),
+                          title: Text(AppLocale.discover.getString(context)),
+                          onTap: () {
+                            context.push('/creative-gallery').whenComplete(reload);
+                          },
+                        ),
+                      // ListTile(
+                      //   leading: const Icon(Icons.palette_outlined),
+                      //   title: Text(AppLocale.creativeIsland.getString(context)),
+                      //   onTap: () {
+                      //     context.push('/creative-draw');
+                      //   },
+                      // ),
+                      Divider(
+                        color: customColors.weakTextColor?.withAlpha(50),
+                        height: 10,
+                        indent: 10,
+                        endIndent: 10,
+                      ),
+                      BlocBuilder<ChatChatBloc, ChatChatState>(
+                        buildWhen: (previous, current) => current is ChatChatRecentHistoriesLoaded,
+                        builder: (_, state) {
+                          if (state is ChatChatRecentHistoriesLoaded) {
+                            // Group histories by time
+                            final now = DateTime.now();
+                            final groups = <String, List<ChatHistory>>{};
+
+                            for (var history in state.histories) {
+                              final created = DateTime.fromMillisecondsSinceEpoch(
+                                  (history.createdAt ?? DateTime.now()).millisecondsSinceEpoch);
+                              final difference = now.difference(created);
+
+                              String groupKey;
+                              if (difference.inDays < 4) {
+                                groupKey = AppLocale.recently.getString(context);
+                              } else if (difference.inDays < 7) {
+                                groupKey = '4 ${AppLocale.daysAgo.getString(context)}';
+                              } else if (difference.inDays < 14) {
+                                groupKey = AppLocale.lastWeek.getString(context);
+                              } else if (difference.inDays < 30) {
+                                final weeks = (difference.inDays / 7).floor();
+                                groupKey = '$weeks ${AppLocale.weeksAgo.getString(context)}';
+                              } else if (difference.inDays < 365) {
+                                if (difference.inDays < 60) {
+                                  groupKey = AppLocale.lastMonth.getString(context);
+                                }
+                                final months = (difference.inDays / 30).floor();
+                                groupKey = '$months ${AppLocale.monthsAgo.getString(context)}';
+                              } else if (difference.inDays < 730) {
+                                groupKey = AppLocale.lastYear.getString(context);
+                              } else {
+                                groupKey = AppLocale.longTimeAgo.getString(context);
+                              }
+
+                              groups.putIfAbsent(groupKey, () => []).add(history);
+                            }
+
+                            return Column(
+                              children: [
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  padding: const EdgeInsets.all(0),
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount:
+                                      groups.entries.fold(0, (sum, entry) => (sum ?? 0) + entry.value.length + 1),
+                                  itemBuilder: (context, index) {
+                                    int itemCount = 0;
+                                    for (var entry in groups.entries) {
+                                      if (index == itemCount) {
+                                        return Container(
+                                          padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+                                          child: Text(
+                                            entry.key,
+                                            style: TextStyle(
+                                              color: Theme.of(context).colorScheme.secondary,
+                                              fontSize: 12,
+                                            ),
                                           ),
-                                        ),
-                                      );
-                                    }
-
-                                    itemCount += 1;
-
-                                    if (index < itemCount + entry.value.length) {
-                                      final item = entry.value[index - itemCount];
-                                      return ListTile(
-                                        title: Text(
-                                          item.title ?? 'Unknown',
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        onTap: () {
-                                          context.push(
-                                              '/chat-anywhere?chat_id=${item.id}&model=${item.model}&title=${item.title}');
-                                        },
-                                      );
-                                    }
-
-                                    itemCount += entry.value.length;
-                                  }
-
-                                  return const SizedBox();
-                                },
-                              ),
-                              if (state.histories.length >= defaultChatHistoryCount) ...[
-                                Divider(
-                                  color: customColors.weakTextColor?.withAlpha(50),
-                                  height: 10,
-                                  indent: 10,
-                                  endIndent: 10,
-                                ),
-                                ListTile(
-                                  title: Text(AppLocale.moreHistories.getString(context)),
-                                  onTap: () {
-                                    context.push('/chat-chat/history').whenComplete(() {
-                                      if (context.mounted) {
-                                        context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
+                                        );
                                       }
-                                    });
+
+                                      itemCount += 1;
+
+                                      if (index < itemCount + entry.value.length) {
+                                        final item = entry.value[index - itemCount];
+                                        return ListTile(
+                                          contentPadding: const EdgeInsets.only(left: 30),
+                                          title: Text(
+                                            item.title ?? 'Unknown',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          onTap: () {
+                                            context.push(
+                                                '/chat-anywhere?chat_id=${item.id}&model=${item.model}&title=${item.title}');
+                                          },
+                                        );
+                                      }
+
+                                      itemCount += entry.value.length;
+                                    }
+
+                                    return const SizedBox();
                                   },
                                 ),
+                                if (state.histories.length >= defaultChatHistoryCount) ...[
+                                  Divider(
+                                    color: customColors.weakTextColor?.withAlpha(50),
+                                    height: 10,
+                                    indent: 10,
+                                    endIndent: 10,
+                                  ),
+                                  ListTile(
+                                    title: Text(AppLocale.moreHistories.getString(context)),
+                                    onTap: () {
+                                      context.push('/chat-chat/history').whenComplete(() {
+                                        if (context.mounted) {
+                                          context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
+                                        }
+                                      });
+                                    },
+                                  ),
+                                ],
                               ],
-                            ],
-                          );
-                        }
+                            );
+                          }
 
-                        return const SizedBox();
-                      },
-                    ),
-                  ],
+                          return const SizedBox();
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Container(
-              height: 100,
-              padding: const EdgeInsets.only(left: 20, right: 20),
-              child: buildAccountCard(context),
-            ),
-          ],
+              Container(
+                height: 100,
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: buildAccountCard(context),
+              ),
+            ],
+          ),
         ),
       ),
     );

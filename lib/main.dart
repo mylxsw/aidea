@@ -1325,9 +1325,9 @@ class _MyAppState extends State<MyApp> {
                   debugShowCheckedModeBanner: false,
                   builder: (context, child) {
                     // 这里设置了全局字体固定大小，不随系统设置变更
-                    // TODO 后面要增加一个设置项，允许用户自定义字体大小
                     return MediaQuery(
-                      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+                      data: MediaQuery.of(context)
+                          .copyWith(textScaler: TextScaler.linear(PlatformTool.isDesktop() ? 0.95 : 1)),
                       child: BotToastInit()(context, child),
                     );
                   },

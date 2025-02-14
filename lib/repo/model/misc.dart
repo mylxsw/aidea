@@ -613,6 +613,8 @@ class Model {
   bool isNew;
   bool isDefault;
 
+  bool userNoPermission;
+
   String get realModelId {
     return id.split(':').last;
   }
@@ -636,6 +638,7 @@ class Model {
     this.tagTextColor,
     this.isNew = false,
     this.isDefault = false,
+    this.userNoPermission = false,
   });
 
   toJson() => {
@@ -657,6 +660,7 @@ class Model {
         'tag_text_color': tagTextColor,
         'is_new': isNew,
         'is_default': isDefault,
+        'user_no_permission': userNoPermission,
       };
 
   static Model fromJson(Map<String, dynamic> json) {
@@ -679,6 +683,7 @@ class Model {
       tagTextColor: json['tag_text_color'],
       isNew: json['is_new'] ?? false,
       isDefault: json['is_default'] ?? false,
+      userNoPermission: json['user_no_permission'] ?? false,
     );
   }
 }

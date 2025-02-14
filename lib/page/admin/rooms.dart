@@ -33,9 +33,7 @@ class AdminRoomsPage extends StatefulWidget {
 class _AdminRoomsPageState extends State<AdminRoomsPage> {
   @override
   void initState() {
-    context
-        .read<AdminRoomBloc>()
-        .add(AdminRoomsLoadEvent(userId: widget.userId));
+    context.read<AdminRoomBloc>().add(AdminRoomsLoadEvent(userId: widget.userId));
     super.initState();
   }
 
@@ -56,20 +54,18 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: RefreshIndicator(
           color: customColors.linkColor,
           onRefresh: () async {
-            context
-                .read<AdminRoomBloc>()
-                .add(AdminRoomsLoadEvent(userId: widget.userId));
+            context.read<AdminRoomBloc>().add(AdminRoomsLoadEvent(userId: widget.userId));
           },
           displacement: 20,
           child: BlocConsumer<AdminRoomBloc, AdminRoomState>(
             listener: (context, state) {
               if (state is AdminRoomOperationResult) {
                 if (state.success) {
-                  showSuccessMessage(
-                      AppLocale.operateSuccess.getString(context));
+                  showSuccessMessage(AppLocale.operateSuccess.getString(context));
                 } else {
                   showErrorMessage(AppLocale.operateFailed.getString(context));
                 }
@@ -90,8 +86,7 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
                           horizontal: 10,
                           vertical: 5,
                         ),
-                        decoration: BoxDecoration(
-                            borderRadius: CustomSize.borderRadius),
+                        decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
                         child: Material(
                           borderRadius: CustomSize.borderRadius,
                           color: customColors.columnBlockBackgroundColor,
@@ -109,31 +104,23 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
                                     _buildAvatar(room),
                                     Expanded(
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10),
+                                        padding: const EdgeInsets.symmetric(horizontal: 10),
                                         child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
                                                 Expanded(
                                                   child: Text(
                                                     room.name,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
+                                                    overflow: TextOverflow.ellipsis,
                                                   ),
                                                 ),
                                                 Text(
-                                                  humanTime(
-                                                      room.lastActiveTime),
+                                                  humanTime(room.lastActiveTime),
                                                   style: TextStyle(
-                                                    color: customColors
-                                                        .weakLinkColor
-                                                        ?.withAlpha(65),
+                                                    color: customColors.weakLinkColor?.withAlpha(65),
                                                     fontSize: 10,
                                                   ),
                                                 ),
@@ -151,15 +138,13 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
                                     top: 0,
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: customColors
-                                            .backgroundContainerColor,
+                                        color: customColors.backgroundContainerColor,
                                         borderRadius: const BorderRadius.only(
                                           topRight: CustomSize.radius,
                                           bottomLeft: CustomSize.radius,
                                         ),
                                       ),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 2),
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                       child: Text(
                                         AppLocale.groupChat.getString(context),
                                         style: TextStyle(
@@ -190,8 +175,7 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
   }
 
   Widget _buildAvatar(RoomInServer room) {
-    if (room.members.length == 1 &&
-        (room.avatarUrl == null || room.avatarUrl == '')) {
+    if (room.members.length == 1 && (room.avatarUrl == null || room.avatarUrl == '')) {
       room.avatarUrl = room.members[0];
     }
 
@@ -200,8 +184,7 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
         width: 70,
         height: 70,
         child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-              topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
+          borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
           child: CachedNetworkImageEnhanced(
             imageUrl: imageURL(room.avatarUrl!, qiniuImageTypeAvatar),
             fit: BoxFit.fill,
@@ -212,8 +195,7 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
 
     if (room.members.isNotEmpty) {
       return ClipRRect(
-        borderRadius: const BorderRadius.only(
-            topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
+        borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
         child: GroupAvatar(
           size: 70,
           avatars: room.members,
@@ -225,8 +207,7 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
       text: room.name.split('、').join(' '),
       size: 70,
       backgroundColor: Colors.grey.withAlpha(100),
-      borderRadius: const BorderRadius.only(
-          topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
+      borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
     );
   }
 }
