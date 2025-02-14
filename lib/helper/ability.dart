@@ -83,8 +83,7 @@ class Ability {
 
   /// 是否支持 OpenAI
   bool get enableOpenAI {
-    return capabilities.openaiEnabled &&
-        (!capabilities.disableChat || !capabilities.disableDigitalHuman);
+    return capabilities.openaiEnabled && (!capabilities.disableChat || !capabilities.disableDigitalHuman);
   }
 
   /// 是否支持 IOS 外支付
@@ -109,16 +108,12 @@ class Ability {
 
   /// 是否显示 Apple 登录
   bool get enableAppleSignin {
-    return enableApplePay &&
-        (PlatformTool.isIOS() ||
-            PlatformTool.isAndroid() ||
-            PlatformTool.isMacOS());
+    return enableApplePay && (PlatformTool.isIOS() || PlatformTool.isAndroid() || PlatformTool.isMacOS());
   }
 
   /// 是否支持微信登录
   bool get enableWechatSignin {
-    return capabilities.wechatSigninEnabled &&
-        (PlatformTool.isIOS() || PlatformTool.isAndroid());
+    return capabilities.wechatSigninEnabled && (PlatformTool.isIOS() || PlatformTool.isAndroid());
   }
 
   /// 是否支持支付功能
@@ -158,7 +153,23 @@ class Ability {
 
   /// 是否支持语音合成功能
   bool get supportSpeak {
-    // return setting.stringDefault(settingAPIServerToken, '') != '';
+    if (!enableTextToVoice) {
+      return false;
+    }
+
+    if (PlatformTool.isWeb()) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /// 是否支持语音聊天功能
+  bool get supportVoiceChat {
+    if (!enableVoiceToText) {
+      return false;
+    }
+
     if (PlatformTool.isWeb()) {
       return false;
     }
@@ -180,6 +191,16 @@ class Ability {
   /// 是否支持七牛云图片上传功能
   bool supportQiniuUploader() {
     return setting.stringDefault(settingAPIServerToken, '') != '';
+  }
+
+  /// 是否支持语音转文字
+  bool get enableVoiceToText {
+    return capabilities.enableVoiceToText;
+  }
+
+  /// 是否支持文字转语音
+  bool get enableTextToVoice {
+    return capabilities.enableTextToVoice;
   }
 
   /// 获取当前主题模式

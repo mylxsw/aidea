@@ -56,6 +56,12 @@ class Capabilities {
   /// 服务状态页
   final String serviceStatusPage;
 
+  /// 是否支持语音转文字
+  final bool enableVoiceToText;
+
+  /// 是否支持文字转语音
+  final bool enableTextToVoice;
+
   Capabilities({
     required this.applePayEnabled,
     required this.otherPayEnabled,
@@ -75,6 +81,8 @@ class Capabilities {
     this.wechatSigninEnabled = false,
     this.stripeEnabled = false,
     this.wechatPayEnabled = false,
+    this.enableVoiceToText = false,
+    this.enableTextToVoice = false,
   });
 
   factory Capabilities.fromJson(Map<String, dynamic> json) {
@@ -86,9 +94,7 @@ class Capabilities {
       translateEnabled: json['translate_enabled'] ?? false,
       mailEnabled: json['mail_enabled'] ?? false,
       openaiEnabled: json['openai_enabled'] ?? false,
-      homeModels: ((json['home_models_v2'] ?? []) as List<dynamic>)
-          .map((e) => HomeModelV2.fromJson(e))
-          .toList(),
+      homeModels: ((json['home_models_v2'] ?? []) as List<dynamic>).map((e) => HomeModelV2.fromJson(e)).toList(),
       // homeRoute: json['home_route'] ?? '/',
       homeRoute: '/',
       showHomeModelDescription: json['show_home_model_description'] ?? true,
@@ -100,6 +106,8 @@ class Capabilities {
       disableChat: json['disable_chat'] ?? false,
       serviceStatusPage: json['service_status_page'] ?? '',
       wechatPayEnabled: json['wechat_pay_enabled'] ?? false,
+      enableVoiceToText: json['enable_voice_to_text'] ?? false,
+      enableTextToVoice: json['enable_text_to_voice'] ?? false,
     );
   }
 
@@ -123,6 +131,8 @@ class Capabilities {
       'disable_digital_human': disableDigitalHuman,
       'disable_chat': disableChat,
       'service_status_page': serviceStatusPage,
+      'enable_voice_to_text': enableVoiceToText,
+      'enable_text_to_voice': enableTextToVoice,
     };
   }
 }

@@ -414,7 +414,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
       );
     }
 
-    return _textController.text == '' && !PlatformTool.isWeb()
+    return _textController.text == '' && Ability().supportVoiceChat
         ? IconButton(
             onPressed: () {
               HapticFeedbackHelper.mediumImpact();
