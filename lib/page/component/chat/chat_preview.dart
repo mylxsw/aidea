@@ -661,6 +661,7 @@ class _ChatPreviewState extends State<ChatPreview> {
       enableSafeArea: true,
       attachedBuilder: (cancel) => AttachedButtonPanel(
         buttons: [
+          // 文本、Markdown 模式切换
           TextButton.icon(
             onPressed: () {
               openFullscreenDialog(
@@ -692,6 +693,7 @@ class _ChatPreviewState extends State<ChatPreview> {
               ],
             ),
           ),
+          // 复制文本
           TextButton.icon(
             onPressed: () {
               FlutterClipboard.copy(message.text).then((value) {
@@ -715,6 +717,7 @@ class _ChatPreviewState extends State<ChatPreview> {
               ],
             ),
           ),
+          // 翻译
           if (Ability().supportTranslate && widget.stateManager != null)
             TextButton.icon(
                 onPressed: () {
@@ -771,6 +774,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                     )
                   ],
                 )),
+          // 分享
           TextButton.icon(
               onPressed: () async {
                 cancel();
@@ -836,6 +840,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                   )
                 ],
               )),
+          // 选择
           TextButton.icon(
               onPressed: () {
                 widget.controller.enterSelectMode();
@@ -856,6 +861,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                   )
                 ],
               )),
+          // 删除
           if (widget.onDeleteMessage != null)
             TextButton.icon(
               onPressed: () {
@@ -878,6 +884,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                 ],
               ),
             ),
+          // 文本转语音
           if (Ability().supportSpeak && widget.onSpeakEvent != null)
             TextButton.icon(
               onPressed: () {
@@ -900,6 +907,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                 ],
               ),
             ),
+          // 重发
           if (message.role == Role.sender && widget.onResentEvent != null)
             TextButton.icon(
               onPressed: () {
@@ -922,6 +930,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                 ],
               ),
             ),
+          // 信息
           if (message.quotaConsumed != null && message.quotaConsumed! > 0)
             TextButton.icon(
               onPressed: () {
