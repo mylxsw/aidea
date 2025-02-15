@@ -169,12 +169,12 @@ void main() async {
         try {
           await migrate(db, oldVersion, newVersion);
         } catch (e) {
-          Logger.instance.e('数据库升级失败', error: e);
+          Logger.instance.e('Database upgrade failure', error: e);
         }
       },
       onCreate: initDatabase,
       onOpen: (db) {
-        Logger.instance.i('数据库存储路径：${db.path}');
+        Logger.instance.i('Database storage path: ${db.path}');
       },
     ),
   );
@@ -217,7 +217,7 @@ void main() async {
     final capabilities = await APIServer().capabilities(cache: false);
     Ability().init(settingRepo, capabilities);
   } catch (e) {
-    Logger.instance.e('获取客户端能力清单失败', error: e);
+    Logger.instance.e('Failed to get the client capability manifest', error: e);
     Ability().init(
       settingRepo,
       Capabilities(

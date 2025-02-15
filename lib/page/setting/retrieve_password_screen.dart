@@ -85,7 +85,6 @@ class _RetrievePasswordScreenState extends State<RetrievePasswordScreen> {
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: customColors.linkColor!),
                   ),
-                  floatingLabelStyle: TextStyle(color: customColors.linkColor!),
                   isDense: true,
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   labelText: AppLocale.account.getString(context),

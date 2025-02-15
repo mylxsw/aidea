@@ -1,5 +1,6 @@
 mixin AppLocale {
   static const String required = 'required';
+  static const String wechat = 'wechat';
   static const String systemInfo = 'system_info';
   static const String appName = 'app_name';
   static const String homeTitle = 'home_title';
@@ -20,6 +21,7 @@ mixin AppLocale {
   static const String userTerms = 'user_terms';
   static const String privacyPolicy = 'privacy_policy';
   static const String signIn = 'sign_in';
+  static const String signInAccount = 'sign_in_account';
   static const String signOut = 'sign_out';
   static const String signUp = 'sign_up';
   static const String password = 'password';
@@ -200,6 +202,7 @@ mixin AppLocale {
   static const String passwordFormatError = 'password-format-error';
   static const String accountCreated = 'account-created';
   static const String sendVerifyCode = 'send-verify-code';
+  static const String verify = 'verify';
   static const String verifyCode = 'verify-code';
   static const String verifyCodeInputTips = 'verify-code-input-tips';
   static const String retryInSeconds = 'retry-in-seconds';
@@ -209,12 +212,14 @@ mixin AppLocale {
   static const String verifyCodeFormatError = 'verify-code-format-error';
   static const String phone = 'phone';
   static const String email = 'email';
-  static const String directSignin = 'direct-signin';
+  static const String directSigninDueHasAccount = 'direct-signin-due-has-account';
+  static const String directSignin = 'direct-signin-due-no-account';
   static const String passwordResetOK = 'password-reset-ok';
   static const String resetPassword = 'reset-password';
   static const String bindPhone = 'bind-phone';
   static const String bind = 'bind';
   static const String bound = 'bond';
+  static const String bindExAccount = 'bind-ex-account';
   static const String unbind = 'unbind';
   static const String inviteCode = 'invite-code';
   static const String inviteCodeInputTips = 'invite-code-input-tips';
@@ -327,8 +332,18 @@ mixin AppLocale {
   static const String longTimeAgo = 'long-time-ago';
 
   static const String modelNeedSignIn = 'model-need-sign-in';
+  static const String wechatBindConfirm = 'wechat-bind-confirm';
+  static const String accountWillBeCreateAutomatically = 'account-will-be-create-automatically';
+  static const String installWechatFirst = 'install-wechat-first';
+  static const String otherLoginMethods = 'other-login-methods';
+  static const String verifyAccount = 'verify-account';
+  static const String enterPasswordToSignin = 'enter-password-to-signin';
+  static const String verifyCodeLogin = 'verify-code-login';
+  static const String verifyCodeLoginTips = 'verify-code-login-tips';
+  static const String usePasswordToSignin = 'use-password-to-signin';
 
   static const Map<String, dynamic> zh = {
+    wechat: '微信',
     required: '必填',
     systemInfo: '系统信息',
     save: '保存',
@@ -386,6 +401,7 @@ mixin AppLocale {
     userTerms: '用户协议',
     privacyPolicy: '隐私政策',
     signIn: '登录',
+    signInAccount: '登录解锁完整功能',
     signOut: '退出登录',
     signUp: '注册',
     password: '密码',
@@ -521,6 +537,7 @@ mixin AppLocale {
     passwordFormatError: '密码格式有误\n必须为8-20位字母、数字、特殊符号组合',
     accountCreated: '账号创建成功',
     sendVerifyCode: '发送',
+    verify: '验证',
     verifyCode: '验证码',
     verifyCodeInputTips: '输入验证码',
     retryInSeconds: '秒后重试',
@@ -530,12 +547,14 @@ mixin AppLocale {
     verifyCodeFormatError: '验证码格式有误',
     phone: '手机',
     email: '邮箱',
-    directSignin: '已有账号？直接登录',
+    directSigninDueHasAccount: '已有账号？直接登录',
+    directSignin: '直接登录',
     passwordResetOK: '密码已重置，请重新登录',
     resetPassword: '重置密码',
     bindPhone: '绑定手机',
     bind: '绑定',
     bound: '已绑定',
+    bindExAccount: '绑定已有账号',
     unbind: '解绑',
     inviteCode: '邀请码',
     inviteCodeInputTips: '输入好友邀请码，获额外奖励（非必填）',
@@ -638,10 +657,20 @@ mixin AppLocale {
     lastYear: '去年',
     longTimeAgo: '很久以前',
     modelNeedSignIn: '该模型需要登录后使用',
+    wechatBindConfirm: '该微信未绑定任何账号，是否直接登录？\n（自动创建账号）',
+    accountWillBeCreateAutomatically: '未注册的账号验证成功后将自动注册',
+    installWechatFirst: '请先安装微信后再使用该功能',
+    otherLoginMethods: '其它登录方式',
+    verifyAccount: '验证账号',
+    enterPasswordToSignin: '请输入密码完成登录。',
+    verifyCodeLogin: '验证码登录',
+    verifyCodeLoginTips: '请输入验证码以完成操作。',
+    usePasswordToSignin: '使用密码登录',
   };
 
   static const Map<String, dynamic> en = {
     required: 'Required',
+    wechat: 'WeChat',
     systemInfo: 'System',
     save: 'Save',
     ok: 'OK',
@@ -698,6 +727,7 @@ mixin AppLocale {
     userTerms: 'User Terms',
     privacyPolicy: 'Privacy Policy',
     signIn: 'Sign In',
+    signInAccount: 'Unlock Full Features',
     signOut: 'Sign Out',
     signUp: 'Sign Up',
     password: 'Password',
@@ -824,9 +854,9 @@ mixin AppLocale {
     signInWithApple: 'Sign in with Apple',
     readAndAgree: 'Read and agree',
     andWord: 'and',
-    accountInputTips: 'Enter your phone number or email',
-    phoneInputTips: 'Enter your phone number',
-    passwordInputTips: 'Enter your password',
+    accountInputTips: 'Phone number or email',
+    phoneInputTips: 'Phone number',
+    passwordInputTips: 'Password',
     pleaseReadAgreeProtocol: 'Please read and agree to the user agreement and privacy policy first',
     signInSuccess: 'Sign in success',
     signInFailed: 'Sign in failed',
@@ -837,6 +867,7 @@ mixin AppLocale {
     passwordFormatError: 'Password format error\nMust be 8-20 digits, letters, special characters',
     accountCreated: 'Account created',
     sendVerifyCode: 'Send',
+    verify: 'Verify',
     verifyCode: 'Verify code',
     verifyCodeInputTips: 'Enter verify code',
     retryInSeconds: 'Retry in',
@@ -846,12 +877,14 @@ mixin AppLocale {
     verifyCodeFormatError: 'Verification code format error',
     phone: 'Phone',
     email: 'Email',
-    directSignin: 'Already have an account? Sign in directly',
+    directSigninDueHasAccount: 'Already have an account? Sign in directly',
+    directSignin: 'Sign in directly',
     passwordResetOK: 'Password has been reset, please log in again',
     resetPassword: 'Reset password',
     bindPhone: 'Bind phone',
     bind: 'Bind',
     bound: 'Bound',
+    bindExAccount: 'Bind existing account',
     unbind: 'Unbind',
     inviteCode: 'Invite code',
     inviteCodeInputTips: 'Enter friend invite code, get extra rewards (optional)',
@@ -954,6 +987,16 @@ mixin AppLocale {
     longTimeAgo: 'Long Time Ago',
     weeksAgo: 'Weeks Ago',
     modelNeedSignIn: 'The model needs to be signed in to use',
+    wechatBindConfirm:
+        'The WeChat is not bound to any account, whether to sign in directly?\n(Automatically create an account)',
+    accountWillBeCreateAutomatically: 'Account will be created automatically',
+    installWechatFirst: 'Please install WeChat first',
+    otherLoginMethods: 'Other Login Methods',
+    verifyAccount: 'Verify Account',
+    enterPasswordToSignin: 'Please enter the password to sign in.',
+    verifyCodeLogin: 'Use Verify Code',
+    verifyCodeLoginTips: 'Please enter the verify code to complete the operation.',
+    usePasswordToSignin: 'Use Password',
   };
 }
 

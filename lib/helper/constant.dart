@@ -95,3 +95,6 @@ const qiniuImageTypeThumbMedium = 'thumb_500';
 // 缓存相关的 Keys
 // 最后一次使用的模型
 const cacheKeyLastModel = 'last-model';
+
+// 数据存储目录
+const homePathDirName = '.aidea-dev';

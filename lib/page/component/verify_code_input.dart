@@ -74,28 +74,22 @@ class _VerifyCodeInputState extends State<VerifyCodeInput> {
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 counterText: '',
-                border: widget.inColumnBlock
-                    ? InputBorder.none
-                    : const OutlineInputBorder(),
+                border: widget.inColumnBlock ? InputBorder.none : const OutlineInputBorder(),
                 enabledBorder: widget.inColumnBlock
                     ? InputBorder.none
                     : const OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Color.fromARGB(200, 192, 192, 192)),
+                        borderSide: BorderSide(color: Color.fromARGB(200, 192, 192, 192)),
                       ),
                 focusedBorder: widget.inColumnBlock
                     ? InputBorder.none
                     : OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: customColors.linkColor ?? Colors.green),
+                        borderSide: BorderSide(color: customColors.linkColor ?? Colors.green),
                       ),
-                floatingLabelStyle:
-                    TextStyle(color: customColors.linkColor ?? Colors.green),
+                // floatingLabelStyle:
+                //     TextStyle(color: customColors.linkColor ?? Colors.green),
                 isDense: true,
                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                labelText: widget.inColumnBlock
-                    ? null
-                    : AppLocale.verifyCode.getString(context),
+                labelText: widget.inColumnBlock ? null : AppLocale.verifyCode.getString(context),
                 labelStyle: const TextStyle(fontSize: 17),
                 hintText: AppLocale.verifyCodeInputTips.getString(context),
                 hintStyle: TextStyle(
@@ -137,23 +131,18 @@ class _VerifyCodeInputState extends State<VerifyCodeInput> {
                         }
 
                         lastSendVerifyCodeTime = DateTime.now();
-                        timer =
-                            Timer.periodic(const Duration(seconds: 1), (timer) {
+                        timer = Timer.periodic(const Duration(seconds: 1), (timer) {
                           if (verifyCodeWaitSeconds <= 0) {
                             timer.cancel();
                             return;
                           }
 
                           setState(() {
-                            verifyCodeWaitSeconds = 60 -
-                                (DateTime.now()
-                                    .difference(lastSendVerifyCodeTime!)
-                                    .inSeconds);
+                            verifyCodeWaitSeconds = 60 - (DateTime.now().difference(lastSendVerifyCodeTime!).inSeconds);
                           });
                         });
 
-                        showSuccessMessage(
-                            AppLocale.verifyCodeSendSuccess.getString(context));
+                        showSuccessMessage(AppLocale.verifyCodeSendSuccess.getString(context));
                       }).onError((error, stackTrace) {
                         setState(() {
                           verifyCodeWaitSeconds = 0;

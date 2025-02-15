@@ -2,11 +2,11 @@ import 'package:askaide/bloc/account_bloc.dart';
 import 'package:askaide/bloc/chat_chat_bloc.dart';
 import 'package:askaide/bloc/room_bloc.dart';
 import 'package:askaide/helper/ability.dart';
-import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/account_quota_card.dart';
 import 'package:askaide/page/component/chat/role_avatar.dart';
+import 'package:askaide/page/component/social_icon.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/user.dart';
@@ -69,7 +69,6 @@ class _LeftDrawerState extends State<LeftDrawer> {
                       SafeArea(
                         child: SizedBox(height: PlatformTool.isMacOS() ? kToolbarHeight : 20),
                       ),
-
                       if (Ability().isUserLogon() && Ability().enableDigitalHuman)
                         ListTile(
                           leading: const Icon(Icons.group_outlined),
@@ -78,7 +77,6 @@ class _LeftDrawerState extends State<LeftDrawer> {
                             context.push('/characters').whenComplete(reload);
                           },
                         ),
-
                       if (Ability().isUserLogon() && Ability().enableDigitalHuman)
                         BlocBuilder<RoomBloc, RoomState>(
                           buildWhen: (previous, current) => current is RoomsRecentLoaded,
@@ -183,15 +181,36 @@ class _LeftDrawerState extends State<LeftDrawer> {
                                     int itemCount = 0;
                                     for (var entry in groups.entries) {
                                       if (index == itemCount) {
-                                        return Container(
-                                          padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
-                                          child: Text(
-                                            entry.key,
-                                            style: TextStyle(
-                                              color: Theme.of(context).colorScheme.secondary,
-                                              fontSize: 12,
+                                        return Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+                                              child: Text(
+                                                entry.key,
+                                                style: TextStyle(
+                                                  color: Theme.of(context).colorScheme.secondary,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
                                             ),
-                                          ),
+                                            const SizedBox(),
+                                            if (index == 0)
+                                              IconButton(
+                                                onPressed: () {
+                                                  context.push('/chat-chat/history').whenComplete(() {
+                                                    if (context.mounted) {
+                                                      context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
+                                                    }
+                                                  });
+                                                },
+                                                icon: Icon(
+                                                  Icons.filter_list,
+                                                  color: Theme.of(context).colorScheme.secondary,
+                                                  size: 16,
+                                                ),
+                                              ),
+                                          ],
                                         );
                                       }
 
@@ -219,29 +238,13 @@ class _LeftDrawerState extends State<LeftDrawer> {
                                     return const SizedBox();
                                   },
                                 ),
-                                if (state.histories.length >= defaultChatHistoryCount) ...[
-                                  Divider(
-                                    color: customColors.weakTextColor?.withAlpha(50),
-                                    height: 10,
-                                    indent: 10,
-                                    endIndent: 10,
-                                  ),
-                                  ListTile(
-                                    title: Text(AppLocale.moreHistories.getString(context)),
-                                    onTap: () {
-                                      context.push('/chat-chat/history').whenComplete(() {
-                                        if (context.mounted) {
-                                          context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
-                                        }
-                                      });
-                                    },
-                                  ),
-                                ],
                               ],
                             );
                           }
 
-                          return const SizedBox();
+                          return SocialIconGroup(
+                            isSettingTiles: true,
+                          );
                         },
                       ),
                     ],
