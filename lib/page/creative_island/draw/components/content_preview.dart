@@ -6,6 +6,7 @@ import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/page/component/video_player.dart';
 import 'package:askaide/repo/api/creative.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:intl/intl.dart';
 
 class CreativeIslandContentPreview extends StatefulWidget {
@@ -62,7 +63,7 @@ class _CreativeIslandContentPreviewState extends State<CreativeIslandContentPrev
                       ),
                       const SizedBox(width: 5),
                       Text(
-                        '${AppLocale.clickToShareWithExpire} $expireTime',
+                        '${AppLocale.clickToShareWithExpire.getString(context)} $expireTime',
                         maxLines: 2,
                         style: TextStyle(
                           fontSize: 12,

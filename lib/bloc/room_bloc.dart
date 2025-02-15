@@ -18,6 +18,27 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
   final ChatMessageRepository chatMsgRepo;
   final MessageStateManager stateManager;
 
+  Future<int?> fixRoomId(int? chatHistoryId) async {
+    if (chatHistoryId != null && chatHistoryId > 0) {
+      final his = await chatMsgRepo.getChatHistory(chatHistoryId);
+      if (his != null) {
+        return his.roomId;
+      }
+    }
+
+    return null;
+  }
+
+  /// 加载房间信息，如果房间不存在，则加载默认房间
+  Future<RoomInServer> loadRoom(int roomId) async {
+    try {
+      final room = await APIServer().room(roomId: roomId);
+      return room;
+    } catch (e) {
+      return await APIServer().room(roomId: chatAnywhereRoomId);
+    }
+  }
+
   RoomBloc({
     required this.chatMsgRepo,
     required this.stateManager,
@@ -25,21 +46,21 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
     // 加载指定聊天室信息
     on<RoomLoadEvent>((event, emit) async {
       try {
-        if (event.roomId == 1) {
-          // 加快首屏加载速度，避免加载中状态
-          emit(RoomLoaded(
-            Room(
-              '',
-              'chat',
-              id: event.roomId,
-            ),
-            const <String, MessageState>{},
-            cascading: false,
-          ));
-        }
+        // 加快首屏加载速度，避免加载中状态
+        emit(RoomLoaded(
+          Room(
+            '',
+            'chat',
+            id: event.roomId,
+          ),
+          const <String, MessageState>{},
+          cascading: false,
+        ));
+
+        final roomId = await fixRoomId(event.chatHistoryId) ?? event.roomId;
 
         if (Ability().isUserLogon()) {
-          final room = await APIServer().room(roomId: event.roomId);
+          final room = await loadRoom(roomId);
           if (event.chatHistoryId != null && event.chatHistoryId! > 0) {
             final chatHistory = await chatMsgRepo.getChatHistory(event.chatHistoryId!);
             if (chatHistory != null && chatHistory.model != null) {
@@ -68,7 +89,7 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
             cascading: false,
           ));
 
-          final states = await stateManager.loadRoomStates(event.roomId);
+          final states = await stateManager.loadRoomStates(roomId);
           emit(RoomLoaded(
             Room(
               room.name,
@@ -96,9 +117,9 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
           return;
         }
 
-        final room = await chatMsgRepo.room(event.roomId);
+        final room = await chatMsgRepo.room(roomId);
         if (room != null) {
-          final states = await stateManager.loadRoomStates(event.roomId);
+          final states = await stateManager.loadRoomStates(roomId);
           emit(RoomLoaded(
             room,
             states,
@@ -129,14 +150,20 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
       emit(RoomsLoading());
 
       try {
-        int id = 0;
         if (Ability().isUserLogon()) {
-          final segs = event.model.split(':');
+          String? model;
+          String? vendor;
 
-          id = await APIServer().createRoom(
+          if (event.model != null) {
+            final segs = event.model!.split(':');
+            model = event.model!.startsWith('v2@') ? event.model! : (segs.length > 1 ? segs.last : event.model);
+            vendor = event.model!.startsWith('v2@') ? '' : (segs.length > 1 ? segs.first : '');
+          }
+
+          await APIServer().createRoom(
             name: event.name,
-            vendor: event.model.startsWith('v2@') ? '' : (segs.length > 1 ? segs.first : ''),
-            model: event.model.startsWith('v2@') ? event.model : (segs.length > 1 ? segs.last : event.model),
+            vendor: vendor,
+            model: model,
             systemPrompt: event.prompt,
             avatarId: event.avatarId,
             avatarUrl: event.avatarUrl,
@@ -144,19 +171,17 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
             initMessage: event.initMessage,
           );
         } else {
-          final room = await chatMsgRepo.createRoom(
+          await chatMsgRepo.createRoom(
             name: event.name,
             category: 'chat',
-            model: event.model,
+            model: event.model ?? 'gpt-4o',
             systemPrompt: event.prompt,
             userId: APIServer().localUserID(),
             maxContext: event.maxContext,
           );
-
-          id = room.id!;
         }
 
-        emit(RoomOperationResult(true, redirect: '/room/$id/chat'));
+        emit(RoomOperationResult(true));
         emit(await createRoomsLoadedState(cache: false));
       } catch (e) {
         emit(RoomOperationResult(false, error: e.toString()));
@@ -193,8 +218,10 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
           final room = await APIServer().updateRoom(
             roomId: event.roomId,
             name: event.name!,
-            model: event.model!.startsWith('v2@') ? event.model! : event.model!.split(':').last,
-            vendor: event.model!.startsWith('v2@') ? '' : event.model!.split(':').first,
+            model: event.model != null
+                ? (event.model!.startsWith('v2@') ? event.model! : event.model!.split(':').last)
+                : null,
+            vendor: event.model != null ? (event.model!.startsWith('v2@') ? '' : event.model!.split(':').first) : null,
             systemPrompt: event.prompt!,
             avatarId: event.avatarId,
             avatarUrl: event.avatarUrl,
@@ -267,8 +294,11 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
       }
 
       try {
-        await APIServer().copyRoomGallery(ids: event.ids);
+        final ids = await APIServer().copyRoomGallery(ids: event.ids);
         emit(await createRoomsLoadedState(cache: false));
+        if (ids.isNotEmpty) {
+          emit(RoomOperationResult(true, redirect: '/room/${ids.first}/chat'));
+        }
       } catch (e) {
         emit(RoomCreateError(e));
       }
@@ -317,6 +347,15 @@ class RoomBloc extends BlocExt<RoomEvent, RoomState> {
         emit(GroupRoomUpdateResultState(true));
       } catch (e) {
         emit(GroupRoomUpdateResultState(false, error: e));
+      }
+    });
+
+    on<RoomsRecentLoadEvent>((event, emit) async {
+      try {
+        final rooms = await APIServer().recentRooms();
+        emit(RoomsRecentLoaded(rooms));
+      } catch (e) {
+        emit(RoomsRecentLoaded(const [], error: e));
       }
     });
   }

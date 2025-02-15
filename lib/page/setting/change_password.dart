@@ -53,6 +53,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
+        backgroundColor: customColors.backgroundColor,
         enabled: false,
         child: Container(
           padding: const EdgeInsets.all(10),
@@ -145,7 +146,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       verifyCode: verificationCode,
     )
         .then((value) {
-      showSuccessMessage('密码修改成功');
+      showSuccessMessage(AppLocale.operateSuccess.getString(context));
       if (context.canPop()) {
         context.pop();
       }

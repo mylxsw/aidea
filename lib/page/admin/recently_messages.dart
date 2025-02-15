@@ -64,6 +64,7 @@ class _AdminRecentlyMessagesPageState extends State<AdminRecentlyMessagesPage> {
       backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
+        backgroundColor: customColors.backgroundColor,
         enabled: false,
         child: Column(
           children: [

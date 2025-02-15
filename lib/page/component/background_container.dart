@@ -15,6 +15,8 @@ class BackgroundContainer extends StatefulWidget {
   final bool enabled;
   final bool pureColorMode;
   final double maxWidth;
+  final bool clickGrapFocus;
+  final Color? backgroundColor;
 
   const BackgroundContainer({
     super.key,
@@ -24,6 +26,8 @@ class BackgroundContainer extends StatefulWidget {
     this.enabled = true,
     this.pureColorMode = false,
     this.maxWidth = CustomSize.maxWindowSize,
+    this.clickGrapFocus = true,
+    this.backgroundColor,
   });
 
   @override
@@ -40,8 +44,7 @@ class _BackgroundContainerState extends State<BackgroundContainer> {
     super.initState();
 
     if (widget.enabled) {
-      if ((widget.useGradient == null || widget.useGradient == false) &&
-          imageUrl == null) {
+      if ((widget.useGradient == null || widget.useGradient == false) && imageUrl == null) {
         imageUrl = widget.setting.get(settingBackgroundImage);
         blur = double.tryParse(
           widget.setting.get(settingBackgroundImageBlur) ?? '15.0',
@@ -72,9 +75,11 @@ class _BackgroundContainerState extends State<BackgroundContainer> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).requestFocus(FocusNode());
-      },
+      onTap: widget.clickGrapFocus
+          ? () {
+              FocusScope.of(context).requestFocus(FocusNode());
+            }
+          : null,
       onHorizontalDragUpdate: (details) {
         // Only the mobile app supports horizontal swiping to go back to the previous page.
         if (PlatformTool.isAndroid() || PlatformTool.isIOS()) {
@@ -86,13 +91,16 @@ class _BackgroundContainerState extends State<BackgroundContainer> {
           }
         }
       },
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: widget.maxWidth > 0 ? widget.maxWidth : double.infinity,
+      child: Container(
+        color: widget.backgroundColor ?? customColors.backgroundContainerColor,
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: widget.maxWidth > 0 ? widget.maxWidth : double.infinity,
+            ),
+            child: _buildChild(customColors),
           ),
-          child: _buildChild(customColors),
         ),
       ),
     );
@@ -115,8 +123,7 @@ class _BackgroundContainerState extends State<BackgroundContainer> {
       );
     }
 
-    if (widget.enabled &&
-        ((imageUrl != null && imageUrl != '') || widget.useGradient == true)) {
+    if (widget.enabled && ((imageUrl != null && imageUrl != '') || widget.useGradient == true)) {
       return Container(
         height: double.infinity,
         decoration: widget.useGradient == true

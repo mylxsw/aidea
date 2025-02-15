@@ -6,7 +6,6 @@ class ChatHistoryProvider {
   ChatHistoryProvider(this.conn);
 
   Future<List<ChatHistory>> getChatHistories(
-    int roomId,
     int count, {
     int? userId,
     int? offset,
@@ -34,8 +33,7 @@ class ChatHistoryProvider {
     var keywordCondition = keyword != '' ? 'AND id in (${historyIds.join(',')})' : '';
     List<Map<String, Object?>> histories = await conn.query(
       'chat_history',
-      where: 'room_id = ? $userConditon $keywordCondition',
-      whereArgs: [roomId],
+      where: 'room_id IS NOT NULL $userConditon $keywordCondition',
       orderBy: 'updated_at DESC',
       limit: count,
       offset: offset,

@@ -4,6 +4,7 @@ import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/cache.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/component/advanced_button.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
 import 'package:askaide/page/component/enhanced_button.dart';
@@ -169,6 +170,7 @@ class _ArtisticQRScreenState extends State<ArtisticQRScreen> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         maxWidth: CustomSize.smallWindowSize,
         child: Column(
           children: [
@@ -398,37 +400,18 @@ class _ArtisticQRScreenState extends State<ArtisticQRScreen> {
               ],
             ),
           // 生成按钮
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              EnhancedButton(
-                title: showAdvancedOptions
-                    ? AppLocale.simpleMode.getString(context)
-                    : AppLocale.professionalMode.getString(context),
-                width: 120,
-                backgroundColor: Colors.transparent,
-                color: customColors.weakLinkColor,
-                fontSize: 15,
-                icon: Icon(
-                  showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
-                  color: customColors.weakLinkColor,
-                  size: 15,
-                ),
-                onPressed: () {
-                  setState(() {
-                    showAdvancedOptions = !showAdvancedOptions;
-                  });
-                },
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                flex: 1,
-                child: EnhancedButton(
-                  title: AppLocale.generate.getString(context),
-                  onPressed: onGenerate,
-                ),
-              ),
-            ],
+          AdvancedButton(
+            showAdvancedOptions: showAdvancedOptions,
+            onPressed: (value) {
+              setState(() {
+                showAdvancedOptions = value;
+              });
+            },
+          ),
+          if (capacity != null) const SizedBox(height: 10),
+          EnhancedButton(
+            title: AppLocale.generate.getString(context),
+            onPressed: onGenerate,
           ),
           const SizedBox(height: 20),
         ],

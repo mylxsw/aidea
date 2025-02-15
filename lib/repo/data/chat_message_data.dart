@@ -12,10 +12,8 @@ class ChatMessageDataProvider {
   Database conn;
   ChatMessageDataProvider(this.conn);
 
-  Future<List<Message>> getRecentMessages(int roomId, int count,
-      {int? userId, int? chatHistoryId}) async {
-    var userConditon =
-        userId == null ? ' AND user_id IS NULL' : ' AND user_id = $userId';
+  Future<List<Message>> getRecentMessages(int count, {int? userId, int? chatHistoryId, int? roomId}) async {
+    var userConditon = userId == null ? ' AND user_id IS NULL' : ' AND user_id = $userId';
 
     if (chatHistoryId != null) {
       userConditon += ' AND chat_history_id = $chatHistoryId';
@@ -23,8 +21,8 @@ class ChatMessageDataProvider {
 
     List<Map<String, Object?>> messages = await conn.query(
       'chat_message',
-      where: 'room_id = ? $userConditon',
-      whereArgs: [roomId],
+      where: '${roomId == null ? 'room_id IS NOT NULL' : 'room_id = ?'} $userConditon',
+      whereArgs: roomId == null ? [] : [roomId],
       orderBy: 'id DESC',
       limit: count,
     );
@@ -37,8 +35,7 @@ class ChatMessageDataProvider {
     int? userId,
     int? chatHistoryId,
   }) async {
-    var userConditon =
-        userId == null ? ' AND user_id IS NULL' : ' AND user_id = $userId';
+    var userConditon = userId == null ? ' AND user_id IS NULL' : ' AND user_id = $userId';
     if (chatHistoryId != null) {
       userConditon += ' AND chat_history_id = $chatHistoryId';
     }
@@ -121,8 +118,7 @@ class ChatMessageDataProvider {
   }
 
   Future<void> clearMessages(int roomId, {int? userId}) async {
-    final userConditon =
-        userId == null ? ' AND user_id IS NULL' : ' AND user_id = $userId';
+    final userConditon = userId == null ? ' AND user_id IS NULL' : ' AND user_id = $userId';
     return conn.transaction((txn) async {
       await txn.delete(
         'chat_message',

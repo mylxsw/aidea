@@ -1,4 +1,5 @@
 import 'package:askaide/bloc/gallery_bloc.dart';
+import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/helper/helper.dart';
@@ -96,6 +97,7 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
+        backgroundColor: customColors.backgroundColor,
         child: BlocBuilder<GalleryBloc, GalleryState>(
           buildWhen: (previous, current) => current is GalleryItemLoaded,
           builder: (context, state) {
@@ -220,68 +222,70 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
                                       );
                                     },
                                   ),
-                                  const SizedBox(width: 10),
-                                  EnhancedButton(
-                                    title: AppLocale.shortcut.getString(context),
-                                    icon: const Icon(Icons.webhook, size: 14),
-                                    width: 80,
-                                    color: customColors.backgroundInvertedColor,
-                                    backgroundColor: customColors.backgroundColor,
-                                    onPressed: () {
-                                      if (state.item.images.length > 1) {
-                                        List<SelectorItem<String>> items = [];
-                                        for (var i = 0; i < state.item.images.length; i++) {
-                                          items.add(SelectorItem(
-                                            NetworkImagePreviewer(
-                                              url: state.item.images[i],
-                                              notClickable: true,
-                                              hidePreviewButton: true,
-                                              borderRadius: CustomSize.borderRadiusAll,
-                                            ),
-                                            state.item.images[i],
-                                          ));
-                                        }
-                                        openListSelectDialog(
-                                          context,
-                                          items,
-                                          (selected) {
-                                            context.pop();
-
-                                            openImageWorkflowActionDialog(
-                                              context,
-                                              customColors,
-                                              selected.value,
-                                            );
-
-                                            return false;
-                                          },
-                                          horizontal: true,
-                                          horizontalCount: 2,
-                                          heightFactor: 0.8,
-                                          innerPadding: const EdgeInsets.symmetric(
-                                            vertical: 10,
-                                          ),
-                                          title: AppLocale.selectImageToShortcut.getString(context),
-                                        );
-                                      } else {
-                                        openImageWorkflowActionDialog(
-                                          context,
-                                          customColors,
-                                          state.item.images.first,
-                                        );
-                                      }
-                                    },
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: EnhancedButton(
-                                      title: AppLocale.makeSameStyle.getString(context),
+                                  if (Ability().enableCreationIsland) ...[
+                                    const SizedBox(width: 10),
+                                    EnhancedButton(
+                                      title: AppLocale.shortcut.getString(context),
+                                      icon: const Icon(Icons.webhook, size: 14),
+                                      width: 80,
+                                      color: customColors.backgroundInvertedColor,
+                                      backgroundColor: customColors.backgroundColor,
                                       onPressed: () {
-                                        context.push(
-                                            '/creative-draw/create?mode=text-to-image&id=${state.item.creativeId}&gallery_copy_id=${state.item.id}');
+                                        if (state.item.images.length > 1) {
+                                          List<SelectorItem<String>> items = [];
+                                          for (var i = 0; i < state.item.images.length; i++) {
+                                            items.add(SelectorItem(
+                                              NetworkImagePreviewer(
+                                                url: state.item.images[i],
+                                                notClickable: true,
+                                                hidePreviewButton: true,
+                                                borderRadius: CustomSize.borderRadiusAll,
+                                              ),
+                                              state.item.images[i],
+                                            ));
+                                          }
+                                          openListSelectDialog(
+                                            context,
+                                            items,
+                                            (selected) {
+                                              context.pop();
+
+                                              openImageWorkflowActionDialog(
+                                                context,
+                                                customColors,
+                                                selected.value,
+                                              );
+
+                                              return false;
+                                            },
+                                            horizontal: true,
+                                            horizontalCount: 2,
+                                            heightFactor: 0.8,
+                                            innerPadding: const EdgeInsets.symmetric(
+                                              vertical: 10,
+                                            ),
+                                            title: AppLocale.selectImageToShortcut.getString(context),
+                                          );
+                                        } else {
+                                          openImageWorkflowActionDialog(
+                                            context,
+                                            customColors,
+                                            state.item.images.first,
+                                          );
+                                        }
                                       },
                                     ),
-                                  ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: EnhancedButton(
+                                        title: AppLocale.makeSameStyle.getString(context),
+                                        onPressed: () {
+                                          context.push(
+                                              '/creative-draw/create?mode=text-to-image&id=${state.item.creativeId}&gallery_copy_id=${state.item.id}');
+                                        },
+                                      ),
+                                    ),
+                                  ]
                                 ],
                               ),
                             ),

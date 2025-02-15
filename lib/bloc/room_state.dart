@@ -15,6 +15,13 @@ class RoomsLoaded extends RoomState {
   RoomsLoaded(this.rooms, {this.error, this.suggests = const []});
 }
 
+class RoomsRecentLoaded extends RoomState {
+  final List<RoomInServer> rooms;
+  final Object? error;
+
+  RoomsRecentLoaded(this.rooms, {this.error});
+}
+
 class RoomLoaded extends RoomState {
   final Room room;
   final List<ChatExample>? examples;

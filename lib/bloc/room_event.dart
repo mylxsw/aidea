@@ -9,9 +9,13 @@ class RoomsLoadEvent extends RoomEvent {
   RoomsLoadEvent({this.forceRefresh = false});
 }
 
+class RoomsRecentLoadEvent extends RoomEvent {
+  RoomsRecentLoadEvent();
+}
+
 class RoomCreateEvent extends RoomEvent {
   final String name;
-  final String model;
+  final String? model;
   final String? prompt;
   final int? avatarId;
   final String? avatarUrl;
@@ -20,8 +24,8 @@ class RoomCreateEvent extends RoomEvent {
 
   RoomCreateEvent(
     this.name,
-    this.model,
     this.prompt, {
+    this.model,
     this.avatarId,
     this.avatarUrl,
     this.maxContext,

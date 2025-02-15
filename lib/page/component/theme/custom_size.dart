@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class CustomSize {
   static const double appBarTitleSize = 16;
-  static const double defaultHintTextSize = 14;
+  static const double defaultHintTextSize = 16;
   static const double maxWindowSize = 1000;
   static const double smallWindowSize = 500;
 
@@ -12,6 +12,14 @@ class CustomSize {
   static BorderRadiusGeometry borderRadius = BorderRadius.circular(radiusValue);
   static const Radius radius = Radius.circular(radiusValue);
   static const BorderRadius borderRadiusAll = BorderRadius.all(radius);
+
+  static double get markdownTextSize {
+    return 16;
+  }
+
+  static double get markdownCodeSize {
+    return 14;
+  }
 
   static double get toolbarHeight {
     if (PlatformTool.isMacOS()) {

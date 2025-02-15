@@ -71,9 +71,9 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         backgroundColor: Colors.transparent,
-        title: const Text(
-          '验证账号',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+        title: Text(
+          AppLocale.verifyAccount.getString(context),
+          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
         leading: IconButton(
@@ -112,7 +112,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
           child: Text(
-            '请使用 ${widget.username} 的密码进行登录。',
+            AppLocale.enterPasswordToSignin.getString(context),
             style: TextStyle(
               color: customColors.weakTextColor?.withAlpha(200),
               fontSize: 15,
@@ -189,7 +189,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
                   });
                 },
                 child: Text(
-                  '验证码登录',
+                  AppLocale.verifyCodeLogin.getString(context),
                   style: TextStyle(
                     color: customColors.weakLinkColor?.withAlpha(120),
                     fontSize: 14,
@@ -226,7 +226,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
           child: Text(
-            '请发送验证码至 ${widget.username} 以完成操作。',
+            AppLocale.verifyCodeLoginTips.getString(context),
             style: TextStyle(
               color: customColors.weakTextColor,
               fontSize: 15,
@@ -313,7 +313,7 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
                     });
                   },
                   child: Text(
-                    '使用密码登录',
+                    AppLocale.usePasswordToSignin.getString(context),
                     style: TextStyle(
                       color: customColors.weakLinkColor?.withAlpha(120),
                       fontSize: 14,

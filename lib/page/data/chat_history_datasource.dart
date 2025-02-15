@@ -1,4 +1,3 @@
-import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/logger.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/chat_message_repo.dart';
@@ -22,7 +21,6 @@ class ChatHistoryDatasource extends LoadingMoreBase<ChatHistory> {
   Future<bool> loadData([bool isloadMoreAction = false]) async {
     try {
       final histories = await repo.recentChatHistories(
-        chatAnywhereRoomId,
         30,
         keyword: keyword,
         offset: 30 * (pageindex - 1),

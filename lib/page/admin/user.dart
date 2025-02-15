@@ -168,6 +168,7 @@ class _AdminUserPageState extends State<AdminUserPage> {
       backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
+        backgroundColor: customColors.backgroundColor,
         enabled: false,
         child: RefreshIndicator(
           color: customColors.linkColor,

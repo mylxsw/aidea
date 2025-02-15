@@ -483,7 +483,7 @@ class APIServer {
   }
 
   /// 获取模型列表
-  Future<List<Model>> models({bool cache = true, bool withCustom = false}) async {
+  Future<List<Model>> models({bool cache = true}) async {
     return sendCachedGetRequest(
       '/v2/models',
       (resp) {
@@ -493,9 +493,6 @@ class APIServer {
         }
 
         return models;
-      },
-      queryParameters: {
-        "with-custom": withCustom,
       },
       subKey: _cacheSubKey(),
       forceRefresh: !cache,
@@ -1134,6 +1131,21 @@ class APIServer {
     );
   }
 
+  /// 获取最近使用过的角色
+  Future<List<RoomInServer>> recentRooms() async {
+    return sendGetRequest(
+      '/v2/rooms/recent',
+      (resp) {
+        var res = <RoomInServer>[];
+        for (var item in resp.data['data']) {
+          res.add(RoomInServer.fromJson(item));
+        }
+
+        return res;
+      },
+    );
+  }
+
   /// 获取单个房间信息
   Future<RoomInServer> room({required roomId, bool cache = true}) async {
     return sendCachedGetRequest(
@@ -1191,8 +1203,8 @@ class APIServer {
   /// 创建房间
   Future<int> createRoom({
     required String name,
-    required String model,
-    required String vendor,
+    String? model,
+    String? vendor,
     String? description,
     String? systemPrompt,
     String? avatarUrl,
@@ -1224,8 +1236,8 @@ class APIServer {
   Future<RoomInServer> updateRoom({
     required int roomId,
     required String name,
-    required String model,
-    required String vendor,
+    String? model,
+    String? vendor,
     String? description,
     String? systemPrompt,
     String? avatarUrl,
@@ -1551,11 +1563,18 @@ class APIServer {
     );
   }
 
-  Future<void> copyRoomGallery({required List<int> ids}) async {
+  Future<List<int>> copyRoomGallery({required List<int> ids}) async {
     return sendPostRequest(
       '/v1/room-galleries/copy',
       formData: {'ids': ids.join(',')},
-      (resp) {},
+      (resp) {
+        var ids = <int>[];
+        for (var item in resp.data['ids']) {
+          ids.add(item);
+        }
+
+        return ids;
+      },
     );
   }
 

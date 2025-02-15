@@ -144,8 +144,7 @@ class _EnhancedTextFieldState extends State<EnhancedTextField> {
 
   @override
   Widget build(BuildContext context) {
-    if ((widget.labelText != null || widget.labelWidget != null) &&
-        widget.labelPosition != LabelPosition.inner) {
+    if ((widget.labelText != null || widget.labelWidget != null) && widget.labelPosition != LabelPosition.inner) {
       // 上下结构
       if (widget.labelPosition == LabelPosition.top) {
         return Column(
@@ -168,8 +167,7 @@ class _EnhancedTextFieldState extends State<EnhancedTextField> {
                             ),
                           ),
                           const SizedBox(width: 5),
-                          if (widget.labelHelpWidget != null)
-                            widget.labelHelpWidget!,
+                          if (widget.labelHelpWidget != null) widget.labelHelpWidget!,
                         ],
                       ),
                 if (widget.inputSelector != null) widget.inputSelector!,
@@ -255,10 +253,8 @@ class _EnhancedTextFieldState extends State<EnhancedTextField> {
                       fillColor: widget.customColors.textfieldBackgroundColor,
                       hintText: widget.hintText,
                       hintStyle: TextStyle(
-                        fontSize: widget.hintTextSize ??
-                            CustomSize.defaultHintTextSize,
-                        color: widget.hintColor ??
-                            widget.customColors.textfieldHintColor,
+                        fontSize: widget.hintTextSize ?? CustomSize.defaultHintTextSize,
+                        color: widget.hintColor ?? widget.customColors.textfieldHintColor,
                       ),
                       hintTextDirection: widget.textDirection,
                       counterText: "",
@@ -270,22 +266,16 @@ class _EnhancedTextFieldState extends State<EnhancedTextField> {
                         top: widget.labelPosition == LabelPosition.top ? 0 : 10,
                         left: widget.enableBackground ? 15 : 0,
                         right: widget.enableBackground ? 15 : 0,
-                        bottom: (widget.showCounter ||
-                                    widget.bottomButton != null) &&
-                                widget.middleWidget == null
+                        bottom: (widget.showCounter || widget.bottomButton != null) && widget.middleWidget == null
                             ? 30
                             : 10,
                       ),
-                      labelText: widget.labelPosition == LabelPosition.inner
-                          ? widget.labelText
-                          : null,
+                      labelText: widget.labelPosition == LabelPosition.inner ? widget.labelText : null,
                       labelStyle: TextStyle(
                         color: widget.customColors.textfieldLabelColor,
                       ),
                       suffixIcon: widget.suffixIcon ??
-                          (widget.labelPosition == LabelPosition.left
-                              ? widget.inputSelector
-                              : null),
+                          (widget.labelPosition == LabelPosition.left ? widget.inputSelector : null),
                     ),
                     cursorRadius: CustomSize.radius,
                     keyboardType: widget.keyboardType,
@@ -337,8 +327,7 @@ class _EnhancedTextFieldState extends State<EnhancedTextField> {
                   highlightColor: Colors.transparent,
                   padding: const EdgeInsets.all(0),
                   minWidth: 60,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: CustomSize.borderRadius),
+                  shape: RoundedRectangleBorder(borderRadius: CustomSize.borderRadius),
                   onPressed: widget.bottomButtonOnPressed,
                   child: widget.bottomButton!,
                 ),
@@ -351,9 +340,7 @@ class _EnhancedTextFieldState extends State<EnhancedTextField> {
 
   InputBorder resolveInputBorder() {
     if (widget.enableBackground) {
-      return const OutlineInputBorder(
-          borderRadius: CustomSize.borderRadiusAll,
-          borderSide: BorderSide.none);
+      return const OutlineInputBorder(borderRadius: CustomSize.borderRadiusAll, borderSide: BorderSide.none);
     }
 
     return InputBorder.none;

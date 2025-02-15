@@ -54,7 +54,7 @@ import 'package:askaide/page/setting/change_password.dart';
 import 'package:askaide/page/chat/home_chat.dart';
 import 'package:askaide/page/chat/home.dart';
 import 'package:askaide/page/chat/home_chat_history.dart';
-import 'package:askaide/page/chat/room_create.dart';
+import 'package:askaide/page/chat/character_create.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/transition_resolver.dart';
 import 'package:askaide/page/creative_island/my_creation.dart';
@@ -109,9 +109,9 @@ import 'package:askaide/bloc/bloc_manager.dart';
 import 'package:askaide/bloc/chat_message_bloc.dart';
 import 'package:askaide/bloc/room_bloc.dart';
 import 'package:askaide/bloc/notify_bloc.dart';
-import 'package:askaide/page/chat/room_edit.dart';
-import 'package:askaide/page/chat/room_chat.dart';
-import 'package:askaide/page/chat/rooms.dart';
+import 'package:askaide/page/chat/character_edit.dart';
+import 'package:askaide/page/chat/character_chat.dart';
+import 'package:askaide/page/chat/characters.dart';
 import 'package:askaide/page/setting/setting_screen.dart';
 import 'package:askaide/repo/data/chat_message_data.dart';
 import 'package:askaide/repo/chat_message_repo.dart';
@@ -169,12 +169,12 @@ void main() async {
         try {
           await migrate(db, oldVersion, newVersion);
         } catch (e) {
-          Logger.instance.e('数据库升级失败', error: e);
+          Logger.instance.e('Database upgrade failure', error: e);
         }
       },
       onCreate: initDatabase,
       onOpen: (db) {
-        Logger.instance.i('数据库存储路径：${db.path}');
+        Logger.instance.i('Database storage path: ${db.path}');
       },
     ),
   );
@@ -217,7 +217,7 @@ void main() async {
     final capabilities = await APIServer().capabilities(cache: false);
     Ability().init(settingRepo, capabilities);
   } catch (e) {
-    Logger.instance.e('获取客户端能力清单失败', error: e);
+    Logger.instance.e('Failed to get the client capability manifest', error: e);
     Ability().init(
       settingRepo,
       Capabilities(
@@ -385,7 +385,7 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [BlocProvider.value(value: chatRoomBloc)],
-                  child: RoomsPage(setting: settingRepo),
+                  child: CharactersPage(setting: settingRepo),
                 ),
               ),
             ),
@@ -527,7 +527,7 @@ class MyApp extends StatefulWidget {
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [BlocProvider.value(value: chatRoomBloc)],
-                  child: RoomCreatePage(setting: settingRepo),
+                  child: CharacterCreatePage(setting: settingRepo),
                 ),
               ),
             ),
@@ -545,7 +545,7 @@ class MyApp extends StatefulWidget {
                       BlocProvider.value(value: chatRoomBloc),
                       BlocProvider(create: (context) => NotifyBloc()),
                     ],
-                    child: RoomChatPage(
+                    child: CharacterChatPage(
                       roomId: roomId,
                       stateManager: messageStateManager,
                       setting: settingRepo,
@@ -567,7 +567,7 @@ class MyApp extends StatefulWidget {
                         value: ChatBlocManager().getBloc(roomId),
                       ),
                     ],
-                    child: RoomEditPage(roomId: roomId, setting: settingRepo),
+                    child: CharacterEditPage(roomId: roomId, setting: settingRepo),
                   ),
                 );
               },
@@ -1325,9 +1325,9 @@ class _MyAppState extends State<MyApp> {
                   debugShowCheckedModeBanner: false,
                   builder: (context, child) {
                     // 这里设置了全局字体固定大小，不随系统设置变更
-                    // TODO 后面要增加一个设置项，允许用户自定义字体大小
                     return MediaQuery(
-                      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+                      data: MediaQuery.of(context)
+                          .copyWith(textScaler: TextScaler.linear(PlatformTool.isDesktop() ? 0.95 : 1)),
                       child: BotToastInit()(context, child),
                     );
                   },

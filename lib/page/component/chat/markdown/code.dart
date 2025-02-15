@@ -1,5 +1,7 @@
 import 'package:askaide/helper/ability.dart';
 import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
@@ -19,6 +21,10 @@ Map<String, TextStyle> codeTheme() {
 }
 
 class CodeElementBuilder extends MarkdownElementBuilder {
+  final CustomColors customColors;
+
+  CodeElementBuilder(this.customColors);
+
   @override
   Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
     var language = '';
@@ -62,23 +68,59 @@ class CodeElementBuilder extends MarkdownElementBuilder {
     );
 
     if (multiLine) {
-      return Stack(
-        children: [
-          child,
-          Positioned(
-            right: 0,
-            top: 0,
-            child: IconButton(
-              tooltip: 'Copy code',
-              icon: const Icon(Icons.copy, size: 12),
-              onPressed: () {
-                FlutterClipboard.copy(element.textContent).then((value) {
-                  showSuccessMessage('Copied to clipboard');
-                });
-              },
+      return Card(
+        elevation: 0,
+        color: customColors.markdownPreColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: CustomSize.borderRadius,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(
+                color: customColors.listTileBackgroundColor,
+                borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, topRight: CustomSize.radius),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    language,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: customColors.weakTextColor,
+                    ),
+                  ),
+                  TextButton.icon(
+                    icon: Icon(
+                      Icons.copy,
+                      size: 14,
+                      color: customColors.weakTextColorLess,
+                    ),
+                    label: Text(
+                      'Copy',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: customColors.weakTextColorLess,
+                      ),
+                    ),
+                    onPressed: () {
+                      FlutterClipboard.copy(element.textContent).then((value) {
+                        showSuccessMessage('Copied to clipboard');
+                      });
+                    },
+                    style: ButtonStyle(
+                      overlayColor: WidgetStateProperty.all(Colors.transparent),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+            child,
+          ],
+        ),
       );
     }
 

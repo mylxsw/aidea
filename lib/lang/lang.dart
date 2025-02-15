@@ -1,11 +1,13 @@
 mixin AppLocale {
   static const String required = 'required';
+  static const String wechat = 'wechat';
   static const String systemInfo = 'system_info';
   static const String appName = 'app_name';
   static const String homeTitle = 'home_title';
   static const String chatAnywhere = 'chat_anywhere';
   static const String creativeIsland = 'creative_island';
   static const String settings = 'settings';
+  static const String configure = 'configure';
   static const String language = 'language';
   static const String themeMode = 'theme_mode';
   static const String accountInfo = 'account_info';
@@ -19,6 +21,7 @@ mixin AppLocale {
   static const String userTerms = 'user_terms';
   static const String privacyPolicy = 'privacy_policy';
   static const String signIn = 'sign_in';
+  static const String signInAccount = 'sign_in_account';
   static const String signOut = 'sign_out';
   static const String signUp = 'sign_up';
   static const String password = 'password';
@@ -28,6 +31,7 @@ mixin AppLocale {
   static const String account = 'account';
   static const String usedUp = 'used_up';
   static const String expired = 'expired';
+  static const String timeConsume = 'time-consume';
 
   static const String save = 'save';
   static const String ok = 'ok';
@@ -64,6 +68,7 @@ mixin AppLocale {
   static const String text = 'text';
   static const String uploading = 'uploading';
   static const String robotIsThinkingMessage = 'robot-is-thinking-message';
+  static const String thinkingProcess = 'thinking-process';
   static const String robotHasSomeError = 'robot-has-some-error';
   static const String questionExamples = 'question-examples';
   static const String noRecords = 'no-records';
@@ -78,6 +83,7 @@ mixin AppLocale {
   static const String switchModel = 'switch-model';
   static const String switchModelTitle = 'switch-model-title';
 
+  static const String myCharacters = 'my-characters';
   static const String character = "character";
   static const String createRoom = "create-room";
   static const String model = "model";
@@ -88,6 +94,7 @@ mixin AppLocale {
   static const String prompt = "prompt";
   static const String optional = "optional";
   static const String search = "search";
+  static const String reasoning = "reasoning";
   static const String background = "background";
   static const String backgroundSetting = "background-setting";
   static const String roomSetting = "room-setting";
@@ -115,6 +122,7 @@ mixin AppLocale {
 
   static const String nameRequiredMessage = 'name-required-message';
   static const String modelRequiredMessage = 'model-required-message';
+  static const String charactorPromptRequiredMessage = 'charactor-prompt-required-message';
 
   static const String writeYourIdeas = 'write-your-ideas';
   static const String describeYourImages = 'describe-your-images';
@@ -136,8 +144,7 @@ mixin AppLocale {
   static const String generating = 'generating';
   static const String generateExitConfirm = 'generate-exit-confirm';
   static const String tooManyRequests = 'too-many-requests';
-  static const String tooManyRequestsOrPaymentRequired =
-      'too-many-requests-or-payment-required';
+  static const String tooManyRequestsOrPaymentRequired = 'too-many-requests-or-payment-required';
   static const String promptHint = 'prompt-hint';
   static const String confirmClearCache = 'confirm-clear-cache';
   static const String confirmSignOut = 'confirm-sign-out';
@@ -158,8 +165,7 @@ mixin AppLocale {
   static const String referenceImage = 'reference-image';
   static const String selectImage = 'select-image';
   static const String imagination = 'imagination';
-  static const String keywordsSeparatedByCommas =
-      'keywords-separated-by-commas';
+  static const String keywordsSeparatedByCommas = 'keywords-separated-by-commas';
   static const String originalImage = 'original-image';
   static const String superResolution = 'super-resolution';
   static const String colorizeImage = 'colorize-image';
@@ -167,8 +173,7 @@ mixin AppLocale {
   static const String report = 'report';
   static const String latestVersion = 'latest-version';
   static const String aIdeaApp = 'aidea-app';
-  static const String onceEnabledSmartOptimization =
-      'once-enabled-smart-optimization';
+  static const String onceEnabledSmartOptimization = 'once-enabled-smart-optimization';
   static const String gotIt = 'got-it';
   static const String referenceImageNote = 'reference-image-note';
   static const String selectReferenceImage = 'select-reference-image';
@@ -197,6 +202,7 @@ mixin AppLocale {
   static const String passwordFormatError = 'password-format-error';
   static const String accountCreated = 'account-created';
   static const String sendVerifyCode = 'send-verify-code';
+  static const String verify = 'verify';
   static const String verifyCode = 'verify-code';
   static const String verifyCodeInputTips = 'verify-code-input-tips';
   static const String retryInSeconds = 'retry-in-seconds';
@@ -206,12 +212,14 @@ mixin AppLocale {
   static const String verifyCodeFormatError = 'verify-code-format-error';
   static const String phone = 'phone';
   static const String email = 'email';
-  static const String directSignin = 'direct-signin';
+  static const String directSigninDueHasAccount = 'direct-signin-due-has-account';
+  static const String directSignin = 'direct-signin-due-no-account';
   static const String passwordResetOK = 'password-reset-ok';
   static const String resetPassword = 'reset-password';
   static const String bindPhone = 'bind-phone';
   static const String bind = 'bind';
   static const String bound = 'bond';
+  static const String bindExAccount = 'bind-ex-account';
   static const String unbind = 'unbind';
   static const String inviteCode = 'invite-code';
   static const String inviteCodeInputTips = 'invite-code-input-tips';
@@ -314,7 +322,28 @@ mixin AppLocale {
   static const String perRequest = 'per-request';
   static const String info = 'info';
 
+  static const String recently = 'recently';
+  static const String daysAgo = 'days-ago';
+  static const String lastWeek = 'last-week';
+  static const String weeksAgo = 'weeks-ago';
+  static const String lastMonth = 'last-month';
+  static const String monthsAgo = 'months-ago';
+  static const String lastYear = 'last-year';
+  static const String longTimeAgo = 'long-time-ago';
+
+  static const String modelNeedSignIn = 'model-need-sign-in';
+  static const String wechatBindConfirm = 'wechat-bind-confirm';
+  static const String accountWillBeCreateAutomatically = 'account-will-be-create-automatically';
+  static const String installWechatFirst = 'install-wechat-first';
+  static const String otherLoginMethods = 'other-login-methods';
+  static const String verifyAccount = 'verify-account';
+  static const String enterPasswordToSignin = 'enter-password-to-signin';
+  static const String verifyCodeLogin = 'verify-code-login';
+  static const String verifyCodeLoginTips = 'verify-code-login-tips';
+  static const String usePasswordToSignin = 'use-password-to-signin';
+
   static const Map<String, dynamic> zh = {
+    wechat: '微信',
     required: '必填',
     systemInfo: '系统信息',
     save: '保存',
@@ -340,8 +369,8 @@ mixin AppLocale {
     continueMessage: '继续',
     messageInputTips: '有问题尽管问我',
     takePhoto: '拍照',
-    photoLibrary: '照片图库',
-    fileLibrary: '文档',
+    photoLibrary: '附加照片',
+    fileLibrary: '附加文档',
     upload: '上传',
     longPressSpeak: '长按说话',
     send: '发送',
@@ -350,13 +379,15 @@ mixin AppLocale {
     selectText: '选择文本',
     text: '文本',
     uploading: '上传中...',
-    robotIsThinkingMessage: '正在思考中...',
+    robotIsThinkingMessage: '正在思考中，请耐心等待',
+    thinkingProcess: '深度思考',
     robotHasSomeError: '发送失败，重发该消息？',
     appName: 'AIdea',
     chatAnywhere: '聊一聊',
     homeTitle: '自定义角色',
     creativeIsland: '创作岛',
     settings: '设置',
+    configure: '配置',
     language: '语言',
     themeMode: '主题外观',
     accountInfo: '账号信息',
@@ -370,6 +401,7 @@ mixin AppLocale {
     userTerms: '用户协议',
     privacyPolicy: '隐私政策',
     signIn: '登录',
+    signInAccount: '登录解锁完整功能',
     signOut: '退出登录',
     signUp: '注册',
     password: '密码',
@@ -379,7 +411,9 @@ mixin AppLocale {
     account: '账号',
     usedUp: '已用完',
     expired: '已过期',
+    timeConsume: '用时',
     character: '角色',
+    myCharacters: '我的角色',
     createRoom: '创建角色',
     model: 'AI 模型',
     selectModel: '选择模型',
@@ -389,6 +423,7 @@ mixin AppLocale {
     prompt: '角色设定',
     optional: '可选',
     search: '搜索',
+    reasoning: '推理',
     background: '背景',
     backgroundSetting: '背景图',
     roomSetting: '设置',
@@ -411,6 +446,7 @@ mixin AppLocale {
     promptUsage: '领域设定用于设置 AI 角色的行为',
     nameRequiredMessage: '请输入名称',
     modelRequiredMessage: '请选择 AI 模型',
+    charactorPromptRequiredMessage: '请输入角色设定',
     operateSuccess: '操作成功',
     operateFailed: '操作失败',
     confirmDelete: '确定删除？',
@@ -445,12 +481,11 @@ mixin AppLocale {
     generating: '创作中...',
     generateExitConfirm: '创作中...\n退出后，可在历史记录中查看结果',
     tooManyRequests: '操作过于频繁，请稍后再试',
-    tooManyRequestsOrPaymentRequired:
-        '操作过于频繁（如果您使用了自定义的 OpenAI Keys，请登录 https://platform.openai.com 检查账户余额是否充足）',
+    tooManyRequestsOrPaymentRequired: '操作过于频繁（如果您使用了自定义的 OpenAI Keys，请登录 https://platform.openai.com 检查账户余额是否充足）',
     promptHint: '设定角色和技能，以便为你提供更精准有效的信息。',
     confirmClearCache: '确定要清除缓存吗？',
     confirmSignOut: '确定要退出登录吗？',
-    askMeAnyQuestion: '有问题尽管问我',
+    askMeAnyQuestion: '消息',
     askMeLikeThis: '可以这样问我:',
     refresh: '换一批',
     fastAndCostEffective: '速度快，成本低',
@@ -502,6 +537,7 @@ mixin AppLocale {
     passwordFormatError: '密码格式有误\n必须为8-20位字母、数字、特殊符号组合',
     accountCreated: '账号创建成功',
     sendVerifyCode: '发送',
+    verify: '验证',
     verifyCode: '验证码',
     verifyCodeInputTips: '输入验证码',
     retryInSeconds: '秒后重试',
@@ -511,12 +547,14 @@ mixin AppLocale {
     verifyCodeFormatError: '验证码格式有误',
     phone: '手机',
     email: '邮箱',
-    directSignin: '已有账号？直接登录',
+    directSigninDueHasAccount: '已有账号？直接登录',
+    directSignin: '直接登录',
     passwordResetOK: '密码已重置，请重新登录',
     resetPassword: '重置密码',
     bindPhone: '绑定手机',
     bind: '绑定',
     bound: '已绑定',
+    bindExAccount: '绑定已有账号',
     unbind: '解绑',
     inviteCode: '邀请码',
     inviteCodeInputTips: '输入好友邀请码，获额外奖励（非必填）',
@@ -567,7 +605,7 @@ mixin AppLocale {
     selectMember: '选择本次对话成员',
     members: '成员',
     createGroupChat: '创建群聊',
-    advanced: '高级选项',
+    advanced: '更多选项',
     collapseOptions: '收起选项',
     welcomeMessage: '引导语',
     welcomeMessageTips: '每次开始新对话时，系统将会以 AI 的身份自动发送引导语。',
@@ -610,10 +648,29 @@ mixin AppLocale {
     output: '输出',
     perRequest: '每次',
     info: '详情',
+    recently: '最近',
+    daysAgo: '天前',
+    lastWeek: '上周',
+    weeksAgo: '周前',
+    lastMonth: '上个月',
+    monthsAgo: '月前',
+    lastYear: '去年',
+    longTimeAgo: '很久以前',
+    modelNeedSignIn: '该模型需要登录后使用',
+    wechatBindConfirm: '该微信未绑定任何账号，是否直接登录？\n（自动创建账号）',
+    accountWillBeCreateAutomatically: '未注册的账号验证成功后将自动注册',
+    installWechatFirst: '请先安装微信后再使用该功能',
+    otherLoginMethods: '其它登录方式',
+    verifyAccount: '验证账号',
+    enterPasswordToSignin: '请输入密码完成登录。',
+    verifyCodeLogin: '验证码登录',
+    verifyCodeLoginTips: '请输入验证码以完成操作。',
+    usePasswordToSignin: '使用密码登录',
   };
 
   static const Map<String, dynamic> en = {
     required: 'Required',
+    wechat: 'WeChat',
     systemInfo: 'System',
     save: 'Save',
     ok: 'OK',
@@ -649,13 +706,14 @@ mixin AppLocale {
     text: 'Text',
     uploading: 'Uploading...',
     robotIsThinkingMessage: 'Thinking...',
-    robotHasSomeError:
-        'There seems to be something wrong, Do you want to resend the message?',
+    thinkingProcess: 'Thinking, please be patient',
+    robotHasSomeError: 'There seems to be something wrong, Do you want to resend the message?',
     appName: 'AIdea',
     chatAnywhere: 'Chat',
     homeTitle: 'Characters',
     creativeIsland: 'Creative',
     settings: 'Setting',
+    configure: 'Configure',
     language: 'Language',
     themeMode: 'Theme',
     accountInfo: 'Account Info',
@@ -669,6 +727,7 @@ mixin AppLocale {
     userTerms: 'User Terms',
     privacyPolicy: 'Privacy Policy',
     signIn: 'Sign In',
+    signInAccount: 'Unlock Full Features',
     signOut: 'Sign Out',
     signUp: 'Sign Up',
     password: 'Password',
@@ -678,7 +737,9 @@ mixin AppLocale {
     account: 'Account',
     usedUp: 'Used Up',
     expired: 'Expired',
+    timeConsume: 'Cost',
     character: 'Character',
+    myCharacters: 'My Characters',
     createRoom: 'Create Character',
     model: 'AI Model',
     selectModel: 'Select Model',
@@ -688,6 +749,7 @@ mixin AppLocale {
     prompt: 'Prompt',
     optional: 'Optional',
     search: 'Search',
+    reasoning: 'Reasoning',
     background: 'Background',
     backgroundSetting: 'Background Setting',
     roomSetting: 'Setting',
@@ -710,6 +772,7 @@ mixin AppLocale {
     promptUsage: 'Prompt is used to set the behavior of the AI character',
     nameRequiredMessage: 'Please enter the name of the character',
     modelRequiredMessage: 'Please select AI model',
+    charactorPromptRequiredMessage: 'Please enter the charactor prompt',
     operateSuccess: 'Success',
     operateFailed: 'Failed',
     confirmDelete: 'Confirm to delete?',
@@ -722,10 +785,8 @@ mixin AppLocale {
     modelNotValid: 'The current model is not open',
     signInRequired: 'You are not logged in, please log in first',
     accountNeedReSignin: 'Account exception, please log in again',
-    openAIAuthFailed:
-        'You have enabled custom OpenAI service, please check if the API Key is correct',
-    modelNotFound:
-        'The current model is not enabled yet, please try again later',
+    openAIAuthFailed: 'You have enabled custom OpenAI service, please check if the API Key is correct',
+    modelNotFound: 'The current model is not enabled yet, please try again later',
     confirmToDeleteRoom: 'Confirm to delete the character?',
     writeYourIdeas: 'Your ideas',
     describeYourImages: 'Your ideas',
@@ -745,8 +806,7 @@ mixin AppLocale {
     generateResult: 'Generate result',
     generateFailed: 'Creation failed',
     generating: 'Generating...',
-    generateExitConfirm:
-        'Generating...\nYou can view the result in the history',
+    generateExitConfirm: 'Generating...\nYou can view the result in the history',
     tooManyRequests: 'Too many requests, please try again later',
     tooManyRequestsOrPaymentRequired:
         'Too many requests (If you are using your own OpenAI Keys, please log in to https://platform.openai.com to check if your account balance is sufficient)',
@@ -754,7 +814,7 @@ mixin AppLocale {
         'Set the role and skills of the character so that it can provide more accurate and effective information for you.',
     confirmClearCache: 'Confirm to clear cache?',
     confirmSignOut: 'Confirm to sign out?',
-    askMeAnyQuestion: 'Feel free to ask ~',
+    askMeAnyQuestion: 'Message',
     askMeLikeThis: 'You can ask me like this:',
     refresh: 'Refresh',
     fastAndCostEffective: 'Fast & Cost-Effective',
@@ -772,21 +832,17 @@ mixin AppLocale {
     referenceImage: 'Reference Image',
     selectImage: 'Select Image',
     imagination: 'Imagination',
-    keywordsSeparatedByCommas:
-        'Keywords of the scene you imagine, separated by commas',
+    keywordsSeparatedByCommas: 'Keywords of the scene you imagine, separated by commas',
     originalImage: 'Original Image',
     superResolution: 'Super-Resolution',
     colorizeImage: 'Colorize Image',
     errorLog: 'Error Log',
     report: 'Report',
     latestVersion: 'You are currently on the latest version',
-    aIdeaApp:
-        'AIdea is an app that allows you to converse with AI, and the app code is completely open source.',
-    onceEnabledSmartOptimization:
-        'Smart Optimization\n\nOnce enabled, AI will further refine and optimize your ideas.',
+    aIdeaApp: 'AIdea is an app that allows you to converse with AI, and the app code is completely open source.',
+    onceEnabledSmartOptimization: 'Smart Optimization\n\nOnce enabled, AI will further refine and optimize your ideas.',
     gotIt: 'Got it',
-    referenceImageNote:
-        'Reference Image\n\nAI will create based on the reference image provided.',
+    referenceImageNote: 'Reference Image\n\nAI will create based on the reference image provided.',
     selectReferenceImage: 'Please select a reference image',
     random: 'Random',
     followSystem: 'Follow System',
@@ -798,22 +854,20 @@ mixin AppLocale {
     signInWithApple: 'Sign in with Apple',
     readAndAgree: 'Read and agree',
     andWord: 'and',
-    accountInputTips: 'Enter your phone number or email',
-    phoneInputTips: 'Enter your phone number',
-    passwordInputTips: 'Enter your password',
-    pleaseReadAgreeProtocol:
-        'Please read and agree to the user agreement and privacy policy first',
+    accountInputTips: 'Phone number or email',
+    phoneInputTips: 'Phone number',
+    passwordInputTips: 'Password',
+    pleaseReadAgreeProtocol: 'Please read and agree to the user agreement and privacy policy first',
     signInSuccess: 'Sign in success',
     signInFailed: 'Sign in failed',
     accountRequired: 'Please enter your account',
-    accountFormatError:
-        'Account format error\nPlease enter your phone number or email',
+    accountFormatError: 'Account format error\nPlease enter your phone number or email',
     phoneNumberFormatError: 'Phone number format error',
     passwordRequired: 'Please enter your password',
-    passwordFormatError:
-        'Password format error\nMust be 8-20 digits, letters, special characters',
+    passwordFormatError: 'Password format error\nMust be 8-20 digits, letters, special characters',
     accountCreated: 'Account created',
     sendVerifyCode: 'Send',
+    verify: 'Verify',
     verifyCode: 'Verify code',
     verifyCodeInputTips: 'Enter verify code',
     retryInSeconds: 'Retry in',
@@ -823,22 +877,22 @@ mixin AppLocale {
     verifyCodeFormatError: 'Verification code format error',
     phone: 'Phone',
     email: 'Email',
-    directSignin: 'Already have an account? Sign in directly',
+    directSigninDueHasAccount: 'Already have an account? Sign in directly',
+    directSignin: 'Sign in directly',
     passwordResetOK: 'Password has been reset, please log in again',
     resetPassword: 'Reset password',
     bindPhone: 'Bind phone',
     bind: 'Bind',
     bound: 'Bound',
+    bindExAccount: 'Bind existing account',
     unbind: 'Unbind',
     inviteCode: 'Invite code',
-    inviteCodeInputTips:
-        'Enter friend invite code, get extra rewards (optional)',
+    inviteCodeInputTips: 'Enter friend invite code, get extra rewards (optional)',
     inviteCodeFormatError: 'Invite code format error',
     enableCustomOpenAI: 'Your custom OpenAI service will be used once enabled',
     me: 'Me',
     creditsUsage: 'Usage',
-    creditUsageTips:
-        'Usage details will be updated the next day, showing usage in the last 30 days.',
+    creditUsageTips: 'Usage details will be updated the next day, showing usage in the last 30 days.',
     updateCheck: 'Check Update',
     buy: 'Buy',
     paymentHistory: 'Histories',
@@ -881,11 +935,10 @@ mixin AppLocale {
     selectMember: 'Select member',
     members: 'Members',
     createGroupChat: 'Create group chat',
-    advanced: 'Advanced',
+    advanced: 'More Options',
     collapseOptions: 'Collapse',
     welcomeMessage: 'Welcome Message',
-    welcomeMessageTips:
-        'The system will automatically send a welcome message each time a new chat is started.',
+    welcomeMessageTips: 'The system will automatically send a welcome message each time a new chat is started.',
     memoryDepth: 'Memory Depth',
     robotRecommand: 'Recommand',
     pickYourRobot: 'Pick your robot',
@@ -904,8 +957,7 @@ mixin AppLocale {
     showInviteCode: 'Show Invite Code',
     dontShowInviteCode: 'Don\'t Show Invite Code',
     inviteNow: 'Invite Now',
-    inviteSlogan:
-        'Invite friends to register, both parties will receive rewards',
+    inviteSlogan: 'Invite friends to register, both parties will receive rewards',
     preview: 'Preview',
     download: 'Download',
     clickSwitchImage: 'Click to switch image',
@@ -926,6 +978,25 @@ mixin AppLocale {
     output: 'Output',
     perRequest: 'Per',
     info: 'Detail',
+    recently: 'Recently',
+    lastWeek: 'Last Week',
+    lastMonth: 'Last Month',
+    daysAgo: 'Days Ago',
+    monthsAgo: 'Months Ago',
+    lastYear: 'Last Year',
+    longTimeAgo: 'Long Time Ago',
+    weeksAgo: 'Weeks Ago',
+    modelNeedSignIn: 'The model needs to be signed in to use',
+    wechatBindConfirm:
+        'The WeChat is not bound to any account, whether to sign in directly?\n(Automatically create an account)',
+    accountWillBeCreateAutomatically: 'Account will be created automatically',
+    installWechatFirst: 'Please install WeChat first',
+    otherLoginMethods: 'Other Login Methods',
+    verifyAccount: 'Verify Account',
+    enterPasswordToSignin: 'Please enter the password to sign in.',
+    verifyCodeLogin: 'Use Verify Code',
+    verifyCodeLoginTips: 'Please enter the verify code to complete the operation.',
+    usePasswordToSignin: 'Use Password',
   };
 }
 

@@ -38,8 +38,8 @@ class ChatMessageUpdated extends ChatMessageState {
   ChatMessageUpdated(this.message, {this.processing = false});
 }
 
-class ChatAnywhereInited extends ChatMessageState {
+class ChatHistoryInited extends ChatMessageState {
   final int chatId;
 
-  ChatAnywhereInited(this.chatId);
+  ChatHistoryInited(this.chatId);
 }

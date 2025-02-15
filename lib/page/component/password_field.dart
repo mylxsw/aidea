@@ -50,24 +50,21 @@ class _PasswordFieldState extends State<PasswordField> {
           Expanded(
             child: TextField(
               obscureText: obscureText,
-              inputFormatters: [
-                FilteringTextInputFormatter.singleLineFormatter
-              ],
+              inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
               textAlignVertical: TextAlignVertical.center,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 enabledBorder: widget.inColumnBlock
                     ? InputBorder.none
                     : const OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Color.fromARGB(200, 192, 192, 192)),
+                        borderSide: BorderSide(color: Color.fromARGB(200, 192, 192, 192)),
                       ),
                 focusedBorder: widget.inColumnBlock
                     ? InputBorder.none
                     : OutlineInputBorder(
                         borderSide: BorderSide(color: customColors.linkColor!),
                       ),
-                floatingLabelStyle: TextStyle(color: customColors.linkColor!),
+                // floatingLabelStyle: TextStyle(color: customColors.linkColor!),
                 isDense: true,
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 labelText: widget.inColumnBlock ? null : widget.labelText,

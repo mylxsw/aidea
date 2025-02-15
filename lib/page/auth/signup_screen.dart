@@ -347,7 +347,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               }
                             },
                             child: Text(
-                              AppLocale.directSignin.getString(context),
+                              AppLocale.directSigninDueHasAccount.getString(context),
                               style: TextStyle(
                                 color: customColors.linkColor,
                                 fontSize: 14,

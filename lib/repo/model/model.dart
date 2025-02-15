@@ -11,7 +11,8 @@ class Model {
   bool disabled;
   String? avatarUrl;
   bool supportVision = false;
-
+  bool supportReasoning = false;
+  bool supportSearch = false;
   String? tag;
   String? tagTextColor;
   String? tagBgColor;
@@ -20,7 +21,7 @@ class Model {
   String category;
 
   bool isDefault;
-
+  bool userNoPermission;
   Model(
     this.id,
     this.name,
@@ -34,11 +35,14 @@ class Model {
     this.tag,
     this.avatarUrl,
     this.supportVision = false,
+    this.supportReasoning = false,
+    this.supportSearch = false,
     this.tagTextColor,
     this.tagBgColor,
     this.isNew = false,
     this.isRecommend = false,
     this.isDefault = false,
+    this.userNoPermission = false,
   });
 
   String uid() {
@@ -56,6 +60,8 @@ class Model {
     bool? disabled,
     String? avatarUrl,
     bool? supportVision,
+    bool? supportReasoning,
+    bool? supportSearch,
     String? tag,
     String? tagTextColor,
     String? tagBgColor,
@@ -63,6 +69,7 @@ class Model {
     bool? isRecommend,
     String? category,
     bool? isDefault,
+    bool? userNoPermission,
   }) {
     return Model(
       id ?? this.id,
@@ -75,6 +82,8 @@ class Model {
       disabled: disabled ?? this.disabled,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       supportVision: supportVision ?? this.supportVision,
+      supportReasoning: supportReasoning ?? this.supportReasoning,
+      supportSearch: supportSearch ?? this.supportSearch,
       tag: tag ?? this.tag,
       tagTextColor: tagTextColor ?? this.tagTextColor,
       tagBgColor: tagBgColor ?? this.tagBgColor,
@@ -82,6 +91,7 @@ class Model {
       isRecommend: isRecommend ?? this.isRecommend,
       category: category ?? this.category,
       isDefault: isDefault ?? false,
+      userNoPermission: userNoPermission ?? this.userNoPermission,
     );
   }
 

@@ -55,7 +55,7 @@ class _AdminRoomMessagesPageState extends State<AdminRoomMessagesPage> {
           roomType: widget.roomType,
         ));
 
-    ModelAggregate.models(withCustom: true).then((value) {
+    ModelAggregate.models().then((value) {
       setState(() {
         for (var element in value) {
           models[element.id] = element;
@@ -97,9 +97,7 @@ class _AdminRoomMessagesPageState extends State<AdminRoomMessagesPage> {
         child: RefreshIndicator(
           color: customColors.linkColor,
           onRefresh: () async {
-            context
-                .read<AdminRoomBloc>()
-                .add(AdminRoomRecentlyMessagesLoadEvent(
+            context.read<AdminRoomBloc>().add(AdminRoomRecentlyMessagesLoadEvent(
                   userId: widget.userId,
                   roomId: widget.roomId,
                   roomType: widget.roomType,
@@ -110,15 +108,13 @@ class _AdminRoomMessagesPageState extends State<AdminRoomMessagesPage> {
             listener: (context, state) {
               if (state is AdminRoomOperationResult) {
                 if (state.success) {
-                  showSuccessMessage(
-                      AppLocale.operateSuccess.getString(context));
+                  showSuccessMessage(AppLocale.operateSuccess.getString(context));
                 } else {
                   showErrorMessage(AppLocale.operateFailed.getString(context));
                 }
               }
             },
-            buildWhen: (previous, current) =>
-                current is AdminRoomRecentlyMessagesLoaded,
+            buildWhen: (previous, current) => current is AdminRoomRecentlyMessagesLoaded,
             builder: (context, state) {
               if (state is AdminRoomRecentlyMessagesLoaded) {
                 return SafeArea(
@@ -130,8 +126,7 @@ class _AdminRoomMessagesPageState extends State<AdminRoomMessagesPage> {
                             if (e.model != null) {
                               final model = models[e.model];
                               if (model != null) {
-                                if (e.avatarUrl == null &&
-                                    model.avatarUrl != null) {
+                                if (e.avatarUrl == null && model.avatarUrl != null) {
                                   e.avatarUrl = model.avatarUrl;
                                 }
 
@@ -144,8 +139,7 @@ class _AdminRoomMessagesPageState extends State<AdminRoomMessagesPage> {
                           controller: controller,
                           supportBloc: false,
                           senderNameBuilder: (message) {
-                            if (message.role == Role.sender ||
-                                message.senderName == null) {
+                            if (message.role == Role.sender || message.senderName == null) {
                               return null;
                             }
 
@@ -156,8 +150,7 @@ class _AdminRoomMessagesPageState extends State<AdminRoomMessagesPage> {
                                 right: 5,
                               ),
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     message.senderName!,

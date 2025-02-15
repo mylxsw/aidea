@@ -1,7 +1,6 @@
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
-import 'package:askaide/repo/openai_repo.dart';
 import 'package:askaide/repo/settings_repo.dart';
 
 /// 模型聚合，用于聚合多种厂商的模型
@@ -13,55 +12,32 @@ class ModelAggregate {
   }
 
   /// 支持的模型列表
-  static Future<List<mm.Model>> models({bool cache = true, bool withCustom = false}) async {
-    final List<mm.Model> models = [];
-    final isAPIServerSet = settings.stringDefault(settingAPIServerToken, '') != '';
-    final selfHostOpenAI = settings.boolDefault(settingOpenAISelfHosted, false);
-
-    if (isAPIServerSet) {
-      models.addAll((await APIServer().models(cache: cache, withCustom: withCustom))
-          .map(
-            (e) => mm.Model(
-              e.id.split(':').last,
-              e.name,
-              e.category,
-              shortName: e.shortName,
-              description: e.description,
-              priceInfo: e.priceInfo,
-              isChatModel: e.isChat,
-              disabled: e.disabled,
-              category: e.category,
-              tag: e.tag,
-              avatarUrl: e.avatarUrl,
-              supportVision: e.supportVision,
-              tagTextColor: e.tagTextColor,
-              tagBgColor: e.tagBgColor,
-              isNew: e.isNew,
-              isDefault: e.isDefault,
-            ),
-          )
-          .toList());
-    }
-
-    if (selfHostOpenAI) {
-      return <mm.Model>[
-        ...OpenAIRepository.supportModels(),
-        ...models.where((element) => element.category != modelTypeOpenAI).toList()
-      ];
-    }
-
-    // if (isAPIServerSet ||
-    //     settings.stringDefault(settingDeepAIAPIToken, '') != '') {
-    //   models.addAll(DeepAIRepository.supportModels());
-    // }
-
-    // TODO Replace with StabilityAI API
-    // if (isAPIServerSet ||
-    //     settings.stringDefault(settingStabilityAIAPIToken, '') != '') {
-    //   models.addAll(StabilityAIRepository.supportModels());
-    // }
-
-    return models;
+  static Future<List<mm.Model>> models({bool cache = true}) async {
+    return (await APIServer().models(cache: cache))
+        .map(
+          (e) => mm.Model(
+            e.id.split(':').last,
+            e.name,
+            e.category,
+            shortName: e.shortName,
+            description: e.description,
+            priceInfo: e.priceInfo,
+            isChatModel: e.isChat,
+            disabled: e.disabled,
+            category: e.category,
+            tag: e.tag,
+            avatarUrl: e.avatarUrl,
+            supportVision: e.supportVision,
+            supportReasoning: e.supportReasoning,
+            supportSearch: e.supportSearch,
+            tagTextColor: e.tagTextColor,
+            tagBgColor: e.tagBgColor,
+            isNew: e.isNew,
+            isDefault: e.isDefault,
+            userNoPermission: e.userNoPermission,
+          ),
+        )
+        .toList();
   }
 
   /// 根据模型唯一id查找模型

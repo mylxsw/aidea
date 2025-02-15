@@ -82,33 +82,35 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return BackgroundContainer(
-      setting: widget.settings,
-      child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: CustomSize.toolbarHeight,
-          title: Text(
-            AppLocale.accountSettings.getString(context),
-            style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
-          ),
-          centerTitle: true,
-          actions: [
-            EnhancedPopupMenu(
-              items: [
-                EnhancedPopupMenuItem(
-                  title: AppLocale.deleteAccount.getString(context),
-                  icon: Icons.delete_forever,
-                  iconColor: Colors.red,
-                  onTap: (ctx) {
-                    context.push('/user/destroy');
-                  },
-                ),
-              ],
-            )
-          ],
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: CustomSize.toolbarHeight,
+        title: Text(
+          AppLocale.accountSettings.getString(context),
+          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
+        centerTitle: true,
+        actions: [
+          EnhancedPopupMenu(
+            items: [
+              EnhancedPopupMenuItem(
+                title: AppLocale.deleteAccount.getString(context),
+                icon: Icons.delete_forever,
+                iconColor: Colors.red,
+                onTap: (ctx) {
+                  context.push('/user/destroy');
+                },
+              ),
+            ],
+          )
+        ],
+      ),
+      backgroundColor: customColors.backgroundColor,
+      body: BackgroundContainer(
+        setting: widget.settings,
         backgroundColor: customColors.backgroundColor,
-        body: SafeArea(
+        enabled: false,
+        child: SafeArea(
           child: BlocConsumer<AccountBloc, AccountState>(
             listenWhen: (previous, current) => current is AccountLoaded,
             listener: (context, state) {
@@ -291,14 +293,14 @@ Widget buildSettingsList(
       },
       child: SettingsList(
         platform: DevicePlatform.iOS,
-        lightTheme: const SettingsThemeData(
+        lightTheme: SettingsThemeData(
           settingsListBackground: Colors.transparent,
-          settingsSectionBackground: Color.fromARGB(255, 255, 255, 255),
+          settingsSectionBackground: customColors.settingsSectionBackground,
         ),
-        darkTheme: const SettingsThemeData(
+        darkTheme: SettingsThemeData(
           settingsListBackground: Colors.transparent,
-          settingsSectionBackground: Color.fromARGB(255, 44, 44, 46),
-          titleTextColor: Color.fromARGB(255, 239, 239, 239),
+          settingsSectionBackground: customColors.settingsSectionBackground,
+          titleTextColor: const Color.fromARGB(255, 239, 239, 239),
         ),
         sections: sections,
         contentPadding: const EdgeInsets.all(0),

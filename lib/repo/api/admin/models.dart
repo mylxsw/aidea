@@ -35,9 +35,7 @@ class AdminModel {
       avatarUrl: json['avatar_url'],
       status: json['status'],
       meta: json['meta'] != null ? AdminModelMeta.fromJson(json['meta']) : null,
-      providers: ((json['providers'] ?? []) as List)
-          .map((e) => AdminModelProvider.fromJson(e))
-          .toList(),
+      providers: ((json['providers'] ?? []) as List).map((e) => AdminModelProvider.fromJson(e)).toList(),
     );
   }
 
@@ -72,6 +70,9 @@ class AdminModelMeta {
   bool? isRecommend;
   String? category;
 
+  bool? search;
+  bool? reasoning;
+
   AdminModelMeta({
     this.vision,
     this.restricted,
@@ -86,6 +87,8 @@ class AdminModelMeta {
     this.isNew,
     this.isRecommend,
     this.category,
+    this.search,
+    this.reasoning,
   });
 
   factory AdminModelMeta.fromJson(Map<String, dynamic> json) {
@@ -103,6 +106,8 @@ class AdminModelMeta {
       isNew: json['is_new'] ?? false,
       isRecommend: json['is_recommend'] ?? false,
       category: json['category'],
+      search: json['search'] ?? false,
+      reasoning: json['reasoning'] ?? false,
     );
   }
 
@@ -121,6 +126,8 @@ class AdminModelMeta {
       'is_new': isNew,
       'is_recommend': isRecommend,
       'category': category,
+      'search': search,
+      'reasoning': reasoning,
     };
   }
 }

@@ -126,8 +126,8 @@ class SocialIconGroup extends StatelessWidget {
       );
     }
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: items.map((e) => SocialIcon(image: e.image, name: e.name, onTap: e.onTap)).toList(),
     );
   }

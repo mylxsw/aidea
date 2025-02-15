@@ -6,7 +6,6 @@ import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/color.dart';
 import 'package:askaide/helper/global_store.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
-import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/cache.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
@@ -90,8 +89,7 @@ class _HomePageState extends State<HomePage> {
       id: 'openai:gpt-4',
       supportVision: false,
       name: 'Chat-4',
-      avatarUrl:
-          'https://ssl.aicode.cc/ai-server/assets/avatar/gpt4-preview.png',
+      avatarUrl: 'https://ssl.aicode.cc/ai-server/assets/avatar/gpt4-preview.png',
     ),
   ];
 
@@ -109,8 +107,7 @@ class _HomePageState extends State<HomePage> {
   /// 用于监听键盘事件，实现回车发送消息，Shift+Enter换行
   late final FocusNode _focusNode = FocusNode(
     onKeyEvent: (node, event) {
-      if (!HardwareKeyboard.instance.isShiftPressed &&
-          event.logicalKey.keyLabel == 'Enter') {
+      if (!HardwareKeyboard.instance.isShiftPressed && event.logicalKey.keyLabel == 'Enter') {
         if (event is KeyDownEvent) {
           onSubmit(context, _textController.text.trim());
         }
@@ -152,14 +149,12 @@ class _HomePageState extends State<HomePage> {
     Cache().boolGet(key: 'show_home_free_model_message').then((show) async {
       if (show) {
         final promotions = await APIServer().notificationPromotionEvents();
-        if (promotions['chat_page'] == null ||
-            promotions['chat_page']!.isEmpty) {
+        if (promotions['chat_page'] == null || promotions['chat_page']!.isEmpty) {
           return;
         }
 
         // 多个促销事件，则随机选择一个
-        promotionEvent = promotions['chat_page']![
-            Random().nextInt(promotions['chat_page']!.length)];
+        promotionEvent = promotions['chat_page']![Random().nextInt(promotions['chat_page']!.length)];
       }
 
       setState(() {
@@ -244,8 +239,7 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: BlocBuilder<ChatChatBloc, ChatChatState>(
-          buildWhen: (previous, current) =>
-              current is ChatChatRecentHistoriesLoaded,
+          buildWhen: (previous, current) => current is ChatChatRecentHistoriesLoaded,
           builder: (context, state) {
             if (state is ChatChatRecentHistoriesLoaded) {
               return SliverSingleComponent(
@@ -261,24 +255,17 @@ class _HomePageState extends State<HomePage> {
                     icon: const Icon(Icons.history),
                     onPressed: () {
                       context.push('/chat-chat/history').whenComplete(() {
-                        context
-                            .read<ChatChatBloc>()
-                            .add(ChatChatLoadRecentHistories());
+                        context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
                       });
                     },
                   ),
                 ],
-                backgroundImage: Image.asset(
-                  customColors.appBarBackgroundImage!,
-                  fit: BoxFit.cover,
-                ),
                 appBarExtraWidgets: () {
                   return [
                     SliverStickyHeader(
                       header: SafeArea(
                         top: false,
-                        child:
-                            buildChatComponents(customColors, context, state),
+                        child: buildChatComponents(customColors, context, state),
                       ),
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
@@ -288,13 +275,11 @@ class _HomePageState extends State<HomePage> {
                                 top: false,
                                 bottom: false,
                                 child: Container(
-                                  margin:
-                                      const EdgeInsets.only(top: 10, left: 15),
+                                  margin: const EdgeInsets.only(top: 10, left: 15),
                                   child: Text(
                                     AppLocale.histories.getString(context),
                                     style: TextStyle(
-                                      color: customColors.weakTextColor
-                                          ?.withAlpha(100),
+                                      color: customColors.weakTextColor?.withAlpha(100),
                                       fontSize: 13,
                                     ),
                                   ),
@@ -308,41 +293,32 @@ class _HomePageState extends State<HomePage> {
                                 bottom: false,
                                 child: GestureDetector(
                                   onTap: () {
-                                    context
-                                        .push('/chat-chat/history')
-                                        .whenComplete(() {
-                                      context
-                                          .read<ChatChatBloc>()
-                                          .add(ChatChatLoadRecentHistories());
+                                    context.push('/chat-chat/history').whenComplete(() {
+                                      context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
                                     });
                                   },
                                   child: Container(
                                     alignment: Alignment.center,
-                                    margin: const EdgeInsets.only(
-                                        top: 5, bottom: 15),
+                                    margin: const EdgeInsets.only(top: 5, bottom: 15),
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         Icon(
                                           Icons.keyboard_double_arrow_left,
                                           size: 12,
-                                          color: customColors.weakTextColor!
-                                              .withAlpha(120),
+                                          color: customColors.weakTextColor!.withAlpha(120),
                                         ),
                                         Text(
                                           "查看更多",
                                           style: TextStyle(
                                             fontSize: 12,
-                                            color: customColors.weakTextColor!
-                                                .withAlpha(120),
+                                            color: customColors.weakTextColor!.withAlpha(120),
                                           ),
                                         ),
                                         Icon(
                                           Icons.keyboard_double_arrow_right,
                                           size: 12,
-                                          color: customColors.weakTextColor!
-                                              .withAlpha(120),
+                                          color: customColors.weakTextColor!.withAlpha(120),
                                         ),
                                       ],
                                     ),
@@ -362,19 +338,14 @@ class _HomePageState extends State<HomePage> {
                                       .push(
                                           '/chat-anywhere?chat_id=${state.histories[index - 1].id}&model=${state.histories[index - 1].model}&title=${state.histories[index - 1].title}')
                                       .whenComplete(() {
-                                    FocusScope.of(context)
-                                        .requestFocus(FocusNode());
-                                    context
-                                        .read<ChatChatBloc>()
-                                        .add(ChatChatLoadRecentHistories());
+                                    FocusScope.of(context).requestFocus(FocusNode());
+                                    context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
                                   });
                                 },
                               ),
                             );
                           },
-                          childCount: state.histories.isNotEmpty
-                              ? state.histories.length + 1
-                              : 0,
+                          childCount: state.histories.isNotEmpty ? state.histories.length + 1 : 0,
                         ),
                       ),
                     ),
@@ -491,8 +462,7 @@ class _HomePageState extends State<HomePage> {
                             customColors: customColors,
                             maxLines: inputMaxLines,
                             minLines: 6,
-                            hintText:
-                                AppLocale.askMeAnyQuestion.getString(context),
+                            hintText: AppLocale.askMeAnyQuestion.getString(context),
                             maxLength: 150000,
                             showCounter: false,
                             hintColor: customColors.textfieldHintDeepColor,
@@ -509,9 +479,7 @@ class _HomePageState extends State<HomePage> {
                         customColors,
                       ),
                     ),
-                    if (selectedImageFiles.isNotEmpty &&
-                        currentModel != null &&
-                        currentModel!.model.supportVision)
+                    if (selectedImageFiles.isNotEmpty && currentModel != null && currentModel!.model.supportVision)
                       SizedBox(
                         height: 110,
                         child: ListView(
@@ -551,10 +519,8 @@ class _HomePageState extends State<HomePage> {
                                           child: Container(
                                             padding: const EdgeInsets.all(3),
                                             decoration: BoxDecoration(
-                                              borderRadius:
-                                                  CustomSize.borderRadius,
-                                              color: customColors
-                                                  .chatRoomBackground,
+                                              borderRadius: CustomSize.borderRadius,
+                                              color: customColors.chatRoomBackground,
                                             ),
                                             child: Icon(
                                               Icons.close,
@@ -577,13 +543,10 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           // 问题示例
-          if (state.examples != null &&
-              state.examples!.isNotEmpty &&
-              state.histories.isEmpty)
+          if (state.examples != null && state.examples!.isNotEmpty && state.histories.isEmpty)
             Container(
               decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
-              padding:
-                  const EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 3),
+              padding: const EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 3),
               margin: const EdgeInsets.all(10),
               height: 260,
               child: Column(
@@ -612,9 +575,7 @@ class _HomePageState extends State<HomePage> {
                   Expanded(
                     child: ListView.separated(
                       padding: const EdgeInsets.all(0),
-                      itemCount: state.examples!.length > 4
-                          ? 4
-                          : state.examples!.length,
+                      itemCount: state.examples!.length > 4 ? 4 : state.examples!.length,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         return ListTextItem(
@@ -630,8 +591,7 @@ class _HomePageState extends State<HomePage> {
                       },
                       separatorBuilder: (BuildContext context, int index) {
                         return Divider(
-                          color:
-                              customColors.chatExampleItemText?.withAlpha(20),
+                          color: customColors.chatExampleItemText?.withAlpha(20),
                         );
                       },
                     ),
@@ -640,8 +600,7 @@ class _HomePageState extends State<HomePage> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       style: ButtonStyle(
-                        overlayColor:
-                            WidgetStateProperty.all(Colors.transparent),
+                        overlayColor: WidgetStateProperty.all(Colors.transparent),
                       ),
                       onPressed: () {
                         setState(() {
@@ -715,23 +674,19 @@ class _HomePageState extends State<HomePage> {
               maxLines: 2,
             ),
           ),
-          if (promotionEvent!.clickButtonType !=
-                  PromotionEventClickButtonType.none &&
+          if (promotionEvent!.clickButtonType != PromotionEventClickButtonType.none &&
               promotionEvent!.clickValue != null &&
               promotionEvent!.clickValue!.isNotEmpty)
             InkWell(
               onTap: () {
                 switch (promotionEvent!.clickButtonType) {
                   case PromotionEventClickButtonType.url:
-                    if (promotionEvent!.clickValue != null &&
-                        promotionEvent!.clickValue!.isNotEmpty) {
-                      launchUrlString(promotionEvent!.clickValue!,
-                          mode: LaunchMode.externalApplication);
+                    if (promotionEvent!.clickValue != null && promotionEvent!.clickValue!.isNotEmpty) {
+                      launchUrlString(promotionEvent!.clickValue!, mode: LaunchMode.externalApplication);
                     }
                     break;
                   case PromotionEventClickButtonType.inAppRoute:
-                    if (promotionEvent!.clickValue != null &&
-                        promotionEvent!.clickValue!.isNotEmpty) {
+                    if (promotionEvent!.clickValue != null && promotionEvent!.clickValue!.isNotEmpty) {
                       context.push(promotionEvent!.clickValue!);
                     }
 
@@ -744,8 +699,7 @@ class _HomePageState extends State<HomePage> {
                   Text(
                     '详情',
                     style: TextStyle(
-                      color: stringToColor(
-                          promotionEvent!.clickButtonColor ?? 'FFFFFFFF'),
+                      color: stringToColor(promotionEvent!.clickButtonColor ?? 'FFFFFFFF'),
                       fontSize: 14,
                     ),
                   ),
@@ -753,8 +707,7 @@ class _HomePageState extends State<HomePage> {
                   Icon(
                     Icons.keyboard_double_arrow_right,
                     size: 16,
-                    color: stringToColor(
-                        promotionEvent!.clickButtonColor ?? 'FFFFFFFF'),
+                    color: stringToColor(promotionEvent!.clickButtonColor ?? 'FFFFFFFF'),
                   ),
                 ],
               ),
@@ -807,23 +760,19 @@ class _HomePageState extends State<HomePage> {
                   // 上传图片
                   HapticFeedbackHelper.mediumImpact();
                   if (selectedImageFiles.length >= 4) {
-                    showSuccessMessage(
-                        AppLocale.uploadImageLimit4.getString(context));
+                    showSuccessMessage(AppLocale.uploadImageLimit4.getString(context));
                     return;
                   }
 
-                  FilePickerResult? result =
-                      await FilePicker.platform.pickFiles(
+                  FilePickerResult? result = await FilePicker.platform.pickFiles(
                     type: FileType.image,
                     allowMultiple: true,
                   );
                   if (result != null && result.files.isNotEmpty) {
                     final files = selectedImageFiles;
-                    files.addAll(
-                        result.files.map((e) => FileUpload(file: e)).toList());
+                    files.addAll(result.files.map((e) => FileUpload(file: e)).toList());
                     setState(() {
-                      selectedImageFiles =
-                          files.sublist(0, files.length > 4 ? 4 : files.length);
+                      selectedImageFiles = files.sublist(0, files.length > 4 ? 4 : files.length);
                     });
                   }
                 },
@@ -843,8 +792,7 @@ class _HomePageState extends State<HomePage> {
           child: Icon(
             Icons.send,
             color: _textController.text.trim().isNotEmpty
-                ? customColors.linkColor ??
-                    const Color.fromARGB(255, 70, 165, 73)
+                ? customColors.linkColor ?? const Color.fromARGB(255, 70, 165, 73)
                 : customColors.chatInputPanelText,
             size: 26,
           ),
@@ -914,9 +862,7 @@ class ChatHistoryItem extends StatelessWidget {
                   context,
                   AppLocale.confirmDelete.getString(context),
                   () {
-                    context
-                        .read<ChatChatBloc>()
-                        .add(ChatChatDeleteHistory(history.id!));
+                    context.read<ChatChatBloc>().add(ChatChatDeleteHistory(history.id!));
                   },
                   danger: true,
                 );
@@ -924,57 +870,54 @@ class ChatHistoryItem extends StatelessWidget {
             ),
           ],
         ),
-        child: Material(
-          color: customColors.backgroundContainerColor,
-          borderRadius: CustomSize.borderRadius,
-          child: InkWell(
-            child: ListTile(
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              shape:
-                  RoundedRectangleBorder(borderRadius: CustomSize.borderRadius),
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      (history.title ?? '未命名').trim(),
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: customColors.weakTextColor,
-                        fontSize: 15,
-                      ),
-                      maxLines: 1,
-                    ),
-                  ),
-                  Text(
-                    humanTime(history.updatedAt),
-                    style: TextStyle(
-                      color: customColors.weakTextColor?.withAlpha(65),
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-              dense: true,
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: Text(
-                  (history.lastMessage ?? '暂无内容').trim().replaceAll("\n", " "),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: customColors.weakTextColor?.withAlpha(150),
-                    fontSize: 12,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: CustomSize.borderRadius,
+            color: customColors.listTileBackgroundColor,
+          ),
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            shape: RoundedRectangleBorder(borderRadius: CustomSize.borderRadius),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    (history.title ?? '未命名').trim(),
                     overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 15),
+                    maxLines: 1,
                   ),
                 ),
-              ),
-              onTap: () {
-                HapticFeedbackHelper.lightImpact();
-                onTap();
-              },
+                // Text(
+                //   humanTime(history.updatedAt),
+                //   style: TextStyle(
+                //     color: customColors.weakTextColor,
+                //     fontSize: 12,
+                //   ),
+                // ),
+              ],
             ),
+            dense: true,
+            subtitle: Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: Text(
+                (history.lastMessage ?? '暂无内容').trim().replaceAll("\n", " "),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: customColors.weakTextColor?.withAlpha(150),
+                  fontSize: 12,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            onTap: () {
+              HapticFeedbackHelper.lightImpact();
+              onTap();
+            },
+            tileColor: Colors.transparent,
+            hoverColor: Colors.transparent,
           ),
         ),
       ),

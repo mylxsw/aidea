@@ -63,8 +63,12 @@ dependencies:
   cached_network_image: ^3.2.3
   photo_view: ^0.14.0
   flutter_image_compress: ^2.3.0
-  isolate_image_compress: ^2.0.0
-  image: 4.1.7
+  isolate_image_compress: 
+    git:
+      url: https://github.com/mylxsw/isolate_flutter
+      ref: customized
+      path: isolate_image_compress
+  image: 4.2.0
   flutter_cache_manager: ^3.3.0
   file_saver: 
     git:
@@ -135,6 +139,7 @@ dependencies:
   flutter_markdown_latex: ^0.3.4
   auto_size_text: ^3.0.0
   animated_list_plus: ^0.5.2
+  lottie: ^3.2.0
   
 dev_dependencies:
   flutter_test:
@@ -146,23 +151,9 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
-  flutter_launcher_icons: "^0.12.0"
+  flutter_launcher_icons: "^0.14.2"
   build_runner: ^2.3.3
   msix: ^3.9.1
-
-flutter_icons:
-  image_path: "assets/app.png"
-  
-  macos:
-    generate: true
-  web:
-    generate: true
-  windows:
-    generate: true
-  ios: true
-  remove_alpha_ios: true
-  android: "launcher_icon"
-  adaptive_icon_background: '#FFFFFF'
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -178,6 +169,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/app.png
+    - assets/app-macos.png
     - assets/image-broken.png
     - assets/wechat.png
     - assets/friendroom.png
@@ -185,14 +177,6 @@ flutter:
     - assets/app-256-transparent.png
     - assets/light-dark-auto.png
     - assets/openai.png
-    - assets/background.jpg
-    - assets/background-dark.jpg
-    - assets/background-team.jpg
-    - assets/background-creative-island.jpg
-    - assets/background-discovery-dark.jpg
-    - assets/background-dark-s1.jpg
-    - assets/background-dark-s3.jpg
-    - assets/background-light-s1.jpg
     - assets/transport.png
     - assets/weibo.png
     - assets/github.png
@@ -209,6 +193,7 @@ flutter:
     - assets/icons/mp3.png
     - assets/icons/pdf.png
     - assets/icons/txt.png
+    - assets/lottie/empty_status.json
 
   
   #   - images/a_dot_ham.jpeg
@@ -237,7 +222,7 @@ flutter:
 flutter_native_splash:
   image: assets/app-splash.png
   color: "#ffffff"
-  android_disable_fullscreen: true
+  fullscreen: true
 
 tobias:
   url_scheme: alipay2021004101661425
