@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 
 // 客户端应用版本号
-const clientVersion = '1.0.14';
+const clientVersion = '2.0.0';
 // 本地数据库版本号
-const databaseVersion = 26;
-
-const maxRoomNumForNonVIP = 50;
-const coinSign = '个';
+const databaseVersion = 27;
 
 const settingAPIServerToken = 'api-token';
 const settingUserInfo = 'user-info';

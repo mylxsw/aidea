@@ -11,12 +11,12 @@ import 'package:go_router/go_router.dart';
 
 class AppScaffold extends StatefulWidget {
   final SettingRepository settingRepo;
+  final StatefulNavigationShell navigationShell;
   const AppScaffold({
     Key? key,
-    required this.child,
     required this.settingRepo,
+    required this.navigationShell,
   }) : super(key: key);
-  final Widget child;
   @override
   State<AppScaffold> createState() => _AppScaffoldState();
 }
@@ -128,7 +128,7 @@ class _AppScaffoldState extends State<AppScaffold> {
       body: BackgroundContainer(
         setting: widget.settingRepo,
         enabled: true,
-        child: widget.child,
+        child: widget.navigationShell,
       ),
       extendBody: false,
       bottomNavigationBar: currentIndex > -1 && _showBottomNavigatorBar
@@ -137,7 +137,7 @@ class _AppScaffoldState extends State<AppScaffold> {
               showSelectedLabels: true,
               showUnselectedLabels: true,
               currentIndex: _calculateSelectedIndex(context),
-              onTap: onTap,
+              onTap: (int index) => _onTap(context, index),
               selectedItemColor: customColors.linkColor,
               unselectedItemColor: Colors.grey,
               selectedFontSize: 10,
@@ -167,17 +167,13 @@ class _AppScaffoldState extends State<AppScaffold> {
     return -1;
   }
 
-  void onTap(int value) {
-    if (context.canPop()) {
-      context.pop();
-    }
-
+  void _onTap(BuildContext context, int index) {
     HapticFeedbackHelper.lightImpact();
 
-    final barItems = _bottomNavigationBarList();
-    if (value >= barItems.length) return context.go(Ability().homeRoute);
-
-    return context.go(barItems[value].route);
+    widget.navigationShell.goBranch(
+      index,
+      initialLocation: index == widget.navigationShell.currentIndex,
+    );
   }
 }
 

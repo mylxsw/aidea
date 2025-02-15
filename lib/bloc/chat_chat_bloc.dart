@@ -16,17 +16,13 @@ class ChatChatBloc extends Bloc<ChatChatEvent, ChatChatState> {
     on<ChatChatLoadRecentHistories>((event, emit) async {
       final histories = await _chatMessageRepository.recentChatHistories(
         chatAnywhereRoomId,
-        4,
+        event.count,
         userId: APIServer().localUserID(),
       );
 
-      var examples = await APIServer().example('openai:$defaultChatModel');
-      // examples 随机排序
-      examples.shuffle();
-
       emit(ChatChatRecentHistoriesLoaded(
         histories: histories,
-        examples: examples,
+        examples: const [],
       ));
     });
 

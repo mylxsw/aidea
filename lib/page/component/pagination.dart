@@ -73,11 +73,11 @@ class _PaginationState extends State<Pagination> {
               style: i == widget.selectedPage
                   ? ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all(Colors.transparent),
+                          WidgetStateProperty.all(Colors.transparent),
                     )
                   : ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all(Colors.transparent)),
+                          WidgetStateProperty.all(Colors.transparent)),
               onPressed: () => widget.onPageChanged(i),
               child: Text(
                 '$i',

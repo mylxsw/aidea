@@ -1,3 +1,4 @@
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -29,9 +30,9 @@ class EnhancedButton extends StatelessWidget {
 
     return Material(
       color: backgroundColor ?? customColors.linkColor,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: CustomSize.borderRadius,
       child: InkWell(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: CustomSize.borderRadiusAll,
         onTap: onPressed,
         child: Container(
           height: height ?? 42,

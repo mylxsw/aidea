@@ -19,7 +19,10 @@ import 'package:askaide/page/admin/user.dart';
 import 'package:askaide/page/admin/users.dart';
 import 'package:askaide/page/balance/web_payment_proxy.dart';
 import 'package:askaide/page/balance/web_payment_result.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/creative_island/draw/artistic_wordart.dart';
+import 'package:askaide/page/home.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:path/path.dart';
 
 import 'package:askaide/bloc/account_bloc.dart';
@@ -43,7 +46,6 @@ import 'package:askaide/data/migrate.dart';
 import 'package:askaide/page/balance/quota_usage_details.dart';
 import 'package:askaide/page/creative_island/draw/artistic_qr.dart';
 import 'package:askaide/page/setting/account_security.dart';
-import 'package:askaide/page/app_scaffold.dart';
 import 'package:askaide/page/lab/avatar_selector.dart';
 import 'package:askaide/page/setting/article.dart';
 import 'package:askaide/page/setting/background_selector.dart';
@@ -135,8 +137,7 @@ void main() async {
   await PathHelper().init();
 
   FlutterError.onError = (FlutterErrorDetails details) {
-    if (details.library == 'rendering library' ||
-        details.library == 'image resource service') {
+    if (details.library == 'rendering library' || details.library == 'image resource service') {
       return;
     }
 
@@ -145,15 +146,13 @@ void main() async {
       error: details.exception,
       stackTrace: details.stack,
     );
-    print(details.stack);
+    Logger.instance.d(details.stack);
   };
 
   if (kIsWeb) {
     databaseFactory = databaseFactoryFfiWeb;
   } else {
-    if (PlatformTool.isWindows() ||
-        PlatformTool.isLinux() ||
-        PlatformTool.isMacOS()) {
+    if (PlatformTool.isWindows() || PlatformTool.isLinux() || PlatformTool.isMacOS()) {
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
       var path = absolute(join(PathHelper().getHomePath, 'databases'));
@@ -197,8 +196,7 @@ void main() async {
     ChatHistoryProvider(db),
   );
 
-  final creativeIslandRepo =
-      CreativeIslandRepository(CreativeIslandDataProvider(db));
+  final creativeIslandRepo = CreativeIslandRepository(CreativeIslandDataProvider(db));
 
   // 聊天状态加载器
   final stateManager = MessageStateManager(cacheRepo);
@@ -229,7 +227,7 @@ void main() async {
         mailEnabled: true,
         openaiEnabled: true,
         homeModels: [],
-        homeRoute: '/chat-chat',
+        homeRoute: '/',
         showHomeModelDescription: true,
         supportWebsocket: false,
       ),
@@ -247,13 +245,15 @@ void main() async {
     );
   });
 
-  runApp(MyApp(
-    settingRepo: settingRepo,
-    chatMsgRepo: chatMsgRepo,
-    openAIRepo: openAIRepo,
-    cacheRepo: cacheRepo,
-    creativeIslandRepo: creativeIslandRepo,
-    messageStateManager: stateManager,
+  runApp(Phoenix(
+    child: MyApp(
+      settingRepo: settingRepo,
+      chatMsgRepo: chatMsgRepo,
+      openAIRepo: openAIRepo,
+      cacheRepo: cacheRepo,
+      creativeIslandRepo: creativeIslandRepo,
+      messageStateManager: stateManager,
+    ),
   ));
 }
 
@@ -269,7 +269,6 @@ class MyApp extends StatefulWidget {
   late final FreeCountBloc freeCountBloc;
 
   final _rootNavigatorKey = GlobalKey<NavigatorState>();
-  final _shellNavigatorKey = GlobalKey<NavigatorState>();
   final FlutterLocalization localization = FlutterLocalization.instance;
   final MessageStateManager messageStateManager;
 
@@ -282,8 +281,7 @@ class MyApp extends StatefulWidget {
     required this.creativeIslandRepo,
     required this.messageStateManager,
   }) {
-    chatRoomBloc =
-        RoomBloc(chatMsgRepo: chatMsgRepo, stateManager: messageStateManager);
+    chatRoomBloc = RoomBloc(chatMsgRepo: chatMsgRepo, stateManager: messageStateManager);
     accountBloc = AccountBloc(settingRepo);
     versionBloc = VersionBloc();
     galleryBloc = GalleryBloc();
@@ -292,12 +290,9 @@ class MyApp extends StatefulWidget {
     var apiServerToken = settingRepo.get(settingAPIServerToken);
     var usingGuestMode = settingRepo.boolDefault(settingUsingGuestMode, false);
 
-    final openAISelfHosted =
-        settingRepo.boolDefault(settingOpenAISelfHosted, false);
-    final deepAISelfHosted =
-        settingRepo.boolDefault(settingDeepAISelfHosted, false);
-    final stabilityAISelfHosted =
-        settingRepo.boolDefault(settingStabilityAISelfHosted, false);
+    final openAISelfHosted = settingRepo.boolDefault(settingOpenAISelfHosted, false);
+    final deepAISelfHosted = settingRepo.boolDefault(settingDeepAISelfHosted, false);
+    final stabilityAISelfHosted = settingRepo.boolDefault(settingStabilityAISelfHosted, false);
 
     final shouldLogin = (apiServerToken == null || apiServerToken == '') &&
         !usingGuestMode &&
@@ -313,17 +308,105 @@ class MyApp extends StatefulWidget {
       navigatorKey: _rootNavigatorKey,
       routes: [
         ShellRoute(
-          navigatorKey: _shellNavigatorKey,
           builder: (context, state, child) {
-            return AppScaffold(
-              settingRepo: settingRepo,
-              child: child,
-            );
+            return child;
           },
           routes: [
             GoRoute(
+              path: '/',
+              name: 'home',
+              pageBuilder: (context, state) {
+                return transitionResolver(
+                  MultiBlocProvider(
+                    providers: [
+                      BlocProvider.value(
+                        value: ChatBlocManager().getBloc(
+                          chatAnywhereRoomId,
+                          chatHistoryId: int.tryParse(state.queryParameters['chat_id'] ?? ''),
+                        ),
+                      ),
+                      BlocProvider(
+                        create: (context) => ChatChatBloc(chatMsgRepo),
+                      ),
+                      BlocProvider.value(value: chatRoomBloc),
+                      BlocProvider.value(value: galleryBloc),
+                      BlocProvider.value(value: accountBloc),
+                      BlocProvider.value(value: versionBloc),
+                    ],
+                    child: NewHomePage(
+                      settings: settingRepo,
+                      stateManager: messageStateManager,
+                    ),
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: 'setting',
+              path: '/setting',
+              pageBuilder: (context, state) => transitionResolver(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider.value(value: accountBloc),
+                  ],
+                  child: SettingScreen(settings: context.read<SettingRepository>()),
+                ),
+              ),
+            ),
+            GoRoute(
+              name: 'creative-draw',
+              path: '/creative-draw',
+              pageBuilder: (context, state) => transitionResolver(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider(create: (context) => CreativeIslandBloc(creativeIslandRepo)),
+                  ],
+                  child: DrawListScreen(
+                    setting: settingRepo,
+                  ),
+                ),
+              ),
+            ),
+            GoRoute(
+              name: 'creative-gallery',
+              path: '/creative-gallery',
+              pageBuilder: (context, state) => transitionResolver(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider.value(value: galleryBloc),
+                  ],
+                  child: GalleryScreen(setting: settingRepo),
+                ),
+              ),
+            ),
+            GoRoute(
+              name: 'characters',
+              path: '/characters',
+              pageBuilder: (context, state) => transitionResolver(
+                MultiBlocProvider(
+                  providers: [BlocProvider.value(value: chatRoomBloc)],
+                  child: RoomsPage(setting: settingRepo),
+                ),
+              ),
+            ),
+            GoRoute(
+              name: 'chat_chat',
+              path: '/chat-chat',
+              pageBuilder: (context, state) => transitionResolver(
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider(create: (context) => ChatChatBloc(chatMsgRepo)),
+                  ],
+                  child: HomePage(
+                    setting: settingRepo,
+                    showInitialDialog: state.queryParameters['show_initial_dialog'] == 'true',
+                    reward: int.tryParse(state.queryParameters['reward'] ?? '0'),
+                  ),
+                ),
+              ),
+            ),
+            GoRoute(
               path: '/login',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -338,7 +421,6 @@ class MyApp extends StatefulWidget {
             ),
             GoRoute(
               path: '/signin-or-signup',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -356,21 +438,18 @@ class MyApp extends StatefulWidget {
             ),
             GoRoute(
               path: '/user/change-password',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 ChangePasswordScreen(setting: settingRepo),
               ),
             ),
             GoRoute(
               path: '/user/destroy',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 DestroyAccountScreen(setting: settingRepo),
               ),
             ),
             GoRoute(
               path: '/signup',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 SignupScreen(
                   settings: settingRepo,
@@ -380,7 +459,6 @@ class MyApp extends StatefulWidget {
             ),
             GoRoute(
               path: '/retrieve-password',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 RetrievePasswordScreen(
                   username: state.queryParameters['username'],
@@ -391,67 +469,37 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'chat_anywhere',
               path: '/chat-anywhere',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
                     BlocProvider.value(
                       value: ChatBlocManager().getBloc(
                         chatAnywhereRoomId,
-                        chatHistoryId: int.tryParse(
-                            state.queryParameters['chat_id'] ?? ''),
+                        chatHistoryId: int.tryParse(state.queryParameters['chat_id'] ?? ''),
                       ),
                     ),
                     BlocProvider.value(value: chatRoomBloc),
                     BlocProvider(create: (context) => NotifyBloc()),
-                    BlocProvider.value(value: freeCountBloc),
                   ],
                   child: HomeChatPage(
                     stateManager: messageStateManager,
                     setting: settingRepo,
-                    chatId:
-                        int.tryParse(state.queryParameters['chat_id'] ?? '0'),
+                    chatId: int.tryParse(state.queryParameters['chat_id'] ?? '0'),
                     initialMessage: state.queryParameters['init_message'],
-                    model: state.queryParameters['model'] == ''
-                        ? null
-                        : state.queryParameters['model'],
-                    title: state.queryParameters['title'] == ''
-                        ? null
-                        : state.queryParameters['title'],
+                    model: state.queryParameters['model'] == '' ? null : state.queryParameters['model'],
+                    title: state.queryParameters['title'] == '' ? null : state.queryParameters['title'],
                   ),
                 ),
               ),
             ),
-            GoRoute(
-              name: 'chat_chat',
-              path: '/chat-chat',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider(
-                        create: (context) => ChatChatBloc(chatMsgRepo)),
-                    BlocProvider.value(value: freeCountBloc),
-                  ],
-                  child: HomePage(
-                    setting: settingRepo,
-                    showInitialDialog:
-                        state.queryParameters['show_initial_dialog'] == 'true',
-                    reward:
-                        int.tryParse(state.queryParameters['reward'] ?? '0'),
-                  ),
-                ),
-              ),
-            ),
+
             GoRoute(
               name: 'chat_chat_history',
               path: '/chat-chat/history',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
-                    BlocProvider(
-                        create: (context) => ChatChatBloc(chatMsgRepo)),
+                    BlocProvider(create: (context) => ChatChatBloc(chatMsgRepo)),
                   ],
                   child: HomeChatHistoryPage(
                     setting: settingRepo,
@@ -462,33 +510,20 @@ class MyApp extends StatefulWidget {
             ),
             GoRoute(
               path: '/lab/avatar-selector',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 const AvatarSelectorScreen(usage: AvatarUsage.room),
               ),
             ),
             GoRoute(
               path: '/lab/draw-board',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 const DrawboardScreen(),
               ),
             ),
-            GoRoute(
-              name: 'characters',
-              path: '/',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [BlocProvider.value(value: chatRoomBloc)],
-                  child: RoomsPage(setting: settingRepo),
-                ),
-              ),
-            ),
+
             GoRoute(
               name: 'create-room',
               path: '/create-room',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [BlocProvider.value(value: chatRoomBloc)],
@@ -499,7 +534,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'chat',
               path: '/room/:room_id/chat',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 final roomId = int.parse(state.pathParameters['room_id']!);
                 return transitionResolver(
@@ -510,7 +544,6 @@ class MyApp extends StatefulWidget {
                       ),
                       BlocProvider.value(value: chatRoomBloc),
                       BlocProvider(create: (context) => NotifyBloc()),
-                      BlocProvider.value(value: freeCountBloc),
                     ],
                     child: RoomChatPage(
                       roomId: roomId,
@@ -524,7 +557,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'room_setting',
               path: '/room/:room_id/setting',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 final roomId = int.parse(state.pathParameters['room_id']!);
                 return transitionResolver(
@@ -543,7 +575,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'account-security-setting',
               path: '/setting/account-security',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -558,38 +589,20 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'lab-user-center',
               path: '/lab/user-center',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
                     BlocProvider.value(value: accountBloc),
-                    BlocProvider(
-                        create: (context) =>
-                            CreativeIslandBloc(creativeIslandRepo)),
+                    BlocProvider(create: (context) => CreativeIslandBloc(creativeIslandRepo)),
                   ],
-                  child: UserCenterScreen(
-                      settings: context.read<SettingRepository>()),
+                  child: UserCenterScreen(settings: context.read<SettingRepository>()),
                 ),
               ),
             ),
-            GoRoute(
-              name: 'setting',
-              path: '/setting',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: accountBloc),
-                  ],
-                  child: SettingScreen(
-                      settings: context.read<SettingRepository>()),
-                ),
-              ),
-            ),
+
             GoRoute(
               name: 'setting-background-selector',
               path: '/setting/background-selector',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 BlocProvider(
                   create: (context) => BackgroundImageBloc(),
@@ -600,7 +613,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'setting-openai-custom',
               path: '/setting/openai-custom',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 OpenAISettingScreen(
                   settings: settingRepo,
@@ -608,33 +620,14 @@ class MyApp extends StatefulWidget {
                 ),
               ),
             ),
-            GoRoute(
-              name: 'creative-draw',
-              path: '/creative-draw',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider(
-                        create: (context) =>
-                            CreativeIslandBloc(creativeIslandRepo)),
-                  ],
-                  child: DrawListScreen(
-                    setting: settingRepo,
-                  ),
-                ),
-              ),
-            ),
+
             GoRoute(
               name: 'creative-upscale',
               path: '/creative-draw/create-upscale',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
-                    BlocProvider(
-                        create: (context) =>
-                            CreativeIslandBloc(creativeIslandRepo)),
+                    BlocProvider(create: (context) => CreativeIslandBloc(creativeIslandRepo)),
                   ],
                   child: ImageEditDirectScreen(
                     setting: settingRepo,
@@ -650,13 +643,10 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-colorize',
               path: '/creative-draw/create-colorize',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
-                    BlocProvider(
-                        create: (context) =>
-                            CreativeIslandBloc(creativeIslandRepo)),
+                    BlocProvider(create: (context) => CreativeIslandBloc(creativeIslandRepo)),
                   ],
                   child: ImageEditDirectScreen(
                     setting: settingRepo,
@@ -672,13 +662,10 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-video',
               path: '/creative-draw/create-video',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
-                    BlocProvider(
-                        create: (context) =>
-                            CreativeIslandBloc(creativeIslandRepo)),
+                    BlocProvider(create: (context) => CreativeIslandBloc(creativeIslandRepo)),
                   ],
                   child: ImageEditDirectScreen(
                     setting: settingRepo,
@@ -694,7 +681,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-draw-gallery-preview',
               path: '/creative-draw/gallery/:id',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -710,7 +696,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-draw-create',
               path: '/creative-draw/create',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -732,7 +717,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-artistic-text',
               path: '/creative-draw/artistic-text',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -753,7 +737,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-artistic-wordart',
               path: '/creative-draw/artistic-wordart',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [
@@ -773,14 +756,11 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-island-history-all',
               path: '/creative-island/history',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
                     providers: [
-                      BlocProvider(
-                          create: (context) =>
-                              CreativeIslandBloc(creativeIslandRepo)),
+                      BlocProvider(create: (context) => CreativeIslandBloc(creativeIslandRepo)),
                     ],
                     child: MyCreationScreen(
                       setting: settingRepo,
@@ -793,14 +773,11 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-island-models',
               path: '/creative-island/models',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
                     providers: [
-                      BlocProvider(
-                          create: (context) =>
-                              CreativeIslandBloc(creativeIslandRepo)),
+                      BlocProvider(create: (context) => CreativeIslandBloc(creativeIslandRepo)),
                     ],
                     child: CreativeModelScreen(setting: settingRepo),
                   ),
@@ -810,18 +787,14 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'creative-island-history-item',
               path: '/creative-island/:id/history/:item_id',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 final id = state.pathParameters['id']!;
                 final itemId = int.tryParse(state.pathParameters['item_id']!);
-                final showErrorMessage =
-                    state.queryParameters['show_error'] == 'true';
+                final showErrorMessage = state.queryParameters['show_error'] == 'true';
                 return transitionResolver(
                   MultiBlocProvider(
                     providers: [
-                      BlocProvider(
-                          create: (context) =>
-                              CreativeIslandBloc(creativeIslandRepo)),
+                      BlocProvider(create: (context) => CreativeIslandBloc(creativeIslandRepo)),
                     ],
                     child: MyCreationItemPage(
                       setting: settingRepo,
@@ -836,7 +809,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'quota-details',
               path: '/quota-details',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 PaymentHistoryScreen(setting: settingRepo),
               ),
@@ -844,7 +816,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'quota-usage-statistics',
               path: '/quota-usage-statistics',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 QuotaUsageStatisticsScreen(setting: settingRepo),
               ),
@@ -852,19 +823,16 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'quota-usage-daily-details',
               path: '/quota-usage-daily-details',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 QuotaUsageDetailScreen(
                   setting: settingRepo,
-                  date: state.queryParameters['date'] ??
-                      DateFormat('yyyy-MM-dd').format(DateTime.now()),
+                  date: state.queryParameters['date'] ?? DateFormat('yyyy-MM-dd').format(DateTime.now()),
                 ),
               ),
             ),
             GoRoute(
               name: 'prompt-editor',
               path: '/prompt-editor',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 var prompt = state.queryParameters['prompt'] ?? '';
                 return transitionResolver(PromptScreen(prompt: prompt));
@@ -873,7 +841,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'payment',
               path: '/payment',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
@@ -888,7 +855,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'bind-phone',
               path: '/bind-phone',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
@@ -904,22 +870,8 @@ class MyApp extends StatefulWidget {
               },
             ),
             GoRoute(
-              name: 'creative-gallery',
-              path: '/creative-gallery',
-              parentNavigatorKey: _shellNavigatorKey,
-              pageBuilder: (context, state) => transitionResolver(
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: galleryBloc),
-                  ],
-                  child: GalleryScreen(setting: settingRepo),
-                ),
-              ),
-            ),
-            GoRoute(
               name: 'diagnosis',
               path: '/diagnosis',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 DiagnosisScreen(setting: settingRepo),
               ),
@@ -927,7 +879,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'free-statistics',
               path: '/free-statistics',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 MultiBlocProvider(
                   providers: [BlocProvider.value(value: freeCountBloc)],
@@ -938,7 +889,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'custom-home-models',
               path: '/setting/custom-home-models',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) => transitionResolver(
                 CustomHomeModelsPage(setting: settingRepo),
               ),
@@ -946,7 +896,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'group-chat-chat',
               path: '/group-chat/:group_id/chat',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 final groupId = int.tryParse(state.pathParameters['group_id']!);
 
@@ -954,8 +903,7 @@ class MyApp extends StatefulWidget {
                   MultiBlocProvider(
                     providers: [
                       BlocProvider(
-                        create: ((context) =>
-                            GroupChatBloc(stateManager: messageStateManager)),
+                        create: ((context) => GroupChatBloc(stateManager: messageStateManager)),
                       ),
                       BlocProvider.value(value: chatRoomBloc),
                     ],
@@ -971,14 +919,12 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'group-chat-create',
               path: '/group-chat-create',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
                     providers: [
                       BlocProvider(
-                        create: ((context) =>
-                            GroupChatBloc(stateManager: messageStateManager)),
+                        create: ((context) => GroupChatBloc(stateManager: messageStateManager)),
                       ),
                       BlocProvider.value(value: chatRoomBloc),
                     ],
@@ -990,14 +936,12 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'group-chat-edit',
               path: '/group-chat/:group_id/edit',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
                     providers: [
                       BlocProvider(
-                        create: ((context) =>
-                            GroupChatBloc(stateManager: messageStateManager)),
+                        create: ((context) => GroupChatBloc(stateManager: messageStateManager)),
                       ),
                       BlocProvider.value(value: chatRoomBloc),
                     ],
@@ -1012,7 +956,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'user-api-keys',
               path: '/setting/user-api-keys',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
@@ -1029,7 +972,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'notifications',
               path: '/notifications',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   NotificationScreen(setting: settingRepo),
@@ -1039,7 +981,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'articles',
               path: '/article',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   ArticleScreen(
@@ -1052,7 +993,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'web-payment-result',
               path: '/payment/result',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(WebPaymentResult(
                   paymentId: state.queryParameters['payment_id']!,
@@ -1063,7 +1003,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'web-payment-proxy',
               path: '/payment/proxy',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(WebPaymentProxy(
                   setting: settingRepo,
@@ -1071,8 +1010,7 @@ class MyApp extends StatefulWidget {
                   paymentIntent: state.queryParameters['intent']!,
                   price: state.queryParameters['price']!,
                   publishableKey: state.queryParameters['key']!,
-                  finishAction:
-                      state.queryParameters['finish_action'] ?? 'close',
+                  finishAction: state.queryParameters['finish_action'] ?? 'close',
                 ));
               },
             ),
@@ -1081,7 +1019,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'admin-dashboard',
               path: '/admin/dashboard',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   AdminDashboardPage(setting: settingRepo),
@@ -1091,7 +1028,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'admin-models',
               path: '/admin/models',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
@@ -1108,7 +1044,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'admin-models-create',
               path: '/admin/models/create',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
@@ -1125,7 +1060,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'admin-models-edit',
               path: '/admin/models/edit/:id',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
@@ -1145,7 +1079,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'admin-channels',
               path: '/admin/channels',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
@@ -1162,7 +1095,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'admin-channels-create',
               path: '/admin/channels/create',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
@@ -1179,7 +1111,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'admin-channels-edit',
               path: '/admin/channels/edit/:id',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 final channelId = int.parse(state.pathParameters['id']!);
 
@@ -1201,7 +1132,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'admin-users',
               path: '/admin/users',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
@@ -1218,7 +1148,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'admin-users-detail',
               path: '/admin/users/:id',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 final userId = int.parse(state.pathParameters['id']!);
 
@@ -1238,7 +1167,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'admin-payment-histories',
               path: '/admin/payment/histories',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
@@ -1256,7 +1184,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'admin-user-rooms',
               path: '/admin/users/:id/rooms',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 final userId = int.parse(state.pathParameters['id']!);
 
@@ -1276,7 +1203,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'admin-user-rooms-messages',
               path: '/admin/users/:id/rooms/:room_id/messages',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 final userId = int.parse(state.pathParameters['id']!);
                 final roomId = int.parse(state.pathParameters['room_id']!);
@@ -1302,7 +1228,6 @@ class MyApp extends StatefulWidget {
             GoRoute(
               name: 'admin-recently-messages',
               path: '/admin/recently-messages',
-              parentNavigatorKey: _shellNavigatorKey,
               pageBuilder: (context, state) {
                 return transitionResolver(
                   MultiBlocProvider(
@@ -1317,7 +1242,7 @@ class MyApp extends StatefulWidget {
               },
             ),
           ],
-        )
+        ),
       ],
     );
   }
@@ -1380,19 +1305,14 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<ChatMessageRepository>(
-            create: (context) => widget.chatMsgRepo),
-        RepositoryProvider<OpenAIRepository>(
-            create: (context) => widget.openAIRepo),
-        RepositoryProvider<SettingRepository>(
-            create: (context) => widget.settingRepo),
-        RepositoryProvider<CacheRepository>(
-            create: (context) => widget.cacheRepo),
+        RepositoryProvider<ChatMessageRepository>(create: (context) => widget.chatMsgRepo),
+        RepositoryProvider<OpenAIRepository>(create: (context) => widget.openAIRepo),
+        RepositoryProvider<SettingRepository>(create: (context) => widget.settingRepo),
+        RepositoryProvider<CacheRepository>(create: (context) => widget.cacheRepo),
       ],
       child: ChangeNotifierProvider(
-          create: (context) => AppTheme.instance
-            ..mode = AppTheme.themeModeFormString(
-                widget.settingRepo.stringDefault(settingThemeMode, 'system')),
+          create: (context) => AppTheme.get()
+            ..mode = AppTheme.themeModeFormString(widget.settingRepo.stringDefault(settingThemeMode, 'system')),
           builder: (context, _) {
             final appTheme = context.watch<AppTheme>();
             return Sizer(
@@ -1407,26 +1327,23 @@ class _MyAppState extends State<MyApp> {
                     // 这里设置了全局字体固定大小，不随系统设置变更
                     // TODO 后面要增加一个设置项，允许用户自定义字体大小
                     return MediaQuery(
-                      data:
-                          MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
                       child: BotToastInit()(context, child),
                     );
                   },
                   routerConfig: widget._router,
                   supportedLocales: widget.localization.supportedLocales,
-                  localizationsDelegates:
-                      widget.localization.localizationsDelegates,
-                  scrollBehavior:
-                      PlatformTool.isAndroid() || PlatformTool.isIOS()
-                          ? null
-                          : const MaterialScrollBehavior().copyWith(
-                              dragDevices: {
-                                PointerDeviceKind.touch,
-                                PointerDeviceKind.mouse,
-                                PointerDeviceKind.stylus,
-                                PointerDeviceKind.trackpad,
-                              },
-                            ),
+                  localizationsDelegates: widget.localization.localizationsDelegates,
+                  scrollBehavior: PlatformTool.isAndroid() || PlatformTool.isIOS()
+                      ? null
+                      : const MaterialScrollBehavior().copyWith(
+                          dragDevices: {
+                            PointerDeviceKind.touch,
+                            PointerDeviceKind.mouse,
+                            PointerDeviceKind.stylus,
+                            PointerDeviceKind.trackpad,
+                          },
+                        ),
                 );
               },
             );
@@ -1435,12 +1352,30 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+TextTheme loadTextTheme() {
+  return const TextTheme(
+    displayLarge: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
+    displayMedium: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
+    displaySmall: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
+    headlineLarge: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
+    headlineMedium: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
+    headlineSmall: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
+    titleLarge: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
+    titleMedium: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
+    titleSmall: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
+    bodyLarge: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
+    bodyMedium: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
+    bodySmall: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
+    labelLarge: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
+    labelMedium: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
+    labelSmall: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
+  );
+}
+
 ThemeData createLightThemeData() {
-  return ThemeData(
-    brightness: Brightness.light,
-    extensions: const [CustomColors.light],
-    useMaterial3: true,
-    fontFamily: 'AlibabaPuHuiTi',
+  return ThemeData.light(useMaterial3: true).copyWith(
+    extensions: [CustomColors.light],
+    textTheme: loadTextTheme(),
     appBarTheme: const AppBarTheme(
       // backgroundColor: Color.fromARGB(255, 250, 250, 250),
       backgroundColor: Colors.transparent,
@@ -1449,7 +1384,7 @@ ThemeData createLightThemeData() {
     iconButtonTheme: PlatformTool.isMacOS()
         ? IconButtonThemeData(
             style: ButtonStyle(
-              overlayColor: MaterialStateProperty.all(Colors.transparent),
+              overlayColor: WidgetStateProperty.all(Colors.transparent),
             ),
           )
         : null,
@@ -1457,25 +1392,22 @@ ThemeData createLightThemeData() {
     dialogBackgroundColor: Colors.white,
     dialogTheme: DialogTheme(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: CustomSize.borderRadius,
       ),
       elevation: 0,
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: const Color.fromARGB(
-            255, 9, 185, 85), // This is a custom color variable
+        foregroundColor: const Color.fromARGB(255, 9, 185, 85), // This is a custom color variable
       ),
     ),
   );
 }
 
 ThemeData createDarkThemeData() {
-  return ThemeData(
-    brightness: Brightness.dark,
-    extensions: const [CustomColors.dark],
-    useMaterial3: true,
-    fontFamily: 'AlibabaPuHuiTi',
+  return ThemeData.dark(useMaterial3: true).copyWith(
+    extensions: [CustomColors.dark],
+    textTheme: loadTextTheme(),
     appBarTheme: const AppBarTheme(
       // backgroundColor: Color.fromARGB(255, 48, 48, 48),
       backgroundColor: Colors.transparent,
@@ -1484,7 +1416,7 @@ ThemeData createDarkThemeData() {
     iconButtonTheme: PlatformTool.isMacOS()
         ? IconButtonThemeData(
             style: ButtonStyle(
-              overlayColor: MaterialStateProperty.all(Colors.transparent),
+              overlayColor: WidgetStateProperty.all(Colors.transparent),
             ),
           )
         : null,
@@ -1492,14 +1424,13 @@ ThemeData createDarkThemeData() {
     dialogBackgroundColor: const Color.fromARGB(255, 48, 48, 48),
     dialogTheme: DialogTheme(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: CustomSize.borderRadius,
       ),
       elevation: 0,
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: const Color.fromARGB(
-            255, 9, 185, 85), // This is a custom color variable
+        foregroundColor: const Color.fromARGB(255, 9, 185, 85), // This is a custom color variable
       ),
     ),
   );

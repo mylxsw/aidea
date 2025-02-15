@@ -58,18 +58,17 @@ class _DrawboardScreenState extends State<DrawboardScreen> {
                               }
 
                               // save imageData to file
-                              if (PlatformTool.isIOS() ||
-                                  PlatformTool.isAndroid()) {
+                              if (PlatformTool.isIOS() || PlatformTool.isAndroid()) {
                                 await ImageGallerySaver.saveImage(
                                   imageData.buffer.asUint8List(),
                                   quality: 100,
                                 );
 
-                                showSuccessMessage('图片保存成功');
+                                showSuccessMessage(AppLocale.operateSuccess.getString(context));
                               } else {
                                 if (PlatformTool.isWindows()) {
                                   FileSaver.instance
-                                    .saveAs(
+                                      .saveAs(
                                     name: randomId(),
                                     ext: '.png',
                                     bytes: imageData.buffer.asUint8List(),
@@ -77,13 +76,13 @@ class _DrawboardScreenState extends State<DrawboardScreen> {
                                   )
                                       .then((value) async {
                                     if (value == null) {
-                                      return ;
+                                      return;
                                     }
 
                                     await File(value).writeAsBytes(imageData.buffer.asUint8List());
 
-                                    Logger.instance.d('文件保存成功: $value');
-                                    showSuccessMessage('文件保存成功');
+                                    Logger.instance.d('File saved successfully: $value');
+                                    showSuccessMessage(AppLocale.operateSuccess.getString(context));
                                   });
                                 } else {
                                   FileSaver.instance
@@ -94,10 +93,9 @@ class _DrawboardScreenState extends State<DrawboardScreen> {
                                     mimeType: MimeType.png,
                                   )
                                       .then((value) {
-                                    showSuccessMessage('文件保存成功');
+                                    showSuccessMessage(AppLocale.operateSuccess.getString(context));
                                   });
                                 }
-                                
                               }
                             },
                             icon: const Icon(Icons.save),
@@ -213,9 +211,7 @@ class _DrawMaskBoardState extends State<DrawMaskBoard> {
                   },
                   icon: Icon(
                     Icons.edit,
-                    color: selectedToolbar == 'draw'
-                        ? customColors.linkColor
-                        : customColors.weakLinkColor,
+                    color: selectedToolbar == 'draw' ? customColors.linkColor : customColors.weakLinkColor,
                   ),
                 ),
                 IconButton(
@@ -227,9 +223,7 @@ class _DrawMaskBoardState extends State<DrawMaskBoard> {
                   },
                   icon: Icon(
                     CupertinoIcons.bandage,
-                    color: selectedToolbar == 'eraser'
-                        ? customColors.linkColor
-                        : customColors.weakLinkColor,
+                    color: selectedToolbar == 'eraser' ? customColors.linkColor : customColors.weakLinkColor,
                   ),
                 ),
                 IconButton(
@@ -303,8 +297,7 @@ class _DrawMaskBoardState extends State<DrawMaskBoard> {
         ),
         Expanded(
           child: FutureBuilder(
-            future:
-                decodeImageFromList(widget.backgroundImage.readAsBytesSync()),
+            future: decodeImageFromList(widget.backgroundImage.readAsBytesSync()),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());
@@ -318,9 +311,7 @@ class _DrawMaskBoardState extends State<DrawMaskBoard> {
                       snapshot.data!.width.toDouble() *
                       snapshot.data!.height.toDouble(),
                   color: Colors.black,
-                  child: showBackground
-                      ? Image.file(widget.backgroundImage, fit: BoxFit.fitWidth)
-                      : null,
+                  child: showBackground ? Image.file(widget.backgroundImage, fit: BoxFit.fitWidth) : null,
                 ),
                 showDefaultActions: false,
               );

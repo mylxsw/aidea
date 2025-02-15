@@ -43,8 +43,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _usernameController = TextEditingController();
 
   final phoneNumberValidator = RegExp(r"^1[3456789]\d{9}$");
-  final emailValidator = RegExp(
-      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+  final emailValidator = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 
   var agreeProtocol = false;
 
@@ -61,8 +60,7 @@ class _SignInScreenState extends State<SignInScreen> {
     }
 
     if (Ability().enableWechatSignin) {
-      _weChatResponse =
-          weChatResponseEventHandler.distinct((a, b) => a == b).listen((event) {
+      _weChatResponse = weChatResponseEventHandler.distinct((a, b) => a == b).listen((event) {
         if (event is WeChatAuthResponse) {
           if (event.errCode != 0) {
             showErrorMessage(event.errStr!);
@@ -76,9 +74,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
           processing = true;
 
-          APIServer()
-              .trySignInWithWechat(code: event.code!)
-              .then((tryRes) async {
+          APIServer().trySignInWithWechat(code: event.code!).then((tryRes) async {
             if (tryRes.exist) {
               await confirmWeChatSignin(tryRes.token);
             } else {
@@ -118,10 +114,11 @@ class _SignInScreenState extends State<SignInScreen> {
       await widget.settings.set(settingAPIServerToken, value.token);
       await widget.settings.set(settingUserInfo, jsonEncode(value));
 
-      await HttpClient.cacheManager.clearAll();
+      await HttpClient.cleanCache();
 
       if (value.needBindPhone) {
         if (context.mounted) {
+          // ignore: use_build_context_synchronously
           context.push('/bind-phone').then((value) async {
             if (value == 'logout') {
               await widget.settings.set(settingAPIServerToken, '');
@@ -169,7 +166,7 @@ class _SignInScreenState extends State<SignInScreen> {
           },
         ),
       ),
-      backgroundColor: customColors.backgroundColor,
+      backgroundColor: customColors.backgroundContainerColor,
       body: BackgroundContainer(
         setting: widget.settings,
         enabled: false,
@@ -204,22 +201,17 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   const SizedBox(height: 30),
                   Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15, bottom: 0),
+                    padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
                     child: TextFormField(
                       controller: _usernameController,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.singleLineFormatter
-                      ],
+                      inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Color.fromARGB(200, 192, 192, 192)),
+                          borderSide: BorderSide(color: Color.fromARGB(200, 192, 192, 192)),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: customColors.linkColor ?? Colors.green),
+                          borderSide: BorderSide(color: customColors.linkColor ?? Colors.green),
                         ),
                         floatingLabelStyle: TextStyle(
                           color: customColors.linkColor ?? Colors.green,
@@ -255,9 +247,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     height: 45,
                     width: double.infinity,
                     margin: const EdgeInsets.symmetric(horizontal: 15),
-                    decoration: BoxDecoration(
-                        color: customColors.linkColor,
-                        borderRadius: BorderRadius.circular(8)),
+                    decoration: BoxDecoration(color: customColors.linkColor, borderRadius: CustomSize.borderRadius),
                     child: TextButton(
                       onPressed: onSigninSubmit,
                       child: const Text(
@@ -317,8 +307,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   // 三方登录
                   BlocBuilder<VersionBloc, VersionState>(
                     builder: (context, state) {
-                      return _buildThirdPartySignInButtons(
-                          context, customColors);
+                      return _buildThirdPartySignInButtons(context, customColors);
                     },
                   ),
                   const SizedBox(height: 10),
@@ -331,8 +320,7 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Row _buildUserTermsAndPrivicy(
-      CustomColors customColors, BuildContext context) {
+  Row _buildUserTermsAndPrivicy(CustomColors customColors, BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -377,8 +365,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
-                    launchUrl(
-                        Uri.parse('$apiServerURL/public/info/terms-of-user'));
+                    launchUrl(Uri.parse('$apiServerURL/public/info/terms-of-user'));
                   },
               ),
               TextSpan(
@@ -396,8 +383,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
-                    launchUrl(
-                        Uri.parse('$apiServerURL/public/info/privacy-policy'));
+                    launchUrl(Uri.parse('$apiServerURL/public/info/privacy-policy'));
                   },
               ),
             ],
@@ -407,8 +393,7 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget _buildThirdPartySignInButtons(
-      BuildContext context, CustomColors customColors) {
+  Widget _buildThirdPartySignInButtons(BuildContext context, CustomColors customColors) {
     return FutureBuilder(
       future: isWeChatInstalled,
       builder: (context, installed) {
@@ -435,15 +420,13 @@ class _SignInScreenState extends State<SignInScreen> {
                 }
 
                 if (!agreeProtocol) {
-                  showErrorMessage(
-                      AppLocale.pleaseReadAgreeProtocol.getString(context));
+                  showErrorMessage(AppLocale.pleaseReadAgreeProtocol.getString(context));
                   return;
                 }
 
-                final ok = await sendWeChatAuth(
-                    scope: "snsapi_userinfo", state: "wechat_sdk_demo_test");
+                final ok = await sendWeChatAuth(scope: "snsapi_userinfo", state: "wechat_sdk_demo_test");
                 if (!ok) {
-                  showErrorMessage('请先安装微信后再使用改功能');
+                  showErrorMessage('请先安装微信后再使用该功能');
                 }
               },
               backgroundColor: Colors.green,
@@ -470,10 +453,7 @@ class _SignInScreenState extends State<SignInScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
-              children: signInItems
-                  .map((e) =>
-                      Padding(padding: const EdgeInsets.all(10), child: e))
-                  .toList(),
+              children: signInItems.map((e) => Padding(padding: const EdgeInsets.all(10), child: e)).toList(),
             ),
           ],
         );
@@ -499,8 +479,7 @@ class _SignInScreenState extends State<SignInScreen> {
       final credential = await SignInWithApple.getAppleIDCredential(
         webAuthenticationOptions: WebAuthenticationOptions(
           clientId: 'cc.aicode.askaide',
-          redirectUri: Uri.parse(
-              'https://ai-api.aicode.cc/v1/callback/auth/sign_in_with_apple'),
+          redirectUri: Uri.parse('https://ai-api.aicode.cc/v1/callback/auth/sign_in_with_apple'),
         ),
         scopes: [
           AppleIDAuthorizationScopes.email,
@@ -522,7 +501,7 @@ class _SignInScreenState extends State<SignInScreen> {
         await widget.settings.set(settingAPIServerToken, value.token);
         await widget.settings.set(settingUserInfo, jsonEncode(value));
 
-        HttpClient.cacheManager.clearAll().then((_) {
+        () {
           if (value.needBindPhone) {
             if (context.mounted) {
               context.push('/bind-phone').then((value) async {
@@ -537,7 +516,24 @@ class _SignInScreenState extends State<SignInScreen> {
             context.go(
                 '${Ability().homeRoute}?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
           }
-        });
+        }();
+
+        // HttpClient.cacheManager.clearAll().then((_) {
+        //   if (value.needBindPhone) {
+        //     if (context.mounted) {
+        //       context.push('/bind-phone').then((value) async {
+        //         if (value == 'logout') {
+        //           await widget.settings.set(settingAPIServerToken, '');
+        //           await widget.settings.set(settingUserInfo, '');
+        //         }
+        //       });
+        //     }
+        //     return;
+        //   } else {
+        //     context.go(
+        //         '${Ability().homeRoute}?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
+        //   }
+        // });
       }).catchError((e) {
         Logger.instance.e(e);
         showErrorMessage(AppLocale.signInFailed.getString(context));
@@ -563,8 +559,7 @@ class _SignInScreenState extends State<SignInScreen> {
       return;
     }
 
-    if (!phoneNumberValidator.hasMatch(username) &&
-        !emailValidator.hasMatch(username)) {
+    if (!phoneNumberValidator.hasMatch(username) && !emailValidator.hasMatch(username)) {
       showErrorMessage(AppLocale.accountFormatError.getString(context));
       return;
     }

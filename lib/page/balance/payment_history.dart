@@ -1,7 +1,7 @@
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
-import 'package:askaide/page/component/coin.dart';
+import 'package:askaide/page/component/credit.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/quota.dart';
@@ -34,7 +34,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
         centerTitle: true,
         elevation: 0,
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -69,8 +69,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                 );
               }
 
-              return _buildQuotaDetailPage(
-                  context, snapshot.data!, customColors);
+              return _buildQuotaDetailPage(context, snapshot.data!, customColors);
             },
           ),
         ),
@@ -78,8 +77,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     );
   }
 
-  Widget _buildQuotaDetailPage(
-      BuildContext context, QuotaResp quota, CustomColors customColors) {
+  Widget _buildQuotaDetailPage(BuildContext context, QuotaResp quota, CustomColors customColors) {
     return Column(
       children: [
         Expanded(
@@ -98,8 +96,8 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                         right: 16,
                       ),
                       decoration: BoxDecoration(
-                        color: customColors.paymentItemBackgroundColor,
-                        borderRadius: BorderRadius.circular(10),
+                        color: customColors.backgroundContainerColor,
+                        borderRadius: CustomSize.borderRadius,
                       ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -112,9 +110,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      (item.note == null || item.note == '')
-                                          ? '购买'
-                                          : item.note!,
+                                      (item.note == null || item.note == '') ? '购买' : item.note!,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     const SizedBox(height: 5),
@@ -122,7 +118,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                                       DateFormat(
                                         'yyyy/MM/dd HH:mm',
                                       ).format(item.createdAt.toLocal()),
-                                      textScaleFactor: 0.8,
+                                      textScaler: const TextScaler.linear(0.8),
                                       style: TextStyle(
                                         color: Colors.grey[600],
                                       ),
@@ -133,7 +129,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Coin(
+                                  Credit(
                                     count: item.quota,
                                     color: Colors.amber,
                                     withAddPrefix: true,
@@ -141,7 +137,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                                   ),
                                   Text(
                                     '${DateFormat('yyyy/MM/dd').format(item.periodEndAt.toLocal())} 过期',
-                                    textScaleFactor: 0.7,
+                                    textScaler: const TextScaler.linear(0.7),
                                   ),
                                 ],
                               ),
@@ -179,10 +175,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
       child: Container(
         decoration: BoxDecoration(
           color: color,
-          borderRadius: const BorderRadius.only(
-            topRight: Radius.circular(9),
-            bottomLeft: Radius.circular(9),
-          ),
+          borderRadius: const BorderRadius.only(topRight: CustomSize.radius, bottomLeft: CustomSize.radius),
         ),
         padding: const EdgeInsets.symmetric(
           horizontal: 5,
@@ -190,7 +183,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
         ),
         child: Text(
           text,
-          textScaleFactor: 0.6,
+          textScaler: const TextScaler.linear(0.6),
           style: const TextStyle(color: Colors.white70),
         ),
       ),

@@ -20,7 +20,7 @@ class InputSelector extends StatelessWidget {
     return TextButton(
       onPressed: onTap,
       style: ButtonStyle(
-        overlayColor: MaterialStateProperty.all(Colors.transparent),
+        overlayColor: WidgetStateProperty.all(Colors.transparent),
       ),
       child: title,
     );
@@ -287,7 +287,7 @@ class _EnhancedTextFieldState extends State<EnhancedTextField> {
                               ? widget.inputSelector
                               : null),
                     ),
-                    cursorRadius: const Radius.circular(10),
+                    cursorRadius: CustomSize.radius,
                     keyboardType: widget.keyboardType,
                     autofocus: widget.autofocus ?? false,
                     maxLength: widget.maxLength,
@@ -338,8 +338,7 @@ class _EnhancedTextFieldState extends State<EnhancedTextField> {
                   padding: const EdgeInsets.all(0),
                   minWidth: 60,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                      borderRadius: CustomSize.borderRadius),
                   onPressed: widget.bottomButtonOnPressed,
                   child: widget.bottomButton!,
                 ),
@@ -352,10 +351,9 @@ class _EnhancedTextFieldState extends State<EnhancedTextField> {
 
   InputBorder resolveInputBorder() {
     if (widget.enableBackground) {
-      return OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide.none,
-      );
+      return const OutlineInputBorder(
+          borderRadius: CustomSize.borderRadiusAll,
+          borderSide: BorderSide.none);
     }
 
     return InputBorder.none;

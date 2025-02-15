@@ -1,3 +1,4 @@
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -15,11 +16,8 @@ class BottomSheetBox extends StatelessWidget {
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(10),
-              bottom: Radius.circular(10),
-            ),
-            color: customColors.backgroundColor,
+            borderRadius: const BorderRadius.vertical(top: CustomSize.radius, bottom: CustomSize.radius),
+            color: customColors.backgroundContainerColor,
           ),
           padding: const EdgeInsets.only(top: 0, left: 10, right: 10),
           child: child,

@@ -60,12 +60,12 @@ class _PaymentHistoriesPageState extends State<PaymentHistoriesPage> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          '支付订单历史',
+          'Payment Order History',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.chatInputPanelBackground,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -90,9 +90,7 @@ class _PaymentHistoriesPageState extends State<PaymentHistoriesPage> {
                   border: InputBorder.none,
                 ),
                 onEditingComplete: () {
-                  context
-                      .read<AdminPaymentBloc>()
-                      .add(AdminPaymentHistoriesLoadEvent(
+                  context.read<AdminPaymentBloc>().add(AdminPaymentHistoriesLoadEvent(
                         perPage: perPage,
                         page: page,
                         keyword: keywordController.text,
@@ -104,9 +102,7 @@ class _PaymentHistoriesPageState extends State<PaymentHistoriesPage> {
               child: RefreshIndicator(
                 color: customColors.linkColor,
                 onRefresh: () async {
-                  context
-                      .read<AdminPaymentBloc>()
-                      .add(AdminPaymentHistoriesLoadEvent(
+                  context.read<AdminPaymentBloc>().add(AdminPaymentHistoriesLoadEvent(
                         perPage: perPage,
                         page: page,
                         keyword: keywordController.text,
@@ -131,8 +127,7 @@ class _PaymentHistoriesPageState extends State<PaymentHistoriesPage> {
                       });
                     }
                   },
-                  buildWhen: (previous, current) =>
-                      current is AdminPaymentHistoriesLoaded,
+                  buildWhen: (previous, current) => current is AdminPaymentHistoriesLoaded,
                   builder: (context, state) {
                     if (state is AdminPaymentHistoriesLoaded) {
                       return SafeArea(
@@ -152,8 +147,7 @@ class _PaymentHistoriesPageState extends State<PaymentHistoriesPage> {
                                 },
                               ),
                             ),
-                            if (state.histories.lastPage != null &&
-                                state.histories.lastPage! > 1)
+                            if (state.histories.lastPage != null && state.histories.lastPage! > 1)
                               Container(
                                 padding: const EdgeInsets.all(10),
                                 child: Pagination(
@@ -161,9 +155,7 @@ class _PaymentHistoriesPageState extends State<PaymentHistoriesPage> {
                                   selectedPage: page,
                                   pagesVisible: 5,
                                   onPageChanged: (selected) {
-                                    context
-                                        .read<AdminPaymentBloc>()
-                                        .add(AdminPaymentHistoriesLoadEvent(
+                                    context.read<AdminPaymentBloc>().add(AdminPaymentHistoriesLoadEvent(
                                           perPage: perPage,
                                           page: selected,
                                           keyword: keywordController.text,
@@ -199,17 +191,13 @@ class _PaymentHistoriesPageState extends State<PaymentHistoriesPage> {
         horizontal: 10,
         vertical: 5,
       ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(customColors.borderRadius ?? 8),
-      ),
+      decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
       child: Slidable(
         child: Material(
-          borderRadius:
-              BorderRadius.all(Radius.circular(customColors.borderRadius ?? 8)),
+          borderRadius: CustomSize.borderRadius,
           color: customColors.columnBlockBackgroundColor,
           child: InkWell(
-            borderRadius: BorderRadius.all(
-                Radius.circular(customColors.borderRadius ?? 8)),
+            borderRadius: CustomSize.borderRadiusAll,
             onTap: () {
               context.push('/admin/users/${his.userId}');
             },
@@ -219,7 +207,7 @@ class _PaymentHistoriesPageState extends State<PaymentHistoriesPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // 头像
-                    buildAvatar(his, radius: BorderRadius.circular(15)),
+                    buildAvatar(his, radius: CustomSize.borderRadiusAll),
                     // 名称
                     Expanded(
                       child: Container(
@@ -230,9 +218,17 @@ class _PaymentHistoriesPageState extends State<PaymentHistoriesPage> {
                             Row(
                               children: [
                                 Text(
-                                  '用户 ${his.userId} 充值 ${(his.retailPrice / 100).ceil()} 元',
+                                  '@${his.userId} Charge ',
                                   style: const TextStyle(
                                     overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Text(
+                                  '￥${(his.retailPrice / 100).ceil()}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red,
                                   ),
                                 ),
                                 const SizedBox(width: 5),
@@ -269,9 +265,8 @@ class _PaymentHistoriesPageState extends State<PaymentHistoriesPage> {
                             fontSize: 10,
                             overflow: TextOverflow.ellipsis,
                             fontWeight: FontWeight.bold,
-                            color: his.environment.toLowerCase() == 'production'
-                                ? customColors.linkColor
-                                : Colors.amber,
+                            color:
+                                his.environment.toLowerCase() == 'production' ? customColors.linkColor : Colors.amber,
                           ),
                         ),
                       ],
@@ -289,8 +284,7 @@ class _PaymentHistoriesPageState extends State<PaymentHistoriesPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          DateFormat('y-MM-dd HH:mm')
-                              .format(his.purchaseAt.toLocal()),
+                          DateFormat('y-MM-dd HH:mm').format(his.purchaseAt.toLocal()),
                           style: TextStyle(
                             fontSize: 10,
                             overflow: TextOverflow.ellipsis,
@@ -312,10 +306,7 @@ class _PaymentHistoriesPageState extends State<PaymentHistoriesPage> {
 
 Widget buildAvatar(
   AdminPaymentHistory his, {
-  BorderRadius radius = const BorderRadius.only(
-    topLeft: Radius.circular(8),
-    bottomLeft: Radius.circular(8),
-  ),
+  BorderRadius radius = const BorderRadius.only(topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
 }) {
   final source = (his.source ?? '').toLowerCase();
 
@@ -342,8 +333,7 @@ Widget buildAvatar(
   );
 }
 
-Widget buildTags(
-    BuildContext context, CustomColors customColors, AdminPaymentHistory his) {
+Widget buildTags(BuildContext context, CustomColors customColors, AdminPaymentHistory his) {
   final tags = <Widget>[];
 
   if (his.source != null) {
@@ -363,10 +353,7 @@ Widget buildTag(BuildContext context, CustomColors customColors, String s) {
       horizontal: 5,
       vertical: 2,
     ),
-    decoration: BoxDecoration(
-      color: customColors.tagsBackground,
-      borderRadius: BorderRadius.circular(5),
-    ),
+    decoration: BoxDecoration(color: customColors.tagsBackground, borderRadius: CustomSize.borderRadius),
     child: Text(
       s,
       style: TextStyle(

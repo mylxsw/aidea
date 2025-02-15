@@ -2,6 +2,7 @@ import 'package:askaide/helper/ability.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/image.dart';
+import 'package:askaide/helper/logger.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
@@ -47,7 +48,7 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
       type: 'model',
       id: '',
       supportVision: false,
-      name: '未设置',
+      name: 'Unset',
     ),
   ];
 
@@ -61,7 +62,7 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
           type: 'model',
           id: '',
           supportVision: false,
-          name: '未设置',
+          name: 'Unset',
         ));
       }
     }
@@ -77,7 +78,7 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
             type: 'model',
             id: '',
             supportVision: false,
-            name: '未设置',
+            name: 'Unset',
           ));
         }
 
@@ -119,8 +120,7 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
               const SizedBox(height: 10),
               ColumnBlock(
                 innerPanding: 5,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                 children: [
                   for (var i = 0; i < models.length; i++)
                     GestureDetector(
@@ -146,11 +146,11 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
                                   type: 'model',
                                   id: '',
                                   supportVision: false,
-                                  name: '未设置',
+                                  name: 'Unset',
                                 );
                               });
                             },
-                            confirmText: '重置',
+                            confirmText: AppLocale.reset.getString(context),
                           );
                         }
                       },
@@ -161,7 +161,7 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: iconAndColors[i].color,
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: CustomSize.borderRadius,
                             ),
                             child: ModelIndicator(
                               model: models[i],
@@ -206,16 +206,10 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
                   );
 
                   try {
-                    final selectedModels = models
-                        .where((e) => e.id != '')
-                        .map((e) => e.uniqueKey)
-                        .toList();
-                    await APIServer()
-                        .updateCustomHomeModelsV2(models: selectedModels);
+                    final selectedModels = models.where((e) => e.id != '').map((e) => e.uniqueKey).toList();
+                    await APIServer().updateCustomHomeModelsV2(models: selectedModels);
 
-                    APIServer()
-                        .capabilities(cache: false)
-                        .then((value) => Ability().updateCapabilities(value));
+                    APIServer().capabilities(cache: false).then((value) => Ability().updateCapabilities(value));
 
                     showSuccessMessage(
                         // ignore: use_build_context_synchronously
@@ -325,9 +319,7 @@ class HomeModelItem extends StatelessWidget {
                         buildTabView(
                           context,
                           customColors,
-                          models
-                              .where((e) => e.type == 'room_gallery')
-                              .toList(),
+                          models.where((e) => e.type == 'room_gallery').toList(),
                         ),
                         buildTabView(
                           context,
@@ -360,9 +352,9 @@ class HomeModelItem extends StatelessWidget {
       itemBuilder: (context, i) {
         var item = models[i];
         if (item.avatarUrl == null) {
-          // TODO: remove this debug print
-          print(item.toJson());
+          Logger.instance.w(item.toJson());
         }
+
         return ListTile(
           title: Container(
             alignment: Alignment.center,
@@ -388,9 +380,7 @@ class HomeModelItem extends StatelessWidget {
                   width: 10,
                   child: Icon(
                     Icons.check,
-                    color: initValue == item.id
-                        ? customColors.linkColor
-                        : Colors.transparent,
+                    color: initValue == item.id ? customColors.linkColor : Colors.transparent,
                   ),
                 ),
               ],

@@ -51,8 +51,7 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
   bool openaiAzure = false;
 
   /// OpenAI Azure API 版本
-  final TextEditingController azureAPIVersionController =
-      TextEditingController();
+  final TextEditingController azureAPIVersionController = TextEditingController();
 
   @override
   void dispose() {
@@ -87,12 +86,12 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          '新增渠道',
+          'New Channel',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.chatInputPanelBackground,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -115,17 +114,17 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
                 ColumnBlock(
                   children: [
                     EnhancedTextField(
-                      labelText: '渠道名称',
+                      labelText: 'Name',
                       customColors: customColors,
                       controller: nameController,
                       textAlignVertical: TextAlignVertical.top,
-                      hintText: '请输入渠道名称',
+                      hintText: 'Enter channel name',
                       maxLength: 100,
                       showCounter: false,
                     ),
                     EnhancedInput(
                       title: Text(
-                        '类型',
+                        'Type',
                         style: TextStyle(
                           color: customColors.textfieldLabelColor,
                           fontSize: 16,
@@ -141,9 +140,7 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
                       onPressed: () {
                         openListSelectDialog(
                           context,
-                          channelTypes
-                              .map((e) => SelectorItem(Text(e.text), e.name))
-                              .toList(),
+                          channelTypes.map((e) => SelectorItem(Text(e.text), e.name)).toList(),
                           (value) {
                             setState(() {
                               selectedChannelType = value.value;
@@ -156,7 +153,7 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
                       },
                     ),
                     EnhancedTextField(
-                      labelText: '服务器',
+                      labelText: 'Server',
                       customColors: customColors,
                       controller: serverController,
                       textAlignVertical: TextAlignVertical.top,
@@ -165,12 +162,12 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
                       showCounter: false,
                     ),
                     EnhancedTextField(
-                      labelText: '鉴权密钥',
+                      labelText: 'API Key',
                       customColors: customColors,
                       controller: secretController,
                       textAlignVertical: TextAlignVertical.top,
-                      hintText: '请输入鉴权密钥',
-                      maxLength: 255,
+                      hintText: 'Enter API Key',
+                      maxLength: 2048,
                       obscureText: true,
                       showCounter: false,
                     ),
@@ -185,7 +182,7 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
-                            '使用代理',
+                            'Use Proxy',
                             style: TextStyle(fontSize: 16),
                           ),
                           CupertinoSwitch(
@@ -203,7 +200,7 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
-                            'Azure 模式',
+                            'Azure Mode',
                             style: TextStyle(fontSize: 16),
                           ),
                           CupertinoSwitch(
@@ -218,7 +215,7 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
                         ],
                       ),
                       EnhancedTextField(
-                        labelText: 'API 版本',
+                        labelText: 'Version',
                         customColors: customColors,
                         controller: azureAPIVersionController,
                         textAlignVertical: TextAlignVertical.top,
@@ -240,9 +237,7 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
                       color: customColors.weakLinkColor,
                       fontSize: 15,
                       icon: Icon(
-                        showAdvancedOptions
-                            ? Icons.unfold_less
-                            : Icons.unfold_more,
+                        showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
                         color: customColors.weakLinkColor,
                         size: 15,
                       ),
@@ -273,23 +268,22 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
   /// 提交
   void onSubmit() {
     if (nameController.text.isEmpty) {
-      showErrorMessage('请输入渠道名称');
+      showErrorMessage('Please enter a channel name');
       return;
     }
 
     if (selectedChannelType == null) {
-      showErrorMessage('请选择渠道类型');
+      showErrorMessage('Please select channel type');
       return;
     }
 
     if (serverController.text.isEmpty) {
-      showErrorMessage('请输入服务器地址');
+      showErrorMessage('Please enter the server address');
       return;
     }
 
-    if (!serverController.text.startsWith('http://') &&
-        !serverController.text.startsWith('https://')) {
-      showErrorMessage('服务器地址格式不正确');
+    if (!serverController.text.startsWith('http://') && !serverController.text.startsWith('https://')) {
+      showErrorMessage('The server address format is incorrect');
       return;
     }
 
@@ -311,11 +305,9 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
   /// 生成选中的渠道类型文本
   String buildSelectedChannelTypeText() {
     if (selectedChannelType == null) {
-      return '请选择';
+      return 'Select';
     }
 
-    return channelTypes
-        .firstWhere((element) => element.name == selectedChannelType)
-        .text;
+    return channelTypes.firstWhere((element) => element.name == selectedChannelType).text;
   }
 }

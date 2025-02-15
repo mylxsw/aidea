@@ -2,6 +2,7 @@ import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/image.dart';
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/random_avatar.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -27,8 +28,8 @@ class ImageCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: customColors.columnBlockBackgroundColor,
-          borderRadius: BorderRadius.circular(8),
+          color: customColors.backgroundContainerColor,
+          borderRadius: CustomSize.borderRadius,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -38,15 +39,11 @@ class ImageCard extends StatelessWidget {
                 minHeight: 50,
               ),
               child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(8),
-                  topRight: Radius.circular(8),
-                ),
+                borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, topRight: CustomSize.radius),
                 child: images.isEmpty
                     ? Image.asset('assets/image-broken.png')
                     : CachedNetworkImageEnhanced(
-                        imageUrl:
-                            imageURL(images.first, qiniuImageTypeThumbMedium),
+                        imageUrl: imageURL(images.first, qiniuImageTypeThumbMedium),
                         fit: BoxFit.cover,
                       ),
               ),

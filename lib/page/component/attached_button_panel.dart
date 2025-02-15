@@ -1,3 +1,4 @@
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:flutter/material.dart';
 
 class AttachedButtonPanel extends StatelessWidget {
@@ -29,7 +30,7 @@ class AttachedButtonPanel extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: CustomSize.borderRadius,
           color: const Color.fromARGB(223, 0, 0, 0),
         ),
         child: Column(

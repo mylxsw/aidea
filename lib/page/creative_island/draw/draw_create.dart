@@ -95,76 +95,60 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
       selectedImagePath = widget.initImage;
     }
 
-    APIServer()
-        .creativeIslandCapacity(mode: widget.mode, id: widget.id)
-        .then((cap) {
+    APIServer().creativeIslandCapacity(mode: widget.mode, id: widget.id).then((cap) {
       setState(() {
         capacity = cap;
       });
 
       if (widget.galleryCopyId != null && widget.galleryCopyId! > 0) {
-        APIServer()
-            .creativeGalleryItem(id: widget.galleryCopyId!)
-            .then((response) {
+        APIServer().creativeGalleryItem(id: widget.galleryCopyId!).then((response) {
           final gallery = response.item;
           if (gallery.prompt != null && gallery.prompt!.isNotEmpty) {
             promptController.text = gallery.prompt!;
           }
 
-          if (gallery.negativePrompt != null &&
-              gallery.negativePrompt!.isNotEmpty) {
-            if (gallery.negativePrompt != null &&
-                gallery.negativePrompt!.isNotEmpty) {
+          if (gallery.negativePrompt != null && gallery.negativePrompt!.isNotEmpty) {
+            if (gallery.negativePrompt != null && gallery.negativePrompt!.isNotEmpty) {
               forceShowNegativePrompt = true;
             }
 
             negativePromptController.text = gallery.negativePrompt!;
           }
 
-          if (gallery.metaMap['model_id'] != null &&
-              gallery.metaMap['model_id'] != '') {
-            final matchedModels = capacity!.vendorModels.where((e) =>
-                e.id == gallery.metaMap['model_id'] ||
-                e.id == 'model-${gallery.metaMap['model_id']}');
+          if (gallery.metaMap['model_id'] != null && gallery.metaMap['model_id'] != '') {
+            final matchedModels = capacity!.vendorModels
+                .where((e) => e.id == gallery.metaMap['model_id'] || e.id == 'model-${gallery.metaMap['model_id']}');
             if (matchedModels.isNotEmpty) {
               selectedModel = matchedModels.first;
             }
           }
 
-          if (gallery.metaMap['image_ratio'] != null &&
-              gallery.metaMap['image_ratio'] != '') {
+          if (gallery.metaMap['image_ratio'] != null && gallery.metaMap['image_ratio'] != '') {
             selectedImageSize = gallery.metaMap['image_ratio']!;
           }
 
-          if (gallery.metaMap['filter_id'] != null &&
-              gallery.metaMap['filter_id'] > 0) {
-            final matchedStyles = capacity!.filters
-                .where((e) => e.id == gallery.metaMap['filter_id']);
+          if (gallery.metaMap['filter_id'] != null && gallery.metaMap['filter_id'] > 0) {
+            final matchedStyles = capacity!.filters.where((e) => e.id == gallery.metaMap['filter_id']);
             if (matchedStyles.isNotEmpty) {
               selectedStyle = matchedStyles.first;
             }
           }
 
-          if (gallery.metaMap['real_prompt'] != null &&
-              gallery.metaMap['real_prompt'] != '') {
+          if (gallery.metaMap['real_prompt'] != null && gallery.metaMap['real_prompt'] != '') {
             promptController.text = gallery.metaMap['real_prompt']!;
           }
 
-          if (gallery.metaMap['negative_prompt'] != null &&
-              gallery.metaMap['negative_prompt'] != '') {
+          if (gallery.metaMap['negative_prompt'] != null && gallery.metaMap['negative_prompt'] != '') {
             negativePromptController.text = gallery.metaMap['negative_prompt']!;
           }
 
-          if (gallery.metaMap['real_negative_prompt'] != null &&
-              gallery.metaMap['real_negative_prompt'] != '') {
-            negativePromptController.text =
-                gallery.metaMap['real_negative_prompt']!;
+          if (gallery.metaMap['real_negative_prompt'] != null && gallery.metaMap['real_negative_prompt'] != '') {
+            negativePromptController.text = gallery.metaMap['real_negative_prompt']!;
           }
 
           // 创建同款时，默认关闭 AI 优化，除非该同款包含 ai_rewrite 的设定
           enableAIRewrite = false;
-          if ((gallery.metaMap['real_prompt'] == null ||
-                  gallery.metaMap['real_prompt'] == '') &&
+          if ((gallery.metaMap['real_prompt'] == null || gallery.metaMap['real_prompt'] == '') &&
               gallery.metaMap['ai_rewrite'] != null &&
               gallery.metaMap['ai_rewrite']) {
             enableAIRewrite = gallery.metaMap['ai_rewrite'];
@@ -176,9 +160,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
     });
 
     if (widget.note != null) {
-      Cache()
-          .boolGet(key: 'creative:tutorials:${widget.mode}:dialog')
-          .then((show) {
+      Cache().boolGet(key: 'creative:tutorials:${widget.mode}:dialog').then((show) {
         if (!show) {
           return;
         }
@@ -229,7 +211,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
           icon: const Icon(Icons.arrow_back_ios),
         ),
         toolbarHeight: CustomSize.toolbarHeight,
-        backgroundColor: customColors.backgroundContainerColor,
+        backgroundColor: customColors.backgroundColor,
         actions: [
           if (widget.note != null)
             IconButton(
@@ -240,19 +222,17 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
             )
         ],
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
-        enabled: true,
+        enabled: false,
         maxWidth: CustomSize.smallWindowSize,
         child: Column(
           children: [
-            if (Ability().showGlobalAlert)
-              const GlobalAlert(pageKey: 'creative_create'),
+            if (Ability().showGlobalAlert) const GlobalAlert(pageKey: 'creative_create'),
             Expanded(
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 height: double.infinity,
                 child: SingleChildScrollView(
                   child: buildEditPanel(context, customColors),
@@ -315,9 +295,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                 ),
 
               // 图片风格
-              if (capacity != null &&
-                  capacity!.showStyle &&
-                  capacity!.filters.isNotEmpty)
+              if (capacity != null && capacity!.showStyle && capacity!.filters.isNotEmpty)
                 ImageStyleSelector(
                   styles: capacity!.filters,
                   onSelected: (style) {
@@ -334,12 +312,9 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
             children: [
               // 生成内容
-              if (widget.mode == 'text-to-image')
-                ...buildPromptField(customColors),
+              if (widget.mode == 'text-to-image') ...buildPromptField(customColors),
               // AI 优化配置
-              if (capacity != null &&
-                  capacity!.showAIRewrite &&
-                  widget.mode != 'image-to-image')
+              if (capacity != null && capacity!.showAIRewrite && widget.mode != 'image-to-image')
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -355,10 +330,8 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                             showBeautyDialog(
                               context,
                               type: QuickAlertType.info,
-                              text: AppLocale.onceEnabledSmartOptimization
-                                  .getString(context),
-                              confirmBtnText:
-                                  AppLocale.gotIt.getString(context),
+                              text: AppLocale.onceEnabledSmartOptimization.getString(context),
+                              confirmBtnText: AppLocale.gotIt.getString(context),
                               showCancelBtn: false,
                             );
                           },
@@ -389,13 +362,10 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
               innerPanding: 10,
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
               children: [
-                if (widget.mode == 'image-to-image' &&
-                    capacity != null &&
-                    capacity!.showPromptForImage2Image)
+                if (widget.mode == 'image-to-image' && capacity != null && capacity!.showPromptForImage2Image)
                   ...buildPromptField(customColors),
                 // 反向提示语
-                if ((capacity != null && capacity!.showNegativeText) ||
-                    forceShowNegativePrompt)
+                if ((capacity != null && capacity!.showNegativeText) || forceShowNegativePrompt)
                   EnhancedTextField(
                     labelPosition: LabelPosition.top,
                     labelText: AppLocale.excludeContents.getString(context),
@@ -409,9 +379,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                     showCounter: false,
                   ),
                 // 原图相似度
-                if (capacity != null &&
-                    capacity!.showImageStrength &&
-                    widget.mode == 'image-to-image')
+                if (capacity != null && capacity!.showImageStrength && widget.mode == 'image-to-image')
                   Row(
                     children: [
                       Row(
@@ -423,10 +391,8 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                               showBeautyDialog(
                                 context,
                                 type: QuickAlertType.info,
-                                text:
-                                    '想象力\n\n提高想象力，得到更有创造力的内容。降低想象力，效果与参考图更相似。',
-                                confirmBtnText:
-                                    AppLocale.gotIt.getString(context),
+                                text: '想象力\n\n提高想象力，得到更有创造力的内容。降低想象力，效果与参考图更相似。',
+                                confirmBtnText: AppLocale.gotIt.getString(context),
                                 showCancelBtn: false,
                               );
                             },
@@ -464,9 +430,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                     ],
                   ),
                 // 图片数量
-                if (capacity != null &&
-                    capacity!.showImageCount &&
-                    widget.mode != 'image-to-image')
+                if (capacity != null && capacity!.showImageCount && widget.mode != 'image-to-image')
                   EnhancedInput(
                     title: Text(
                       AppLocale.imageCount.getString(context),
@@ -480,14 +444,10 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                       openListSelectDialog(
                         context,
                         <SelectorItem>[
-                          SelectorItem(
-                              const Text('1', textAlign: TextAlign.center), 1),
-                          SelectorItem(
-                              const Text('2', textAlign: TextAlign.center), 2),
-                          SelectorItem(
-                              const Text('3', textAlign: TextAlign.center), 3),
-                          SelectorItem(
-                              const Text('4', textAlign: TextAlign.center), 4),
+                          SelectorItem(const Text('1', textAlign: TextAlign.center), 1),
+                          SelectorItem(const Text('2', textAlign: TextAlign.center), 2),
+                          SelectorItem(const Text('3', textAlign: TextAlign.center), 3),
+                          SelectorItem(const Text('4', textAlign: TextAlign.center), 4),
                         ],
                         (value) {
                           setState(() {
@@ -501,9 +461,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                     },
                   ),
                 // 图片尺寸
-                if (capacity != null &&
-                    capacity!.allowRatios.isNotEmpty &&
-                    widget.mode != 'image-to-image')
+                if (capacity != null && capacity!.allowRatios.isNotEmpty && widget.mode != 'image-to-image')
                   EnhancedInput(
                     title: Text(
                       AppLocale.imageSize.getString(context),
@@ -516,10 +474,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                     onPressed: () {
                       openListSelectDialog(
                         context,
-                        capacity!.allowRatios
-                            .map((e) =>
-                                SelectorItem(ImageSize(aspectRatio: e), e))
-                            .toList(),
+                        capacity!.allowRatios.map((e) => SelectorItem(ImageSize(aspectRatio: e), e)).toList(),
                         (value) {
                           setState(() {
                             selectedImageSize = value.value;
@@ -530,9 +485,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                         value: selectedImageSize,
                         heightFactor: 0.3,
                         horizontal: true,
-                        horizontalCount: capacity!.allowRatios.length > 3
-                            ? 4
-                            : capacity!.allowRatios.length,
+                        horizontalCount: capacity!.allowRatios.length > 3 ? 4 : capacity!.allowRatios.length,
                       );
                     },
                   ),
@@ -570,34 +523,27 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                                     Stack(
                                       children: [
                                         Container(
-                                          padding: const EdgeInsets.only(
-                                              top: 25, bottom: 10),
+                                          padding: const EdgeInsets.only(top: 25, bottom: 10),
                                           alignment: Alignment.center,
                                           child: Text(
                                             e.name,
                                             textAlign: TextAlign.center,
-                                            style:
-                                                const TextStyle(fontSize: 14),
-                                            textWidthBasis:
-                                                TextWidthBasis.longestLine,
+                                            style: const TextStyle(fontSize: 14),
+                                            textWidthBasis: TextWidthBasis.longestLine,
                                           ),
                                         ),
-                                        if (e.vendor != null &&
-                                            e.vendor!.isNotEmpty)
+                                        if (e.vendor != null && e.vendor!.isNotEmpty)
                                           Positioned(
                                             left: 0,
                                             top: 0,
                                             child: Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
+                                              padding: const EdgeInsets.symmetric(
                                                 horizontal: 5,
                                                 vertical: 3,
                                               ),
                                               decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                color: modelTypeTagColors[
-                                                    e.vendor!],
+                                                borderRadius: CustomSize.borderRadius,
+                                                color: modelTypeTagColors[e.vendor!],
                                               ),
                                               child: Text(
                                                 e.vendor!,
@@ -613,8 +559,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                                     e.id,
                                     search: (keywrod) {
                                       return e.name.contains(keywrod) ||
-                                          (e.vendor != null &&
-                                              e.vendor!.contains(keywrod));
+                                          (e.vendor != null && e.vendor!.contains(keywrod));
                                     },
                                   ))
                               .toList(),
@@ -626,8 +571,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                               return;
                             }
 
-                            selectedModel = capacity!.vendorModels
-                                .firstWhere((e) => e.id == value.value);
+                            selectedModel = capacity!.vendorModels.firstWhere((e) => e.id == value.value);
                           });
                           return true;
                         },
@@ -659,9 +603,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
                         context,
                         [
                           SelectorItem(const Text('自动'), null),
-                          ...capacity!.allowUpscaleBy
-                              .map((e) => SelectorItem(Text(e), e))
-                              .toList(),
+                          ...capacity!.allowUpscaleBy.map((e) => SelectorItem(Text(e), e)).toList(),
                         ],
                         (value) {
                           setState(() {
@@ -837,9 +779,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
       return;
     }
 
-    if (widget.mode == 'image-to-image' &&
-        selectedImagePath == null &&
-        selectedImageData == null) {
+    if (widget.mode == 'image-to-image' && selectedImagePath == null && selectedImageData == null) {
       showErrorMessage(AppLocale.selectReferenceImage.getString(context));
       return;
     }
@@ -866,8 +806,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
     };
 
     if (selectedImagePath != null && selectedImagePath!.isNotEmpty) {
-      params['image'] =
-          'https://${selectedImagePath ?? 'demo'}'; // 仅用于测试消耗量，正式上传后会被替换为 URL
+      params['image'] = 'https://${selectedImagePath ?? 'demo'}'; // 仅用于测试消耗量，正式上传后会被替换为 URL
     }
 
     if (selectedImageData != null && selectedImageData!.isNotEmpty) {
@@ -891,41 +830,36 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
         if (params['image'] != null && params['image'] != '') {
           final cancel = BotToast.showCustomLoading(
             toastBuilder: (cancel) {
-              return const LoadingIndicator(
-                message: '正在上传图片，请稍后...',
+              return LoadingIndicator(
+                message: AppLocale.imageUploading.getString(context),
               );
             },
             allowClick: false,
           );
 
           if (selectedImagePath != null &&
-              (selectedImagePath!.startsWith('http://') ||
-                  selectedImagePath!.startsWith('https://'))) {
+              (selectedImagePath!.startsWith('http://') || selectedImagePath!.startsWith('https://'))) {
             params['image'] = selectedImagePath;
             cancel();
           } else {
             if (selectedImagePath != null && selectedImagePath!.isNotEmpty) {
-              final uploadRes = await ImageUploader(widget.setting)
-                  .upload(selectedImagePath!)
-                  .whenComplete(() => cancel());
+              final uploadRes =
+                  await ImageUploader(widget.setting).upload(selectedImagePath!).whenComplete(() => cancel());
               params['image'] = uploadRes.url;
-            } else if (selectedImageData != null &&
-                selectedImageData!.isNotEmpty) {
-              final uploadRes = await ImageUploader(widget.setting)
-                  .uploadData(selectedImageData!)
-                  .whenComplete(() => cancel());
+            } else if (selectedImageData != null && selectedImageData!.isNotEmpty) {
+              final uploadRes =
+                  await ImageUploader(widget.setting).uploadData(selectedImageData!).whenComplete(() => cancel());
               params['image'] = uploadRes.url;
             }
           }
         }
 
-        final taskId =
-            await APIServer().creativeIslandCompletionsAsyncV2(params);
+        final taskId = await APIServer().creativeIslandCompletionsAsyncV2(params);
 
         stopPeriodQuery = false;
 
-        // ignore: use_build_context_synchronously
         Navigator.push(
+          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
             fullscreenDialog: true,
@@ -957,8 +891,10 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
       if (!res.enough) {
         if (context.mounted) {
           showBeautyDialog(
+            // ignore: use_build_context_synchronously
             context,
             type: QuickAlertType.warning,
+            // ignore: use_build_context_synchronously
             text: AppLocale.quotaExceeded.getString(context),
             confirmBtnText: '立即购买',
             showCancelBtn: true,
@@ -972,8 +908,8 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
       }
       if (res.cost > 0) {
         cancel();
-        // ignore: use_build_context_synchronously
         openConfirmDialog(
+          // ignore: use_build_context_synchronously
           context,
           '本次请求预计消耗 ${res.cost} 个智慧果，是否继续操作？',
           () => request(res.waitDuration ?? 60),
@@ -1021,9 +957,7 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
     final resp = await APIServer().asyncTaskStatus(taskId);
     switch (resp.status) {
       case 'success':
-        if (params != null &&
-            resp.originImage != null &&
-            resp.originImage != '') {
+        if (params != null && resp.originImage != null && resp.originImage != '') {
           params['image'] = resp.originImage;
         }
         return IslandResult(

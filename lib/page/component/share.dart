@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:askaide/helper/platform.dart';
+import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:fluwx/fluwx.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
@@ -22,10 +24,9 @@ Future<void> shareTo(
     // ignore: empty_catches
   } catch (ignored) {}
 
-  if ((PlatformTool.isIOS() || PlatformTool.isAndroid()) &&
-      await isWeChatInstalled) {
-    // ignore: use_build_context_synchronously
+  if ((PlatformTool.isIOS() || PlatformTool.isAndroid()) && await isWeChatInstalled) {
     openModalBottomSheet(
+      // ignore: use_build_context_synchronously
       context,
       (context) => Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -59,9 +60,9 @@ Future<void> shareTo(
                   children: [
                     Image.asset('assets/friendroom.png', width: 40),
                     const SizedBox(height: 10),
-                    const Text(
-                      '分享到朋友圈',
-                      style: TextStyle(fontSize: 12),
+                    Text(
+                      AppLocale.shareToWechatQ.getString(context),
+                      style: const TextStyle(fontSize: 12),
                     ),
                   ],
                 ),
@@ -88,9 +89,9 @@ Future<void> shareTo(
                   children: [
                     Image.asset('assets/wechat.png', width: 40),
                     const SizedBox(height: 10),
-                    const Text(
-                      '分享到微信',
-                      style: TextStyle(fontSize: 12),
+                    Text(
+                      AppLocale.shareToWechat.getString(context),
+                      style: const TextStyle(fontSize: 12),
                     ),
                   ],
                 ),
@@ -116,9 +117,9 @@ Future<void> shareTo(
                   children: [
                     Image.asset('assets/share.png', width: 40),
                     const SizedBox(height: 10),
-                    const Text(
-                      '分享到其它应用',
-                      style: TextStyle(fontSize: 12),
+                    Text(
+                      AppLocale.shareToOtherApps.getString(context),
+                      style: const TextStyle(fontSize: 12),
                     ),
                   ],
                 ),

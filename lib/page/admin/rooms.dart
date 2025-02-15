@@ -47,12 +47,12 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          '用户数字人列表',
+          'Characters',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.chatInputPanelBackground,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -91,16 +91,12 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
                           vertical: 5,
                         ),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(
-                              customColors.borderRadius ?? 8),
-                        ),
+                            borderRadius: CustomSize.borderRadius),
                         child: Material(
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(customColors.borderRadius ?? 8)),
+                          borderRadius: CustomSize.borderRadius,
                           color: customColors.columnBlockBackgroundColor,
                           child: InkWell(
-                            borderRadius: BorderRadius.all(Radius.circular(
-                                customColors.borderRadius ?? 8)),
+                            borderRadius: CustomSize.borderRadiusAll,
                             onTap: () {
                               context.push(
                                   '/admin/users/${widget.userId}/rooms/${room.id}/messages?room_type=${room.roomType ?? 1}');
@@ -158,14 +154,14 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
                                         color: customColors
                                             .backgroundContainerColor,
                                         borderRadius: const BorderRadius.only(
-                                          topRight: Radius.circular(8),
-                                          bottomLeft: Radius.circular(8),
+                                          topRight: CustomSize.radius,
+                                          bottomLeft: CustomSize.radius,
                                         ),
                                       ),
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 2),
                                       child: Text(
-                                        '群聊',
+                                        AppLocale.groupChat.getString(context),
                                         style: TextStyle(
                                           color: customColors.weakTextColor,
                                           fontSize: 8,
@@ -205,9 +201,7 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
         height: 70,
         child: ClipRRect(
           borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(8),
-            bottomLeft: Radius.circular(8),
-          ),
+              topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
           child: CachedNetworkImageEnhanced(
             imageUrl: imageURL(room.avatarUrl!, qiniuImageTypeAvatar),
             fit: BoxFit.fill,
@@ -219,9 +213,7 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
     if (room.members.isNotEmpty) {
       return ClipRRect(
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(8),
-          bottomLeft: Radius.circular(8),
-        ),
+            topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
         child: GroupAvatar(
           size: 70,
           avatars: room.members,
@@ -234,9 +226,7 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
       size: 70,
       backgroundColor: Colors.grey.withAlpha(100),
       borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(8),
-        bottomLeft: Radius.circular(8),
-      ),
+          topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
     );
   }
 }

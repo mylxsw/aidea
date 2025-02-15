@@ -24,7 +24,6 @@ import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/model/misc.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
@@ -73,24 +72,19 @@ class _ArtisticWordArtScreenState extends State<ArtisticWordArtScreen> {
 
   @override
   void initState() {
-    APIServer()
-        .creativeIslandCapacity(mode: 'artistic-text', id: widget.id)
-        .then((cap) {
+    APIServer().creativeIslandCapacity(mode: 'artistic-text', id: widget.id).then((cap) {
       setState(() {
         capacity = cap;
       });
 
       if (widget.galleryCopyId != null && widget.galleryCopyId! > 0) {
-        APIServer()
-            .creativeGalleryItem(id: widget.galleryCopyId!)
-            .then((response) {
+        APIServer().creativeGalleryItem(id: widget.galleryCopyId!).then((response) {
           final gallery = response.item;
           if (gallery.prompt != null && gallery.prompt!.isNotEmpty) {
             promptController.text = gallery.prompt!;
           }
 
-          if (gallery.metaMap['real_prompt'] != null &&
-              gallery.metaMap['real_prompt'] != '') {
+          if (gallery.metaMap['real_prompt'] != null && gallery.metaMap['real_prompt'] != '') {
             promptController.text = gallery.metaMap['real_prompt']!;
           }
 
@@ -100,9 +94,7 @@ class _ArtisticWordArtScreenState extends State<ArtisticWordArtScreen> {
     });
 
     if (widget.note != null) {
-      Cache()
-          .boolGet(key: 'creative:tutorials:artistic-text:dialog')
-          .then((show) {
+      Cache().boolGet(key: 'creative:tutorials:artistic-text:dialog').then((show) {
         if (!show) {
           return;
         }
@@ -137,7 +129,7 @@ class _ArtisticWordArtScreenState extends State<ArtisticWordArtScreen> {
           icon: const Icon(Icons.arrow_back_ios),
         ),
         toolbarHeight: CustomSize.toolbarHeight,
-        backgroundColor: customColors.backgroundContainerColor,
+        backgroundColor: customColors.backgroundColor,
         actions: [
           if (widget.note != null)
             IconButton(
@@ -148,19 +140,17 @@ class _ArtisticWordArtScreenState extends State<ArtisticWordArtScreen> {
             )
         ],
       ),
-      backgroundColor: customColors.backgroundContainerColor,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
-        enabled: true,
+        enabled: false,
         maxWidth: CustomSize.smallWindowSize,
         child: Column(
           children: [
-            if (Ability().showGlobalAlert)
-              const GlobalAlert(pageKey: 'creative_create'),
+            if (Ability().showGlobalAlert) const GlobalAlert(pageKey: 'creative_create'),
             Expanded(
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 height: double.infinity,
                 child: SingleChildScrollView(
                   child: buildEditPanel(context, customColors),
@@ -194,7 +184,7 @@ class _ArtisticWordArtScreenState extends State<ArtisticWordArtScreen> {
         children: [
           ColumnBlock(
             innerPanding: 10,
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            padding: const EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 0),
             children: [
               if (capacity != null && capacity!.artisticTextStyles.isNotEmpty)
                 ArtisticStyleSelector(
@@ -260,14 +250,10 @@ class _ArtisticWordArtScreenState extends State<ArtisticWordArtScreen> {
                     openListSelectDialog(
                       context,
                       <SelectorItem>[
-                        SelectorItem(
-                            const Text('1', textAlign: TextAlign.center), 1),
-                        SelectorItem(
-                            const Text('2', textAlign: TextAlign.center), 2),
-                        SelectorItem(
-                            const Text('3', textAlign: TextAlign.center), 3),
-                        SelectorItem(
-                            const Text('4', textAlign: TextAlign.center), 4),
+                        SelectorItem(const Text('1', textAlign: TextAlign.center), 1),
+                        SelectorItem(const Text('2', textAlign: TextAlign.center), 2),
+                        SelectorItem(const Text('3', textAlign: TextAlign.center), 3),
+                        SelectorItem(const Text('4', textAlign: TextAlign.center), 4),
                       ],
                       (value) {
                         setState(() {
@@ -454,14 +440,13 @@ class _ArtisticWordArtScreenState extends State<ArtisticWordArtScreen> {
 
     request(int waitDuration) async {
       try {
-        final taskId = await APIServer()
-            .creativeIslandArtisticTextCompletionsAsyncV2(params);
+        final taskId = await APIServer().creativeIslandArtisticTextCompletionsAsyncV2(params);
 
         stopPeriodQuery = false;
 
         cancel();
-        // ignore: use_build_context_synchronously
         Navigator.push(
+          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
             fullscreenDialog: true,
@@ -510,9 +495,7 @@ class _ArtisticWordArtScreenState extends State<ArtisticWordArtScreen> {
     final resp = await APIServer().asyncTaskStatus(taskId);
     switch (resp.status) {
       case 'success':
-        if (params != null &&
-            resp.originImage != null &&
-            resp.originImage != '') {
+        if (params != null && resp.originImage != null && resp.originImage != '') {
           params['image'] = resp.originImage;
         }
         return IslandResult(

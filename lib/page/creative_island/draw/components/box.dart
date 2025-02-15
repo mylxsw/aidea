@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:askaide/helper/color.dart';
 import 'package:askaide/helper/haptic_feedback.dart';
 import 'package:askaide/page/component/image.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/repo/api/creative.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -11,8 +12,7 @@ import 'package:go_router/go_router.dart';
 class CreativeIslandBox extends StatelessWidget {
   final CreativeIslandItem item;
   final Color? backgroundColor;
-  const CreativeIslandBox(
-      {super.key, required this.item, this.backgroundColor});
+  const CreativeIslandBox({super.key, required this.item, this.backgroundColor});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class CreativeIslandBox extends StatelessWidget {
             // height: 80,
             decoration: BoxDecoration(
               color: backgroundColor,
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              borderRadius: CustomSize.borderRadius,
               image: item.bgImage != null
                   ? DecorationImage(
                       image: CachedNetworkImageProviderEnhanced(item.bgImage!),
@@ -36,7 +36,7 @@ class CreativeIslandBox extends StatelessWidget {
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: CustomSize.borderRadiusAll,
                 onTap: () {
                   HapticFeedbackHelper.lightImpact();
                   context.push('/creative-island/${item.id}/create');
@@ -49,9 +49,7 @@ class CreativeIslandBox extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: Colors.white.withAlpha(60),
                               borderRadius: const BorderRadius.only(
-                                bottomLeft: Radius.circular(10),
-                                bottomRight: Radius.circular(10),
-                              ),
+                                  bottomLeft: CustomSize.radius, bottomRight: CustomSize.radius),
                             ),
                             child: ClipRect(
                               child: BackdropFilter(
@@ -67,14 +65,10 @@ class CreativeIslandBox extends StatelessWidget {
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
-                                        color: item.titleColor != null
-                                            ? stringToColor(item.titleColor!)
-                                            : Colors.white,
+                                        color: item.titleColor != null ? stringToColor(item.titleColor!) : Colors.white,
                                         shadows: [
                                           Shadow(
-                                            color: const Color.fromARGB(
-                                                    255, 161, 161, 161)
-                                                .withOpacity(0.5),
+                                            color: const Color.fromARGB(255, 161, 161, 161).withOpacity(0.5),
                                             offset: const Offset(2, 2),
                                             blurRadius: 5,
                                           ),
@@ -106,13 +100,9 @@ class CreativeIslandBox extends StatelessWidget {
               top: 0,
               right: 0,
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(
-                    topRight: Radius.circular(10),
-                    bottomLeft: Radius.circular(10),
-                  ),
+                  borderRadius: const BorderRadius.only(topRight: CustomSize.radius, bottomLeft: CustomSize.radius),
                   color: item.labelColor != null
                       ? stringToColor(item.labelColor!)
                       : const Color.fromARGB(255, 230, 173, 58),

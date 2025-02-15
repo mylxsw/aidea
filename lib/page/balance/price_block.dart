@@ -1,7 +1,10 @@
-import 'package:askaide/page/component/coin.dart';
+import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/component/credit.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/payment.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 class PriceBlock extends StatelessWidget {
@@ -30,14 +33,13 @@ class PriceBlock extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: customColors.paymentItemBackgroundColor,
+            color: customColors.backgroundContainerColor,
             border: Border.all(
-              color:
-                  (selectedProduct != null && selectedProduct!.id == detail.id)
-                      ? customColors.linkColor ?? Colors.green
-                      : customColors.paymentItemBackgroundColor!,
+              color: (selectedProduct != null && selectedProduct!.id == detail.id)
+                  ? customColors.linkColor ?? Colors.green
+                  : customColors.paymentItemBackgroundColor!,
             ),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: CustomSize.borderRadius,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -45,7 +47,7 @@ class PriceBlock extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Coin(
+                  Credit(
                     count: product.quota,
                     color: customColors.paymentItemTitleColor,
                   ),
@@ -59,7 +61,7 @@ class PriceBlock extends StatelessWidget {
                       ),
                       const SizedBox(width: 1),
                       Text(
-                        '${product.expirePolicyText}内有效',
+                        '${product.expirePolicyText} ${AppLocale.validDays.getString(context)}',
                         style: const TextStyle(
                           fontSize: 11,
                           color: Color.fromARGB(255, 224, 170, 7),
@@ -90,10 +92,7 @@ class PriceBlock extends StatelessWidget {
             child: Container(
               decoration: const BoxDecoration(
                 color: Color.fromARGB(255, 224, 68, 7),
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(8),
-                  bottomLeft: Radius.circular(8),
-                ),
+                borderRadius: BorderRadius.only(topRight: CustomSize.radius, bottomLeft: CustomSize.radius),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
               child: const Text(

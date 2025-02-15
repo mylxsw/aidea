@@ -387,6 +387,7 @@
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "i386 arm64";
 				INFOPLIST_FILE = Runner/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -449,10 +450,6 @@
 					"\"file_picker\"",
 					"-framework",
 					"\"file_saver\"",
-					"-framework",
-					"\"flutter_image_compress\"",
-					"-framework",
-					"\"flutter_local_notifications\"",
 					"-framework",
 					"\"flutter_localization\"",
 					"-framework",
@@ -612,6 +609,7 @@
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "i386 arm64";
 				INFOPLIST_FILE = Runner/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -674,10 +672,6 @@
 					"\"file_picker\"",
 					"-framework",
 					"\"file_saver\"",
-					"-framework",
-					"\"flutter_image_compress\"",
-					"-framework",
-					"\"flutter_local_notifications\"",
 					"-framework",
 					"\"flutter_localization\"",
 					"-framework",
@@ -731,6 +725,7 @@
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "i386 arm64";
 				INFOPLIST_FILE = Runner/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -793,10 +788,6 @@
 					"\"file_picker\"",
 					"-framework",
 					"\"file_saver\"",
-					"-framework",
-					"\"flutter_image_compress\"",
-					"-framework",
-					"\"flutter_local_notifications\"",
 					"-framework",
 					"\"flutter_localization\"",
 					"-framework",

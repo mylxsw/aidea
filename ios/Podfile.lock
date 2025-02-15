@@ -1,35 +1,40 @@
 PODS:
   - audioplayers_darwin (0.0.1):
     - Flutter
-  - DKImagePickerController/Core (4.3.4):
+  - camera_avfoundation (0.0.1):
+    - Flutter
+  - camerawesome (0.0.1):
+    - Flutter
+    - JPSVolumeButtonHandler
+  - DKImagePickerController/Core (4.3.9):
     - DKImagePickerController/ImageDataManager
     - DKImagePickerController/Resource
-  - DKImagePickerController/ImageDataManager (4.3.4)
-  - DKImagePickerController/PhotoGallery (4.3.4):
+  - DKImagePickerController/ImageDataManager (4.3.9)
+  - DKImagePickerController/PhotoGallery (4.3.9):
     - DKImagePickerController/Core
     - DKPhotoGallery
-  - DKImagePickerController/Resource (4.3.4)
-  - DKPhotoGallery (0.0.17):
-    - DKPhotoGallery/Core (= 0.0.17)
-    - DKPhotoGallery/Model (= 0.0.17)
-    - DKPhotoGallery/Preview (= 0.0.17)
-    - DKPhotoGallery/Resource (= 0.0.17)
+  - DKImagePickerController/Resource (4.3.9)
+  - DKPhotoGallery (0.0.19):
+    - DKPhotoGallery/Core (= 0.0.19)
+    - DKPhotoGallery/Model (= 0.0.19)
+    - DKPhotoGallery/Preview (= 0.0.19)
+    - DKPhotoGallery/Resource (= 0.0.19)
     - SDWebImage
     - SwiftyGif
-  - DKPhotoGallery/Core (0.0.17):
+  - DKPhotoGallery/Core (0.0.19):
     - DKPhotoGallery/Model
     - DKPhotoGallery/Preview
     - SDWebImage
     - SwiftyGif
-  - DKPhotoGallery/Model (0.0.17):
+  - DKPhotoGallery/Model (0.0.19):
     - SDWebImage
     - SwiftyGif
-  - DKPhotoGallery/Preview (0.0.17):
+  - DKPhotoGallery/Preview (0.0.19):
     - DKPhotoGallery/Model
     - DKPhotoGallery/Resource
     - SDWebImage
     - SwiftyGif
-  - DKPhotoGallery/Resource (0.0.17):
+  - DKPhotoGallery/Resource (0.0.19):
     - SDWebImage
     - SwiftyGif
   - file_picker (0.0.1):
@@ -38,13 +43,11 @@ PODS:
   - file_saver (0.0.1):
     - Flutter
   - Flutter (1.0.0)
-  - flutter_image_compress (1.0.0):
+  - flutter_image_compress_common (1.0.0):
     - Flutter
     - Mantle
     - SDWebImage
     - SDWebImageWebPCoder
-  - flutter_local_notifications (0.0.1):
-    - Flutter
   - flutter_localization (0.0.1):
     - Flutter
   - flutter_native_splash (0.0.1):
@@ -54,20 +57,24 @@ PODS:
   - fluwx (0.0.1):
     - Flutter
     - WechatOpenSDK-XCFramework (~> 2.0.2)
-  - image_gallery_saver (1.5.0):
+  - image_gallery_saver (2.0.2):
     - Flutter
   - in_app_purchase_storekit (0.0.1):
     - Flutter
     - FlutterMacOS
-  - libwebp (1.2.4):
-    - libwebp/demux (= 1.2.4)
-    - libwebp/mux (= 1.2.4)
-    - libwebp/webp (= 1.2.4)
-  - libwebp/demux (1.2.4):
+  - JPSVolumeButtonHandler (1.0.5)
+  - libwebp (1.3.2):
+    - libwebp/demux (= 1.3.2)
+    - libwebp/mux (= 1.3.2)
+    - libwebp/sharpyuv (= 1.3.2)
+    - libwebp/webp (= 1.3.2)
+  - libwebp/demux (1.3.2):
     - libwebp/webp
-  - libwebp/mux (1.2.4):
+  - libwebp/mux (1.3.2):
     - libwebp/demux
-  - libwebp/webp (1.2.4)
+  - libwebp/sharpyuv (1.3.2)
+  - libwebp/webp (1.3.2):
+    - libwebp/sharpyuv
   - Mantle (2.2.0):
     - Mantle/extobjc (= 2.2.0)
   - Mantle/extobjc (2.2.0)
@@ -87,12 +94,12 @@ PODS:
     - FlutterMacOS
   - screen_brightness_ios (0.1.0):
     - Flutter
-  - SDWebImage (5.15.5):
-    - SDWebImage/Core (= 5.15.5)
-  - SDWebImage/Core (5.15.5)
-  - SDWebImageWebPCoder (0.11.0):
+  - SDWebImage (5.19.4):
+    - SDWebImage/Core (= 5.19.4)
+  - SDWebImage/Core (5.19.4)
+  - SDWebImageWebPCoder (0.14.6):
     - libwebp (~> 1.0)
-    - SDWebImage/Core (~> 5.15)
+    - SDWebImage/Core (~> 5.17)
   - share_plus (0.0.1):
     - Flutter
   - shared_preferences_foundation (0.0.1):
@@ -103,43 +110,43 @@ PODS:
   - sqflite (0.0.3):
     - Flutter
     - FlutterMacOS
-  - Stripe (23.22.1):
-    - StripeApplePay (= 23.22.1)
-    - StripeCore (= 23.22.1)
-    - StripePayments (= 23.22.1)
-    - StripePaymentsUI (= 23.22.1)
-    - StripeUICore (= 23.22.1)
+  - Stripe (23.28.1):
+    - StripeApplePay (= 23.28.1)
+    - StripeCore (= 23.28.1)
+    - StripePayments (= 23.28.1)
+    - StripePaymentsUI (= 23.28.1)
+    - StripeUICore (= 23.28.1)
   - stripe_ios (0.0.1):
     - Flutter
-    - Stripe (~> 23.22.0)
-    - StripeApplePay (~> 23.22.0)
-    - StripeFinancialConnections (~> 23.22.0)
-    - StripePayments (~> 23.22.0)
-    - StripePaymentSheet (~> 23.22.0)
-    - StripePaymentsUI (~> 23.22.0)
-  - StripeApplePay (23.22.1):
-    - StripeCore (= 23.22.1)
-  - StripeCore (23.22.1)
-  - StripeFinancialConnections (23.22.1):
-    - StripeCore (= 23.22.1)
-    - StripeUICore (= 23.22.1)
-  - StripePayments (23.22.1):
-    - StripeCore (= 23.22.1)
-    - StripePayments/Stripe3DS2 (= 23.22.1)
-  - StripePayments/Stripe3DS2 (23.22.1):
-    - StripeCore (= 23.22.1)
-  - StripePaymentSheet (23.22.1):
-    - StripeApplePay (= 23.22.1)
-    - StripeCore (= 23.22.1)
-    - StripePayments (= 23.22.1)
-    - StripePaymentsUI (= 23.22.1)
-  - StripePaymentsUI (23.22.1):
-    - StripeCore (= 23.22.1)
-    - StripePayments (= 23.22.1)
-    - StripeUICore (= 23.22.1)
-  - StripeUICore (23.22.1):
-    - StripeCore (= 23.22.1)
-  - SwiftyGif (5.4.4)
+    - Stripe (~> 23.28.0)
+    - StripeApplePay (~> 23.28.0)
+    - StripeFinancialConnections (~> 23.28.0)
+    - StripePayments (~> 23.28.0)
+    - StripePaymentSheet (~> 23.28.0)
+    - StripePaymentsUI (~> 23.28.0)
+  - StripeApplePay (23.28.1):
+    - StripeCore (= 23.28.1)
+  - StripeCore (23.28.1)
+  - StripeFinancialConnections (23.28.1):
+    - StripeCore (= 23.28.1)
+    - StripeUICore (= 23.28.1)
+  - StripePayments (23.28.1):
+    - StripeCore (= 23.28.1)
+    - StripePayments/Stripe3DS2 (= 23.28.1)
+  - StripePayments/Stripe3DS2 (23.28.1):
+    - StripeCore (= 23.28.1)
+  - StripePaymentSheet (23.28.1):
+    - StripeApplePay (= 23.28.1)
+    - StripeCore (= 23.28.1)
+    - StripePayments (= 23.28.1)
+    - StripePaymentsUI (= 23.28.1)
+  - StripePaymentsUI (23.28.1):
+    - StripeCore (= 23.28.1)
+    - StripePayments (= 23.28.1)
+    - StripeUICore (= 23.28.1)
+  - StripeUICore (23.28.1):
+    - StripeCore (= 23.28.1)
+  - SwiftyGif (5.4.5)
   - tobias (0.0.1):
     - Flutter
   - url_launcher_ios (0.0.1):
@@ -148,15 +155,16 @@ PODS:
     - Flutter
   - wakelock_plus (0.0.1):
     - Flutter
-  - WechatOpenSDK-XCFramework (2.0.2)
+  - WechatOpenSDK-XCFramework (2.0.4)
 
 DEPENDENCIES:
   - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/ios`)
+  - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
+  - camerawesome (from `.symlinks/plugins/camerawesome/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - file_saver (from `.symlinks/plugins/file_saver/ios`)
   - Flutter (from `Flutter`)
-  - flutter_image_compress (from `.symlinks/plugins/flutter_image_compress/ios`)
-  - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
+  - flutter_image_compress_common (from `.symlinks/plugins/flutter_image_compress_common/ios`)
   - flutter_localization (from `.symlinks/plugins/flutter_localization/ios`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - flutter_tts (from `.symlinks/plugins/flutter_tts/ios`)
@@ -184,6 +192,7 @@ SPEC REPOS:
   trunk:
     - DKImagePickerController
     - DKPhotoGallery
+    - JPSVolumeButtonHandler
     - libwebp
     - Mantle
     - SDWebImage
@@ -202,16 +211,18 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   audioplayers_darwin:
     :path: ".symlinks/plugins/audioplayers_darwin/ios"
+  camera_avfoundation:
+    :path: ".symlinks/plugins/camera_avfoundation/ios"
+  camerawesome:
+    :path: ".symlinks/plugins/camerawesome/ios"
   file_picker:
     :path: ".symlinks/plugins/file_picker/ios"
   file_saver:
     :path: ".symlinks/plugins/file_saver/ios"
   Flutter:
     :path: Flutter
-  flutter_image_compress:
-    :path: ".symlinks/plugins/flutter_image_compress/ios"
-  flutter_local_notifications:
-    :path: ".symlinks/plugins/flutter_local_notifications/ios"
+  flutter_image_compress_common:
+    :path: ".symlinks/plugins/flutter_image_compress_common/ios"
   flutter_localization:
     :path: ".symlinks/plugins/flutter_localization/ios"
   flutter_native_splash:
@@ -259,49 +270,51 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
-  DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
-  DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
+  camera_avfoundation: dd002b0330f4981e1bbcb46ae9b62829237459a4
+  camerawesome: 1e06540f60158809bc70f398ed1ac2cf93fe4188
+  DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
+  DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
   file_picker: ce3938a0df3cc1ef404671531facef740d03f920
   file_saver: 503e386464dbe118f630e17b4c2e1190fa0cf808
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_image_compress: 5a5e9aee05b6553048b8df1c3bc456d0afaac433
-  flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
+  flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
   flutter_localization: f43b18844a2b3d2c71fd64f04ffd6b1e64dd54d4
-  flutter_native_splash: 52501b97d1c0a5f898d687f1646226c1f93c56ef
+  flutter_native_splash: edf599c81f74d093a4daf8e17bd7a018854bc778
   flutter_tts: 0f492aab6accf87059b72354fcb4ba934304771d
   fluwx: e9e728cfdb80e82dac5f4ff974b1901a7939dcd0
-  image_gallery_saver: 259eab68fb271cfd57d599904f7acdc7832e7ef2
-  in_app_purchase_storekit: 0e4b3c2e43ba1e1281f4f46dd71b0593ce529892
-  libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
+  image_gallery_saver: cb43cc43141711190510e92c460eb1655cd343cb
+  in_app_purchase_storekit: 8c3b0b3eb1b0f04efbff401c3de6266d4258d433
+  JPSVolumeButtonHandler: 53110330c9168ed325def93eabff39f0fe3e8082
+  libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   Mantle: c5aa8794a29a022dfbbfc9799af95f477a69b62d
   media_kit_libs_ios_video: a5fe24bc7875ccd6378a0978c13185e1344651c1
   media_kit_native_event_loop: e6b2ab20cf0746eb1c33be961fcf79667304fa2a
   media_kit_video: 5da63f157170e5bf303bf85453b7ef6971218a2e
-  package_info_plus: 115f4ad11e0698c8c1c5d8a689390df880f47e85
-  path_provider_foundation: 3784922295ac71e43754bd15e0653ccfd36a147c
-  record_darwin: 1f6619f2abac4d1ca91d3eeab038c980d76f1517
+  package_info_plus: 58f0028419748fad15bf008b270aaa8e54380b1c
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  record_darwin: df0a677188e5fed18472550298e675f19ddaffbe
   screen_brightness_ios: 715ca807df953bf676d339f11464e438143ee625
-  SDWebImage: fd7e1a22f00303e058058278639bf6196ee431fe
-  SDWebImageWebPCoder: 295a6573c512f54ad2dd58098e64e17dcf008499
+  SDWebImage: 066c47b573f408f18caa467d71deace7c0f8280d
+  SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   share_plus: c3fef564749587fc939ef86ffb283ceac0baf9f5
-  shared_preferences_foundation: b4c3b4cddf1c21f02770737f147a3f5da9d39695
+  shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
   sqflite: 673a0e54cc04b7d6dba8d24fb8095b31c3a99eec
-  Stripe: b65e9f748f8f51b51e015b0d72f5474dc0708788
-  stripe_ios: 433385aa051f8965915d495744946ee5a5d657db
-  StripeApplePay: 4a2fef6cd4e1e9b2c0849919fc7b3a9c5c3684b1
-  StripeCore: e1f6cd91d1487c0f6b5db81b42aec860420f75c9
-  StripeFinancialConnections: d223a44613e6982cedd552c5950edc9b4901c90a
-  StripePayments: 76144e9e6b5fee859954238a175f859043562659
-  StripePaymentSheet: a25d920bb3bb5e2580696476482dc7df9cb5e4e2
-  StripePaymentsUI: 66088abec88754bbdd522ef227dfdbb2265a653e
-  StripeUICore: b193c7d35e9cd1b04bc9ed4a6fb8c548fcee83fa
-  SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
+  Stripe: 20e24971647daa5750e7764faa1e8aefe4917243
+  stripe_ios: 91946e5c07e0a0dc0e1484ee6659e1f90a302cf3
+  StripeApplePay: 5b098a0ba6136f4b587e03f5a3776461b4f20dd4
+  StripeCore: 880a68482cf78d4745c5213c2fd3446efc73574b
+  StripeFinancialConnections: 49a19ca17dbb3055a8b559a1e3adfe769784a8f8
+  StripePayments: 3af5b03fa1831c301a4d1621eb0e790280dccb46
+  StripePaymentSheet: 8321efebb6d104add8fce929286d414545913114
+  StripePaymentsUI: 4c35e12ebcd4bd9bd21e379f03f730bee097250d
+  StripeUICore: 22b314dc9f7ea8814d0f9eeba0ddb5e4b77f34f3
+  SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
   tobias: 2aded9b83e3663b907360a800d8e3c13284f25c5
-  url_launcher_ios: 6116280ddcfe98ab8820085d8d76ae7449447586
+  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
   volume_controller: 531ddf792994285c9b17f9d8a7e4dcdd29b3eae9
-  wakelock_plus: 8b09852c8876491e4b6d179e17dfe2a0b5f60d47
-  WechatOpenSDK-XCFramework: acdeeda129efbef9532bca8a10c24e1b4b8c7d69
+  wakelock_plus: 78ec7c5b202cab7761af8e2b2b3d0671be6c4ae1
+  WechatOpenSDK-XCFramework: 36fb2bea0754266c17184adf4963d7e6ff98b69f
 
 PODFILE CHECKSUM: cc1f88378b4bfcf93a6ce00d2c587857c6008d3b
 

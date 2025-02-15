@@ -5,14 +5,36 @@ class ChatHistoryProvider {
   Database conn;
   ChatHistoryProvider(this.conn);
 
-  Future<List<ChatHistory>> getChatHistories(int roomId, int count,
-      {int? userId, int? offset}) async {
-    final userConditon =
-        userId == null ? ' AND user_id IS NULL' : ' AND user_id = $userId';
+  Future<List<ChatHistory>> getChatHistories(
+    int roomId,
+    int count, {
+    int? userId,
+    int? offset,
+    String? keyword,
+  }) async {
+    keyword ??= '';
+    final userConditon = userId == null ? ' AND user_id IS NULL' : ' AND user_id = $userId';
 
+    var historyIds = [];
+    if (keyword != '') {
+      final histories = await conn.query(
+        'chat_message',
+        where: 'chat_history_id IS NOT NULL AND text LIKE ? $userConditon',
+        whereArgs: ['%$keyword%'],
+        columns: ['chat_history_id'],
+        distinct: true,
+      );
+
+      historyIds = histories.map((h) => h['chat_history_id']).toList();
+      if (historyIds.isEmpty) {
+        return [];
+      }
+    }
+
+    var keywordCondition = keyword != '' ? 'AND id in (${historyIds.join(',')})' : '';
     List<Map<String, Object?>> histories = await conn.query(
       'chat_history',
-      where: 'room_id = ? $userConditon',
+      where: 'room_id = ? $userConditon $keywordCondition',
       whereArgs: [roomId],
       orderBy: 'updated_at DESC',
       limit: count,
@@ -63,8 +85,7 @@ class ChatHistoryProvider {
   }
 
   Future<ChatHistory?> history(int id) async {
-    List<Map<String, Object?>> histories = await conn.query('chat_history',
-        where: 'id = ?', whereArgs: [id], limit: 1);
+    List<Map<String, Object?>> histories = await conn.query('chat_history', where: 'id = ?', whereArgs: [id], limit: 1);
     if (histories.isEmpty) {
       return null;
     }

@@ -23,8 +23,7 @@ import 'package:go_router/go_router.dart';
 class BindPhoneScreen extends StatefulWidget {
   final SettingRepository setting;
   final bool isSignIn;
-  const BindPhoneScreen(
-      {super.key, required this.setting, this.isSignIn = true});
+  const BindPhoneScreen({super.key, required this.setting, this.isSignIn = true});
 
   @override
   State<BindPhoneScreen> createState() => _BindPhoneScreenState();
@@ -33,8 +32,7 @@ class BindPhoneScreen extends StatefulWidget {
 class _BindPhoneScreenState extends State<BindPhoneScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _inviteCodeController = TextEditingController();
-  final TextEditingController _verificationCodeController =
-      TextEditingController();
+  final TextEditingController _verificationCodeController = TextEditingController();
 
   String verifyCodeId = '';
   final phoneNumberValidator = RegExp(r"^1[3456789]\d{9}$");
@@ -87,8 +85,7 @@ class _BindPhoneScreenState extends State<BindPhoneScreen> {
         leading: IconButton(
           onPressed: () {
             if (widget.isSignIn) {
-              context.go(
-                  '${Ability().homeRoute}?show_initial_dialog=false&reward=0');
+              context.go('${Ability().homeRoute}?show_initial_dialog=false&reward=0');
             } else {
               context.pop();
             }
@@ -114,26 +111,20 @@ class _BindPhoneScreenState extends State<BindPhoneScreen> {
               return Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15, bottom: 0),
+                    padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
                     child: TextFormField(
                       controller: _usernameController,
                       keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.singleLineFormatter
-                      ],
+                      inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Color.fromARGB(200, 192, 192, 192)),
+                          borderSide: BorderSide(color: Color.fromARGB(200, 192, 192, 192)),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: customColors.linkColor ?? Colors.green),
+                          borderSide: BorderSide(color: customColors.linkColor ?? Colors.green),
                         ),
-                        floatingLabelStyle:
-                            TextStyle(color: customColors.linkColor!),
+                        floatingLabelStyle: TextStyle(color: customColors.linkColor!),
                         isDense: true,
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         labelText: AppLocale.account.getString(context),
@@ -147,25 +138,21 @@ class _BindPhoneScreenState extends State<BindPhoneScreen> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 5.0, top: 15, bottom: 0),
+                    padding: const EdgeInsets.only(left: 15.0, right: 5.0, top: 15, bottom: 0),
                     child: VerifyCodeInput(
                       controller: _verificationCodeController,
                       onVerifyCodeSent: (id) {
                         verifyCodeId = id;
                       },
                       sendVerifyCode: () {
-                        return APIServer()
-                            .sendBindPhoneCode(_usernameController.text.trim());
+                        return APIServer().sendBindPhoneCode(_usernameController.text.trim());
                       },
                       sendCheck: () {
                         final username = _usernameController.text.trim();
-                        final isPhoneNumber =
-                            phoneNumberValidator.hasMatch(username);
+                        final isPhoneNumber = phoneNumberValidator.hasMatch(username);
 
                         if (!isPhoneNumber) {
-                          showErrorMessage(AppLocale.phoneNumberFormatError
-                              .getString(context));
+                          showErrorMessage(AppLocale.phoneNumberFormatError.getString(context));
                           return false;
                         }
 
@@ -173,34 +160,26 @@ class _BindPhoneScreenState extends State<BindPhoneScreen> {
                       },
                     ),
                   ),
-                  if (state.user!.user.invitedBy == null ||
-                      state.user!.user.invitedBy == 0)
+                  if (state.user!.user.invitedBy == null || state.user!.user.invitedBy == 0)
                     Padding(
-                      padding: const EdgeInsets.only(
-                          left: 15.0, right: 15.0, top: 15, bottom: 0),
+                      padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
                       child: TextFormField(
                         controller: _inviteCodeController,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.singleLineFormatter
-                        ],
+                        inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(),
                           enabledBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(200, 192, 192, 192)),
+                            borderSide: BorderSide(color: Color.fromARGB(200, 192, 192, 192)),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: customColors.linkColor!),
+                            borderSide: BorderSide(color: customColors.linkColor!),
                           ),
-                          floatingLabelStyle:
-                              TextStyle(color: customColors.linkColor!),
+                          floatingLabelStyle: TextStyle(color: customColors.linkColor!),
                           isDense: true,
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           labelText: AppLocale.inviteCode.getString(context),
                           labelStyle: const TextStyle(fontSize: 17),
-                          hintText:
-                              AppLocale.inviteCodeInputTips.getString(context),
+                          hintText: AppLocale.inviteCodeInputTips.getString(context),
                           hintStyle: TextStyle(
                             color: customColors.textfieldHintColor,
                             fontSize: 15,
@@ -215,14 +194,13 @@ class _BindPhoneScreenState extends State<BindPhoneScreen> {
                     margin: const EdgeInsets.symmetric(horizontal: 15),
                     decoration: BoxDecoration(
                       color: customColors.linkColor,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: CustomSize.borderRadius,
                     ),
                     child: TextButton(
                       onPressed: onSubmit,
                       child: Text(
                         AppLocale.ok.getString(context),
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 18),
+                        style: const TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     ),
                   ),
@@ -293,11 +271,13 @@ class _BindPhoneScreenState extends State<BindPhoneScreen> {
 
       if (widget.isSignIn) {
         if (context.mounted) {
+          // ignore: use_build_context_synchronously
           context.go(
               '${Ability().homeRoute}?show_initial_dialog=${value.isNewUser ? "true" : "false"}&reward=${value.reward}');
         }
       } else {
         if (context.mounted) {
+          // ignore: use_build_context_synchronously
           showSuccessMessage(AppLocale.operateSuccess.getString(context));
         }
       }

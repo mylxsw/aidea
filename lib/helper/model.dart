@@ -13,14 +13,13 @@ class ModelAggregate {
   }
 
   /// 支持的模型列表
-  static Future<List<mm.Model>> models() async {
+  static Future<List<mm.Model>> models({bool cache = true, bool withCustom = false}) async {
     final List<mm.Model> models = [];
-    final isAPIServerSet =
-        settings.stringDefault(settingAPIServerToken, '') != '';
+    final isAPIServerSet = settings.stringDefault(settingAPIServerToken, '') != '';
     final selfHostOpenAI = settings.boolDefault(settingOpenAISelfHosted, false);
 
     if (isAPIServerSet) {
-      models.addAll((await APIServer().models())
+      models.addAll((await APIServer().models(cache: cache, withCustom: withCustom))
           .map(
             (e) => mm.Model(
               e.id.split(':').last,
@@ -28,12 +27,17 @@ class ModelAggregate {
               e.category,
               shortName: e.shortName,
               description: e.description,
+              priceInfo: e.priceInfo,
               isChatModel: e.isChat,
               disabled: e.disabled,
               category: e.category,
               tag: e.tag,
               avatarUrl: e.avatarUrl,
               supportVision: e.supportVision,
+              tagTextColor: e.tagTextColor,
+              tagBgColor: e.tagBgColor,
+              isNew: e.isNew,
+              isDefault: e.isDefault,
             ),
           )
           .toList());
@@ -42,9 +46,7 @@ class ModelAggregate {
     if (selfHostOpenAI) {
       return <mm.Model>[
         ...OpenAIRepository.supportModels(),
-        ...models
-            .where((element) => element.category != modelTypeOpenAI)
-            .toList()
+        ...models.where((element) => element.category != modelTypeOpenAI).toList()
       ];
     }
 
@@ -69,8 +71,7 @@ class ModelAggregate {
     final supportModels = await models();
     return supportModels.firstWhere(
       (element) => element.uid() == uid || element.id == uid,
-      orElse: () => mm.Model(defaultChatModel, defaultChatModel, 'openai',
-          category: modelTypeOpenAI),
+      orElse: () => mm.Model(defaultChatModel, defaultChatModel, 'openai', category: modelTypeOpenAI),
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'package:askaide/helper/platform.dart';
+import 'package:askaide/lang/lang.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -94,7 +96,7 @@ class SocialIconGroup extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isSettingTiles) {
       return SettingsSection(
-        title: const Text('关注我们'),
+        title: Text(AppLocale.socialMedia.getString(context)),
         tiles: items
             .where((e) {
               if (e.nonIOS) {
@@ -110,9 +112,9 @@ class SocialIconGroup extends StatelessWidget {
                   const SizedBox(width: 10),
                   Text(e.name),
                 ]),
-                trailing: Icon(
+                trailing: const Icon(
                   CupertinoIcons.chevron_forward,
-                  size: MediaQuery.of(context).textScaleFactor * 18,
+                  size: 18,
                   color: Colors.grey,
                 ),
                 onPressed: (context) {
@@ -126,9 +128,7 @@ class SocialIconGroup extends StatelessWidget {
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: items
-          .map((e) => SocialIcon(image: e.image, name: e.name, onTap: e.onTap))
-          .toList(),
+      children: items.map((e) => SocialIcon(image: e.image, name: e.name, onTap: e.onTap)).toList(),
     );
   }
 }

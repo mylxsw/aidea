@@ -12,7 +12,6 @@ import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_initicon/flutter_initicon.dart';
 import 'package:flutter_localization/flutter_localization.dart';
@@ -82,7 +81,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          '大语言模型管理',
+          'Large Language Model',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
@@ -97,7 +96,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
           ),
         ],
       ),
-      backgroundColor: customColors.chatInputPanelBackground,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -131,8 +130,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
                 },
                 displacement: 20,
                 child: BlocConsumer<ModelBloc, ModelState>(
-                  listenWhen: (previous, current) =>
-                      current is ModelOperationResult,
+                  listenWhen: (previous, current) => current is ModelOperationResult,
                   listener: (context, state) {
                     if (state is ModelOperationResult) {
                       if (state.success) {
@@ -149,15 +147,9 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
                       final models = state.models
                           .where((e) =>
                               keyword == '' ||
-                              e.name
-                                  .toLowerCase()
-                                  .contains(keyword.toLowerCase()) ||
-                              e.modelId
-                                  .toLowerCase()
-                                  .contains(keyword.toLowerCase()) ||
-                              (e.description ?? '')
-                                  .toLowerCase()
-                                  .contains(keyword.toLowerCase()))
+                              e.name.toLowerCase().contains(keyword.toLowerCase()) ||
+                              e.modelId.toLowerCase().contains(keyword.toLowerCase()) ||
+                              (e.description ?? '').toLowerCase().contains(keyword.toLowerCase()))
                           .toList();
                       return SafeArea(
                         top: false,
@@ -196,9 +188,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
         horizontal: 10,
         vertical: 5,
       ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(customColors.borderRadius ?? 8),
-      ),
+      decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
       child: Slidable(
         endActionPane: ActionPane(
           motion: const ScrollMotion(),
@@ -206,11 +196,11 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
             const SizedBox(width: 10),
             SlidableAction(
               label: AppLocale.delete.getString(context),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(customColors.borderRadius ?? 8),
-                bottomLeft: Radius.circular(customColors.borderRadius ?? 8),
-                topRight: Radius.circular(customColors.borderRadius ?? 8),
-                bottomRight: Radius.circular(customColors.borderRadius ?? 8),
+              borderRadius: const BorderRadius.only(
+                topLeft: CustomSize.radius,
+                bottomLeft: CustomSize.radius,
+                topRight: CustomSize.radius,
+                bottomRight: CustomSize.radius,
               ),
               backgroundColor: Colors.red,
               icon: Icons.delete,
@@ -218,9 +208,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
                 openConfirmDialog(
                   context,
                   AppLocale.confirmToDeleteRoom.getString(context),
-                  () => context
-                      .read<ModelBloc>()
-                      .add(ModelDeleteEvent(mod.modelId)),
+                  () => context.read<ModelBloc>().add(ModelDeleteEvent(mod.modelId)),
                   danger: true,
                 );
               },
@@ -228,17 +216,12 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
           ],
         ),
         child: Material(
-          borderRadius:
-              BorderRadius.all(Radius.circular(customColors.borderRadius ?? 8)),
+          borderRadius: CustomSize.borderRadius,
           color: customColors.columnBlockBackgroundColor,
           child: InkWell(
-            borderRadius: BorderRadius.all(
-                Radius.circular(customColors.borderRadius ?? 8)),
+            borderRadius: CustomSize.borderRadiusAll,
             onTap: () {
-              context
-                  .push(
-                      '/admin/models/edit/${Uri.encodeComponent(mod.modelId)}')
-                  .then((value) {
+              context.push('/admin/models/edit/${Uri.encodeComponent(mod.modelId)}').then((value) {
                 context.read<ModelBloc>().add(ModelsLoadEvent());
               });
             },
@@ -256,25 +239,23 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
                             left: 0,
                             bottom: 0,
                             child: ClipRRect(
-                              borderRadius: const BorderRadius.only(
-                                bottomLeft: Radius.circular(8),
-                              ),
+                              borderRadius: const BorderRadius.only(bottomLeft: CustomSize.radius),
                               child: Container(
                                 padding: const EdgeInsets.all(3),
                                 width: 80,
                                 color: Colors.black.withAlpha(30),
-                                child: const Row(
+                                child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.remove_red_eye_outlined,
                                       color: Colors.white,
                                       size: 12,
                                     ),
-                                    SizedBox(width: 3),
+                                    const SizedBox(width: 3),
                                     Text(
-                                      '视觉',
-                                      style: TextStyle(
+                                      AppLocale.visionTag.getString(context),
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 12,
                                       ),
@@ -295,10 +276,14 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
                           children: [
                             Text(
                               mod.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 overflow: TextOverflow.ellipsis,
+                                fontWeight: mod.enabled ? FontWeight.bold : FontWeight.normal,
+                                color: mod.enabled ? null : customColors.weakLinkColor?.withAlpha(100),
+                                decoration: mod.enabled ? null : TextDecoration.lineThrough,
                               ),
                             ),
+                            const SizedBox(height: 5),
                             Text(
                               buildModelDescription(mod),
                               style: TextStyle(
@@ -325,9 +310,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          mod.providers
-                              .map((e) => searchChannel(e).display)
-                              .join('|'),
+                          mod.providers.map((e) => searchChannel(e).display).join('|'),
                           style: TextStyle(
                             fontSize: 10,
                             overflow: TextOverflow.ellipsis,
@@ -352,10 +335,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
         width: 80,
         height: 80,
         child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(8),
-            bottomLeft: Radius.circular(8),
-          ),
+          borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
           child: CachedNetworkImage(
             imageUrl: imageURL(mod.avatarUrl!, qiniuImageTypeAvatar),
             fit: BoxFit.fill,
@@ -368,21 +348,25 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
       text: mod.name.split('、').join(' '),
       size: 80,
       backgroundColor: Colors.grey.withAlpha(100),
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(8),
-        bottomLeft: Radius.circular(8),
-      ),
+      borderRadius: const BorderRadius.only(topLeft: CustomSize.radius, bottomLeft: CustomSize.radius),
     );
   }
 
   String buildModelDescription(AdminModel mod) {
     String desc = '';
-    if (mod.inputPrice > 0 || mod.outputPrice > 0) {
+    if (mod.inputPrice > 0 || mod.outputPrice > 0 || mod.perReqPrice > 0) {
       desc += '💰 ';
-      if (mod.inputPrice == mod.outputPrice) {
-        desc += '${mod.inputPrice} 智慧果/1K Token';
-      } else {
-        desc += '${mod.inputPrice} / ${mod.outputPrice} 智慧果/1K Token';
+      if (mod.inputPrice > 0 || mod.outputPrice > 0) {
+        if (mod.inputPrice == mod.outputPrice) {
+          desc += 'IO${AppLocale.creditUnit.getString(context)}${mod.inputPrice} ';
+        } else {
+          desc +=
+              'I${AppLocale.creditUnit.getString(context)}${mod.inputPrice} O${AppLocale.creditUnit.getString(context)}${mod.outputPrice} ';
+        }
+      }
+
+      if (mod.perReqPrice > 0) {
+        desc += 'R${AppLocale.creditUnit.getString(context)}${mod.perReqPrice}';
       }
     }
 
@@ -392,6 +376,10 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
       }
 
       desc += '🎞️ ${mod.maxContext} Tokens';
+    }
+
+    if (mod.meta != null && mod.meta!.tag != null && mod.meta!.tag != '') {
+      desc += ' | ${mod.meta!.tag}';
     }
 
     if (desc != '') {

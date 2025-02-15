@@ -28,7 +28,11 @@ class RoomLoaded extends RoomState {
     this.error,
     this.examples,
     required this.cascading,
-  });
+  }) {
+    if (examples != null) {
+      examples!.shuffle();
+    }
+  }
 }
 
 class RoomCreateError extends RoomState {

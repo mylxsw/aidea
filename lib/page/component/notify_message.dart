@@ -1,4 +1,5 @@
 import 'package:askaide/page/component/gradient_style.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -38,7 +39,7 @@ class NotifyMessageWidget extends StatelessWidget {
         height: height,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: CustomSize.borderRadius,
           // gradient: buildGradientStyle(),
           color: backgroundColor,
           image: backgroundImageUrl != null

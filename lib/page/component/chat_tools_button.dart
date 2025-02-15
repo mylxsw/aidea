@@ -1,3 +1,4 @@
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:flutter/material.dart';
 
 import 'package:askaide/page/component/theme/custom_theme.dart';
@@ -41,10 +42,8 @@ class _ChatToolsButtonState extends State<ChatToolsButton> {
         },
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: _mouseHover
-                ? customColors.tagsBackgroundHover
-                : customColors.tagsBackground,
+            borderRadius: CustomSize.borderRadius,
+            color: _mouseHover ? customColors.tagsBackgroundHover : customColors.tagsBackground,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           child: Row(

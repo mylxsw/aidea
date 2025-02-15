@@ -1,5 +1,6 @@
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/image.dart';
+import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/image_preview.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/page/component/video_player.dart';
@@ -22,20 +23,17 @@ class CreativeIslandContentPreview extends StatefulWidget {
   });
 
   @override
-  State<CreativeIslandContentPreview> createState() =>
-      _CreativeIslandContentPreviewState();
+  State<CreativeIslandContentPreview> createState() => _CreativeIslandContentPreviewState();
 }
 
-class _CreativeIslandContentPreviewState
-    extends State<CreativeIslandContentPreview> {
+class _CreativeIslandContentPreviewState extends State<CreativeIslandContentPreview> {
   var currentTime = DateTime.now().add(const Duration(days: 7));
 
   @override
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
     final expireTime = widget.item != null
-        ? DateFormat('y-MM-dd').format(
-            widget.item!.createdAt!.add(const Duration(days: 7)).toLocal())
+        ? DateFormat('y-MM-dd').format(widget.item!.createdAt!.add(const Duration(days: 7)).toLocal())
         : DateFormat('y-MM-dd').format(currentTime);
     return widget.result.text == ''
         ? const Center(
@@ -64,7 +62,7 @@ class _CreativeIslandContentPreviewState
                       ),
                       const SizedBox(width: 5),
                       Text(
-                        '点击图片可分享、保存；有效期至 $expireTime',
+                        '${AppLocale.clickToShareWithExpire} $expireTime',
                         maxLines: 2,
                         style: TextStyle(
                           fontSize: 12,
@@ -81,9 +79,7 @@ class _CreativeIslandContentPreviewState
                           vertical: 5,
                           horizontal: 10,
                         ),
-                        child: (widget.item != null &&
-                                    (widget.item!.isVideoType)) ||
-                                e.endsWith('.mp4')
+                        child: (widget.item != null && (widget.item!.isVideoType)) || e.endsWith('.mp4')
                             ? _buildVideoPreviewer(
                                 widget.result.params ?? {},
                                 e,
@@ -121,9 +117,7 @@ class _CreativeIslandContentPreviewState
     return NetworkImagePreviewer(
       url: e,
       preview: imageURL(e, qiniuImageTypeThumb),
-      original: params['image'] == null || params['image'] == ''
-          ? null
-          : params['image'] as String,
+      original: params['image'] == null || params['image'] == '' ? null : params['image'] as String,
       description: widget.prompt ?? widget.item?.prompt ?? '',
     );
   }

@@ -1,4 +1,5 @@
 import 'package:askaide/page/component/enhanced_button.dart';
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/weak_text_button.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api_server.dart';
@@ -57,24 +58,18 @@ class _PromptTagsSelectorState extends State<PromptTagsSelector> {
         children: [
           Expanded(
             child: Container(
-              decoration: BoxDecoration(
-                color: customColors.backgroundColor,
-                borderRadius: BorderRadius.circular(5),
-              ),
+              decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
               child: DefaultTabController(
                 length: promptCategories.length,
                 child: Column(
                   children: [
                     Theme(
                       data: Theme.of(context).copyWith(
-                        colorScheme: Theme.of(context)
-                            .colorScheme
-                            .copyWith(surfaceVariant: Colors.transparent),
+                        colorScheme:
+                            Theme.of(context).colorScheme.copyWith(surfaceContainerHighest: Colors.transparent),
                       ),
                       child: TabBar(
-                        tabs: [
-                          for (var cat in promptCategories) Tab(text: cat.name)
-                        ],
+                        tabs: [for (var cat in promptCategories) Tab(text: cat.name)],
                         isScrollable: true,
                         labelPadding: const EdgeInsets.only(left: 0, right: 20),
                         labelColor: customColors.linkColor,
@@ -84,15 +79,13 @@ class _PromptTagsSelectorState extends State<PromptTagsSelector> {
                           fontWeight: FontWeight.bold,
                         ),
                         indicator: const BoxDecoration(),
-                        overlayColor:
-                            MaterialStateProperty.all(Colors.transparent),
+                        overlayColor: WidgetStateProperty.all(Colors.transparent),
                       ),
                     ),
                     Expanded(
                       child: TabBarView(
                         children: [
-                          for (var cat in promptCategories)
-                            buildTabBarView(customColors, cat.children),
+                          for (var cat in promptCategories) buildTabBarView(customColors, cat.children),
                         ],
                       ),
                     ),
@@ -175,14 +168,13 @@ class _PromptTagsSelectorState extends State<PromptTagsSelector> {
     );
   }
 
-  Widget buildTabBarView(
-      CustomColors customColors, List<PromptCategory> subCategories) {
+  Widget buildTabBarView(CustomColors customColors, List<PromptCategory> subCategories) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5),
       padding: const EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 10),
       decoration: BoxDecoration(
         color: customColors.backgroundContainerColor?.withAlpha(50),
-        borderRadius: BorderRadius.circular(5),
+        borderRadius: CustomSize.borderRadius,
       ),
       child: ListView.builder(
         itemCount: subCategories.length,
@@ -231,9 +223,7 @@ class _PromptTagsSelectorState extends State<PromptTagsSelector> {
                 curve: Curves.easeOut,
               );
             },
-            textColor: selectedTags.containsKey(tag.value)
-                ? Colors.white
-                : customColors.weakTextColorPlusPlus,
+            textColor: selectedTags.containsKey(tag.value) ? Colors.white : customColors.weakTextColorPlusPlus,
             backgroundColor: selectedTags.containsKey(tag.value)
                 ? customColors.linkColor
                 : customColors.backgroundContainerColor?.withAlpha(200),
@@ -269,8 +259,7 @@ class Tag extends StatelessWidget {
         side: BorderSide.none,
         visualDensity: const VisualDensity(horizontal: -4.0, vertical: -4.0),
         padding: const EdgeInsets.all(0),
-        labelPadding:
-            EdgeInsets.only(left: 5, right: onDeleted == null ? 5 : 0),
+        labelPadding: EdgeInsets.only(left: 5, right: onDeleted == null ? 5 : 0),
         elevation: 0,
         label: Text(
           name,

@@ -1,5 +1,8 @@
 import 'dart:io';
+import 'dart:ui';
 
+import 'package:animated_list_plus/animated_list_plus.dart';
+import 'package:animated_list_plus/transitions.dart';
 import 'package:askaide/bloc/model_bloc.dart';
 import 'package:askaide/helper/upload.dart';
 import 'package:askaide/lang/lang.dart';
@@ -21,6 +24,7 @@ import 'package:askaide/repo/api/admin/channels.dart';
 import 'package:askaide/repo/api/admin/models.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +54,9 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
   final TextEditingController maxContextController = TextEditingController();
   final TextEditingController inputPriceController = TextEditingController();
   final TextEditingController outputPriceController = TextEditingController();
+  final TextEditingController perReqPriceController = TextEditingController();
   final TextEditingController promptController = TextEditingController();
+  final TextEditingController categoryController = TextEditingController();
 
   /// 用于控制是否显示高级选项
   bool showAdvancedOptions = false;
@@ -68,6 +74,17 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
   String? avatarUrl;
   List<String> avatarPresets = [];
 
+  /// 是否是上新
+  bool isNew = false;
+
+  /// 是否是推荐模型
+  bool isRecommended = false;
+
+  /// Tag
+  final TextEditingController tagController = TextEditingController();
+  String? tagTextColor;
+  String? tagBgColor;
+
   // 模型渠道
   List<AdminChannel> modelChannels = [];
   // 选择的渠道
@@ -82,7 +99,10 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
     maxContextController.dispose();
     inputPriceController.dispose();
     outputPriceController.dispose();
+    perReqPriceController.dispose();
     promptController.dispose();
+    categoryController.dispose();
+    tagController.dispose();
 
     super.dispose();
   }
@@ -99,9 +119,10 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
     });
 
     // 初始值设置
-    maxContextController.value = const TextEditingValue(text: '3500');
-    inputPriceController.value = const TextEditingValue(text: '1');
-    outputPriceController.value = const TextEditingValue(text: '1');
+    maxContextController.value = const TextEditingValue(text: '7500');
+    inputPriceController.value = const TextEditingValue(text: '0');
+    outputPriceController.value = const TextEditingValue(text: '0');
+    perReqPriceController.value = const TextEditingValue(text: '0');
     providers.add(AdminModelProvider());
 
     super.initState();
@@ -115,12 +136,12 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
       appBar: AppBar(
         toolbarHeight: CustomSize.toolbarHeight,
         title: const Text(
-          '新增模型',
+          'New Model',
           style: TextStyle(fontSize: CustomSize.appBarTitleSize),
         ),
         centerTitle: true,
       ),
-      backgroundColor: customColors.chatInputPanelBackground,
+      backgroundColor: customColors.backgroundColor,
       body: BackgroundContainer(
         setting: widget.setting,
         enabled: false,
@@ -138,34 +159,42 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
               }
             },
             child: Container(
-              padding: const EdgeInsets.only(
-                  left: 10, right: 10, top: 10, bottom: 20),
+              padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 20),
               child: Column(
                 children: [
                   ColumnBlock(
                     children: [
                       EnhancedTextField(
-                        labelText: '唯一标识',
+                        labelText: 'ID',
                         customColors: customColors,
                         controller: modelIdController,
                         textAlignVertical: TextAlignVertical.top,
-                        hintText: '请输入模型唯一标识',
+                        hintText: 'Enter a unique ID',
                         maxLength: 100,
                         showCounter: false,
                       ),
                       EnhancedTextField(
-                        labelText: '名称',
+                        labelText: 'Vendor',
+                        customColors: customColors,
+                        controller: categoryController,
+                        textAlignVertical: TextAlignVertical.top,
+                        hintText: 'Enter a vendor name (Optional)',
+                        maxLength: 100,
+                        showCounter: false,
+                      ),
+                      EnhancedTextField(
+                        labelText: 'Name',
                         customColors: customColors,
                         controller: nameController,
                         textAlignVertical: TextAlignVertical.top,
-                        hintText: '请输入模型名称',
+                        hintText: 'Enter a model name',
                         maxLength: 100,
                         showCounter: false,
                       ),
                       EnhancedInput(
                         padding: const EdgeInsets.only(top: 10, bottom: 5),
                         title: Text(
-                          '头像',
+                          'Avatar',
                           style: TextStyle(
                             color: customColors.textfieldLabelColor,
                             fontSize: 16,
@@ -179,15 +208,13 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                               width: 45,
                               height: 45,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: CustomSize.borderRadius,
                                 image: avatarUrl == null
                                     ? null
                                     : DecorationImage(
                                         image: (avatarUrl!.startsWith('http')
-                                            ? CachedNetworkImageProviderEnhanced(
-                                                avatarUrl!)
-                                            : FileImage(File(
-                                                avatarUrl!))) as ImageProvider,
+                                            ? CachedNetworkImageProviderEnhanced(avatarUrl!)
+                                            : FileImage(File(avatarUrl!))) as ImageProvider,
                                         fit: BoxFit.cover,
                                       ),
                               ),
@@ -225,11 +252,11 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         },
                       ),
                       EnhancedTextField(
-                        labelText: '描述',
+                        labelText: 'Description',
                         customColors: customColors,
                         controller: descriptionController,
                         textAlignVertical: TextAlignVertical.top,
-                        hintText: '可选',
+                        hintText: 'Optional',
                         maxLength: 255,
                         showCounter: false,
                         maxLines: 3,
@@ -239,179 +266,274 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                   ColumnBlock(
                     children: [
                       EnhancedTextField(
-                        labelText: '输入价格',
+                        labelWidth: 120,
+                        labelText: 'Input Price',
                         customColors: customColors,
                         controller: inputPriceController,
                         textAlignVertical: TextAlignVertical.top,
-                        hintText: '可选',
+                        hintText: 'Optional',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
-                            '智慧果/1K Token',
-                            style: TextStyle(
-                                color: customColors.weakTextColor,
-                                fontSize: 12),
+                            'Credits/1K Token',
+                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
                           ),
                         ),
                       ),
                       EnhancedTextField(
-                        labelText: '输出价格',
+                        labelWidth: 120,
+                        labelText: 'Output Price',
                         customColors: customColors,
                         controller: outputPriceController,
                         textAlignVertical: TextAlignVertical.top,
-                        hintText: '可选',
+                        hintText: 'Optional',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 110,
                           alignment: Alignment.center,
                           child: Text(
-                            '智慧果/1K Token',
-                            style: TextStyle(
-                                color: customColors.weakTextColor,
-                                fontSize: 12),
+                            'Credits/1K Token',
+                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
                           ),
                         ),
                       ),
                       EnhancedTextField(
-                        labelText: '输入限制',
+                        labelWidth: 120,
+                        labelText: 'Request Price',
+                        customColors: customColors,
+                        controller: perReqPriceController,
+                        textAlignVertical: TextAlignVertical.top,
+                        hintText: 'Optional',
+                        showCounter: false,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        textDirection: TextDirection.rtl,
+                        suffixIcon: Container(
+                          width: 110,
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Credits/Request',
+                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
+                          ),
+                        ),
+                      ),
+                      EnhancedTextField(
+                        labelWidth: 120,
+                        labelText: 'Context Len',
                         customColors: customColors,
                         controller: maxContextController,
                         textAlignVertical: TextAlignVertical.top,
-                        hintText: '最大上下文减掉预期的输出长度',
+                        hintText: 'Subtract the expected output length from the maximum context.',
                         showCounter: false,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         textDirection: TextDirection.rtl,
                         suffixIcon: Container(
                           width: 50,
                           alignment: Alignment.center,
                           child: Text(
                             'Token',
-                            style: TextStyle(
-                                color: customColors.weakTextColor,
-                                fontSize: 12),
+                            style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  ...providers.map((e) {
-                    return Container(
-                      margin:
-                          const EdgeInsets.only(bottom: 10, left: 5, right: 5),
-                      child: Slidable(
-                        endActionPane: ActionPane(
-                          motion: const ScrollMotion(),
-                          children: [
-                            const SizedBox(width: 10),
-                            SlidableAction(
-                              label: AppLocale.delete.getString(context),
-                              borderRadius: BorderRadius.circular(
-                                  customColors.borderRadius ?? 8),
-                              backgroundColor: Colors.red,
-                              icon: Icons.delete,
-                              onPressed: (_) {
-                                if (providers.length == 1) {
-                                  showErrorMessage('至少需要一个渠道');
-                                  return;
-                                }
+                  ImplicitlyAnimatedReorderableList<AdminModelProvider>(
+                    items: providers,
+                    shrinkWrap: true,
+                    itemBuilder: (context, itemAnimation, item, index) {
+                      return Reorderable(
+                        key: ValueKey(item),
+                        builder: (context, dragAnimation, inDrag) {
+                          final t = dragAnimation.value;
+                          final elevation = lerpDouble(0, 8, t);
+                          final color = Color.lerp(Colors.white, Colors.white.withOpacity(0.8), t);
 
-                                openConfirmDialog(
-                                  context,
-                                  AppLocale.confirmToDeleteRoom
-                                      .getString(context),
-                                  () {
-                                    setState(() {
-                                      providers
-                                          .removeWhere((item) => item == e);
-                                    });
-                                  },
-                                  danger: true,
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                        child: ColumnBlock(
-                          margin: const EdgeInsets.all(0),
-                          children: [
-                            EnhancedInput(
-                              title: Text(
-                                '渠道',
-                                style: TextStyle(
-                                  color: customColors.textfieldLabelColor,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              value: Text(
-                                buildChannelName(e),
-                                style: TextStyle(
-                                  color: customColors.textfieldValueColor,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              onPressed: () {
-                                openListSelectDialog(
-                                  context,
-                                  <SelectorItem<AdminChannel>>[
-                                    ...modelChannels
-                                        .map(
-                                          (e) => SelectorItem(
-                                            Text(
-                                                '${e.id == null ? '【系统】' : ''}${e.name}'),
-                                            e,
-                                          ),
-                                        )
-                                        .toList(),
+                          return SizeFadeTransition(
+                            sizeFraction: 0.7,
+                            curve: Curves.easeInOut,
+                            animation: itemAnimation,
+                            child: Material(
+                              color: color,
+                              elevation: elevation ?? 0,
+                              type: MaterialType.transparency,
+                              child: Slidable(
+                                startActionPane: ActionPane(
+                                  motion: const ScrollMotion(),
+                                  children: [
+                                    const SizedBox(width: 10),
+                                    SlidableAction(
+                                      label: AppLocale.delete.getString(context),
+                                      borderRadius: CustomSize.borderRadiusAll,
+                                      backgroundColor: Colors.red,
+                                      icon: Icons.delete,
+                                      onPressed: (_) {
+                                        if (providers.length == 1) {
+                                          showErrorMessage('At least one channel is needed');
+                                          return;
+                                        }
+
+                                        openConfirmDialog(
+                                          context,
+                                          AppLocale.confirmToDeleteRoom.getString(context),
+                                          () {
+                                            setState(() {
+                                              providers.removeAt(index);
+                                            });
+                                          },
+                                          danger: true,
+                                        );
+                                      },
+                                    ),
                                   ],
-                                  (value) {
-                                    setState(() {
-                                      e.id = value.value.id;
-                                      if (value.value.id == null) {
-                                        e.name = value.value.type;
-                                      }
-                                    });
-                                    return true;
-                                  },
-                                  heightFactor: 0.5,
-                                  value: e,
-                                );
-                              },
+                                ),
+                                child: ListTile(
+                                  contentPadding: const EdgeInsets.all(5),
+                                  title: ColumnBlock(
+                                    margin: const EdgeInsets.all(0),
+                                    children: [
+                                      EnhancedInput(
+                                        title: Text(
+                                          'Channel',
+                                          style: TextStyle(
+                                            color: customColors.textfieldLabelColor,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        value: AutoSizeText(
+                                          buildChannelName(item),
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                            color: customColors.textfieldValueColor,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          openListSelectDialog(
+                                            context,
+                                            <SelectorItem<AdminChannel>>[
+                                              ...modelChannels
+                                                  .map((e) => SelectorItem(
+                                                      Text('${e.id == null ? '【System】' : ''}${e.name}'), e))
+                                                  .toList(),
+                                            ],
+                                            (value) {
+                                              setState(() {
+                                                providers[index].id = value.value.id;
+                                                if (value.value.id == null) {
+                                                  providers[index].name = value.value.type;
+                                                }
+                                              });
+                                              return true;
+                                            },
+                                            heightFactor: 0.5,
+                                            value: item,
+                                          );
+                                        },
+                                      ),
+                                      EnhancedTextField(
+                                        labelWidth: 90,
+                                        labelText: 'Rewrite',
+                                        customColors: customColors,
+                                        textAlignVertical: TextAlignVertical.top,
+                                        hintText: 'Optional',
+                                        maxLength: 100,
+                                        showCounter: false,
+                                        initValue: item.modelRewrite,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            providers[index].modelRewrite = value;
+                                          });
+                                        },
+                                        labelHelpWidget: InkWell(
+                                          onTap: () {
+                                            showBeautyDialog(
+                                              context,
+                                              type: QuickAlertType.info,
+                                              text:
+                                                  'When the model identifier corresponding to the channel does not match the ID here, calling the channel interface will automatically replace the model with the value configured here.',
+                                              confirmBtnText: AppLocale.gotIt.getString(context),
+                                              showCancelBtn: false,
+                                            );
+                                          },
+                                          child: Icon(
+                                            Icons.help_outline,
+                                            size: 16,
+                                            color: customColors.weakLinkColor?.withAlpha(150),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: Handle(
+                                    delay: const Duration(milliseconds: 100),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          width: 15,
+                                          height: 15,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.blue.withOpacity(0.1),
+                                            border: Border.all(
+                                              color: Colors.blue.withOpacity(0.3),
+                                              width: 1,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.blue.withOpacity(0.1),
+                                                blurRadius: 2,
+                                                spreadRadius: 1,
+                                              ),
+                                            ],
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              '${index + 1}',
+                                              style: TextStyle(
+                                                fontSize: 9,
+                                                color: Colors.blue.shade700,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        const Icon(
+                                          Icons.drag_indicator,
+                                          size: 20,
+                                          color: Colors.grey,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
-                            EnhancedTextField(
-                              labelText: '模型重写',
-                              customColors: customColors,
-                              textAlignVertical: TextAlignVertical.top,
-                              hintText: '可选',
-                              maxLength: 100,
-                              showCounter: false,
-                              initValue: e.modelRewrite,
-                              onChanged: (value) {
-                                e.modelRewrite = value;
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                  const SizedBox(width: 10),
+                          );
+                        },
+                      );
+                    },
+                    areItemsTheSame: (AdminModelProvider oldItem, AdminModelProvider newItem) {
+                      return oldItem.id == newItem.id;
+                    },
+                    onReorderFinished: (AdminModelProvider item, int from, int to, List<AdminModelProvider> newItems) {
+                      setState(() {
+                        providers = newItems;
+                      });
+                    },
+                  ),
                   WeakTextButton(
-                    title: '添加渠道',
+                    title: 'Add Channel',
                     icon: Icons.add,
                     onPressed: () {
                       setState(() {
@@ -419,44 +541,57 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                       });
                     },
                   ),
+                  const SizedBox(height: 10),
                   // 高级选项
                   if (showAdvancedOptions)
                     ColumnBlock(
                       innerPanding: 5,
                       children: [
                         EnhancedTextField(
-                          labelText: '简称',
+                          labelText: 'Abbr.',
                           customColors: customColors,
                           controller: shortNameController,
                           textAlignVertical: TextAlignVertical.top,
-                          hintText: '请输入模型简称',
+                          hintText: 'Enter model shorthand',
+                          maxLength: 100,
+                          showCounter: false,
+                        ),
+                        EnhancedTextField(
+                          labelText: 'Tag',
+                          customColors: customColors,
+                          controller: tagController,
+                          textAlignVertical: TextAlignVertical.top,
+                          hintText: 'Enter tags',
                           maxLength: 100,
                           showCounter: false,
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              '启用',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            CupertinoSwitch(
-                              activeColor: customColors.linkColor,
-                              value: modelEnabled,
-                              onChanged: (value) {
-                                setState(() {
-                                  modelEnabled = value;
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              '视觉能力',
-                              style: TextStyle(fontSize: 16),
+                            Row(
+                              children: [
+                                const Text(
+                                  'Vision',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 5),
+                                InkWell(
+                                  onTap: () {
+                                    showBeautyDialog(
+                                      context,
+                                      type: QuickAlertType.info,
+                                      text: 'Whether the current model supports visual capabilities.',
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
+                                      showCancelBtn: false,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.help_outline,
+                                    size: 16,
+                                    color: customColors.weakLinkColor?.withAlpha(150),
+                                  ),
+                                ),
+                              ],
                             ),
                             CupertinoSwitch(
                               activeColor: customColors.linkColor,
@@ -475,7 +610,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                             Row(
                               children: [
                                 const Text(
-                                  '受限模型',
+                                  'New',
                                   style: TextStyle(fontSize: 16),
                                 ),
                                 const SizedBox(width: 5),
@@ -484,17 +619,96 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                     showBeautyDialog(
                                       context,
                                       type: QuickAlertType.info,
-                                      text: '受限模型是指因政策因素，不能在中国大陆地区使用的模型。',
-                                      confirmBtnText:
-                                          AppLocale.gotIt.getString(context),
+                                      text:
+                                          'Whether to display a "New" icon next to the model to inform users that this is a new model.',
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
                                       showCancelBtn: false,
                                     );
                                   },
                                   child: Icon(
                                     Icons.help_outline,
                                     size: 16,
-                                    color: customColors.weakLinkColor
-                                        ?.withAlpha(150),
+                                    color: customColors.weakLinkColor?.withAlpha(150),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            CupertinoSwitch(
+                              activeColor: customColors.linkColor,
+                              value: isNew,
+                              onChanged: (value) {
+                                setState(() {
+                                  isNew = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Text(
+                                  'Recommended',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 5),
+                                InkWell(
+                                  onTap: () {
+                                    showBeautyDialog(
+                                      context,
+                                      type: QuickAlertType.info,
+                                      text:
+                                          'Whether to display a "Recommended" icon next to the model to inform users that this is a recommended model.',
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
+                                      showCancelBtn: false,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.help_outline,
+                                    size: 16,
+                                    color: customColors.weakLinkColor?.withAlpha(150),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            CupertinoSwitch(
+                              activeColor: customColors.linkColor,
+                              value: isRecommended,
+                              onChanged: (value) {
+                                setState(() {
+                                  isRecommended = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Text(
+                                  'Restricted',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 5),
+                                InkWell(
+                                  onTap: () {
+                                    showBeautyDialog(
+                                      context,
+                                      type: QuickAlertType.info,
+                                      text:
+                                          'Restricted models refer to models that cannot be used in Chinese Mainland due to policy factors.',
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
+                                      showCancelBtn: false,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.help_outline,
+                                    size: 16,
+                                    color: customColors.weakLinkColor?.withAlpha(150),
                                   ),
                                 ),
                               ],
@@ -510,13 +724,31 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                             ),
                           ],
                         ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Enabled',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            CupertinoSwitch(
+                              activeColor: customColors.linkColor,
+                              value: modelEnabled,
+                              onChanged: (value) {
+                                setState(() {
+                                  modelEnabled = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
                         EnhancedTextField(
                           labelPosition: LabelPosition.top,
-                          labelText: '系统提示语',
+                          labelText: 'System prompt',
                           customColors: customColors,
                           controller: promptController,
                           textAlignVertical: TextAlignVertical.top,
-                          hintText: '全局系统提示语',
+                          hintText: 'Global system prompt',
                           maxLength: 2000,
                           maxLines: 3,
                         ),
@@ -534,9 +766,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                         color: customColors.weakLinkColor,
                         fontSize: 15,
                         icon: Icon(
-                          showAdvancedOptions
-                              ? Icons.unfold_less
-                              : Icons.unfold_more,
+                          showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
                           color: customColors.weakLinkColor,
                           size: 15,
                         ),
@@ -568,39 +798,36 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
   /// 提交
   void onSubmit() async {
     if (nameController.text.isEmpty) {
-      showErrorMessage('请输入模型名称');
+      showErrorMessage('Please enter a model name');
       return;
     }
 
     if (modelIdController.text.isEmpty) {
-      showErrorMessage('请输入模型唯一标识');
+      showErrorMessage('Please enter a model ID');
       return;
     }
 
     final ps = providers.where((e) => e.id != null || e.name != null).toList();
     if (ps.isEmpty) {
-      showErrorMessage('至少需要一个渠道');
+      showErrorMessage('At least one channel is required');
       return;
     }
 
-    if (avatarUrl != null &&
-        (!avatarUrl!.startsWith('http://') &&
-            !avatarUrl!.startsWith('https://'))) {
+    if (avatarUrl != null && (!avatarUrl!.startsWith('http://') && !avatarUrl!.startsWith('https://'))) {
       final cancel = BotToast.showCustomLoading(
         toastBuilder: (cancel) {
           return const LoadingIndicator(
-            message: '正在上传头像，请稍后...',
+            message: 'Uploading avatar, please wait...',
           );
         },
         allowClick: false,
       );
 
       try {
-        final res = await ImageUploader(widget.setting)
-            .upload(avatarUrl!, usage: 'avatar');
+        final res = await ImageUploader(widget.setting).upload(avatarUrl!, usage: 'avatar');
         avatarUrl = res.url;
       } catch (e) {
-        showErrorMessage('上传头像失败');
+        showErrorMessage('Failed to upload avatar');
         cancel();
         return;
       } finally {
@@ -617,9 +844,16 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
         maxContext: int.parse(maxContextController.text),
         inputPrice: int.parse(inputPriceController.text),
         outputPrice: int.parse(outputPriceController.text),
+        perReqPrice: int.parse(perReqPriceController.text),
         prompt: promptController.text,
         vision: supportVision,
         restricted: restricted,
+        tag: tagController.text,
+        tagTextColor: tagTextColor,
+        tagBgColor: tagBgColor,
+        category: categoryController.text,
+        isNew: isNew,
+        isRecommend: isRecommended,
       ),
       status: modelEnabled ? 1 : 2,
       providers: ps,
@@ -640,11 +874,11 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
       return modelChannels
           .firstWhere(
             (e) => e.type == provider.name! && e.id == null,
-            orElse: () => AdminChannel(name: '未知', type: ''),
+            orElse: () => AdminChannel(name: 'Unknown', type: ''),
           )
           .display;
     }
 
-    return '请选择';
+    return 'Select';
   }
 }

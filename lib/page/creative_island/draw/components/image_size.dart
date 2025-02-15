@@ -1,3 +1,4 @@
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +28,7 @@ class ImageSize extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: CustomSize.borderRadius,
         color: customColors.backgroundContainerColor,
       ),
       alignment: Alignment.center,
