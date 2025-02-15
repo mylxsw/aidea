@@ -81,16 +81,16 @@ class _SignInScreenState extends State<SignInScreen> {
               await showBeautyDialog(
                 context,
                 type: QuickAlertType.confirm,
-                title: '提示',
-                text: '该微信未绑定任何账号，是否直接登录？\n（自动创建账号）',
-                confirmBtnText: '直接登录',
+                title: AppLocale.tips.getString(context),
+                text: AppLocale.wechatBindConfirm.getString(context),
+                confirmBtnText: AppLocale.directSignin.getString(context),
                 onConfirmBtnTap: () async {
                   await confirmWeChatSignin(tryRes.token);
                   // ignore: use_build_context_synchronously
                   context.pop();
                 },
                 showCancelBtn: true,
-                cancelBtnText: '绑定已有账号',
+                cancelBtnText: AppLocale.bindExAccount.getString(context),
                 onCancelBtnTap: () {
                   setState(() {
                     wechatBindToken = tryRes.token;
@@ -213,9 +213,6 @@ class _SignInScreenState extends State<SignInScreen> {
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: customColors.linkColor ?? Colors.green),
                         ),
-                        floatingLabelStyle: TextStyle(
-                          color: customColors.linkColor ?? Colors.green,
-                        ),
                         isDense: true,
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         labelText: AppLocale.account.getString(context),
@@ -234,7 +231,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: Text(
-                      '未注册的账号验证成功后将自动注册',
+                      AppLocale.accountWillBeCreateAutomatically.getString(context),
                       style: TextStyle(
                         color: customColors.weakTextColor?.withAlpha(80),
                         fontSize: 14,
@@ -250,9 +247,9 @@ class _SignInScreenState extends State<SignInScreen> {
                     decoration: BoxDecoration(color: customColors.linkColor, borderRadius: CustomSize.borderRadius),
                     child: TextButton(
                       onPressed: onSigninSubmit,
-                      child: const Text(
-                        '验证',
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      child: Text(
+                        AppLocale.verify.getString(context),
+                        style: const TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     ),
                   ),
@@ -426,11 +423,11 @@ class _SignInScreenState extends State<SignInScreen> {
 
                 final ok = await sendWeChatAuth(scope: "snsapi_userinfo", state: "wechat_sdk_demo_test");
                 if (!ok) {
-                  showErrorMessage('请先安装微信后再使用该功能');
+                  showErrorMessage(AppLocale.installWechatFirst.getString(context));
                 }
               },
               backgroundColor: Colors.green,
-              text: '微信',
+              text: AppLocale.wechat.getString(context),
               icon: Icons.wechat,
             ));
           }
@@ -443,7 +440,7 @@ class _SignInScreenState extends State<SignInScreen> {
         return Column(
           children: [
             Text(
-              '其它登录方式',
+              AppLocale.otherLoginMethods.getString(context),
               style: TextStyle(
                 fontSize: 13,
                 color: customColors.weakTextColor?.withAlpha(80),

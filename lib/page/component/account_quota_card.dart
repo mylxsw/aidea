@@ -4,6 +4,7 @@ import 'package:askaide/page/component/credit.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/repo/api/user.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
@@ -102,7 +103,7 @@ class AccountQuotaCard extends StatelessWidget {
                 ],
               )
             : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   IconButton(
                     alignment: Alignment.centerLeft,
@@ -111,7 +112,7 @@ class AccountQuotaCard extends StatelessWidget {
                       children: [
                         const Icon(Icons.account_circle),
                         const SizedBox(width: 5),
-                        Text(AppLocale.signIn.getString(context)),
+                        AutoSizeText(AppLocale.signInAccount.getString(context), maxLines: 1),
                       ],
                     ),
                     onPressed: () {
