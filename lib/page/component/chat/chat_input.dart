@@ -94,7 +94,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    if (!PlatformTool.isDesktop()) {
+    if (!PlatformTool.isDesktopAndWeb()) {
       availableCameras().then((cameras) {
         setState(() {
           hasCamera = cameras.isNotEmpty;
@@ -142,11 +142,11 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
       child: SafeArea(
         bottom: false,
         child: Container(
-          margin: PlatformTool.isDesktop() ? const EdgeInsets.all(8) : null,
+          margin: PlatformTool.isDesktopAndWeb() ? const EdgeInsets.all(8) : null,
           padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
           decoration: BoxDecoration(
             color: customColors.chatInputAreaBackground,
-            borderRadius: PlatformTool.isDesktop()
+            borderRadius: PlatformTool.isDesktopAndWeb()
                 ? BorderRadius.circular(CustomSize.radiusValue)
                 : const BorderRadius.only(
                     topLeft: Radius.circular(CustomSize.radiusValue * 2),
@@ -158,7 +158,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                 offset: const Offset(-1, -1),
                 blurRadius: CustomSize.radiusValue,
               ),
-              if (PlatformTool.isDesktop())
+              if (PlatformTool.isDesktopAndWeb())
                 BoxShadow(
                   color: Colors.black.withOpacity(0.08),
                   offset: const Offset(-1, -1),

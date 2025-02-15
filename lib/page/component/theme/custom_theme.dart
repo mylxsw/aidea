@@ -4,10 +4,6 @@ import 'package:flutter/material.dart';
 
 class CustomColors extends ThemeExtension<CustomColors> {
   const CustomColors({
-    this.appBarBackgroundImage,
-    this.appBarBackgroundImageForRoom,
-    this.appBarBackgroundImageForCreativeIsland,
-    this.appBarBackgroundImageDiscovery,
     this.chatRoomBackground,
     this.chatRoomReplyBackground,
     this.chatRoomReplyBackgroundSecondary,
@@ -62,11 +58,6 @@ class CustomColors extends ThemeExtension<CustomColors> {
     this.paymentItemDescriptionColor,
     this.settingsSectionBackground,
   });
-
-  final String? appBarBackgroundImage;
-  final String? appBarBackgroundImageForRoom;
-  final String? appBarBackgroundImageForCreativeIsland;
-  final String? appBarBackgroundImageDiscovery;
 
   final Color? chatRoomBackground;
   final Color? chatRoomReplyBackground;
@@ -145,10 +136,6 @@ class CustomColors extends ThemeExtension<CustomColors> {
     }
 
     return CustomColors(
-      appBarBackgroundImage: appBarBackgroundImage,
-      appBarBackgroundImageForRoom: appBarBackgroundImageForRoom,
-      appBarBackgroundImageForCreativeIsland: appBarBackgroundImageForCreativeIsland,
-      appBarBackgroundImageDiscovery: appBarBackgroundImageDiscovery,
       chatRoomBackground: Color.lerp(chatRoomBackground, other.chatRoomBackground, t),
       chatRoomReplyBackground: Color.lerp(chatRoomReplyBackground, other.chatRoomReplyBackground, t),
       chatRoomReplyBackgroundSecondary:
@@ -209,10 +196,6 @@ class CustomColors extends ThemeExtension<CustomColors> {
   }
 
   static const light = CustomColors(
-    appBarBackgroundImage: 'assets/background.jpg',
-    appBarBackgroundImageForRoom: 'assets/background-team.jpg',
-    appBarBackgroundImageForCreativeIsland: 'assets/background-creative-island.jpg',
-    appBarBackgroundImageDiscovery: 'assets/background-light-s1.jpg',
     chatRoomBackground: Color.fromARGB(255, 239, 239, 239),
     chatRoomReplyBackground: Colors.transparent,
     chatRoomReplyBackgroundSecondary: Color.fromARGB(200, 255, 255, 255),
@@ -269,10 +252,6 @@ class CustomColors extends ThemeExtension<CustomColors> {
   );
 
   static const dark = CustomColors(
-    appBarBackgroundImage: 'assets/background-dark.jpg',
-    appBarBackgroundImageForRoom: 'assets/background-discovery-dark.jpg',
-    appBarBackgroundImageForCreativeIsland: 'assets/background-dark-s3.jpg',
-    appBarBackgroundImageDiscovery: 'assets/background-dark-s1.jpg',
     chatRoomBackground: Color.fromARGB(255, 0, 0, 0),
     chatRoomReplyBackground: Colors.transparent,
     chatRoomReplyBackgroundSecondary: Color.fromARGB(200, 39, 39, 39),
@@ -330,10 +309,6 @@ class CustomColors extends ThemeExtension<CustomColors> {
 
   @override
   ThemeExtension<CustomColors> copyWith({
-    String? appBarBackgroundImage,
-    String? appBarBackgroundImageForRoom,
-    String? appBarBackgroundImageForCreativeIsland,
-    String? appBarBackgroundImageDiscovery,
     Color? chatRoomBackground,
     Color? chatRoomReplyBackground,
     Color? chatRoomReplyBackgroundSecondary,
@@ -389,11 +364,6 @@ class CustomColors extends ThemeExtension<CustomColors> {
     Color? settingsSectionBackground,
   }) {
     return CustomColors(
-      appBarBackgroundImage: appBarBackgroundImage ?? this.appBarBackgroundImage,
-      appBarBackgroundImageForRoom: appBarBackgroundImageForRoom ?? this.appBarBackgroundImageForRoom,
-      appBarBackgroundImageForCreativeIsland:
-          appBarBackgroundImageForCreativeIsland ?? this.appBarBackgroundImageForCreativeIsland,
-      appBarBackgroundImageDiscovery: appBarBackgroundImageDiscovery ?? this.appBarBackgroundImageDiscovery,
       chatRoomBackground: chatRoomBackground ?? this.chatRoomBackground,
       chatRoomReplyBackground: chatRoomReplyBackground ?? this.chatRoomReplyBackground,
       chatRoomReplyBackgroundSecondary: chatRoomReplyBackgroundSecondary ?? this.chatRoomReplyBackgroundSecondary,

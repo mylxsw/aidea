@@ -260,10 +260,6 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
                 ],
-                backgroundImage: Image.asset(
-                  customColors.appBarBackgroundImage!,
-                  fit: BoxFit.cover,
-                ),
                 appBarExtraWidgets: () {
                   return [
                     SliverStickyHeader(
