@@ -1352,30 +1352,10 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-TextTheme loadTextTheme() {
-  return const TextTheme(
-    displayLarge: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
-    displayMedium: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
-    displaySmall: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
-    headlineLarge: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
-    headlineMedium: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
-    headlineSmall: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
-    titleLarge: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
-    titleMedium: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
-    titleSmall: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
-    bodyLarge: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
-    bodyMedium: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
-    bodySmall: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
-    labelLarge: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
-    labelMedium: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
-    labelSmall: TextStyle(fontFamily: 'AlibabaPuHuiTi'),
-  );
-}
-
 ThemeData createLightThemeData() {
   return ThemeData.light(useMaterial3: true).copyWith(
     extensions: [CustomColors.light],
-    textTheme: loadTextTheme(),
+    textTheme: ThemeData(fontFamily: 'AlibabaPuHuiTi').primaryTextTheme,
     appBarTheme: const AppBarTheme(
       // backgroundColor: Color.fromARGB(255, 250, 250, 250),
       backgroundColor: Colors.transparent,
@@ -1407,7 +1387,7 @@ ThemeData createLightThemeData() {
 ThemeData createDarkThemeData() {
   return ThemeData.dark(useMaterial3: true).copyWith(
     extensions: [CustomColors.dark],
-    textTheme: loadTextTheme(),
+    textTheme: ThemeData(fontFamily: 'AlibabaPuHuiTi').primaryTextTheme,
     appBarTheme: const AppBarTheme(
       // backgroundColor: Color.fromARGB(255, 48, 48, 48),
       backgroundColor: Colors.transparent,
