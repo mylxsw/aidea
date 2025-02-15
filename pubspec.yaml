@@ -177,14 +177,6 @@ flutter:
     - assets/app-256-transparent.png
     - assets/light-dark-auto.png
     - assets/openai.png
-    - assets/background.jpg
-    - assets/background-dark.jpg
-    - assets/background-team.jpg
-    - assets/background-creative-island.jpg
-    - assets/background-discovery-dark.jpg
-    - assets/background-dark-s1.jpg
-    - assets/background-dark-s3.jpg
-    - assets/background-light-s1.jpg
     - assets/transport.png
     - assets/weibo.png
     - assets/github.png
@@ -228,7 +220,7 @@ flutter:
 flutter_native_splash:
   image: assets/app-splash.png
   color: "#ffffff"
-  android_disable_fullscreen: true
+  fullscreen: true
 
 tobias:
   url_scheme: alipay2021004101661425
