@@ -21,6 +21,7 @@ import 'package:askaide/page/component/sliver_component.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api/model.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/model/chat_history.dart';
@@ -234,128 +235,130 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
-    return BackgroundContainer(
-      setting: widget.setting,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: BlocBuilder<ChatChatBloc, ChatChatState>(
-          buildWhen: (previous, current) => current is ChatChatRecentHistoriesLoaded,
-          builder: (context, state) {
-            if (state is ChatChatRecentHistoriesLoaded) {
-              return SliverSingleComponent(
-                title: Text(
-                  AppLocale.chatAnywhere.getString(context),
-                  style: TextStyle(
-                    fontSize: CustomSize.appBarTitleSize,
-                    color: customColors.backgroundInvertedColor,
+    return WindowFrameWidget(
+      child: BackgroundContainer(
+        setting: widget.setting,
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: BlocBuilder<ChatChatBloc, ChatChatState>(
+            buildWhen: (previous, current) => current is ChatChatRecentHistoriesLoaded,
+            builder: (context, state) {
+              if (state is ChatChatRecentHistoriesLoaded) {
+                return SliverSingleComponent(
+                  title: Text(
+                    AppLocale.chatAnywhere.getString(context),
+                    style: TextStyle(
+                      fontSize: CustomSize.appBarTitleSize,
+                      color: customColors.backgroundInvertedColor,
+                    ),
                   ),
-                ),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.history),
-                    onPressed: () {
-                      context.push('/chat-chat/history').whenComplete(() {
-                        context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
-                      });
-                    },
-                  ),
-                ],
-                appBarExtraWidgets: () {
-                  return [
-                    SliverStickyHeader(
-                      header: SafeArea(
-                        top: false,
-                        child: buildChatComponents(customColors, context, state),
-                      ),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            if (index == 0) {
-                              return SafeArea(
-                                top: false,
-                                bottom: false,
-                                child: Container(
-                                  margin: const EdgeInsets.only(top: 10, left: 15),
-                                  child: Text(
-                                    AppLocale.histories.getString(context),
-                                    style: TextStyle(
-                                      color: customColors.weakTextColor?.withAlpha(100),
-                                      fontSize: 13,
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.history),
+                      onPressed: () {
+                        context.push('/chat-chat/history').whenComplete(() {
+                          context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
+                        });
+                      },
+                    ),
+                  ],
+                  appBarExtraWidgets: () {
+                    return [
+                      SliverStickyHeader(
+                        header: SafeArea(
+                          top: false,
+                          child: buildChatComponents(customColors, context, state),
+                        ),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              if (index == 0) {
+                                return SafeArea(
+                                  top: false,
+                                  bottom: false,
+                                  child: Container(
+                                    margin: const EdgeInsets.only(top: 10, left: 15),
+                                    child: Text(
+                                      AppLocale.histories.getString(context),
+                                      style: TextStyle(
+                                        color: customColors.weakTextColor?.withAlpha(100),
+                                        fontSize: 13,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
-                            }
+                                );
+                              }
 
-                            if (index == state.histories.length && index > 3) {
+                              if (index == state.histories.length && index > 3) {
+                                return SafeArea(
+                                  top: false,
+                                  bottom: false,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      context.push('/chat-chat/history').whenComplete(() {
+                                        context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
+                                      });
+                                    },
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      margin: const EdgeInsets.only(top: 5, bottom: 15),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.keyboard_double_arrow_left,
+                                            size: 12,
+                                            color: customColors.weakTextColor!.withAlpha(120),
+                                          ),
+                                          Text(
+                                            "查看更多",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: customColors.weakTextColor!.withAlpha(120),
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.keyboard_double_arrow_right,
+                                            size: 12,
+                                            color: customColors.weakTextColor!.withAlpha(120),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+
                               return SafeArea(
                                 top: false,
                                 bottom: false,
-                                child: GestureDetector(
+                                child: ChatHistoryItem(
+                                  history: state.histories[index - 1],
+                                  customColors: customColors,
                                   onTap: () {
-                                    context.push('/chat-chat/history').whenComplete(() {
+                                    context
+                                        .push(
+                                            '/chat-anywhere?chat_id=${state.histories[index - 1].id}&model=${state.histories[index - 1].model}&title=${state.histories[index - 1].title}')
+                                        .whenComplete(() {
+                                      FocusScope.of(context).requestFocus(FocusNode());
                                       context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
                                     });
                                   },
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    margin: const EdgeInsets.only(top: 5, bottom: 15),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.keyboard_double_arrow_left,
-                                          size: 12,
-                                          color: customColors.weakTextColor!.withAlpha(120),
-                                        ),
-                                        Text(
-                                          "查看更多",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: customColors.weakTextColor!.withAlpha(120),
-                                          ),
-                                        ),
-                                        Icon(
-                                          Icons.keyboard_double_arrow_right,
-                                          size: 12,
-                                          color: customColors.weakTextColor!.withAlpha(120),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
                                 ),
                               );
-                            }
-
-                            return SafeArea(
-                              top: false,
-                              bottom: false,
-                              child: ChatHistoryItem(
-                                history: state.histories[index - 1],
-                                customColors: customColors,
-                                onTap: () {
-                                  context
-                                      .push(
-                                          '/chat-anywhere?chat_id=${state.histories[index - 1].id}&model=${state.histories[index - 1].model}&title=${state.histories[index - 1].title}')
-                                      .whenComplete(() {
-                                    FocusScope.of(context).requestFocus(FocusNode());
-                                    context.read<ChatChatBloc>().add(ChatChatLoadRecentHistories());
-                                  });
-                                },
-                              ),
-                            );
-                          },
-                          childCount: state.histories.isNotEmpty ? state.histories.length + 1 : 0,
+                            },
+                            childCount: state.histories.isNotEmpty ? state.histories.length + 1 : 0,
+                          ),
                         ),
                       ),
-                    ),
-                  ];
-                },
-              );
-            } else {
-              return const SizedBox();
-            }
-          },
+                    ];
+                  },
+                );
+              } else {
+                return const SizedBox();
+              }
+            },
+          ),
         ),
       ),
     );

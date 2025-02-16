@@ -127,6 +127,7 @@ import 'package:sizer/sizer.dart';
 import 'package:askaide/helper/http.dart' as httpx;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -255,6 +256,25 @@ void main() async {
       messageStateManager: stateManager,
     ),
   ));
+
+  if (PlatformTool.isDesktop()) {
+    doWhenWindowReady(() {
+      final win = appWindow;
+      const initialSize = Size(850, 750);
+      win.size = initialSize;
+      win.minSize = const Size(350, 650);
+      win.alignment = Alignment.center;
+      win.title = "AIdea";
+
+      if (PlatformTool.isWindows()) {
+        WidgetsBinding.instance.scheduleFrameCallback((timeStamp) {
+          appWindow.size = initialSize + const Offset(0, 1);
+        });
+      }
+
+      win.show();
+    });
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -1355,6 +1375,7 @@ class _MyAppState extends State<MyApp> {
 ThemeData createLightThemeData() {
   return ThemeData.light(useMaterial3: true).copyWith(
     extensions: [CustomColors.light],
+    textTheme: ThemeData(fontFamily: 'AlibabaPuHuiTi').textTheme,
     appBarTheme: const AppBarTheme(
       // backgroundColor: Color.fromARGB(255, 250, 250, 250),
       backgroundColor: Colors.transparent,
@@ -1386,6 +1407,7 @@ ThemeData createLightThemeData() {
 ThemeData createDarkThemeData() {
   return ThemeData.dark(useMaterial3: true).copyWith(
     extensions: [CustomColors.dark],
+    textTheme: ThemeData(fontFamily: 'AlibabaPuHuiTi').primaryTextTheme,
     appBarTheme: const AppBarTheme(
       // backgroundColor: Color.fromARGB(255, 48, 48, 48),
       backgroundColor: Colors.transparent,

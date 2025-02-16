@@ -28,6 +28,7 @@ import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/select_mode_toolbar.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/page/custom_scaffold.dart';
 import 'package:askaide/page/drawer.dart';
 import 'package:askaide/repo/api/model.dart';
@@ -228,127 +229,129 @@ class _NewHomePageState extends State<NewHomePage> {
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
-    return CustomScaffold(
-      settings: widget.settings,
-      showBackAppBar: chatPreviewController.selectMode,
-      backAppBar: AppBar(
-        title: Text(
-          AppLocale.select.getString(context),
-          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
-        ),
-        centerTitle: true,
-        elevation: 0,
-        leadingWidth: 80,
-        leading: TextButton(
-          onPressed: () {
-            chatPreviewController.exitSelectMode();
-          },
-          child: Text(
-            AppLocale.cancel.getString(context),
-            style: TextStyle(color: customColors.linkColor),
+    return WindowFrameWidget(
+      child: CustomScaffold(
+        settings: widget.settings,
+        showBackAppBar: chatPreviewController.selectMode,
+        backAppBar: AppBar(
+          title: Text(
+            AppLocale.select.getString(context),
+            style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
           ),
-        ),
-        toolbarHeight: CustomSize.toolbarHeight,
-      ),
-      // 标题，点击后弹出模型选择对话框
-      title: GestureDetector(
-        onTap: () {
-          reloadModels(cache: false);
-
-          ModelSwitcher.openActionDialog(
-            // ignore: use_build_context_synchronously
-            context: context,
-            onSelected: (selected) {
-              setState(() {
-                selectedModel = selected;
-              });
-
-              if (selected != null) {
-                Cache().setString(
-                  key: 'last_selected_model',
-                  value: selected.id,
-                  duration: const Duration(days: 3650),
-                );
-              }
+          centerTitle: true,
+          elevation: 0,
+          leadingWidth: 80,
+          leading: TextButton(
+            onPressed: () {
+              chatPreviewController.exitSelectMode();
             },
-            initValue: selectedModel,
-          );
-        },
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width / 2,
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible(
-                    child: AutoSizeText(
-                      selectedModel != null ? selectedModel!.name : AppLocale.selectModel.getString(context),
-                      maxFontSize: 15,
-                      minFontSize: 12,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: CustomSize.appBarTitleSize,
-                        color: customColors.backgroundInvertedColor,
-                        fontWeight: FontWeight.bold,
+            child: Text(
+              AppLocale.cancel.getString(context),
+              style: TextStyle(color: customColors.linkColor),
+            ),
+          ),
+          toolbarHeight: CustomSize.toolbarHeight,
+        ),
+        // 标题，点击后弹出模型选择对话框
+        title: GestureDetector(
+          onTap: () {
+            reloadModels(cache: false);
+
+            ModelSwitcher.openActionDialog(
+              // ignore: use_build_context_synchronously
+              context: context,
+              onSelected: (selected) {
+                setState(() {
+                  selectedModel = selected;
+                });
+
+                if (selected != null) {
+                  Cache().setString(
+                    key: 'last_selected_model',
+                    value: selected.id,
+                    duration: const Duration(days: 3650),
+                  );
+                }
+              },
+              initValue: selectedModel,
+            );
+          },
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width / 2,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: AutoSizeText(
+                        selectedModel != null ? selectedModel!.name : AppLocale.selectModel.getString(context),
+                        maxFontSize: 15,
+                        minFontSize: 12,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: CustomSize.appBarTitleSize,
+                          color: customColors.backgroundInvertedColor,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 3),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    color: customColors.backgroundInvertedColor!.withAlpha(150),
-                    size: CustomSize.appBarTitleSize * 0.8,
-                  ),
-                ],
-              ),
-            ],
+                    const SizedBox(width: 3),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      color: customColors.backgroundInvertedColor!.withAlpha(150),
+                      size: CustomSize.appBarTitleSize * 0.8,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.maps_ugc_outlined),
-          onPressed: createNewChat,
-        ),
-      ],
-      body: BlocConsumer<RoomBloc, RoomState>(
-        listenWhen: (previous, current) => current is RoomLoaded,
-        listener: (context, state) async {
-          if (state is RoomLoaded && currentModelV2 == null) {
-            await loadCurrentModel(state.room.model);
-          }
-        },
-        buildWhen: (previous, current) => current is RoomLoaded,
-        builder: (context, room) {
-          // 加载聊天室
-          if (room is RoomLoaded) {
-            if (room.error != null) {
-              return EnhancedErrorWidget(error: room.error);
-            }
-
-            return buildChatComponents(
-              customColors,
-              context,
-              room,
-            );
-          } else {
-            return Container();
-          }
-        },
-      ),
-      drawer: MultiBlocProvider(
-        providers: [
-          BlocProvider.value(
-            value: context.read<AccountBloc>(),
-          ),
-          BlocProvider.value(
-            value: context.read<ChatChatBloc>(),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.maps_ugc_outlined),
+            onPressed: createNewChat,
           ),
         ],
-        child: const LeftDrawer(),
+        body: BlocConsumer<RoomBloc, RoomState>(
+          listenWhen: (previous, current) => current is RoomLoaded,
+          listener: (context, state) async {
+            if (state is RoomLoaded && currentModelV2 == null) {
+              await loadCurrentModel(state.room.model);
+            }
+          },
+          buildWhen: (previous, current) => current is RoomLoaded,
+          builder: (context, room) {
+            // 加载聊天室
+            if (room is RoomLoaded) {
+              if (room.error != null) {
+                return EnhancedErrorWidget(error: room.error);
+              }
+
+              return buildChatComponents(
+                customColors,
+                context,
+                room,
+              );
+            } else {
+              return Container();
+            }
+          },
+        ),
+        drawer: MultiBlocProvider(
+          providers: [
+            BlocProvider.value(
+              value: context.read<AccountBloc>(),
+            ),
+            BlocProvider.value(
+              value: context.read<ChatChatBloc>(),
+            ),
+          ],
+          child: const LeftDrawer(),
+        ),
       ),
     );
   }

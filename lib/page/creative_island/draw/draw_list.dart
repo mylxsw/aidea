@@ -4,6 +4,7 @@ import 'package:askaide/helper/color.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/sliver_component.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/page/creative_island/draw/components/creative_item.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
@@ -43,9 +44,12 @@ class _DrawListScreenState extends State<DrawListScreen> {
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
-    return Scaffold(
+    return WindowFrameWidget(
       backgroundColor: customColors.backgroundColor,
-      body: _buildIslandItems(customColors),
+      child: Scaffold(
+        backgroundColor: customColors.backgroundColor,
+        body: _buildIslandItems(customColors),
+      ),
     );
   }
 

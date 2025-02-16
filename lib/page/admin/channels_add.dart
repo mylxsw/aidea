@@ -9,6 +9,7 @@ import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api/admin/channels.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
@@ -82,183 +83,186 @@ class _ChannelAddPageState extends State<ChannelAddPage> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        title: const Text(
-          'New Channel',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
-        ),
-        centerTitle: true,
-      ),
+    return WindowFrameWidget(
       backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
-        enabled: false,
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          title: const Text(
+            'New Channel',
+            style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          centerTitle: true,
+        ),
         backgroundColor: customColors.backgroundColor,
-        child: BlocListener<ChannelBloc, ChannelState>(
-          listenWhen: (previous, current) => current is ChannelOperationResult,
-          listener: (context, state) {
-            if (state is ChannelOperationResult) {
-              if (state.success) {
-                showSuccessMessage(state.message);
-                context.pop();
-              } else {
-                showErrorMessage(state.message);
+        body: BackgroundContainer(
+          setting: widget.setting,
+          enabled: false,
+          backgroundColor: customColors.backgroundColor,
+          child: BlocListener<ChannelBloc, ChannelState>(
+            listenWhen: (previous, current) => current is ChannelOperationResult,
+            listener: (context, state) {
+              if (state is ChannelOperationResult) {
+                if (state.success) {
+                  showSuccessMessage(state.message);
+                  context.pop();
+                } else {
+                  showErrorMessage(state.message);
+                }
               }
-            }
-          },
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              children: [
-                ColumnBlock(
-                  children: [
-                    EnhancedTextField(
-                      labelText: 'Name',
-                      customColors: customColors,
-                      controller: nameController,
-                      textAlignVertical: TextAlignVertical.top,
-                      hintText: 'Enter channel name',
-                      maxLength: 100,
-                      showCounter: false,
-                    ),
-                    EnhancedInput(
-                      title: Text(
-                        'Type',
-                        style: TextStyle(
-                          color: customColors.textfieldLabelColor,
-                          fontSize: 16,
-                        ),
-                      ),
-                      value: Text(
-                        buildSelectedChannelTypeText(),
-                        style: TextStyle(
-                          color: customColors.textfieldValueColor,
-                          fontSize: 16,
-                        ),
-                      ),
-                      onPressed: () {
-                        openListSelectDialog(
-                          context,
-                          channelTypes.map((e) => SelectorItem(Text(e.text), e.name)).toList(),
-                          (value) {
-                            setState(() {
-                              selectedChannelType = value.value;
-                            });
-                            return true;
-                          },
-                          heightFactor: 0.5,
-                          value: selectedChannelType,
-                        );
-                      },
-                    ),
-                    EnhancedTextField(
-                      labelText: 'Server',
-                      customColors: customColors,
-                      controller: serverController,
-                      textAlignVertical: TextAlignVertical.top,
-                      hintText: 'https://api.openai.com/v1',
-                      maxLength: 255,
-                      showCounter: false,
-                    ),
-                    EnhancedTextField(
-                      labelText: 'API Key',
-                      customColors: customColors,
-                      controller: secretController,
-                      textAlignVertical: TextAlignVertical.top,
-                      hintText: 'Enter API Key',
-                      maxLength: 2048,
-                      obscureText: true,
-                      showCounter: false,
-                    ),
-                  ],
-                ),
-                // 高级选项
-                if (showAdvancedOptions)
+            },
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
                   ColumnBlock(
-                    innerPanding: 5,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Use Proxy',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          CupertinoSwitch(
-                            activeColor: customColors.linkColor,
-                            value: usingProxy,
-                            onChanged: (value) {
-                              setState(() {
-                                usingProxy = value;
-                              });
-                            },
-                          ),
-                        ],
+                      EnhancedTextField(
+                        labelText: 'Name',
+                        customColors: customColors,
+                        controller: nameController,
+                        textAlignVertical: TextAlignVertical.top,
+                        hintText: 'Enter channel name',
+                        maxLength: 100,
+                        showCounter: false,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Azure Mode',
-                            style: TextStyle(fontSize: 16),
+                      EnhancedInput(
+                        title: Text(
+                          'Type',
+                          style: TextStyle(
+                            color: customColors.textfieldLabelColor,
+                            fontSize: 16,
                           ),
-                          CupertinoSwitch(
-                            activeColor: customColors.linkColor,
-                            value: openaiAzure,
-                            onChanged: (value) {
+                        ),
+                        value: Text(
+                          buildSelectedChannelTypeText(),
+                          style: TextStyle(
+                            color: customColors.textfieldValueColor,
+                            fontSize: 16,
+                          ),
+                        ),
+                        onPressed: () {
+                          openListSelectDialog(
+                            context,
+                            channelTypes.map((e) => SelectorItem(Text(e.text), e.name)).toList(),
+                            (value) {
                               setState(() {
-                                openaiAzure = value;
+                                selectedChannelType = value.value;
                               });
+                              return true;
                             },
-                          ),
-                        ],
+                            heightFactor: 0.5,
+                            value: selectedChannelType,
+                          );
+                        },
                       ),
                       EnhancedTextField(
-                        labelText: 'Version',
+                        labelText: 'Server',
                         customColors: customColors,
-                        controller: azureAPIVersionController,
+                        controller: serverController,
                         textAlignVertical: TextAlignVertical.top,
-                        hintText: '2023-05-15',
-                        maxLength: 30,
+                        hintText: 'https://api.openai.com/v1',
+                        maxLength: 255,
+                        showCounter: false,
+                      ),
+                      EnhancedTextField(
+                        labelText: 'API Key',
+                        customColors: customColors,
+                        controller: secretController,
+                        textAlignVertical: TextAlignVertical.top,
+                        hintText: 'Enter API Key',
+                        maxLength: 2048,
+                        obscureText: true,
                         showCounter: false,
                       ),
                     ],
                   ),
-                const SizedBox(height: 15),
-                Row(
-                  children: [
-                    EnhancedButton(
-                      title: showAdvancedOptions
-                          ? AppLocale.simpleMode.getString(context)
-                          : AppLocale.professionalMode.getString(context),
-                      width: 120,
-                      backgroundColor: Colors.transparent,
-                      color: customColors.weakLinkColor,
-                      fontSize: 15,
-                      icon: Icon(
-                        showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
+                  // 高级选项
+                  if (showAdvancedOptions)
+                    ColumnBlock(
+                      innerPanding: 5,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Use Proxy',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            CupertinoSwitch(
+                              activeColor: customColors.linkColor,
+                              value: usingProxy,
+                              onChanged: (value) {
+                                setState(() {
+                                  usingProxy = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Azure Mode',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            CupertinoSwitch(
+                              activeColor: customColors.linkColor,
+                              value: openaiAzure,
+                              onChanged: (value) {
+                                setState(() {
+                                  openaiAzure = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        EnhancedTextField(
+                          labelText: 'Version',
+                          customColors: customColors,
+                          controller: azureAPIVersionController,
+                          textAlignVertical: TextAlignVertical.top,
+                          hintText: '2023-05-15',
+                          maxLength: 30,
+                          showCounter: false,
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 15),
+                  Row(
+                    children: [
+                      EnhancedButton(
+                        title: showAdvancedOptions
+                            ? AppLocale.simpleMode.getString(context)
+                            : AppLocale.professionalMode.getString(context),
+                        width: 120,
+                        backgroundColor: Colors.transparent,
                         color: customColors.weakLinkColor,
-                        size: 15,
+                        fontSize: 15,
+                        icon: Icon(
+                          showAdvancedOptions ? Icons.unfold_less : Icons.unfold_more,
+                          color: customColors.weakLinkColor,
+                          size: 15,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            showAdvancedOptions = !showAdvancedOptions;
+                          });
+                        },
                       ),
-                      onPressed: () {
-                        setState(() {
-                          showAdvancedOptions = !showAdvancedOptions;
-                        });
-                      },
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      flex: 1,
-                      child: EnhancedButton(
-                        title: AppLocale.save.getString(context),
-                        onPressed: onSubmit,
+                      const SizedBox(width: 10),
+                      Expanded(
+                        flex: 1,
+                        child: EnhancedButton(
+                          title: AppLocale.save.getString(context),
+                          onPressed: onSubmit,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

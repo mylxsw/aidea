@@ -6,6 +6,7 @@ import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api/admin/channels.dart';
 import 'package:askaide/repo/api/admin/models.dart';
 import 'package:askaide/repo/api_server.dart';
@@ -77,103 +78,106 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        title: const Text(
-          'Large Language Model',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              context.push('/admin/models/create').then((value) {
-                context.read<ModelBloc>().add(ModelsLoadEvent());
-              });
-            },
-          ),
-        ],
-      ),
+    return WindowFrameWidget(
       backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
-        enabled: false,
-        backgroundColor: customColors.backgroundColor,
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.only(left: 10, right: 10, bottom: 5),
-              child: TextField(
-                textAlignVertical: TextAlignVertical.center,
-                style: TextStyle(color: customColors.dialogDefaultTextColor),
-                decoration: InputDecoration(
-                  hintText: AppLocale.search.getString(context),
-                  hintStyle: TextStyle(
-                    color: customColors.dialogDefaultTextColor,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: customColors.dialogDefaultTextColor,
-                  ),
-                  isDense: true,
-                  border: InputBorder.none,
-                ),
-                onChanged: (value) => setState(() => keyword = value),
-              ),
-            ),
-            Expanded(
-              child: RefreshIndicator(
-                color: customColors.linkColor,
-                onRefresh: () async {
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          title: const Text(
+            'Large Language Model',
+            style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () {
+                context.push('/admin/models/create').then((value) {
                   context.read<ModelBloc>().add(ModelsLoadEvent());
-                },
-                displacement: 20,
-                child: BlocConsumer<ModelBloc, ModelState>(
-                  listenWhen: (previous, current) => current is ModelOperationResult,
-                  listener: (context, state) {
-                    if (state is ModelOperationResult) {
-                      if (state.success) {
-                        showSuccessMessage(state.message);
-                        context.read<ModelBloc>().add(ModelsLoadEvent());
-                      } else {
-                        showErrorMessage(state.message);
-                      }
-                    }
-                  },
-                  buildWhen: (previous, current) => current is ModelsLoaded,
-                  builder: (context, state) {
-                    if (state is ModelsLoaded) {
-                      final models = state.models
-                          .where((e) =>
-                              keyword == '' ||
-                              e.name.toLowerCase().contains(keyword.toLowerCase()) ||
-                              e.modelId.toLowerCase().contains(keyword.toLowerCase()) ||
-                              (e.description ?? '').toLowerCase().contains(keyword.toLowerCase()))
-                          .toList();
-                      return SafeArea(
-                        top: false,
-                        child: ListView.builder(
-                          padding: const EdgeInsets.all(5),
-                          itemCount: models.length,
-                          itemBuilder: (context, index) {
-                            final mod = models[index];
-
-                            return buildModelItem(context, customColors, mod);
-                          },
-                        ),
-                      );
-                    }
-
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  },
-                ),
-              ),
+                });
+              },
             ),
           ],
+        ),
+        backgroundColor: customColors.backgroundColor,
+        body: BackgroundContainer(
+          setting: widget.setting,
+          enabled: false,
+          backgroundColor: customColors.backgroundColor,
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                child: TextField(
+                  textAlignVertical: TextAlignVertical.center,
+                  style: TextStyle(color: customColors.dialogDefaultTextColor),
+                  decoration: InputDecoration(
+                    hintText: AppLocale.search.getString(context),
+                    hintStyle: TextStyle(
+                      color: customColors.dialogDefaultTextColor,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: customColors.dialogDefaultTextColor,
+                    ),
+                    isDense: true,
+                    border: InputBorder.none,
+                  ),
+                  onChanged: (value) => setState(() => keyword = value),
+                ),
+              ),
+              Expanded(
+                child: RefreshIndicator(
+                  color: customColors.linkColor,
+                  onRefresh: () async {
+                    context.read<ModelBloc>().add(ModelsLoadEvent());
+                  },
+                  displacement: 20,
+                  child: BlocConsumer<ModelBloc, ModelState>(
+                    listenWhen: (previous, current) => current is ModelOperationResult,
+                    listener: (context, state) {
+                      if (state is ModelOperationResult) {
+                        if (state.success) {
+                          showSuccessMessage(state.message);
+                          context.read<ModelBloc>().add(ModelsLoadEvent());
+                        } else {
+                          showErrorMessage(state.message);
+                        }
+                      }
+                    },
+                    buildWhen: (previous, current) => current is ModelsLoaded,
+                    builder: (context, state) {
+                      if (state is ModelsLoaded) {
+                        final models = state.models
+                            .where((e) =>
+                                keyword == '' ||
+                                e.name.toLowerCase().contains(keyword.toLowerCase()) ||
+                                e.modelId.toLowerCase().contains(keyword.toLowerCase()) ||
+                                (e.description ?? '').toLowerCase().contains(keyword.toLowerCase()))
+                            .toList();
+                        return SafeArea(
+                          top: false,
+                          child: ListView.builder(
+                            padding: const EdgeInsets.all(5),
+                            itemCount: models.length,
+                            itemBuilder: (context, index) {
+                              final mod = models[index];
+
+                              return buildModelItem(context, customColors, mod);
+                            },
+                          ),
+                        );
+                      }
+
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

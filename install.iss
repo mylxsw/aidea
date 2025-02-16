@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "AIdea"
-#define MyAppVersion "1.0.15"
+#define MyAppVersion "2.0.0"
 #define MyAppPublisher "Shenzhen Gulu Artificial Intelligence Technology Co., Ltd."
 #define MyAppURL "https://ai.aicode.cc/"
 #define MyAppExeName "AIdea.exe"

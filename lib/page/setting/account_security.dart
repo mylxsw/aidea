@@ -9,6 +9,7 @@ import 'package:askaide/page/component/enhanced_popup_menu.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/cupertino.dart';
@@ -82,134 +83,106 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        title: Text(
-          AppLocale.accountSettings.getString(context),
-          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
-        ),
-        centerTitle: true,
-        actions: [
-          EnhancedPopupMenu(
-            items: [
-              EnhancedPopupMenuItem(
-                title: AppLocale.deleteAccount.getString(context),
-                icon: Icons.delete_forever,
-                iconColor: Colors.red,
-                onTap: (ctx) {
-                  context.push('/user/destroy');
-                },
-              ),
-            ],
-          )
-        ],
-      ),
+    return WindowFrameWidget(
       backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.settings,
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          title: Text(
+            AppLocale.accountSettings.getString(context),
+            style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          centerTitle: true,
+          actions: [
+            EnhancedPopupMenu(
+              items: [
+                EnhancedPopupMenuItem(
+                  title: AppLocale.deleteAccount.getString(context),
+                  icon: Icons.delete_forever,
+                  iconColor: Colors.red,
+                  onTap: (ctx) {
+                    context.push('/user/destroy');
+                  },
+                ),
+              ],
+            )
+          ],
+        ),
         backgroundColor: customColors.backgroundColor,
-        enabled: false,
-        child: SafeArea(
-          child: BlocConsumer<AccountBloc, AccountState>(
-            listenWhen: (previous, current) => current is AccountLoaded,
-            listener: (context, state) {
-              if (state is AccountLoaded) {
-                if (state.error != null) {
-                  showErrorMessageEnhanced(context, state.error!);
+        body: BackgroundContainer(
+          setting: widget.settings,
+          backgroundColor: customColors.backgroundColor,
+          enabled: false,
+          child: SafeArea(
+            child: BlocConsumer<AccountBloc, AccountState>(
+              listenWhen: (previous, current) => current is AccountLoaded,
+              listener: (context, state) {
+                if (state is AccountLoaded) {
+                  if (state.error != null) {
+                    showErrorMessageEnhanced(context, state.error!);
+                  }
                 }
-              }
-            },
-            buildWhen: (previous, current) => current is AccountLoaded,
-            builder: (_, state) {
-              if (state is AccountLoaded) {
-                return buildSettingsList(
-                  context,
-                  [
-                    SettingsSection(
-                      title: Text(AppLocale.basicInfo.getString(context)),
-                      tiles: [
-                        SettingsTile(
-                          title: Text(AppLocale.nickname.getString(context)),
-                          trailing: Row(
-                            children: [
-                              Text(
-                                state.user!.user.name == null || state.user!.user.name == ''
-                                    ? AppLocale.unset.getString(context)
-                                    : state.user!.user.name!,
-                                style: TextStyle(
-                                  color: customColors.weakTextColor?.withAlpha(200),
-                                  fontSize: 13,
-                                ),
-                              ),
-                              const Icon(
-                                CupertinoIcons.chevron_forward,
-                                size: 18,
-                                color: Colors.grey,
-                              ),
-                            ],
-                          ),
-                          onPressed: (context) {
-                            openTextFieldDialog(
-                              context,
-                              title: AppLocale.setNickname.getString(context),
-                              hint: AppLocale.inputYourNickname.getString(context),
-                              maxLine: 1,
-                              maxLength: 30,
-                              defaultValue: state.user?.user.name,
-                              onSubmit: (value) {
-                                context.read<AccountBloc>().add(AccountUpdateEvent(realname: value));
-                                return true;
-                              },
-                            );
-                          },
-                        ),
-                        SettingsTile(
-                          title: Text(AppLocale.phone.getString(context)),
-                          trailing: Row(
-                            children: [
-                              Text(
-                                state.user!.user.phone == null || state.user!.user.phone == ''
-                                    ? AppLocale.bindPhone.getString(context)
-                                    : state.user!.user.phone!,
-                                style: TextStyle(
-                                  color: customColors.weakTextColor?.withAlpha(200),
-                                  fontSize: 13,
-                                ),
-                              ),
-                              if (state.user!.user.phone == null || state.user!.user.phone == '')
-                                const SizedBox(width: 5),
-                              if (state.user!.user.phone == null || state.user!.user.phone == '')
-                                const Icon(
-                                  CupertinoIcons.chevron_forward,
-                                  size: 18,
-                                  color: Colors.grey,
-                                ),
-                            ],
-                          ),
-                          onPressed: (context) {
-                            if (state.user!.user.phone == null || state.user!.user.phone == '') {
-                              context.push('/bind-phone?is_signin=false').then((value) => Logger.instance.d(value));
-                            }
-                          },
-                        ),
-                        if (Ability().enableWechatSignin && wechatInstalled)
+              },
+              buildWhen: (previous, current) => current is AccountLoaded,
+              builder: (_, state) {
+                if (state is AccountLoaded) {
+                  return buildSettingsList(
+                    context,
+                    [
+                      SettingsSection(
+                        title: Text(AppLocale.basicInfo.getString(context)),
+                        tiles: [
                           SettingsTile(
-                            title: Text(AppLocale.wechatAccount.getString(context)),
+                            title: Text(AppLocale.nickname.getString(context)),
                             trailing: Row(
                               children: [
                                 Text(
-                                  state.user!.user.unionId == null || state.user!.user.unionId == ''
-                                      ? AppLocale.bind.getString(context)
-                                      : AppLocale.bound.getString(context),
+                                  state.user!.user.name == null || state.user!.user.name == ''
+                                      ? AppLocale.unset.getString(context)
+                                      : state.user!.user.name!,
                                   style: TextStyle(
                                     color: customColors.weakTextColor?.withAlpha(200),
                                     fontSize: 13,
                                   ),
                                 ),
-                                if (state.user!.user.unionId == null || state.user!.user.unionId == '')
+                                const Icon(
+                                  CupertinoIcons.chevron_forward,
+                                  size: 18,
+                                  color: Colors.grey,
+                                ),
+                              ],
+                            ),
+                            onPressed: (context) {
+                              openTextFieldDialog(
+                                context,
+                                title: AppLocale.setNickname.getString(context),
+                                hint: AppLocale.inputYourNickname.getString(context),
+                                maxLine: 1,
+                                maxLength: 30,
+                                defaultValue: state.user?.user.name,
+                                onSubmit: (value) {
+                                  context.read<AccountBloc>().add(AccountUpdateEvent(realname: value));
+                                  return true;
+                                },
+                              );
+                            },
+                          ),
+                          SettingsTile(
+                            title: Text(AppLocale.phone.getString(context)),
+                            trailing: Row(
+                              children: [
+                                Text(
+                                  state.user!.user.phone == null || state.user!.user.phone == ''
+                                      ? AppLocale.bindPhone.getString(context)
+                                      : state.user!.user.phone!,
+                                  style: TextStyle(
+                                    color: customColors.weakTextColor?.withAlpha(200),
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                if (state.user!.user.phone == null || state.user!.user.phone == '')
                                   const SizedBox(width: 5),
-                                if (state.user!.user.unionId == null || state.user!.user.unionId == '')
+                                if (state.user!.user.phone == null || state.user!.user.phone == '')
                                   const Icon(
                                     CupertinoIcons.chevron_forward,
                                     size: 18,
@@ -217,60 +190,91 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
                                   ),
                               ],
                             ),
-                            onPressed: (context) async {
-                              if (state.user!.user.unionId == null || state.user!.user.unionId == '') {
-                                final ok =
-                                    await sendWeChatAuth(scope: "snsapi_userinfo", state: "wechat_sdk_demo_test");
-                                if (!ok) {
-                                  showErrorMessage(AppLocale.installWeChat.getString(context));
-                                }
+                            onPressed: (context) {
+                              if (state.user!.user.phone == null || state.user!.user.phone == '') {
+                                context.push('/bind-phone?is_signin=false').then((value) => Logger.instance.d(value));
                               }
                             },
                           ),
-                        SettingsTile(
-                          title: Text(state.user!.control.isSetPassword
-                              ? AppLocale.modifyPassword.getString(context)
-                              : AppLocale.setPassword.getString(context)),
-                          trailing: const Icon(
-                            CupertinoIcons.chevron_forward,
-                            size: 18,
-                            color: Colors.grey,
-                          ),
-                          onPressed: (context) {
-                            context.push('/user/change-password');
-                          },
-                        ),
-                      ],
-                    ),
-                    SettingsSection(
-                      tiles: [
-                        SettingsTile(
-                          title: Text(AppLocale.signOut.getString(context)),
-                          trailing: const Icon(
-                            Icons.logout,
-                            size: 18,
-                            color: Colors.grey,
-                          ),
-                          onPressed: (_) {
-                            openConfirmDialog(
-                              context,
-                              AppLocale.confirmSignOut.getString(context),
-                              () {
-                                context.read<AccountBloc>().add(AccountSignOutEvent());
-                                context.go('/login');
+                          if (Ability().enableWechatSignin && wechatInstalled)
+                            SettingsTile(
+                              title: Text(AppLocale.wechatAccount.getString(context)),
+                              trailing: Row(
+                                children: [
+                                  Text(
+                                    state.user!.user.unionId == null || state.user!.user.unionId == ''
+                                        ? AppLocale.bind.getString(context)
+                                        : AppLocale.bound.getString(context),
+                                    style: TextStyle(
+                                      color: customColors.weakTextColor?.withAlpha(200),
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                  if (state.user!.user.unionId == null || state.user!.user.unionId == '')
+                                    const SizedBox(width: 5),
+                                  if (state.user!.user.unionId == null || state.user!.user.unionId == '')
+                                    const Icon(
+                                      CupertinoIcons.chevron_forward,
+                                      size: 18,
+                                      color: Colors.grey,
+                                    ),
+                                ],
+                              ),
+                              onPressed: (context) async {
+                                if (state.user!.user.unionId == null || state.user!.user.unionId == '') {
+                                  final ok =
+                                      await sendWeChatAuth(scope: "snsapi_userinfo", state: "wechat_sdk_demo_test");
+                                  if (!ok) {
+                                    showErrorMessage(AppLocale.installWeChat.getString(context));
+                                  }
+                                }
                               },
-                              danger: true,
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                );
-              }
+                            ),
+                          SettingsTile(
+                            title: Text(state.user!.control.isSetPassword
+                                ? AppLocale.modifyPassword.getString(context)
+                                : AppLocale.setPassword.getString(context)),
+                            trailing: const Icon(
+                              CupertinoIcons.chevron_forward,
+                              size: 18,
+                              color: Colors.grey,
+                            ),
+                            onPressed: (context) {
+                              context.push('/user/change-password');
+                            },
+                          ),
+                        ],
+                      ),
+                      SettingsSection(
+                        tiles: [
+                          SettingsTile(
+                            title: Text(AppLocale.signOut.getString(context)),
+                            trailing: const Icon(
+                              Icons.logout,
+                              size: 18,
+                              color: Colors.grey,
+                            ),
+                            onPressed: (_) {
+                              openConfirmDialog(
+                                context,
+                                AppLocale.confirmSignOut.getString(context),
+                                () {
+                                  context.read<AccountBloc>().add(AccountSignOutEvent());
+                                  context.go('/login');
+                                },
+                                danger: true,
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                }
 
-              return const Center(child: CircularProgressIndicator());
-            },
+                return const Center(child: CircularProgressIndicator());
+              },
+            ),
           ),
         ),
       ),

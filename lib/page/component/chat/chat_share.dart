@@ -17,6 +17,7 @@ import 'package:askaide/page/component/share.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/model/misc.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -62,58 +63,14 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        actions: [
-          if (!PlatformTool.isWeb())
-            TextButton(
-              onPressed: () async {
-                final cancel = BotToast.showCustomLoading(
-                  toastBuilder: (cancel) {
-                    return LoadingIndicator(
-                      message: AppLocale.processingWait.getString(context),
-                    );
-                  },
-                  allowClick: false,
-                  duration: const Duration(seconds: 15),
-                );
-
-                try {
-                  final data = await controller.capture();
-                  if (data != null) {
-                    final file = await writeTempFile('share-image.png', data);
-                    cancel();
-                    await shareTo(
-                      // ignore: use_build_context_synchronously
-                      context,
-                      content: 'images',
-                      images: [
-                        file.path,
-                      ],
-                    );
-                  }
-                } finally {
-                  cancel();
-                }
-              },
-              child: Row(
-                children: [
-                  Icon(Icons.share, size: 14, color: customColors.weakLinkColor),
-                  const SizedBox(width: 5),
-                  Text(
-                    AppLocale.share.getString(context),
-                    style: TextStyle(color: customColors.weakLinkColor, fontSize: 14),
-                  ),
-                ],
-              ),
-            ),
-          EnhancedPopupMenu(
-            items: [
-              EnhancedPopupMenuItem(
-                title: AppLocale.saveToLocal.getString(context),
-                icon: Icons.save,
-                onTap: (ctx) async {
+    return WindowFrameWidget(
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          actions: [
+            if (!PlatformTool.isWeb())
+              TextButton(
+                onPressed: () async {
                   final cancel = BotToast.showCustomLoading(
                     toastBuilder: (cancel) {
                       return LoadingIndicator(
@@ -127,101 +84,147 @@ class _ChatShareScreenState extends State<ChatShareScreen> {
                   try {
                     final data = await controller.capture();
                     if (data != null) {
+                      final file = await writeTempFile('share-image.png', data);
                       cancel();
-                      // ignore: use_build_context_synchronously
-
-                      if (PlatformTool.isIOS() || PlatformTool.isAndroid()) {
-                        await ImageGallerySaver.saveImage(data, quality: 100);
-
-                        showSuccessMessage(AppLocale.operateSuccess.getString(context));
-                      } else {
-                        if (PlatformTool.isWindows()) {
-                          FileSaver.instance
-                              .saveAs(
-                            name: randomId(),
-                            bytes: data,
-                            ext: '.png',
-                            mimeType: MimeType.png,
-                          )
-                              .then((value) async {
-                            if (value == null) {
-                              return;
-                            }
-
-                            await File(value).writeAsBytes(data);
-
-                            Logger.instance.d('File saved successfully: $value');
-                            showSuccessMessage(AppLocale.operateSuccess.getString(context));
-                          });
-                        } else {
-                          FileSaver.instance
-                              .saveFile(
-                            name: randomId(),
-                            bytes: data,
-                            ext: 'png',
-                            mimeType: MimeType.png,
-                          )
-                              .then((value) {
-                            showSuccessMessage(AppLocale.operateSuccess.getString(context));
-                          });
-                        }
-                      }
+                      await shareTo(
+                        // ignore: use_build_context_synchronously
+                        context,
+                        content: 'images',
+                        images: [
+                          file.path,
+                        ],
+                      );
                     }
                   } finally {
                     cancel();
                   }
                 },
+                child: Row(
+                  children: [
+                    Icon(Icons.share, size: 14, color: customColors.weakLinkColor),
+                    const SizedBox(width: 5),
+                    Text(
+                      AppLocale.share.getString(context),
+                      style: TextStyle(color: customColors.weakLinkColor, fontSize: 14),
+                    ),
+                  ],
+                ),
               ),
-              EnhancedPopupMenuItem(
-                title: showQRCode
-                    ? AppLocale.dontShowInviteCode.getString(context)
-                    : AppLocale.showInviteCode.getString(context),
-                icon: showQRCode ? Icons.visibility_off : Icons.visibility,
-                onTap: (ctx) {
-                  setState(() {
-                    showQRCode = !showQRCode;
-                  });
-                },
-              ),
-              EnhancedPopupMenuItem(
-                title: usingChatStyle ? '使用列表风格' : '使用聊天风格',
-                icon: usingChatStyle ? Icons.list : Icons.chat,
-                onTap: (ctx) {
-                  setState(() {
-                    usingChatStyle = !usingChatStyle;
-                  });
-                },
-              ),
-            ],
-          ),
-        ],
-      ),
-      backgroundColor: customColors.backgroundContainerColor,
-      body: Align(
-        alignment: Alignment.topCenter,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: CustomSize.maxWindowSize,
-          ),
-          child: SafeArea(
-            child: SingleChildScrollView(
-              child: FutureBuilder(
-                  future: APIServer().shareInfo(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text(resolveError(context, snapshot.error!)),
-                      );
-                    }
-
-                    if (snapshot.hasData) {
-                      return buildShareWindow(customColors, context, snapshot);
-                    }
-
-                    return const Center(
-                      child: Text('Loading ...'),
+            EnhancedPopupMenu(
+              items: [
+                EnhancedPopupMenuItem(
+                  title: AppLocale.saveToLocal.getString(context),
+                  icon: Icons.save,
+                  onTap: (ctx) async {
+                    final cancel = BotToast.showCustomLoading(
+                      toastBuilder: (cancel) {
+                        return LoadingIndicator(
+                          message: AppLocale.processingWait.getString(context),
+                        );
+                      },
+                      allowClick: false,
+                      duration: const Duration(seconds: 15),
                     );
-                  }),
+
+                    try {
+                      final data = await controller.capture();
+                      if (data != null) {
+                        cancel();
+                        // ignore: use_build_context_synchronously
+
+                        if (PlatformTool.isIOS() || PlatformTool.isAndroid()) {
+                          await ImageGallerySaver.saveImage(data, quality: 100);
+
+                          showSuccessMessage(AppLocale.operateSuccess.getString(context));
+                        } else {
+                          if (PlatformTool.isWindows()) {
+                            FileSaver.instance
+                                .saveAs(
+                              name: randomId(),
+                              bytes: data,
+                              ext: '.png',
+                              mimeType: MimeType.png,
+                            )
+                                .then((value) async {
+                              if (value == null) {
+                                return;
+                              }
+
+                              await File(value).writeAsBytes(data);
+
+                              Logger.instance.d('File saved successfully: $value');
+                              showSuccessMessage(AppLocale.operateSuccess.getString(context));
+                            });
+                          } else {
+                            FileSaver.instance
+                                .saveFile(
+                              name: randomId(),
+                              bytes: data,
+                              ext: 'png',
+                              mimeType: MimeType.png,
+                            )
+                                .then((value) {
+                              showSuccessMessage(AppLocale.operateSuccess.getString(context));
+                            });
+                          }
+                        }
+                      }
+                    } finally {
+                      cancel();
+                    }
+                  },
+                ),
+                EnhancedPopupMenuItem(
+                  title: showQRCode
+                      ? AppLocale.dontShowInviteCode.getString(context)
+                      : AppLocale.showInviteCode.getString(context),
+                  icon: showQRCode ? Icons.visibility_off : Icons.visibility,
+                  onTap: (ctx) {
+                    setState(() {
+                      showQRCode = !showQRCode;
+                    });
+                  },
+                ),
+                EnhancedPopupMenuItem(
+                  title: usingChatStyle ? '使用列表风格' : '使用聊天风格',
+                  icon: usingChatStyle ? Icons.list : Icons.chat,
+                  onTap: (ctx) {
+                    setState(() {
+                      usingChatStyle = !usingChatStyle;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+        backgroundColor: customColors.backgroundContainerColor,
+        body: Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: CustomSize.maxWindowSize,
+            ),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                child: FutureBuilder(
+                    future: APIServer().shareInfo(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text(resolveError(context, snapshot.error!)),
+                        );
+                      }
+
+                      if (snapshot.hasData) {
+                        return buildShareWindow(customColors, context, snapshot);
+                      }
+
+                      return const Center(
+                        child: Text('Loading ...'),
+                      );
+                    }),
+              ),
             ),
           ),
         ),

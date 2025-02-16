@@ -51,8 +51,13 @@ class _LeftDrawerState extends State<LeftDrawer> {
     final customColors = Theme.of(context).extension<CustomColors>()!;
     return Drawer(
       width: maxDrawerWidth(),
-      shape: const RoundedRectangleBorder(
-        borderRadius: CustomSize.borderRadiusAll,
+      shape: RoundedRectangleBorder(
+        borderRadius: PlatformTool.isDesktop()
+            ? BorderRadius.zero
+            : const BorderRadius.only(
+                topRight: CustomSize.radius,
+                bottomRight: CustomSize.radius,
+              ),
       ),
       backgroundColor: customColors.backgroundContainerColor,
       shadowColor: customColors.backgroundInvertedColor,
@@ -66,9 +71,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      SafeArea(
-                        child: SizedBox(height: PlatformTool.isMacOS() ? kToolbarHeight : 20),
-                      ),
+                      const SafeArea(child: SizedBox(height: 20)),
                       if (Ability().isUserLogon() && Ability().enableDigitalHuman)
                         ListTile(
                           leading: const Icon(Icons.group_outlined),

@@ -11,6 +11,7 @@ import 'package:askaide/page/component/verify_code_input.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -67,34 +68,36 @@ class _SigninOrSignupScreenState extends State<SigninOrSignupScreen> {
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        backgroundColor: Colors.transparent,
-        title: Text(
-          AppLocale.verifyAccount.getString(context),
-          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+    return WindowFrameWidget(
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          backgroundColor: Colors.transparent,
+          title: Text(
+            AppLocale.verifyAccount.getString(context),
+            style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              context.pop();
+            },
+          ),
         ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            context.pop();
-          },
-        ),
-      ),
-      backgroundColor: customColors.backgroundContainerColor,
-      body: BackgroundContainer(
-        setting: widget.settings,
-        enabled: false,
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400),
-            child: SingleChildScrollView(
-                child: widget.isSignup || signInMethod == 'sms_code' || signInMethod == 'email_code'
-                    ? signInOrSignUpWithSMSOrEmailCode(customColors, context)
-                    : signInWithPassword(customColors, context)),
+        backgroundColor: customColors.backgroundContainerColor,
+        body: BackgroundContainer(
+          setting: widget.settings,
+          enabled: false,
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: SingleChildScrollView(
+                  child: widget.isSignup || signInMethod == 'sms_code' || signInMethod == 'email_code'
+                      ? signInOrSignUpWithSMSOrEmailCode(customColors, context)
+                      : signInWithPassword(customColors, context)),
+            ),
           ),
         ),
       ),

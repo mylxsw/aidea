@@ -26,6 +26,7 @@ import 'package:askaide/bloc/room_bloc.dart';
 import 'package:askaide/bloc/notify_bloc.dart';
 import 'package:askaide/page/component/chat/chat_input.dart';
 import 'package:askaide/page/component/chat/chat_preview.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/model/message.dart';
 import 'package:askaide/repo/model/misc.dart';
 import 'package:askaide/repo/model/room.dart';
@@ -134,12 +135,14 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: _buildAppBar(context, customColors),
-      backgroundColor: customColors.backgroundContainerColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
-        child: _buildChatComponents(customColors),
+    return WindowFrameWidget(
+      child: Scaffold(
+        appBar: _buildAppBar(context, customColors),
+        backgroundColor: customColors.backgroundContainerColor,
+        body: BackgroundContainer(
+          setting: widget.setting,
+          child: _buildChatComponents(customColors),
+        ),
       ),
     );
   }

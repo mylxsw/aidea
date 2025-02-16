@@ -26,6 +26,9 @@ func main() {
 	data = strings.ReplaceAll(data, "fonts.gstatic.com", "global-cdn.aicode.cc")
 	data = strings.ReplaceAll(data, "www.gstatic.com", "global-cdn.aicode.cc")
 
+	// 替换字体为国内镜像
+	data = strings.ReplaceAll(data, "fonts.gstatic.com", "fonts-gstatic.lug.ustc.edu.cn")
+
 	must.NoError(os.WriteFile(mainDartJSPath, []byte(data), 0755))
 
 	log.Debugf("replace font url success")

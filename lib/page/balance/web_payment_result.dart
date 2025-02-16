@@ -1,10 +1,10 @@
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api/payment.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'web/payment_element.dart'
-    if (dart.library.js) 'web/payment_element_web.dart';
+import 'web/payment_element.dart' if (dart.library.js) 'web/payment_element_web.dart';
 
 class WebPaymentResult extends StatefulWidget {
   final String paymentId;
@@ -60,31 +60,34 @@ class _WebPaymentResultState extends State<WebPaymentResult> {
   @override
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('支付结果'),
-        leading: IconButton(
-          icon: Icon(
-            Icons.close,
-            color: customColors.weakLinkColor,
-          ),
-          onPressed: () {
-            if (widget.action != null && widget.action == 'close') {
-              closeWindow();
-            } else {
-              if (context.canPop()) {
-                context.pop();
+    return WindowFrameWidget(
+      backgroundColor: customColors.backgroundColor,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('支付结果'),
+          leading: IconButton(
+            icon: Icon(
+              Icons.close,
+              color: customColors.weakLinkColor,
+            ),
+            onPressed: () {
+              if (widget.action != null && widget.action == 'close') {
+                closeWindow();
               } else {
-                context.go('/payment');
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  context.go('/payment');
+                }
               }
-            }
-          },
+            },
+          ),
         ),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: buildResult(),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: buildResult(),
+          ),
         ),
       ),
     );

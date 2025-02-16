@@ -17,6 +17,7 @@ import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -50,258 +51,263 @@ class _GalleryItemScreenState extends State<GalleryItemScreen> {
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => Navigator.of(context).pop(),
+    return WindowFrameWidget(
+      backgroundColor: customColors.backgroundColor,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          backgroundColor: customColors.backgroundColor,
+          toolbarHeight: CustomSize.toolbarHeight,
+          actions: [
+            BlocBuilder<GalleryBloc, GalleryState>(
+              buildWhen: (previous, current) => current is GalleryItemLoaded,
+              builder: (context, state) {
+                if (state is GalleryItemLoaded && state.isInternalUser && state.item.status == 1) {
+                  return TextButton(
+                    onPressed: () {
+                      openConfirmDialog(
+                        context,
+                        '确认取消？',
+                        () => APIServer()
+                            .cancelShareCreativeHistoryToGallery(historyId: state.item.creativeHistoryId!)
+                            .then((value) {
+                          showSuccessMessage(AppLocale.operateSuccess.getString(context));
+
+                          context
+                              .read<GalleryBloc>()
+                              .add(GalleryItemLoadEvent(id: widget.galleryId, forceRefresh: true));
+                        }),
+                      );
+                    },
+                    child: Text(
+                      AppLocale.cancelShare.getString(context),
+                      style: TextStyle(
+                        color: customColors.weakLinkColor,
+                        fontSize: 12,
+                      ),
+                    ),
+                  );
+                }
+
+                return const SizedBox();
+              },
+            ),
+          ],
         ),
+        extendBodyBehindAppBar: true,
         backgroundColor: customColors.backgroundColor,
-        toolbarHeight: CustomSize.toolbarHeight,
-        actions: [
-          BlocBuilder<GalleryBloc, GalleryState>(
+        body: BackgroundContainer(
+          setting: widget.setting,
+          enabled: false,
+          backgroundColor: customColors.backgroundColor,
+          child: BlocBuilder<GalleryBloc, GalleryState>(
             buildWhen: (previous, current) => current is GalleryItemLoaded,
             builder: (context, state) {
-              if (state is GalleryItemLoaded && state.isInternalUser && state.item.status == 1) {
-                return TextButton(
-                  onPressed: () {
-                    openConfirmDialog(
-                      context,
-                      '确认取消？',
-                      () => APIServer()
-                          .cancelShareCreativeHistoryToGallery(historyId: state.item.creativeHistoryId!)
-                          .then((value) {
-                        showSuccessMessage(AppLocale.operateSuccess.getString(context));
+              if (state is GalleryItemLoaded) {
+                return Align(
+                  alignment: Alignment.topCenter,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: CustomSize.smallWindowSize,
+                    ),
+                    child: SingleChildScrollView(
+                      child: SafeArea(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              for (var img in state.item.images)
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: customColors.backgroundColor,
+                                    borderRadius: CustomSize.borderRadius,
+                                  ),
+                                  // padding: const EdgeInsets.symmetric(
+                                  //   horizontal: 10,
+                                  //   vertical: 10,
+                                  // ),
+                                  margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                                  child: NetworkImagePreviewer(
+                                    url: img,
+                                    preview: imageURL(img, qiniuImageTypeThumb),
+                                    hidePreviewButton: true,
+                                  ),
+                                ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 8,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        RandomAvatar(
+                                          id: state.item.userId ?? 0,
+                                          usage: AvatarUsage.user,
+                                          size: 15,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          state.item.username ?? '匿名',
+                                          style: TextStyle(
+                                            color: customColors.weakTextColor,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.local_fire_department,
+                                          size: 12,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '${state.item.hotValue}',
+                                          style: TextStyle(
+                                            color: customColors.weakTextColor,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              ColumnBlock(
+                                innerPanding: 10,
+                                padding: const EdgeInsets.all(15),
+                                children: [
+                                  if (state.item.prompt != null && state.item.prompt!.isNotEmpty)
+                                    TextItem(
+                                      title: 'Prompt',
+                                      value: state.item.prompt!,
+                                    ),
+                                  if (state.item.negativePrompt != null && state.item.negativePrompt!.isNotEmpty)
+                                    TextItem(
+                                      title: 'Negative Prompt',
+                                      value: state.item.negativePrompt!,
+                                    ),
+                                ],
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 10,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    EnhancedButton(
+                                      title: AppLocale.share.getString(context),
+                                      icon: const Icon(Icons.share, size: 14),
+                                      width: 80,
+                                      color: customColors.backgroundInvertedColor,
+                                      backgroundColor: customColors.backgroundColor,
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            fullscreenDialog: true,
+                                            builder: (context) => GalleryItemShareScreen(
+                                              images: state.item.images,
+                                              prompt: state.item.prompt,
+                                              negativePrompt: state.item.negativePrompt,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    if (Ability().enableCreationIsland) ...[
+                                      const SizedBox(width: 10),
+                                      EnhancedButton(
+                                        title: AppLocale.shortcut.getString(context),
+                                        icon: const Icon(Icons.webhook, size: 14),
+                                        width: 80,
+                                        color: customColors.backgroundInvertedColor,
+                                        backgroundColor: customColors.backgroundColor,
+                                        onPressed: () {
+                                          if (state.item.images.length > 1) {
+                                            List<SelectorItem<String>> items = [];
+                                            for (var i = 0; i < state.item.images.length; i++) {
+                                              items.add(SelectorItem(
+                                                NetworkImagePreviewer(
+                                                  url: state.item.images[i],
+                                                  notClickable: true,
+                                                  hidePreviewButton: true,
+                                                  borderRadius: CustomSize.borderRadiusAll,
+                                                ),
+                                                state.item.images[i],
+                                              ));
+                                            }
+                                            openListSelectDialog(
+                                              context,
+                                              items,
+                                              (selected) {
+                                                context.pop();
 
-                        context.read<GalleryBloc>().add(GalleryItemLoadEvent(id: widget.galleryId, forceRefresh: true));
-                      }),
-                    );
-                  },
-                  child: Text(
-                    AppLocale.cancelShare.getString(context),
-                    style: TextStyle(
-                      color: customColors.weakLinkColor,
-                      fontSize: 12,
+                                                openImageWorkflowActionDialog(
+                                                  context,
+                                                  customColors,
+                                                  selected.value,
+                                                );
+
+                                                return false;
+                                              },
+                                              horizontal: true,
+                                              horizontalCount: 2,
+                                              heightFactor: 0.8,
+                                              innerPadding: const EdgeInsets.symmetric(
+                                                vertical: 10,
+                                              ),
+                                              title: AppLocale.selectImageToShortcut.getString(context),
+                                            );
+                                          } else {
+                                            openImageWorkflowActionDialog(
+                                              context,
+                                              customColors,
+                                              state.item.images.first,
+                                            );
+                                          }
+                                        },
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: EnhancedButton(
+                                          title: AppLocale.makeSameStyle.getString(context),
+                                          onPressed: () {
+                                            context.push(
+                                                '/creative-draw/create?mode=text-to-image&id=${state.item.creativeId}&gallery_copy_id=${state.item.id}');
+                                          },
+                                        ),
+                                      ),
+                                    ]
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 );
               }
 
-              return const SizedBox();
+              return const Center(
+                child: Text('Loading ...'),
+              );
             },
           ),
-        ],
-      ),
-      extendBodyBehindAppBar: true,
-      backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
-        enabled: false,
-        backgroundColor: customColors.backgroundColor,
-        child: BlocBuilder<GalleryBloc, GalleryState>(
-          buildWhen: (previous, current) => current is GalleryItemLoaded,
-          builder: (context, state) {
-            if (state is GalleryItemLoaded) {
-              return Align(
-                alignment: Alignment.topCenter,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: CustomSize.smallWindowSize,
-                  ),
-                  child: SingleChildScrollView(
-                    child: SafeArea(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            for (var img in state.item.images)
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: customColors.backgroundColor,
-                                  borderRadius: CustomSize.borderRadius,
-                                ),
-                                // padding: const EdgeInsets.symmetric(
-                                //   horizontal: 10,
-                                //   vertical: 10,
-                                // ),
-                                margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                                child: NetworkImagePreviewer(
-                                  url: img,
-                                  preview: imageURL(img, qiniuImageTypeThumb),
-                                  hidePreviewButton: true,
-                                ),
-                              ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 15,
-                                vertical: 8,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      RandomAvatar(
-                                        id: state.item.userId ?? 0,
-                                        usage: AvatarUsage.user,
-                                        size: 15,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        state.item.username ?? '匿名',
-                                        style: TextStyle(
-                                          color: customColors.weakTextColor,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.local_fire_department,
-                                        size: 12,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        '${state.item.hotValue}',
-                                        style: TextStyle(
-                                          color: customColors.weakTextColor,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            ColumnBlock(
-                              innerPanding: 10,
-                              padding: const EdgeInsets.all(15),
-                              children: [
-                                if (state.item.prompt != null && state.item.prompt!.isNotEmpty)
-                                  TextItem(
-                                    title: 'Prompt',
-                                    value: state.item.prompt!,
-                                  ),
-                                if (state.item.negativePrompt != null && state.item.negativePrompt!.isNotEmpty)
-                                  TextItem(
-                                    title: 'Negative Prompt',
-                                    value: state.item.negativePrompt!,
-                                  ),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 5,
-                                vertical: 10,
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  EnhancedButton(
-                                    title: AppLocale.share.getString(context),
-                                    icon: const Icon(Icons.share, size: 14),
-                                    width: 80,
-                                    color: customColors.backgroundInvertedColor,
-                                    backgroundColor: customColors.backgroundColor,
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          fullscreenDialog: true,
-                                          builder: (context) => GalleryItemShareScreen(
-                                            images: state.item.images,
-                                            prompt: state.item.prompt,
-                                            negativePrompt: state.item.negativePrompt,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  if (Ability().enableCreationIsland) ...[
-                                    const SizedBox(width: 10),
-                                    EnhancedButton(
-                                      title: AppLocale.shortcut.getString(context),
-                                      icon: const Icon(Icons.webhook, size: 14),
-                                      width: 80,
-                                      color: customColors.backgroundInvertedColor,
-                                      backgroundColor: customColors.backgroundColor,
-                                      onPressed: () {
-                                        if (state.item.images.length > 1) {
-                                          List<SelectorItem<String>> items = [];
-                                          for (var i = 0; i < state.item.images.length; i++) {
-                                            items.add(SelectorItem(
-                                              NetworkImagePreviewer(
-                                                url: state.item.images[i],
-                                                notClickable: true,
-                                                hidePreviewButton: true,
-                                                borderRadius: CustomSize.borderRadiusAll,
-                                              ),
-                                              state.item.images[i],
-                                            ));
-                                          }
-                                          openListSelectDialog(
-                                            context,
-                                            items,
-                                            (selected) {
-                                              context.pop();
-
-                                              openImageWorkflowActionDialog(
-                                                context,
-                                                customColors,
-                                                selected.value,
-                                              );
-
-                                              return false;
-                                            },
-                                            horizontal: true,
-                                            horizontalCount: 2,
-                                            heightFactor: 0.8,
-                                            innerPadding: const EdgeInsets.symmetric(
-                                              vertical: 10,
-                                            ),
-                                            title: AppLocale.selectImageToShortcut.getString(context),
-                                          );
-                                        } else {
-                                          openImageWorkflowActionDialog(
-                                            context,
-                                            customColors,
-                                            state.item.images.first,
-                                          );
-                                        }
-                                      },
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: EnhancedButton(
-                                        title: AppLocale.makeSameStyle.getString(context),
-                                        onPressed: () {
-                                          context.push(
-                                              '/creative-draw/create?mode=text-to-image&id=${state.item.creativeId}&gallery_copy_id=${state.item.id}');
-                                        },
-                                      ),
-                                    ),
-                                  ]
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }
-
-            return const Center(
-              child: Text('Loading ...'),
-            );
-          },
         ),
       ),
     );

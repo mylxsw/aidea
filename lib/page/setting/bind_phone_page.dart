@@ -11,6 +11,7 @@ import 'package:askaide/page/component/verify_code_input.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -72,100 +73,52 @@ class _BindPhoneScreenState extends State<BindPhoneScreen> {
   @override
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        title: Text(
-          AppLocale.bindPhone.getString(context),
-          style: const TextStyle(
-            fontSize: CustomSize.appBarTitleSize,
+    return WindowFrameWidget(
+      backgroundColor: customColors.backgroundColor,
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          title: Text(
+            AppLocale.bindPhone.getString(context),
+            style: const TextStyle(
+              fontSize: CustomSize.appBarTitleSize,
+            ),
+          ),
+          centerTitle: true,
+          leading: IconButton(
+            onPressed: () {
+              if (widget.isSignIn) {
+                context.go('${Ability().homeRoute}?show_initial_dialog=false&reward=0');
+              } else {
+                context.pop();
+              }
+
+              // 当返回值为 logout 时，表示需要退出登录
+              // if (widget.isSignIn) {
+              //   context.pop('logout');
+              // } else {
+              //   context.pop();
+              // }
+            },
+            icon: Icon(widget.isSignIn ? Icons.close : Icons.arrow_back_ios),
           ),
         ),
-        centerTitle: true,
-        leading: IconButton(
-          onPressed: () {
-            if (widget.isSignIn) {
-              context.go('${Ability().homeRoute}?show_initial_dialog=false&reward=0');
-            } else {
-              context.pop();
-            }
-
-            // 当返回值为 logout 时，表示需要退出登录
-            // if (widget.isSignIn) {
-            //   context.pop('logout');
-            // } else {
-            //   context.pop();
-            // }
-          },
-          icon: Icon(widget.isSignIn ? Icons.close : Icons.arrow_back_ios),
-        ),
-      ),
-      backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
-        enabled: false,
         backgroundColor: customColors.backgroundColor,
-        child: BlocBuilder<AccountBloc, AccountState>(
-          buildWhen: (previous, current) => current is AccountLoaded,
-          builder: (context, state) {
-            if (state is AccountLoaded) {
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
-                    child: TextFormField(
-                      controller: _usernameController,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Color.fromARGB(200, 192, 192, 192)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: customColors.linkColor ?? Colors.green),
-                        ),
-                        floatingLabelStyle: TextStyle(color: customColors.linkColor!),
-                        isDense: true,
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        labelText: AppLocale.account.getString(context),
-                        labelStyle: const TextStyle(fontSize: 17),
-                        hintText: AppLocale.phoneInputTips.getString(context),
-                        hintStyle: TextStyle(
-                          color: customColors.textfieldHintColor,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15.0, right: 5.0, top: 15, bottom: 0),
-                    child: VerifyCodeInput(
-                      controller: _verificationCodeController,
-                      onVerifyCodeSent: (id) {
-                        verifyCodeId = id;
-                      },
-                      sendVerifyCode: () {
-                        return APIServer().sendBindPhoneCode(_usernameController.text.trim());
-                      },
-                      sendCheck: () {
-                        final username = _usernameController.text.trim();
-                        final isPhoneNumber = phoneNumberValidator.hasMatch(username);
-
-                        if (!isPhoneNumber) {
-                          showErrorMessage(AppLocale.phoneNumberFormatError.getString(context));
-                          return false;
-                        }
-
-                        return true;
-                      },
-                    ),
-                  ),
-                  if (state.user!.user.invitedBy == null || state.user!.user.invitedBy == 0)
+        body: BackgroundContainer(
+          setting: widget.setting,
+          enabled: false,
+          backgroundColor: customColors.backgroundColor,
+          child: BlocBuilder<AccountBloc, AccountState>(
+            buildWhen: (previous, current) => current is AccountLoaded,
+            builder: (context, state) {
+              if (state is AccountLoaded) {
+                return Column(
+                  children: [
                     Padding(
                       padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
                       child: TextFormField(
-                        controller: _inviteCodeController,
+                        controller: _usernameController,
+                        keyboardType: TextInputType.number,
                         inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(),
@@ -173,14 +126,14 @@ class _BindPhoneScreenState extends State<BindPhoneScreen> {
                             borderSide: BorderSide(color: Color.fromARGB(200, 192, 192, 192)),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: customColors.linkColor!),
+                            borderSide: BorderSide(color: customColors.linkColor ?? Colors.green),
                           ),
                           floatingLabelStyle: TextStyle(color: customColors.linkColor!),
                           isDense: true,
                           floatingLabelBehavior: FloatingLabelBehavior.always,
-                          labelText: AppLocale.inviteCode.getString(context),
+                          labelText: AppLocale.account.getString(context),
                           labelStyle: const TextStyle(fontSize: 17),
-                          hintText: AppLocale.inviteCodeInputTips.getString(context),
+                          hintText: AppLocale.phoneInputTips.getString(context),
                           hintStyle: TextStyle(
                             color: customColors.textfieldHintColor,
                             fontSize: 15,
@@ -188,29 +141,80 @@ class _BindPhoneScreenState extends State<BindPhoneScreen> {
                         ),
                       ),
                     ),
-                  const SizedBox(height: 15),
-                  Container(
-                    height: 45,
-                    width: double.infinity,
-                    margin: const EdgeInsets.symmetric(horizontal: 15),
-                    decoration: BoxDecoration(
-                      color: customColors.linkColor,
-                      borderRadius: CustomSize.borderRadius,
-                    ),
-                    child: TextButton(
-                      onPressed: onSubmit,
-                      child: Text(
-                        AppLocale.ok.getString(context),
-                        style: const TextStyle(color: Colors.white, fontSize: 18),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15.0, right: 5.0, top: 15, bottom: 0),
+                      child: VerifyCodeInput(
+                        controller: _verificationCodeController,
+                        onVerifyCodeSent: (id) {
+                          verifyCodeId = id;
+                        },
+                        sendVerifyCode: () {
+                          return APIServer().sendBindPhoneCode(_usernameController.text.trim());
+                        },
+                        sendCheck: () {
+                          final username = _usernameController.text.trim();
+                          final isPhoneNumber = phoneNumberValidator.hasMatch(username);
+
+                          if (!isPhoneNumber) {
+                            showErrorMessage(AppLocale.phoneNumberFormatError.getString(context));
+                            return false;
+                          }
+
+                          return true;
+                        },
                       ),
                     ),
-                  ),
-                ],
-              );
-            }
+                    if (state.user!.user.invitedBy == null || state.user!.user.invitedBy == 0)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+                        child: TextFormField(
+                          controller: _inviteCodeController,
+                          inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            enabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: Color.fromARGB(200, 192, 192, 192)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: customColors.linkColor!),
+                            ),
+                            floatingLabelStyle: TextStyle(color: customColors.linkColor!),
+                            isDense: true,
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            labelText: AppLocale.inviteCode.getString(context),
+                            labelStyle: const TextStyle(fontSize: 17),
+                            hintText: AppLocale.inviteCodeInputTips.getString(context),
+                            hintStyle: TextStyle(
+                              color: customColors.textfieldHintColor,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 15),
+                    Container(
+                      height: 45,
+                      width: double.infinity,
+                      margin: const EdgeInsets.symmetric(horizontal: 15),
+                      decoration: BoxDecoration(
+                        color: customColors.linkColor,
+                        borderRadius: CustomSize.borderRadius,
+                      ),
+                      child: TextButton(
+                        onPressed: onSubmit,
+                        child: Text(
+                          AppLocale.ok.getString(context),
+                          style: const TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
 
-            return const Center(child: CircularProgressIndicator());
-          },
+              return const Center(child: CircularProgressIndicator());
+            },
+          ),
         ),
       ),
     );

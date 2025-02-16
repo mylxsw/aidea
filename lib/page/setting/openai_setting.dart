@@ -10,6 +10,7 @@ import 'package:askaide/page/component/message_box.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
@@ -61,144 +62,147 @@ class _OpenAISettingScreenState extends State<OpenAISettingScreen> {
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        title: const Text(
-          'OpenAI Setting',
-          style: TextStyle(
-            fontSize: CustomSize.appBarTitleSize,
+    return WindowFrameWidget(
+      backgroundColor: customColors.backgroundColor,
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          title: const Text(
+            'OpenAI Setting',
+            style: TextStyle(
+              fontSize: CustomSize.appBarTitleSize,
+            ),
           ),
-        ),
-        centerTitle: true,
-        elevation: 0,
-        actions: [
-          if (widget.source != 'setting')
-            TextButton(
-              onPressed: () {
-                context.go(Ability().homeRoute);
-              },
-              child: Text(
-                'Do not set',
-                style: TextStyle(
-                  color: customColors.weakLinkColor,
-                  fontSize: 13,
+          centerTitle: true,
+          elevation: 0,
+          actions: [
+            if (widget.source != 'setting')
+              TextButton(
+                onPressed: () {
+                  context.go(Ability().homeRoute);
+                },
+                child: Text(
+                  'Do not set',
+                  style: TextStyle(
+                    color: customColors.weakLinkColor,
+                    fontSize: 13,
+                  ),
                 ),
               ),
-            ),
-        ],
-      ),
-      backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.settings,
-        enabled: false,
-        child: SizedBox(
-          height: double.infinity,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                MessageBox(
-                  message: AppLocale.enableCustomOpenAI.getString(context),
-                  type: MessageBoxType.info,
-                ),
-                const SizedBox(height: 10),
-                ColumnBlock(
-                  children: [
-                    if (widget.source == 'setting')
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 5),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              AppLocale.enable.getString(context),
-                              style: TextStyle(
-                                color: customColors.textfieldLabelColor,
-                                fontSize: 16,
+          ],
+        ),
+        backgroundColor: customColors.backgroundColor,
+        body: BackgroundContainer(
+          setting: widget.settings,
+          enabled: false,
+          child: SizedBox(
+            height: double.infinity,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  MessageBox(
+                    message: AppLocale.enableCustomOpenAI.getString(context),
+                    type: MessageBoxType.info,
+                  ),
+                  const SizedBox(height: 10),
+                  ColumnBlock(
+                    children: [
+                      if (widget.source == 'setting')
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                AppLocale.enable.getString(context),
+                                style: TextStyle(
+                                  color: customColors.textfieldLabelColor,
+                                  fontSize: 16,
+                                ),
                               ),
-                            ),
-                            CupertinoSwitch(
-                              activeColor: customColors.linkColor,
-                              value: enableOpenAISelfHosted,
-                              onChanged: (value) {
-                                setState(() {
-                                  enableOpenAISelfHosted = value;
-                                });
-                              },
-                            ),
-                          ],
+                              CupertinoSwitch(
+                                activeColor: customColors.linkColor,
+                                value: enableOpenAISelfHosted,
+                                onChanged: (value) {
+                                  setState(() {
+                                    enableOpenAISelfHosted = value;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
                         ),
+                      EnhancedTextField(
+                        customColors: customColors,
+                        maxLength: 128,
+                        labelText: 'Server URL',
+                        labelWidth: 104,
+                        labelPosition: LabelPosition.left,
+                        controller: _urlController,
+                        showCounter: false,
+                        hintText: 'https://api.openai.com',
                       ),
-                    EnhancedTextField(
-                      customColors: customColors,
-                      maxLength: 128,
-                      labelText: 'Server URL',
-                      labelWidth: 104,
-                      labelPosition: LabelPosition.left,
-                      controller: _urlController,
-                      showCounter: false,
-                      hintText: 'https://api.openai.com',
-                    ),
-                    EnhancedTextField(
-                      customColors: customColors,
-                      maxLength: 128,
-                      labelText: 'API Key',
-                      labelWidth: 104,
-                      labelPosition: LabelPosition.left,
-                      controller: _apiKeyController,
-                      showCounter: false,
-                      obscureText: true,
-                      hintText: 'sk-xxxxxxx',
-                    ),
-                    EnhancedTextField(
-                      customColors: customColors,
-                      labelText: 'Organization ID',
-                      labelFontSize: 14,
-                      labelWidth: 104,
-                      maxLength: 128,
-                      labelPosition: LabelPosition.left,
-                      controller: _organizationController,
-                      showCounter: false,
-                      hintText: AppLocale.optional.getString(context),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                EnhancedButton(
-                  title: widget.source == 'setting' ? AppLocale.save.getString(context) : 'Enable',
-                  onPressed: () {
-                    var url = _urlController.text;
-                    var apiKey = _apiKeyController.text;
-                    var organization = _organizationController.text;
+                      EnhancedTextField(
+                        customColors: customColors,
+                        maxLength: 128,
+                        labelText: 'API Key',
+                        labelWidth: 104,
+                        labelPosition: LabelPosition.left,
+                        controller: _apiKeyController,
+                        showCounter: false,
+                        obscureText: true,
+                        hintText: 'sk-xxxxxxx',
+                      ),
+                      EnhancedTextField(
+                        customColors: customColors,
+                        labelText: 'Organization ID',
+                        labelFontSize: 14,
+                        labelWidth: 104,
+                        maxLength: 128,
+                        labelPosition: LabelPosition.left,
+                        controller: _organizationController,
+                        showCounter: false,
+                        hintText: AppLocale.optional.getString(context),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  EnhancedButton(
+                    title: widget.source == 'setting' ? AppLocale.save.getString(context) : 'Enable',
+                    onPressed: () {
+                      var url = _urlController.text;
+                      var apiKey = _apiKeyController.text;
+                      var organization = _organizationController.text;
 
-                    if (url == '') {
-                      url = 'https://api.openai.com';
-                    }
+                      if (url == '') {
+                        url = 'https://api.openai.com';
+                      }
 
-                    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                      showErrorMessageEnhanced(context, 'The URL must begin with http:// or https://.');
-                      return;
-                    }
+                      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                        showErrorMessageEnhanced(context, 'The URL must begin with http:// or https://.');
+                        return;
+                      }
 
-                    if (!enableOpenAISelfHosted) {
-                      onSaveAndEnter(apiKey, organization, url, context);
-                      return;
-                    }
+                      if (!enableOpenAISelfHosted) {
+                        onSaveAndEnter(apiKey, organization, url, context);
+                        return;
+                      }
 
-                    if (enableOpenAISelfHosted && apiKey == '') {
-                      showErrorMessageEnhanced(context, 'API Key cannot be empty');
-                      return;
-                    }
+                      if (enableOpenAISelfHosted && apiKey == '') {
+                        showErrorMessageEnhanced(context, 'API Key cannot be empty');
+                        return;
+                      }
 
-                    verifySecretKey().then((value) {
-                      onSaveAndEnter(apiKey, organization, url, context);
-                    }).onError((error, stackTrace) {
-                      showErrorMessage(error.toString());
-                    });
-                  },
-                ),
-              ],
+                      verifySecretKey().then((value) {
+                        onSaveAndEnter(apiKey, organization, url, context);
+                      }).onError((error, stackTrace) {
+                        showErrorMessage(error.toString());
+                      });
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),

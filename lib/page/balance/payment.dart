@@ -15,6 +15,7 @@ import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api/payment.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
@@ -183,204 +184,207 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        elevation: 0,
-        title: Text(
-          AppLocale.buyCredits.getString(context),
-          style: const TextStyle(
-            fontSize: CustomSize.appBarTitleSize,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios,
-            color: customColors.weakLinkColor,
-          ),
-          onPressed: () {
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              context.go('/setting');
-            }
-          },
-        ),
-        actions: [
-          if (Ability().isUserLogon())
-            TextButton(
-              style: ButtonStyle(
-                overlayColor: WidgetStateProperty.all(Colors.transparent),
-              ),
-              onPressed: () {
-                context.push('/quota-details');
-              },
-              child: Text(
-                AppLocale.paymentHistory.getString(context),
-                style: TextStyle(color: customColors.weakLinkColor),
-                textScaler: const TextScaler.linear(0.9),
-              ),
-            ),
-        ],
-      ),
+    return WindowFrameWidget(
       backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
-        enabled: false,
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          elevation: 0,
+          title: Text(
+            AppLocale.buyCredits.getString(context),
+            style: const TextStyle(
+              fontSize: CustomSize.appBarTitleSize,
+            ),
+          ),
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: customColors.weakLinkColor,
+            ),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/setting');
+              }
+            },
+          ),
+          actions: [
+            if (Ability().isUserLogon())
+              TextButton(
+                style: ButtonStyle(
+                  overlayColor: WidgetStateProperty.all(Colors.transparent),
+                ),
+                onPressed: () {
+                  context.push('/quota-details');
+                },
+                child: Text(
+                  AppLocale.paymentHistory.getString(context),
+                  style: TextStyle(color: customColors.weakLinkColor),
+                  textScaler: const TextScaler.linear(0.9),
+                ),
+              ),
+          ],
+        ),
         backgroundColor: customColors.backgroundColor,
-        child: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            child: BlocConsumer<PaymentBloc, PaymentState>(
-              listener: (context, state) {
-                if (state is PaymentAppleProductsLoaded) {
-                  if (state.error != null) {
-                    showErrorMessage(resolveError(context, state.error!));
-                  } else {
-                    if (state.localProducts.isEmpty) {
-                      showErrorMessage('暂无可购买的产品');
+        body: BackgroundContainer(
+          setting: widget.setting,
+          enabled: false,
+          backgroundColor: customColors.backgroundColor,
+          child: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              child: BlocConsumer<PaymentBloc, PaymentState>(
+                listener: (context, state) {
+                  if (state is PaymentAppleProductsLoaded) {
+                    if (state.error != null) {
+                      showErrorMessage(resolveError(context, state.error!));
                     } else {
-                      final recommends = state.localProducts.where((e) => e.recommend).toList();
-                      if (recommends.isNotEmpty && !state.loading) {
-                        setState(() {
-                          selectedProduct = state.products.firstWhere((e) => e.id == recommends.first.id);
-                        });
+                      if (state.localProducts.isEmpty) {
+                        showErrorMessage('暂无可购买的产品');
+                      } else {
+                        final recommends = state.localProducts.where((e) => e.recommend).toList();
+                        if (recommends.isNotEmpty && !state.loading) {
+                          setState(() {
+                            selectedProduct = state.products.firstWhere((e) => e.id == recommends.first.id);
+                          });
+                        }
                       }
                     }
                   }
-                }
-              },
-              buildWhen: (previous, current) => current is PaymentAppleProductsLoaded,
-              builder: (context, state) {
-                if (state is! PaymentAppleProductsLoaded) {
-                  return const Center(child: LoadingIndicator());
-                }
+                },
+                buildWhen: (previous, current) => current is PaymentAppleProductsLoaded,
+                builder: (context, state) {
+                  if (state is! PaymentAppleProductsLoaded) {
+                    return const Center(child: LoadingIndicator());
+                  }
 
-                if (state.error != null) {
-                  return Center(
-                    child: Text(
-                      state.error.toString(),
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                  );
-                }
-
-                return Column(
-                  children: [
-                    Column(
-                      children: [
-                        for (var item in state.products)
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedProduct = item;
-                              });
-                            },
-                            child: PriceBlock(
-                              customColors: customColors,
-                              detail: item,
-                              selectedProduct: selectedProduct,
-                              product: state.localProducts.firstWhere((e) => e.id == item.id),
-                              loading: state.loading,
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    if (selectedProduct != null)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child: Text(
-                          state.localProducts.where((e) => e.id == selectedProduct!.id).first.description!,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: customColors.weakTextColor,
-                          ),
-                        ),
+                  if (state.error != null) {
+                    return Center(
+                      child: Text(
+                        state.error.toString(),
+                        style: const TextStyle(color: Colors.red),
                       ),
-                    const SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: EnhancedButton(
-                        title: '${AppLocale.toPay.getString(context)}   ${selectedProduct?.price ?? ''}',
-                        onPressed: () async {
-                          if (state.loading) {
-                            showErrorMessage('价格加载中，请稍后');
-                            return;
-                          }
-                          if (selectedProduct == null) {
-                            showErrorMessage('请选择购买的产品');
-                            return;
-                          }
+                    );
+                  }
 
-                          if (!Ability().isUserLogon()) {
-                            showBeautyDialog(
-                              context,
-                              type: QuickAlertType.warning,
-                              text: '该功能需要登录账号后使用',
-                              onConfirmBtnTap: () {
-                                context.pop();
-                                context.push('/login');
+                  return Column(
+                    children: [
+                      Column(
+                        children: [
+                          for (var item in state.products)
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedProduct = item;
+                                });
                               },
-                              showCancelBtn: true,
-                              confirmBtnText: '立即登录',
-                            );
-                            return;
-                          }
-
-                          // 根据当前平台不通，调用不同的支付方式
-                          if (PlatformTool.isAndroid()) {
-                            handlePaymentForAndroid(
-                              state,
-                              context,
-                              customColors,
-                            );
-                          } else if (PlatformTool.isIOS()) {
-                            _startPaymentLoading();
-                            try {
-                              await createAppApplePay();
-                            } catch (e) {
-                              _closePaymentLoading();
-                              // ignore: use_build_context_synchronously
-                              showErrorMessage(resolveError(context, e));
-                            }
-                          } else if (PlatformTool.isWeb()) {
-                            handlePaymentForWeb(state, context, customColors);
-                          } else {
-                            handlePaymentForPC(state, context, customColors);
-                          }
-                        },
+                              child: PriceBlock(
+                                customColors: customColors,
+                                detail: item,
+                                selectedProduct: selectedProduct,
+                                product: state.localProducts.firstWhere((e) => e.id == item.id),
+                                loading: state.loading,
+                              ),
+                            ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    if (state.note != null)
-                      SizedBox(
-                        width: double.infinity,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              '   购买说明：',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: customColors.paymentItemTitleColor?.withOpacity(0.5),
-                              ),
+                      const SizedBox(height: 20),
+                      if (selectedProduct != null)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Text(
+                            state.localProducts.where((e) => e.id == selectedProduct!.id).first.description!,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: customColors.weakTextColor,
                             ),
-                            Markdown(
-                              data: state.note!,
-                              textStyle: TextStyle(
-                                color: customColors.paymentItemTitleColor?.withOpacity(0.5),
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
+                          ),
+                        ),
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: EnhancedButton(
+                          title: '${AppLocale.toPay.getString(context)}   ${selectedProduct?.price ?? ''}',
+                          onPressed: () async {
+                            if (state.loading) {
+                              showErrorMessage('价格加载中，请稍后');
+                              return;
+                            }
+                            if (selectedProduct == null) {
+                              showErrorMessage('请选择购买的产品');
+                              return;
+                            }
+
+                            if (!Ability().isUserLogon()) {
+                              showBeautyDialog(
+                                context,
+                                type: QuickAlertType.warning,
+                                text: '该功能需要登录账号后使用',
+                                onConfirmBtnTap: () {
+                                  context.pop();
+                                  context.push('/login');
+                                },
+                                showCancelBtn: true,
+                                confirmBtnText: '立即登录',
+                              );
+                              return;
+                            }
+
+                            // 根据当前平台不通，调用不同的支付方式
+                            if (PlatformTool.isAndroid()) {
+                              handlePaymentForAndroid(
+                                state,
+                                context,
+                                customColors,
+                              );
+                            } else if (PlatformTool.isIOS()) {
+                              _startPaymentLoading();
+                              try {
+                                await createAppApplePay();
+                              } catch (e) {
+                                _closePaymentLoading();
+                                // ignore: use_build_context_synchronously
+                                showErrorMessage(resolveError(context, e));
+                              }
+                            } else if (PlatformTool.isWeb()) {
+                              handlePaymentForWeb(state, context, customColors);
+                            } else {
+                              handlePaymentForPC(state, context, customColors);
+                            }
+                          },
                         ),
                       ),
-                  ],
-                );
-              },
+                      const SizedBox(height: 20),
+                      if (state.note != null)
+                        SizedBox(
+                          width: double.infinity,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '   购买说明：',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: customColors.paymentItemTitleColor?.withOpacity(0.5),
+                                ),
+                              ),
+                              Markdown(
+                                data: state.note!,
+                                textStyle: TextStyle(
+                                  color: customColors.paymentItemTitleColor?.withOpacity(0.5),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ),

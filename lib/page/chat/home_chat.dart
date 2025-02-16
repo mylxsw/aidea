@@ -29,6 +29,7 @@ import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/select_mode_toolbar.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api/model.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/model/message.dart';
@@ -206,38 +207,40 @@ class _HomeChatPageState extends State<HomeChatPage> {
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
-    return Scaffold(
-      // AppBar
-      appBar: buildAppBar(context, customColors),
-      backgroundColor: customColors.backgroundContainerColor,
-      // 聊天内容窗口
-      body: BackgroundContainer(
-        setting: widget.setting,
-        // maxWidth: double.infinity,
-        child: BlocConsumer<RoomBloc, RoomState>(
-          listenWhen: (previous, current) => current is RoomLoaded,
-          listener: (context, state) async {
-            if (state is RoomLoaded && currentModelV2 == null) {
-              await loadCurrentModel(state.room.model);
-            }
-          },
-          buildWhen: (previous, current) => current is RoomLoaded,
-          builder: (context, room) {
-            // 加载聊天室
-            if (room is RoomLoaded) {
-              if (room.error != null) {
-                return EnhancedErrorWidget(error: room.error);
+    return WindowFrameWidget(
+      child: Scaffold(
+        // AppBar
+        appBar: buildAppBar(context, customColors),
+        backgroundColor: customColors.backgroundContainerColor,
+        // 聊天内容窗口
+        body: BackgroundContainer(
+          setting: widget.setting,
+          // maxWidth: double.infinity,
+          child: BlocConsumer<RoomBloc, RoomState>(
+            listenWhen: (previous, current) => current is RoomLoaded,
+            listener: (context, state) async {
+              if (state is RoomLoaded && currentModelV2 == null) {
+                await loadCurrentModel(state.room.model);
               }
+            },
+            buildWhen: (previous, current) => current is RoomLoaded,
+            builder: (context, room) {
+              // 加载聊天室
+              if (room is RoomLoaded) {
+                if (room.error != null) {
+                  return EnhancedErrorWidget(error: room.error);
+                }
 
-              return buildChatComponents(
-                customColors,
-                context,
-                room,
-              );
-            } else {
-              return Container();
-            }
-          },
+                return buildChatComponents(
+                  customColors,
+                  context,
+                  room,
+                );
+              } else {
+                return Container();
+              }
+            },
+          ),
         ),
       ),
     );

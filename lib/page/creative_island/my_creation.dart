@@ -8,6 +8,7 @@ import 'package:askaide/page/component/button.dart';
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/dialog.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/page/creative_island/draw/data/draw_history_datasource.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
@@ -42,212 +43,215 @@ class _MyCreationScreenState extends State<MyCreationScreen> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          '我的创作',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
-        ),
-        centerTitle: true,
-        toolbarHeight: CustomSize.toolbarHeight,
-      ),
+    return WindowFrameWidget(
       backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
-        enabled: false,
-        maxWidth: CustomSize.maxWindowSize,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            '我的创作',
+            style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          centerTitle: true,
+          toolbarHeight: CustomSize.toolbarHeight,
+        ),
         backgroundColor: customColors.backgroundColor,
-        child: SafeArea(
-          child: RefreshIndicator(
-            color: customColors.linkColor,
-            onRefresh: () async {
-              context
-                  .read<CreativeIslandBloc>()
-                  .add(CreativeIslandHistoriesAllLoadEvent(forceRefresh: true, mode: widget.mode));
-            },
-            child: LoadingMoreList(
-              ListConfig<CreativeItemInServer>(
-                extendedListDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: _calCrossAxisCount(context),
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                ),
-                itemBuilder: (context, item, index) {
-                  return Material(
-                    color: customColors.backgroundContainerColor,
-                    borderRadius: CustomSize.borderRadius,
-                    child: InkWell(
-                      borderRadius: CustomSize.borderRadiusAll,
-                      onTap: () {
-                        context.push('/creative-island/${item.islandId}/history/${item.id}?show_error=true');
-                      },
-                      onLongPress: () {
-                        openModalBottomSheet(
-                          context,
-                          (context) {
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body: BackgroundContainer(
+          setting: widget.setting,
+          enabled: false,
+          maxWidth: CustomSize.maxWindowSize,
+          backgroundColor: customColors.backgroundColor,
+          child: SafeArea(
+            child: RefreshIndicator(
+              color: customColors.linkColor,
+              onRefresh: () async {
+                context
+                    .read<CreativeIslandBloc>()
+                    .add(CreativeIslandHistoriesAllLoadEvent(forceRefresh: true, mode: widget.mode));
+              },
+              child: LoadingMoreList(
+                ListConfig<CreativeItemInServer>(
+                  extendedListDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: _calCrossAxisCount(context),
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                  ),
+                  itemBuilder: (context, item, index) {
+                    return Material(
+                      color: customColors.backgroundContainerColor,
+                      borderRadius: CustomSize.borderRadius,
+                      child: InkWell(
+                        borderRadius: CustomSize.borderRadiusAll,
+                        onTap: () {
+                          context.push('/creative-island/${item.islandId}/history/${item.id}?show_error=true');
+                        },
+                        onLongPress: () {
+                          openModalBottomSheet(
+                            context,
+                            (context) {
+                              return Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const SizedBox(height: 20),
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Button(
+                                        title: '查看作品',
+                                        onPressed: () {
+                                          context.push(
+                                              '/creative-island/${item.islandId}/history/${item.id}?show_error=true');
+                                          context.pop();
+                                        },
+                                        size: const ButtonSize.full(),
+                                        color: customColors.weakLinkColor,
+                                        backgroundColor: const Color.fromARGB(36, 222, 222, 222),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Button(
+                                        title: '删除作品',
+                                        onPressed: () {
+                                          onItemDelete(
+                                            context,
+                                            item,
+                                            index,
+                                            onFinished: () {
+                                              context.pop();
+                                            },
+                                          );
+                                        },
+                                        size: const ButtonSize.full(),
+                                        color: customColors.weakLinkColor,
+                                        backgroundColor: const Color.fromARGB(36, 222, 222, 222),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Button(
+                                        title: AppLocale.cancel.getString(context),
+                                        backgroundColor: const Color.fromARGB(36, 222, 222, 222),
+                                        color: customColors.dialogDefaultTextColor?.withAlpha(150),
+                                        onPressed: () {
+                                          context.pop();
+                                        },
+                                        size: const ButtonSize.full(),
+                                      ),
+                                      const SizedBox(height: 10),
+                                    ],
+                                  ),
+                                ],
+                              );
+                            },
+                            heightFactor: 0.25,
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            Stack(
                               children: [
-                                const SizedBox(height: 20),
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Button(
-                                      title: '查看作品',
-                                      onPressed: () {
-                                        context.push(
-                                            '/creative-island/${item.islandId}/history/${item.id}?show_error=true');
-                                        context.pop();
-                                      },
-                                      size: const ButtonSize.full(),
-                                      color: customColors.weakLinkColor,
-                                      backgroundColor: const Color.fromARGB(36, 222, 222, 222),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Button(
-                                      title: '删除作品',
-                                      onPressed: () {
-                                        onItemDelete(
-                                          context,
-                                          item,
-                                          index,
-                                          onFinished: () {
-                                            context.pop();
-                                          },
-                                        );
-                                      },
-                                      size: const ButtonSize.full(),
-                                      color: customColors.weakLinkColor,
-                                      backgroundColor: const Color.fromARGB(36, 222, 222, 222),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Button(
-                                      title: AppLocale.cancel.getString(context),
-                                      backgroundColor: const Color.fromARGB(36, 222, 222, 222),
-                                      color: customColors.dialogDefaultTextColor?.withAlpha(150),
-                                      onPressed: () {
-                                        context.pop();
-                                      },
-                                      size: const ButtonSize.full(),
-                                    ),
-                                    const SizedBox(height: 10),
-                                  ],
-                                ),
-                              ],
-                            );
-                          },
-                          heightFactor: 0.25,
-                        );
-                      },
-                      child: Column(
-                        children: [
-                          Stack(
-                            children: [
-                              _buildAnswerImagePreview(context, item),
-                              // TODO 风格名称，测试阶段使用
-                              if (item.filterName != null && item.filterName!.isNotEmpty)
-                                Positioned(
-                                  bottom: 0,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 2,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.5),
-                                      borderRadius: const BorderRadius.only(
-                                          topRight: CustomSize.radius, bottomLeft: CustomSize.radius),
-                                    ),
-                                    child: Text(
-                                      item.filterName!,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.white,
+                                _buildAnswerImagePreview(context, item),
+                                // TODO 风格名称，测试阶段使用
+                                if (item.filterName != null && item.filterName!.isNotEmpty)
+                                  Positioned(
+                                    bottom: 0,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black.withOpacity(0.5),
+                                        borderRadius: const BorderRadius.only(
+                                            topRight: CustomSize.radius, bottomLeft: CustomSize.radius),
+                                      ),
+                                      child: Text(
+                                        item.filterName!,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              if (item.isShared)
-                                Positioned(
-                                  right: 0,
-                                  top: 0,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 2,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.5),
-                                      borderRadius: const BorderRadius.only(
-                                        topRight: CustomSize.radius,
-                                        bottomLeft: CustomSize.radius,
+                                if (item.isShared)
+                                  Positioned(
+                                    right: 0,
+                                    top: 0,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black.withOpacity(0.5),
+                                        borderRadius: const BorderRadius.only(
+                                          topRight: CustomSize.radius,
+                                          bottomLeft: CustomSize.radius,
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        '公开',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
-                                    child: const Text(
-                                      '公开',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                            ],
-                          ),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                buildIslandTypeText(customColors, item),
-                                Text(
-                                  humanTime(item.createdAt, withTime: true),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: customColors.weakTextColor?.withAlpha(150),
-                                  ),
-                                ),
+                                  )
                               ],
                             ),
-                          ),
-                        ],
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  buildIslandTypeText(customColors, item),
+                                  Text(
+                                    humanTime(item.createdAt, withTime: true),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: customColors.weakTextColor?.withAlpha(150),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-                sourceList: datasource,
-                padding: const EdgeInsets.all(10),
-                indicatorBuilder: (context, status) {
-                  String msg = '';
-                  switch (status) {
-                    case IndicatorStatus.noMoreLoad:
-                      msg = '~ 没有更多了 ~';
-                      break;
-                    case IndicatorStatus.loadingMoreBusying:
-                      msg = '加载中...';
-                      break;
-                    case IndicatorStatus.error:
-                      msg = '加载失败，请稍后再试';
-                      break;
-                    case IndicatorStatus.empty:
-                      msg = '您还没有创作过作品哦';
-                      break;
-                    default:
-                      return const Center(child: LoadingIndicator());
-                  }
-                  return Container(
-                    padding: const EdgeInsets.all(15),
-                    alignment: Alignment.center,
-                    child: Text(
-                      msg,
-                      style: TextStyle(
-                        color: customColors.weakTextColor,
-                        fontSize: 14,
+                    );
+                  },
+                  sourceList: datasource,
+                  padding: const EdgeInsets.all(10),
+                  indicatorBuilder: (context, status) {
+                    String msg = '';
+                    switch (status) {
+                      case IndicatorStatus.noMoreLoad:
+                        msg = '~ 没有更多了 ~';
+                        break;
+                      case IndicatorStatus.loadingMoreBusying:
+                        msg = '加载中...';
+                        break;
+                      case IndicatorStatus.error:
+                        msg = '加载失败，请稍后再试';
+                        break;
+                      case IndicatorStatus.empty:
+                        msg = '您还没有创作过作品哦';
+                        break;
+                      default:
+                        return const Center(child: LoadingIndicator());
+                    }
+                    return Container(
+                      padding: const EdgeInsets.all(15),
+                      alignment: Alignment.center,
+                      child: Text(
+                        msg,
+                        style: TextStyle(
+                          color: customColors.weakTextColor,
+                          fontSize: 14,
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
           ),
