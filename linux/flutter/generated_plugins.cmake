@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_linux
+  bitsdojo_window_linux
   file_saver
   flutter_localization
   media_kit_libs_linux

@@ -20,6 +20,7 @@ import 'package:askaide/page/admin/users.dart';
 import 'package:askaide/page/balance/web_payment_proxy.dart';
 import 'package:askaide/page/balance/web_payment_result.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/page/creative_island/draw/artistic_wordart.dart';
 import 'package:askaide/page/home.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
@@ -127,6 +128,7 @@ import 'package:sizer/sizer.dart';
 import 'package:askaide/helper/http.dart' as httpx;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -255,6 +257,15 @@ void main() async {
       messageStateManager: stateManager,
     ),
   ));
+
+  doWhenWindowReady(() {
+    final win = appWindow;
+    const initialSize = Size(850, 750);
+    win.size = initialSize;
+    win.alignment = Alignment.center;
+    win.title = "AIdea";
+    win.show();
+  });
 }
 
 class MyApp extends StatefulWidget {
@@ -309,7 +320,7 @@ class MyApp extends StatefulWidget {
       routes: [
         ShellRoute(
           builder: (context, state, child) {
-            return child;
+            return WindowFrameWidget(child: child);
           },
           routes: [
             GoRoute(
@@ -1355,7 +1366,7 @@ class _MyAppState extends State<MyApp> {
 ThemeData createLightThemeData() {
   return ThemeData.light(useMaterial3: true).copyWith(
     extensions: [CustomColors.light],
-    textTheme: ThemeData(fontFamily: 'AlibabaPuHuiTi').primaryTextTheme,
+    textTheme: ThemeData(fontFamily: 'AlibabaPuHuiTi').textTheme,
     appBarTheme: const AppBarTheme(
       // backgroundColor: Color.fromARGB(255, 250, 250, 250),
       backgroundColor: Colors.transparent,
