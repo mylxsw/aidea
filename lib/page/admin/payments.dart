@@ -6,6 +6,7 @@ import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/pagination.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api/admin/payment.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
@@ -56,127 +57,130 @@ class _PaymentHistoriesPageState extends State<PaymentHistoriesPage> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        title: const Text(
-          'Payment Order History',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
-        ),
-        centerTitle: true,
-      ),
+    return WindowFrameWidget(
       backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
-        enabled: false,
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          title: const Text(
+            'Payment Order History',
+            style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          centerTitle: true,
+        ),
         backgroundColor: customColors.backgroundColor,
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.only(left: 10, right: 10, bottom: 5),
-              child: TextField(
-                controller: keywordController,
-                textAlignVertical: TextAlignVertical.center,
-                style: TextStyle(color: customColors.dialogDefaultTextColor),
-                decoration: InputDecoration(
-                  hintText: AppLocale.search.getString(context),
-                  hintStyle: TextStyle(
-                    color: customColors.dialogDefaultTextColor,
+        body: BackgroundContainer(
+          setting: widget.setting,
+          enabled: false,
+          backgroundColor: customColors.backgroundColor,
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                child: TextField(
+                  controller: keywordController,
+                  textAlignVertical: TextAlignVertical.center,
+                  style: TextStyle(color: customColors.dialogDefaultTextColor),
+                  decoration: InputDecoration(
+                    hintText: AppLocale.search.getString(context),
+                    hintStyle: TextStyle(
+                      color: customColors.dialogDefaultTextColor,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: customColors.dialogDefaultTextColor,
+                    ),
+                    isDense: true,
+                    border: InputBorder.none,
                   ),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: customColors.dialogDefaultTextColor,
-                  ),
-                  isDense: true,
-                  border: InputBorder.none,
-                ),
-                onEditingComplete: () {
-                  context.read<AdminPaymentBloc>().add(AdminPaymentHistoriesLoadEvent(
-                        perPage: perPage,
-                        page: page,
-                        keyword: keywordController.text,
-                      ));
-                },
-              ),
-            ),
-            Expanded(
-              child: RefreshIndicator(
-                color: customColors.linkColor,
-                onRefresh: () async {
-                  context.read<AdminPaymentBloc>().add(AdminPaymentHistoriesLoadEvent(
-                        perPage: perPage,
-                        page: page,
-                        keyword: keywordController.text,
-                      ));
-                },
-                displacement: 20,
-                child: BlocConsumer<AdminPaymentBloc, AdminPaymentState>(
-                  listener: (context, state) {
-                    if (state is AdminPaymentOperationResult) {
-                      if (state.success) {
-                        showSuccessMessage(state.message);
-                        context.read<UserBloc>().add(UserListLoadEvent());
-                      } else {
-                        showErrorMessage(state.message);
-                      }
-                    }
-
-                    if (state is AdminPaymentHistoriesLoaded) {
-                      setState(() {
-                        page = state.histories.page;
-                        perPage = state.histories.perPage;
-                      });
-                    }
+                  onEditingComplete: () {
+                    context.read<AdminPaymentBloc>().add(AdminPaymentHistoriesLoadEvent(
+                          perPage: perPage,
+                          page: page,
+                          keyword: keywordController.text,
+                        ));
                   },
-                  buildWhen: (previous, current) => current is AdminPaymentHistoriesLoaded,
-                  builder: (context, state) {
-                    if (state is AdminPaymentHistoriesLoaded) {
-                      return SafeArea(
-                        top: false,
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: ListView.builder(
-                                padding: const EdgeInsets.all(5),
-                                itemCount: state.histories.data.length,
-                                itemBuilder: (context, index) {
-                                  return buildHistoryInfo(
-                                    context,
-                                    customColors,
-                                    state.histories.data[index],
-                                  );
-                                },
-                              ),
-                            ),
-                            if (state.histories.lastPage != null && state.histories.lastPage! > 1)
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                child: Pagination(
-                                  numOfPages: state.histories.lastPage ?? 1,
-                                  selectedPage: page,
-                                  pagesVisible: 5,
-                                  onPageChanged: (selected) {
-                                    context.read<AdminPaymentBloc>().add(AdminPaymentHistoriesLoadEvent(
-                                          perPage: perPage,
-                                          page: selected,
-                                          keyword: keywordController.text,
-                                        ));
+                ),
+              ),
+              Expanded(
+                child: RefreshIndicator(
+                  color: customColors.linkColor,
+                  onRefresh: () async {
+                    context.read<AdminPaymentBloc>().add(AdminPaymentHistoriesLoadEvent(
+                          perPage: perPage,
+                          page: page,
+                          keyword: keywordController.text,
+                        ));
+                  },
+                  displacement: 20,
+                  child: BlocConsumer<AdminPaymentBloc, AdminPaymentState>(
+                    listener: (context, state) {
+                      if (state is AdminPaymentOperationResult) {
+                        if (state.success) {
+                          showSuccessMessage(state.message);
+                          context.read<UserBloc>().add(UserListLoadEvent());
+                        } else {
+                          showErrorMessage(state.message);
+                        }
+                      }
+
+                      if (state is AdminPaymentHistoriesLoaded) {
+                        setState(() {
+                          page = state.histories.page;
+                          perPage = state.histories.perPage;
+                        });
+                      }
+                    },
+                    buildWhen: (previous, current) => current is AdminPaymentHistoriesLoaded,
+                    builder: (context, state) {
+                      if (state is AdminPaymentHistoriesLoaded) {
+                        return SafeArea(
+                          top: false,
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: ListView.builder(
+                                  padding: const EdgeInsets.all(5),
+                                  itemCount: state.histories.data.length,
+                                  itemBuilder: (context, index) {
+                                    return buildHistoryInfo(
+                                      context,
+                                      customColors,
+                                      state.histories.data[index],
+                                    );
                                   },
                                 ),
                               ),
-                          ],
-                        ),
-                      );
-                    }
+                              if (state.histories.lastPage != null && state.histories.lastPage! > 1)
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Pagination(
+                                    numOfPages: state.histories.lastPage ?? 1,
+                                    selectedPage: page,
+                                    pagesVisible: 5,
+                                    onPageChanged: (selected) {
+                                      context.read<AdminPaymentBloc>().add(AdminPaymentHistoriesLoadEvent(
+                                            perPage: perPage,
+                                            page: selected,
+                                            keyword: keywordController.text,
+                                          ));
+                                    },
+                                  ),
+                                ),
+                            ],
+                          ),
+                        );
+                      }
 
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  },
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -8,6 +8,7 @@ import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/page/creative_island/gallery/gallery_item.dart';
 import 'package:askaide/repo/api/quota.dart';
 import 'package:askaide/repo/api_server.dart';
@@ -43,280 +44,283 @@ class _AdminUserPageState extends State<AdminUserPage> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        title: const Text(
-          'User Info',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.card_giftcard_outlined),
-            tooltip: 'Give Credits',
-            onPressed: () {
-              int sendCount = 600;
-              String? note;
-              int validDays = 30;
-
-              openDialog(
-                context,
-                builder: Builder(builder: (context) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'Give Credits',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      const SizedBox(height: 10),
-                      EnhancedTextField(
-                        labelText: 'Quantity',
-                        customColors: customColors,
-                        textAlignVertical: TextAlignVertical.top,
-                        showCounter: false,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                        suffixIcon: Container(
-                          width: 110,
-                          alignment: Alignment.center,
-                          child: Text(
-                            'Credits',
-                            style: TextStyle(
-                              color: customColors.weakTextColor,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                        onChanged: (value) {
-                          sendCount = int.tryParse(value) ?? 0;
-                        },
-                        initValue: sendCount.toString(),
-                      ),
-                      const SizedBox(height: 10),
-                      EnhancedTextField(
-                        labelText: 'Expiration',
-                        customColors: customColors,
-                        textAlignVertical: TextAlignVertical.top,
-                        showCounter: false,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                        suffixIcon: Container(
-                          width: 110,
-                          alignment: Alignment.center,
-                          child: Text(
-                            'Days',
-                            style: TextStyle(
-                              color: customColors.weakTextColor,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                        onChanged: (value) {
-                          validDays = int.tryParse(value) ?? 0;
-                        },
-                        initValue: validDays.toString(),
-                      ),
-                      const SizedBox(height: 10),
-                      EnhancedTextField(
-                        labelText: 'Note',
-                        customColors: customColors,
-                        textAlignVertical: TextAlignVertical.top,
-                        showCounter: false,
-                        hintText: 'Optional',
-                        onChanged: (value) {
-                          note = value;
-                        },
-                        initValue: note,
-                      ),
-                    ],
-                  );
-                }),
-                onSubmit: () {
-                  if (sendCount <= 0) {
-                    showErrorMessage('Quantity must be greater than 0');
-                    return false;
-                  }
-
-                  if (validDays <= 0) {
-                    showErrorMessage('Expiration date must be greater than 0');
-                    return false;
-                  }
-
-                  APIServer()
-                      .adminUserQuotaAssign(
-                    userId: widget.userId,
-                    quota: sendCount,
-                    validPeriod: validDays * 24,
-                    note: note,
-                  )
-                      .then((value) {
-                    showSuccessMessage('Gift sent successfully');
-                    context.read<UserBloc>().add(UserQuotaLoadEvent(widget.userId));
-                  }).onError(
-                    (error, stackTrace) => showErrorMessageEnhanced(context, error!),
-                  );
-
-                  return true;
-                },
-              );
-            },
-          ),
-        ],
-      ),
+    return WindowFrameWidget(
       backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
-        backgroundColor: customColors.backgroundColor,
-        enabled: false,
-        child: RefreshIndicator(
-          color: customColors.linkColor,
-          onRefresh: () async {
-            context.read<UserBloc>().add(UserLoadEvent(widget.userId));
-            context.read<UserBloc>().add(UserQuotaLoadEvent(widget.userId));
-          },
-          displacement: 20,
-          child: SafeArea(
-            top: false,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  BlocConsumer<UserBloc, UserState>(
-                    listenWhen: (previous, current) => current is UserOperationResult,
-                    listener: (context, state) {
-                      if (state is UserOperationResult) {
-                        if (state.success) {
-                          showSuccessMessage(state.message ?? AppLocale.operateSuccess.getString(context));
-                          context.read<UserBloc>().add(UserListLoadEvent());
-                        } else {
-                          showErrorMessage(state.message ?? AppLocale.operateFailed.getString(context));
-                        }
-                      }
-                    },
-                    buildWhen: (previous, current) => current is UserLoaded,
-                    builder: (context, state) {
-                      if (state is UserLoaded) {
-                        return ColumnBlock(
-                          innerPanding: 10,
-                          padding: const EdgeInsets.all(15),
-                          margin: const EdgeInsets.all(15),
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        width: double.infinity,
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              'ID',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                                color: customColors.weakTextColor,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 10),
-                                            Text(
-                                              '${state.user.id}',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: customColors.weakTextColor,
-                                              ),
-                                              maxLines: 5,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      buildTags(context, customColors, state.user),
-                                    ],
-                                  ),
-                                ),
-                                buildUserAvatar(state.user, radius: CustomSize.borderRadiusAll),
-                              ],
-                            ),
-                            TextItem(
-                              title: 'Type',
-                              value: state.user.userType ?? '-',
-                            ),
-                            if (state.user.phone != null && state.user.phone!.isNotEmpty)
-                              TextItem(
-                                title: 'Photo',
-                                value: state.user.phone!,
-                              ),
-                            if (state.user.email != null && state.user.email!.isNotEmpty)
-                              TextItem(
-                                title: 'Email',
-                                value: state.user.email!,
-                              ),
-                            if (state.user.realname != null && state.user.realname!.isNotEmpty)
-                              TextItem(
-                                title: 'Nickname',
-                                value: state.user.realname!,
-                              ),
-                            if (state.user.invitedBy != null && state.user.invitedBy! > 0)
-                              TextItem(
-                                title: 'Inviter ID',
-                                value: '${state.user.invitedBy}',
-                              ),
-                            if (state.user.createdAt != null)
-                              TextItem(
-                                title: 'Creation time',
-                                value: state.user.createdAt!.toLocal().toString(),
-                              ),
-                            TextItem(
-                              title: 'Status',
-                              value: state.user.status ?? '-',
-                            ),
-                          ],
-                        );
-                      }
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          title: const Text(
+            'User Info',
+            style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.card_giftcard_outlined),
+              tooltip: 'Give Credits',
+              onPressed: () {
+                int sendCount = 600;
+                String? note;
+                int validDays = 30;
 
-                      return Center(
-                        child: CircularProgressIndicator(
-                          color: customColors.linkColor,
+                openDialog(
+                  context,
+                  builder: Builder(builder: (context) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'Give Credits',
+                          style: TextStyle(fontSize: 18),
                         ),
-                      );
-                    },
-                  ),
-                  BlocBuilder<UserBloc, UserState>(
-                    buildWhen: (previous, current) => current is UserQuotaLoaded,
-                    builder: (context, state) {
-                      if (state is UserQuotaLoaded) {
-                        return ColumnBlock(
-                          innerPanding: 10,
-                          padding: const EdgeInsets.all(15),
-                          margin: const EdgeInsets.only(
-                            left: 15,
-                            right: 15,
-                            bottom: 15,
+                        const SizedBox(height: 10),
+                        EnhancedTextField(
+                          labelText: 'Quantity',
+                          customColors: customColors,
+                          textAlignVertical: TextAlignVertical.top,
+                          showCounter: false,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          suffixIcon: Container(
+                            width: 110,
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Credits',
+                              style: TextStyle(
+                                color: customColors.weakTextColor,
+                                fontSize: 12,
+                              ),
+                            ),
                           ),
-                          children: [
-                            TextItem(
-                              title: 'Remaining credits',
-                              value: state.quota.total.toString(),
-                            ),
-                            buildPaymentDetails(customColors, state)
-                          ],
-                        );
-                      }
-
-                      return Center(
-                        child: CircularProgressIndicator(
-                          color: customColors.linkColor,
+                          onChanged: (value) {
+                            sendCount = int.tryParse(value) ?? 0;
+                          },
+                          initValue: sendCount.toString(),
                         ),
-                      );
-                    },
-                  ),
-                ],
+                        const SizedBox(height: 10),
+                        EnhancedTextField(
+                          labelText: 'Expiration',
+                          customColors: customColors,
+                          textAlignVertical: TextAlignVertical.top,
+                          showCounter: false,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          suffixIcon: Container(
+                            width: 110,
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Days',
+                              style: TextStyle(
+                                color: customColors.weakTextColor,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          onChanged: (value) {
+                            validDays = int.tryParse(value) ?? 0;
+                          },
+                          initValue: validDays.toString(),
+                        ),
+                        const SizedBox(height: 10),
+                        EnhancedTextField(
+                          labelText: 'Note',
+                          customColors: customColors,
+                          textAlignVertical: TextAlignVertical.top,
+                          showCounter: false,
+                          hintText: 'Optional',
+                          onChanged: (value) {
+                            note = value;
+                          },
+                          initValue: note,
+                        ),
+                      ],
+                    );
+                  }),
+                  onSubmit: () {
+                    if (sendCount <= 0) {
+                      showErrorMessage('Quantity must be greater than 0');
+                      return false;
+                    }
+
+                    if (validDays <= 0) {
+                      showErrorMessage('Expiration date must be greater than 0');
+                      return false;
+                    }
+
+                    APIServer()
+                        .adminUserQuotaAssign(
+                      userId: widget.userId,
+                      quota: sendCount,
+                      validPeriod: validDays * 24,
+                      note: note,
+                    )
+                        .then((value) {
+                      showSuccessMessage('Gift sent successfully');
+                      context.read<UserBloc>().add(UserQuotaLoadEvent(widget.userId));
+                    }).onError(
+                      (error, stackTrace) => showErrorMessageEnhanced(context, error!),
+                    );
+
+                    return true;
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+        backgroundColor: customColors.backgroundColor,
+        body: BackgroundContainer(
+          setting: widget.setting,
+          backgroundColor: customColors.backgroundColor,
+          enabled: false,
+          child: RefreshIndicator(
+            color: customColors.linkColor,
+            onRefresh: () async {
+              context.read<UserBloc>().add(UserLoadEvent(widget.userId));
+              context.read<UserBloc>().add(UserQuotaLoadEvent(widget.userId));
+            },
+            displacement: 20,
+            child: SafeArea(
+              top: false,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    BlocConsumer<UserBloc, UserState>(
+                      listenWhen: (previous, current) => current is UserOperationResult,
+                      listener: (context, state) {
+                        if (state is UserOperationResult) {
+                          if (state.success) {
+                            showSuccessMessage(state.message ?? AppLocale.operateSuccess.getString(context));
+                            context.read<UserBloc>().add(UserListLoadEvent());
+                          } else {
+                            showErrorMessage(state.message ?? AppLocale.operateFailed.getString(context));
+                          }
+                        }
+                      },
+                      buildWhen: (previous, current) => current is UserLoaded,
+                      builder: (context, state) {
+                        if (state is UserLoaded) {
+                          return ColumnBlock(
+                            innerPanding: 10,
+                            padding: const EdgeInsets.all(15),
+                            margin: const EdgeInsets.all(15),
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(
+                                          width: double.infinity,
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                'ID',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: customColors.weakTextColor,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Text(
+                                                '${state.user.id}',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: customColors.weakTextColor,
+                                                ),
+                                                maxLines: 5,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        buildTags(context, customColors, state.user),
+                                      ],
+                                    ),
+                                  ),
+                                  buildUserAvatar(state.user, radius: CustomSize.borderRadiusAll),
+                                ],
+                              ),
+                              TextItem(
+                                title: 'Type',
+                                value: state.user.userType ?? '-',
+                              ),
+                              if (state.user.phone != null && state.user.phone!.isNotEmpty)
+                                TextItem(
+                                  title: 'Photo',
+                                  value: state.user.phone!,
+                                ),
+                              if (state.user.email != null && state.user.email!.isNotEmpty)
+                                TextItem(
+                                  title: 'Email',
+                                  value: state.user.email!,
+                                ),
+                              if (state.user.realname != null && state.user.realname!.isNotEmpty)
+                                TextItem(
+                                  title: 'Nickname',
+                                  value: state.user.realname!,
+                                ),
+                              if (state.user.invitedBy != null && state.user.invitedBy! > 0)
+                                TextItem(
+                                  title: 'Inviter ID',
+                                  value: '${state.user.invitedBy}',
+                                ),
+                              if (state.user.createdAt != null)
+                                TextItem(
+                                  title: 'Creation time',
+                                  value: state.user.createdAt!.toLocal().toString(),
+                                ),
+                              TextItem(
+                                title: 'Status',
+                                value: state.user.status ?? '-',
+                              ),
+                            ],
+                          );
+                        }
+
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: customColors.linkColor,
+                          ),
+                        );
+                      },
+                    ),
+                    BlocBuilder<UserBloc, UserState>(
+                      buildWhen: (previous, current) => current is UserQuotaLoaded,
+                      builder: (context, state) {
+                        if (state is UserQuotaLoaded) {
+                          return ColumnBlock(
+                            innerPanding: 10,
+                            padding: const EdgeInsets.all(15),
+                            margin: const EdgeInsets.only(
+                              left: 15,
+                              right: 15,
+                              bottom: 15,
+                            ),
+                            children: [
+                              TextItem(
+                                title: 'Remaining credits',
+                                value: state.quota.total.toString(),
+                              ),
+                              buildPaymentDetails(customColors, state)
+                            ],
+                          );
+                        }
+
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: customColors.linkColor,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

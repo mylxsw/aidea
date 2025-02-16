@@ -11,7 +11,7 @@ class WindowFrameWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!PlatformTool.isWindows()) {
+    if (!PlatformTool.isDesktop()) {
       return child;
     }
 

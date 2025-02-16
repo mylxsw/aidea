@@ -16,6 +16,7 @@ import 'package:askaide/page/component/global_alert.dart';
 import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/prompt_tags_selector.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/page/creative_island/draw/components/content_preview.dart';
 import 'package:askaide/page/creative_island/draw/draw_result.dart';
 import 'package:askaide/page/component/dialog.dart';
@@ -196,52 +197,55 @@ class _DrawCreateScreenState extends State<DrawCreateScreen> {
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.mode == 'image-to-image'
-              ? AppLocale.imageToImage.getString(context)
-              : AppLocale.textToImage.getString(context),
-          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          onPressed: () {
-            context.pop();
-          },
-          icon: const Icon(Icons.arrow_back_ios),
-        ),
-        toolbarHeight: CustomSize.toolbarHeight,
-        backgroundColor: customColors.backgroundColor,
-        actions: [
-          if (widget.note != null)
-            IconButton(
-              onPressed: () {
-                openDefaultTutorials();
-              },
-              icon: const Icon(Icons.help_outline),
-            )
-        ],
-      ),
+    return WindowFrameWidget(
       backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
-        enabled: false,
-        maxWidth: CustomSize.smallWindowSize,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            widget.mode == 'image-to-image'
+                ? AppLocale.imageToImage.getString(context)
+                : AppLocale.textToImage.getString(context),
+            style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          centerTitle: true,
+          leading: IconButton(
+            onPressed: () {
+              context.pop();
+            },
+            icon: const Icon(Icons.arrow_back_ios),
+          ),
+          toolbarHeight: CustomSize.toolbarHeight,
+          backgroundColor: customColors.backgroundColor,
+          actions: [
+            if (widget.note != null)
+              IconButton(
+                onPressed: () {
+                  openDefaultTutorials();
+                },
+                icon: const Icon(Icons.help_outline),
+              )
+          ],
+        ),
         backgroundColor: customColors.backgroundColor,
-        child: Column(
-          children: [
-            if (Ability().showGlobalAlert) const GlobalAlert(pageKey: 'creative_create'),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                height: double.infinity,
-                child: SingleChildScrollView(
-                  child: buildEditPanel(context, customColors),
+        body: BackgroundContainer(
+          setting: widget.setting,
+          enabled: false,
+          maxWidth: CustomSize.smallWindowSize,
+          backgroundColor: customColors.backgroundColor,
+          child: Column(
+            children: [
+              if (Ability().showGlobalAlert) const GlobalAlert(pageKey: 'creative_create'),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  height: double.infinity,
+                  child: SingleChildScrollView(
+                    child: buildEditPanel(context, customColors),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

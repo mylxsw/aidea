@@ -7,6 +7,7 @@ import 'package:askaide/page/component/verify_code_input.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -56,104 +57,106 @@ class _RetrievePasswordScreenState extends State<RetrievePasswordScreen> {
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        title: Text(
-          AppLocale.resetPassword.getString(context),
-          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+    return WindowFrameWidget(
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          title: Text(
+            AppLocale.resetPassword.getString(context),
+            style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      backgroundColor: customColors.backgroundContainerColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
-        enabled: false,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
-              child: TextFormField(
-                controller: _usernameController,
-                inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
-                keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Color.fromARGB(200, 192, 192, 192)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: customColors.linkColor!),
-                  ),
-                  isDense: true,
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                  labelText: AppLocale.account.getString(context),
-                  hintText: AppLocale.accountInputTips.getString(context),
-                  hintStyle: TextStyle(
-                    color: customColors.textfieldHintColor,
-                    fontSize: 15,
+        backgroundColor: customColors.backgroundContainerColor,
+        body: BackgroundContainer(
+          setting: widget.setting,
+          enabled: false,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+                child: TextFormField(
+                  controller: _usernameController,
+                  inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Color.fromARGB(200, 192, 192, 192)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: customColors.linkColor!),
+                    ),
+                    isDense: true,
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    labelText: AppLocale.account.getString(context),
+                    hintText: AppLocale.accountInputTips.getString(context),
+                    hintStyle: TextStyle(
+                      color: customColors.textfieldHintColor,
+                      fontSize: 15,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
-              child: PasswordField(
-                controller: _passwordController,
-                labelText: AppLocale.newPassword.getString(context),
-                hintText: AppLocale.passwordInputTips.getString(context),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 15.0, right: 10.0, top: 15, bottom: 0),
-              child: VerifyCodeInput(
-                controller: _verificationCodeController,
-                onVerifyCodeSent: (id) {
-                  verifyCodeId = id;
-                },
-                sendVerifyCode: () {
-                  return APIServer().sendResetPasswordCode(
-                    _usernameController.text.trim(),
-                    verifyType: phoneNumberValidator.hasMatch(_usernameController.text) ? 'sms' : 'email',
-                  );
-                },
-                sendCheck: () {
-                  final username = _usernameController.text.trim();
-                  final isPhoneNumber = phoneNumberValidator.hasMatch(username);
-                  final isEmail = emailValidator.hasMatch(username);
-
-                  if (username == '') {
-                    showErrorMessage(AppLocale.accountRequired.getString(context));
-                    return false;
-                  }
-
-                  if (!isPhoneNumber && !isEmail) {
-                    showErrorMessage(AppLocale.accountFormatError.getString(context));
-                    return false;
-                  }
-
-                  return true;
-                },
-              ),
-            ),
-            const SizedBox(height: 15),
-            Container(
-              height: 45,
-              width: double.infinity,
-              margin: const EdgeInsets.symmetric(horizontal: 15),
-              decoration: BoxDecoration(
-                color: customColors.linkColor,
-                borderRadius: CustomSize.borderRadius,
-              ),
-              child: TextButton(
-                onPressed: onResetSubmit,
-                child: Text(
-                  AppLocale.resetPassword.getString(context),
-                  style: const TextStyle(color: Colors.white, fontSize: 18),
+              Padding(
+                padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+                child: PasswordField(
+                  controller: _passwordController,
+                  labelText: AppLocale.newPassword.getString(context),
+                  hintText: AppLocale.passwordInputTips.getString(context),
                 ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.only(left: 15.0, right: 10.0, top: 15, bottom: 0),
+                child: VerifyCodeInput(
+                  controller: _verificationCodeController,
+                  onVerifyCodeSent: (id) {
+                    verifyCodeId = id;
+                  },
+                  sendVerifyCode: () {
+                    return APIServer().sendResetPasswordCode(
+                      _usernameController.text.trim(),
+                      verifyType: phoneNumberValidator.hasMatch(_usernameController.text) ? 'sms' : 'email',
+                    );
+                  },
+                  sendCheck: () {
+                    final username = _usernameController.text.trim();
+                    final isPhoneNumber = phoneNumberValidator.hasMatch(username);
+                    final isEmail = emailValidator.hasMatch(username);
+
+                    if (username == '') {
+                      showErrorMessage(AppLocale.accountRequired.getString(context));
+                      return false;
+                    }
+
+                    if (!isPhoneNumber && !isEmail) {
+                      showErrorMessage(AppLocale.accountFormatError.getString(context));
+                      return false;
+                    }
+
+                    return true;
+                  },
+                ),
+              ),
+              const SizedBox(height: 15),
+              Container(
+                height: 45,
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(horizontal: 15),
+                decoration: BoxDecoration(
+                  color: customColors.linkColor,
+                  borderRadius: CustomSize.borderRadius,
+                ),
+                child: TextButton(
+                  onPressed: onResetSubmit,
+                  child: Text(
+                    AppLocale.resetPassword.getString(context),
+                    style: const TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

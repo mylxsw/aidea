@@ -2,6 +2,7 @@ import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/model/misc.dart';
 import 'package:askaide/repo/settings_repo.dart';
@@ -41,24 +42,27 @@ class _QuotaUsageDetailScreenState extends State<QuotaUsageDetailScreen> {
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        title: Text(
-          widget.date,
-          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
-        ),
-        centerTitle: true,
-        elevation: 0,
-      ),
+    return WindowFrameWidget(
       backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
-        enabled: false,
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          title: Text(
+            widget.date,
+            style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          centerTitle: true,
+          elevation: 0,
+        ),
         backgroundColor: customColors.backgroundColor,
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          child: _buildQuotaUsagePage(context, customColors),
+        body: BackgroundContainer(
+          setting: widget.setting,
+          enabled: false,
+          backgroundColor: customColors.backgroundColor,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: _buildQuotaUsagePage(context, customColors),
+          ),
         ),
       ),
     );

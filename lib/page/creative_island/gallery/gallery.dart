@@ -3,6 +3,7 @@ import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/sliver_component.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/page/creative_island/gallery/components/image_card.dart';
 import 'package:askaide/page/creative_island/gallery/data/gallery_datasource.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
@@ -38,9 +39,12 @@ class _GalleryScreenState extends State<GalleryScreen> {
   @override
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
-    return Scaffold(
+    return WindowFrameWidget(
       backgroundColor: customColors.backgroundColor,
-      body: _buildIslandItems(customColors),
+      child: Scaffold(
+        backgroundColor: customColors.backgroundColor,
+        body: _buildIslandItems(customColors),
+      ),
     );
   }
 

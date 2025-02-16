@@ -13,6 +13,7 @@ import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/chat/component/character_box.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api/room_gallery.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
@@ -41,124 +42,127 @@ class _CharactersPageState extends State<CharactersPage> {
   @override
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          AppLocale.homeTitle.getString(context),
-          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
-        ),
-        centerTitle: true,
-        toolbarHeight: CustomSize.toolbarHeight,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add_circle_outline),
-            onPressed: () {
-              context.push('/create-room').whenComplete(() {
-                if (context.mounted) {
-                  context.read<RoomBloc>().add(RoomsLoadEvent());
-                }
-              });
-            },
-          ),
-        ],
-      ),
+    return WindowFrameWidget(
       backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            AppLocale.homeTitle.getString(context),
+            style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          centerTitle: true,
+          toolbarHeight: CustomSize.toolbarHeight,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add_circle_outline),
+              onPressed: () {
+                context.push('/create-room').whenComplete(() {
+                  if (context.mounted) {
+                    context.read<RoomBloc>().add(RoomsLoadEvent());
+                  }
+                });
+              },
+            ),
+          ],
+        ),
         backgroundColor: customColors.backgroundColor,
-        enabled: false,
-        child: SafeArea(
-          top: false,
-          left: false,
-          right: false,
-          child: BlocConsumer<RoomBloc, RoomState>(
-            listener: (context, state) {
-              if (state is RoomsLoaded) {
-                if (state.rooms.isNotEmpty) {
-                  selectedSuggestions.clear();
-                  setState(() {});
-                  GlobalEvent().emit('showBottomNavigatorBar');
-                }
-              }
-
-              if (state is RoomCreateError) {
-                showErrorMessageEnhanced(context, state.error);
-              }
-
-              if (state is RoomOperationResult) {
-                if (!state.success) {
-                  showErrorMessageEnhanced(context, state.error ?? AppLocale.operateFailed.getString(context));
-                } else {
-                  if (state.redirect != null) {
-                    context.push(state.redirect!);
+        body: BackgroundContainer(
+          setting: widget.setting,
+          backgroundColor: customColors.backgroundColor,
+          enabled: false,
+          child: SafeArea(
+            top: false,
+            left: false,
+            right: false,
+            child: BlocConsumer<RoomBloc, RoomState>(
+              listener: (context, state) {
+                if (state is RoomsLoaded) {
+                  if (state.rooms.isNotEmpty) {
+                    selectedSuggestions.clear();
+                    setState(() {});
+                    GlobalEvent().emit('showBottomNavigatorBar');
                   }
                 }
-              }
-            },
-            buildWhen: (previous, current) => current is RoomsLoading || current is RoomsLoaded,
-            builder: (context, state) {
-              if (state is RoomsLoaded) {
-                if (state.error != null) {
-                  return EnhancedErrorWidget(error: state.error);
+
+                if (state is RoomCreateError) {
+                  showErrorMessageEnhanced(context, state.error);
                 }
 
-                return Column(
-                  children: [
-                    Expanded(
-                      child: RefreshIndicator(
-                        color: customColors.linkColor,
-                        onRefresh: () async {
-                          context.read<RoomBloc>().add(RoomsLoadEvent(forceRefresh: true));
-                        },
-                        displacement: 20,
-                        child: Column(
-                          children: [
-                            if (Ability().showGlobalAlert) const GlobalAlert(pageKey: 'rooms'),
-                            Expanded(child: buildBody(customColors, state, context)),
-                          ],
-                        ),
-                      ),
-                    ),
-                    if (selectedSuggestions.isNotEmpty)
-                      Container(
-                        height: 70,
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
-                        ),
-                        child: Row(
-                          children: [
-                            WeakTextButton(
-                              title: AppLocale.cancel.getString(context),
-                              onPressed: () {
-                                selectedSuggestions.clear();
-                                setState(() {});
-                                GlobalEvent().emit('showBottomNavigatorBar');
-                              },
-                            ),
-                            const SizedBox(width: 20),
-                            Expanded(
-                              child: EnhancedButton(
-                                  title: AppLocale.ok.getString(context),
-                                  onPressed: () {
-                                    context
-                                        .read<RoomBloc>()
-                                        .add(GalleryRoomCopyEvent(selectedSuggestions.map((e) => e.id).toList()));
-                                    showSuccessMessage(AppLocale.operateSuccess.getString(context));
-                                  }),
-                            )
-                          ],
-                        ),
-                      ),
-                  ],
-                );
-              }
+                if (state is RoomOperationResult) {
+                  if (!state.success) {
+                    showErrorMessageEnhanced(context, state.error ?? AppLocale.operateFailed.getString(context));
+                  } else {
+                    if (state.redirect != null) {
+                      context.push(state.redirect!);
+                    }
+                  }
+                }
+              },
+              buildWhen: (previous, current) => current is RoomsLoading || current is RoomsLoaded,
+              builder: (context, state) {
+                if (state is RoomsLoaded) {
+                  if (state.error != null) {
+                    return EnhancedErrorWidget(error: state.error);
+                  }
 
-              return const Center(
-                child: LoadingIndicator(),
-              );
-            },
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: RefreshIndicator(
+                          color: customColors.linkColor,
+                          onRefresh: () async {
+                            context.read<RoomBloc>().add(RoomsLoadEvent(forceRefresh: true));
+                          },
+                          displacement: 20,
+                          child: Column(
+                            children: [
+                              if (Ability().showGlobalAlert) const GlobalAlert(pageKey: 'rooms'),
+                              Expanded(child: buildBody(customColors, state, context)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (selectedSuggestions.isNotEmpty)
+                        Container(
+                          height: 70,
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
+                          child: Row(
+                            children: [
+                              WeakTextButton(
+                                title: AppLocale.cancel.getString(context),
+                                onPressed: () {
+                                  selectedSuggestions.clear();
+                                  setState(() {});
+                                  GlobalEvent().emit('showBottomNavigatorBar');
+                                },
+                              ),
+                              const SizedBox(width: 20),
+                              Expanded(
+                                child: EnhancedButton(
+                                    title: AppLocale.ok.getString(context),
+                                    onPressed: () {
+                                      context
+                                          .read<RoomBloc>()
+                                          .add(GalleryRoomCopyEvent(selectedSuggestions.map((e) => e.id).toList()));
+                                      showSuccessMessage(AppLocale.operateSuccess.getString(context));
+                                    }),
+                              )
+                            ],
+                          ),
+                        ),
+                    ],
+                  );
+                }
+
+                return const Center(
+                  child: LoadingIndicator(),
+                );
+              },
+            ),
           ),
         ),
       ),

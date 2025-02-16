@@ -14,6 +14,7 @@ import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/gestures.dart';
@@ -149,166 +150,168 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        leading: IconButton(
-          icon: Icon(
-            Icons.close,
-            color: customColors.weakLinkColor,
+    return WindowFrameWidget(
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          leading: IconButton(
+            icon: Icon(
+              Icons.close,
+              color: customColors.weakLinkColor,
+            ),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go(Ability().homeRoute);
+              }
+            },
           ),
-          onPressed: () {
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              context.go(Ability().homeRoute);
-            }
-          },
         ),
-      ),
-      backgroundColor: customColors.backgroundContainerColor,
-      body: BackgroundContainer(
-        setting: widget.settings,
-        enabled: false,
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400),
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  Center(
-                    child: SizedBox(
-                      width: 200,
-                      height: 200,
-                      child: Image.asset('assets/app.png'),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  AnimatedTextKit(
-                    animatedTexts: [
-                      ColorizeAnimatedText(
-                        'AIdea',
-                        textStyle: const TextStyle(fontSize: 30.0),
-                        colors: [
-                          Colors.purple,
-                          Colors.blue,
-                          Colors.yellow,
-                          Colors.red,
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 30),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
-                    child: TextFormField(
-                      controller: _usernameController,
-                      inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Color.fromARGB(200, 192, 192, 192)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: customColors.linkColor ?? Colors.green),
-                        ),
-                        isDense: true,
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        labelText: AppLocale.account.getString(context),
-                        labelStyle: const TextStyle(fontSize: 17),
-                        hintText: AppLocale.accountInputTips.getString(context),
-                        hintStyle: TextStyle(
-                          color: customColors.textfieldHintColor,
-                          fontSize: 15,
-                        ),
+        backgroundColor: customColors.backgroundContainerColor,
+        body: BackgroundContainer(
+          setting: widget.settings,
+          enabled: false,
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Center(
+                      child: SizedBox(
+                        width: 200,
+                        height: 200,
+                        child: Image.asset('assets/app.png'),
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 10),
+                    AnimatedTextKit(
+                      animatedTexts: [
+                        ColorizeAnimatedText(
+                          'AIdea',
+                          textStyle: const TextStyle(fontSize: 30.0),
+                          colors: [
+                            Colors.purple,
+                            Colors.blue,
+                            Colors.yellow,
+                            Colors.red,
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 30),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+                      child: TextFormField(
+                        controller: _usernameController,
+                        inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Color.fromARGB(200, 192, 192, 192)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: customColors.linkColor ?? Colors.green),
+                          ),
+                          isDense: true,
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          labelText: AppLocale.account.getString(context),
+                          labelStyle: const TextStyle(fontSize: 17),
+                          hintText: AppLocale.accountInputTips.getString(context),
+                          hintStyle: TextStyle(
+                            color: customColors.textfieldHintColor,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ),
 
-                  const SizedBox(height: 8),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Text(
-                      AppLocale.accountWillBeCreateAutomatically.getString(context),
-                      style: TextStyle(
-                        color: customColors.weakTextColor?.withAlpha(80),
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 25),
-                  // 登录按钮
-                  Container(
-                    height: 45,
-                    width: double.infinity,
-                    margin: const EdgeInsets.symmetric(horizontal: 15),
-                    decoration: BoxDecoration(color: customColors.linkColor, borderRadius: CustomSize.borderRadius),
-                    child: TextButton(
-                      onPressed: onSigninSubmit,
+                    const SizedBox(height: 8),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
                       child: Text(
-                        AppLocale.verify.getString(context),
-                        style: const TextStyle(color: Colors.white, fontSize: 18),
+                        AppLocale.accountWillBeCreateAutomatically.getString(context),
+                        style: TextStyle(
+                          color: customColors.weakTextColor?.withAlpha(80),
+                          fontSize: 14,
+                        ),
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 25),
+                    // 登录按钮
+                    Container(
+                      height: 45,
+                      width: double.infinity,
+                      margin: const EdgeInsets.symmetric(horizontal: 15),
+                      decoration: BoxDecoration(color: customColors.linkColor, borderRadius: CustomSize.borderRadius),
+                      child: TextButton(
+                        onPressed: onSigninSubmit,
+                        child: Text(
+                          AppLocale.verify.getString(context),
+                          style: const TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                      ),
+                    ),
 
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(horizontal: 15),
-                  //   child: Column(
-                  //     children: [
-                  //       Row(
-                  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //         children: [
-                  //           // 找回密码
-                  //           TextButton(
-                  //             onPressed: () {
-                  //               context.push(
-                  //                   '/retrieve-password?username=${_usernameController.text.trim()}');
-                  //             },
-                  //             child: Text(
-                  //               AppLocale.forgotPassword.getString(context),
-                  //               style: TextStyle(
-                  //                 color: customColors.weakLinkColor,
-                  //                 fontSize: 14,
-                  //               ),
-                  //             ),
-                  //           ),
-                  //           // 创建账号
-                  //           TextButton(
-                  //               onPressed: () {
-                  //                 context
-                  //                     .push(
-                  //                         '/signup?username=${_usernameController.text.trim()}')
-                  //                     .then((value) {
-                  //                   if (value != null) {
-                  //                     _usernameController.text = value as String;
-                  //                   }
-                  //                 });
-                  //               },
-                  //               child: Text(
-                  //                 AppLocale.createAccount.getString(context),
-                  //                 style: TextStyle(
-                  //                   color: customColors.linkColor,
-                  //                   fontSize: 14,
-                  //                 ),
-                  //               )),
-                  //         ],
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                  _buildUserTermsAndPrivicy(customColors, context),
-                  const SizedBox(height: 50),
-                  // 三方登录
-                  BlocBuilder<VersionBloc, VersionState>(
-                    builder: (context, state) {
-                      return _buildThirdPartySignInButtons(context, customColors);
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                ],
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 15),
+                    //   child: Column(
+                    //     children: [
+                    //       Row(
+                    //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //         children: [
+                    //           // 找回密码
+                    //           TextButton(
+                    //             onPressed: () {
+                    //               context.push(
+                    //                   '/retrieve-password?username=${_usernameController.text.trim()}');
+                    //             },
+                    //             child: Text(
+                    //               AppLocale.forgotPassword.getString(context),
+                    //               style: TextStyle(
+                    //                 color: customColors.weakLinkColor,
+                    //                 fontSize: 14,
+                    //               ),
+                    //             ),
+                    //           ),
+                    //           // 创建账号
+                    //           TextButton(
+                    //               onPressed: () {
+                    //                 context
+                    //                     .push(
+                    //                         '/signup?username=${_usernameController.text.trim()}')
+                    //                     .then((value) {
+                    //                   if (value != null) {
+                    //                     _usernameController.text = value as String;
+                    //                   }
+                    //                 });
+                    //               },
+                    //               child: Text(
+                    //                 AppLocale.createAccount.getString(context),
+                    //                 style: TextStyle(
+                    //                   color: customColors.linkColor,
+                    //                   fontSize: 14,
+                    //                 ),
+                    //               )),
+                    //         ],
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    _buildUserTermsAndPrivicy(customColors, context),
+                    const SizedBox(height: 50),
+                    // 三方登录
+                    BlocBuilder<VersionBloc, VersionState>(
+                      builder: (context, state) {
+                        return _buildThirdPartySignInButtons(context, customColors);
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
               ),
             ),
           ),

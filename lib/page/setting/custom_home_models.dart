@@ -14,6 +14,7 @@ import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api/model.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
@@ -95,134 +96,137 @@ class _CustomHomeModelsPageState extends State<CustomHomeModelsPage> {
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        title: Text(
-          AppLocale.customHomeModels.getString(context),
-          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+    return WindowFrameWidget(
+      backgroundColor: customColors.backgroundColor,
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          title: Text(
+            AppLocale.customHomeModels.getString(context),
+            style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          centerTitle: true,
+          elevation: 0,
         ),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      backgroundColor: customColors.backgroundContainerColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
-        enabled: false,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: [
-              const MessageBox(
-                message: '用于设置聊一聊中的常用模型。模型 3 为可选项，长按可重置',
-                type: MessageBoxType.info,
-              ),
-              const SizedBox(height: 10),
-              ColumnBlock(
-                innerPanding: 5,
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                children: [
-                  for (var i = 0; i < models.length; i++)
-                    GestureDetector(
-                      onTap: () {
-                        openSelectCustomModelDialog(
-                          context,
-                          (selected) {
-                            setState(() {
-                              models[i] = selected;
-                            });
-                          },
-                          initValue: models[i].id,
-                        );
-                      },
-                      onLongPress: () {
-                        if (models[i].id.isNotEmpty && i == models.length - 1) {
-                          openConfirmDialog(
+        backgroundColor: customColors.backgroundContainerColor,
+        body: BackgroundContainer(
+          setting: widget.setting,
+          enabled: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: [
+                const MessageBox(
+                  message: '用于设置聊一聊中的常用模型。模型 3 为可选项，长按可重置',
+                  type: MessageBoxType.info,
+                ),
+                const SizedBox(height: 10),
+                ColumnBlock(
+                  innerPanding: 5,
+                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                  children: [
+                    for (var i = 0; i < models.length; i++)
+                      GestureDetector(
+                        onTap: () {
+                          openSelectCustomModelDialog(
                             context,
-                            '确认重置该模型？',
-                            () {
+                            (selected) {
                               setState(() {
-                                models[i] = HomeModelV2(
-                                  type: 'model',
-                                  id: '',
-                                  supportVision: false,
-                                  name: 'Unset',
-                                );
+                                models[i] = selected;
                               });
                             },
-                            confirmText: AppLocale.reset.getString(context),
+                            initValue: models[i].id,
                           );
-                        }
-                      },
-                      child: Stack(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: iconAndColors[i].color,
-                              borderRadius: CustomSize.borderRadius,
-                            ),
-                            child: ModelIndicator(
-                              model: models[i],
-                              iconAndColor: iconAndColors[i],
-                              selected: true,
-                            ),
-                          ),
-                          Positioned(
-                            right: 0,
-                            top: 0,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 5,
+                        },
+                        onLongPress: () {
+                          if (models[i].id.isNotEmpty && i == models.length - 1) {
+                            openConfirmDialog(
+                              context,
+                              '确认重置该模型？',
+                              () {
+                                setState(() {
+                                  models[i] = HomeModelV2(
+                                    type: 'model',
+                                    id: '',
+                                    supportVision: false,
+                                    name: 'Unset',
+                                  );
+                                });
+                              },
+                              confirmText: AppLocale.reset.getString(context),
+                            );
+                          }
+                        },
+                        child: Stack(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(vertical: 15),
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: iconAndColors[i].color,
+                                borderRadius: CustomSize.borderRadius,
                               ),
-                              child: Text(
-                                '模型 ${i + 1}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
+                              child: ModelIndicator(
+                                model: models[i],
+                                iconAndColor: iconAndColors[i],
+                                selected: true,
+                              ),
+                            ),
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 5,
+                                ),
+                                child: Text(
+                                  '模型 ${i + 1}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              EnhancedButton(
-                title: AppLocale.save.getString(context),
-                onPressed: () async {
-                  final cancelLoading = BotToast.showCustomLoading(
-                    toastBuilder: (cancel) {
-                      return LoadingIndicator(
-                        message: AppLocale.processingWait.getString(context),
-                      );
-                    },
-                    allowClick: false,
-                    duration: const Duration(seconds: 120),
-                  );
+                  ],
+                ),
+                const SizedBox(height: 10),
+                EnhancedButton(
+                  title: AppLocale.save.getString(context),
+                  onPressed: () async {
+                    final cancelLoading = BotToast.showCustomLoading(
+                      toastBuilder: (cancel) {
+                        return LoadingIndicator(
+                          message: AppLocale.processingWait.getString(context),
+                        );
+                      },
+                      allowClick: false,
+                      duration: const Duration(seconds: 120),
+                    );
 
-                  try {
-                    final selectedModels = models.where((e) => e.id != '').map((e) => e.uniqueKey).toList();
-                    await APIServer().updateCustomHomeModelsV2(models: selectedModels);
+                    try {
+                      final selectedModels = models.where((e) => e.id != '').map((e) => e.uniqueKey).toList();
+                      await APIServer().updateCustomHomeModelsV2(models: selectedModels);
 
-                    APIServer().capabilities(cache: false).then((value) => Ability().updateCapabilities(value));
+                      APIServer().capabilities(cache: false).then((value) => Ability().updateCapabilities(value));
 
-                    showSuccessMessage(
-                        // ignore: use_build_context_synchronously
-                        AppLocale.operateSuccess.getString(context));
-                  } catch (e) {
-                    // ignore: use_build_context_synchronously
-                    showErrorMessageEnhanced(context, e);
-                  } finally {
-                    cancelLoading();
-                  }
-                },
-              ),
-            ],
+                      showSuccessMessage(
+                          // ignore: use_build_context_synchronously
+                          AppLocale.operateSuccess.getString(context));
+                    } catch (e) {
+                      // ignore: use_build_context_synchronously
+                      showErrorMessageEnhanced(context, e);
+                    } finally {
+                      cancelLoading();
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -8,6 +8,7 @@ import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/pagination.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api/admin/users.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -59,127 +60,130 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        title: const Text(
-          'User Management',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
-        ),
-        centerTitle: true,
-      ),
+    return WindowFrameWidget(
       backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
-        enabled: false,
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          title: const Text(
+            'User Management',
+            style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          centerTitle: true,
+        ),
         backgroundColor: customColors.backgroundColor,
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.only(left: 10, right: 10, bottom: 5),
-              child: TextField(
-                controller: keywordController,
-                textAlignVertical: TextAlignVertical.center,
-                style: TextStyle(color: customColors.dialogDefaultTextColor),
-                decoration: InputDecoration(
-                  hintText: AppLocale.search.getString(context),
-                  hintStyle: TextStyle(
-                    color: customColors.dialogDefaultTextColor,
+        body: BackgroundContainer(
+          setting: widget.setting,
+          enabled: false,
+          backgroundColor: customColors.backgroundColor,
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                child: TextField(
+                  controller: keywordController,
+                  textAlignVertical: TextAlignVertical.center,
+                  style: TextStyle(color: customColors.dialogDefaultTextColor),
+                  decoration: InputDecoration(
+                    hintText: AppLocale.search.getString(context),
+                    hintStyle: TextStyle(
+                      color: customColors.dialogDefaultTextColor,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: customColors.dialogDefaultTextColor,
+                    ),
+                    isDense: true,
+                    border: InputBorder.none,
                   ),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: customColors.dialogDefaultTextColor,
-                  ),
-                  isDense: true,
-                  border: InputBorder.none,
-                ),
-                onEditingComplete: () {
-                  context.read<UserBloc>().add(UserListLoadEvent(
-                        perPage: perPage,
-                        page: page,
-                        keyword: keywordController.text,
-                      ));
-                },
-              ),
-            ),
-            Expanded(
-              child: RefreshIndicator(
-                color: customColors.linkColor,
-                onRefresh: () async {
-                  context.read<UserBloc>().add(UserListLoadEvent(
-                        perPage: perPage,
-                        page: page,
-                        keyword: keywordController.text,
-                      ));
-                },
-                displacement: 20,
-                child: BlocConsumer<UserBloc, UserState>(
-                  listener: (context, state) {
-                    if (state is UserOperationResult) {
-                      if (state.success) {
-                        showSuccessMessage(state.message ?? AppLocale.operateSuccess.getString(context));
-                        context.read<UserBloc>().add(UserListLoadEvent());
-                      } else {
-                        showErrorMessage(state.message ?? AppLocale.operateFailed.getString(context));
-                      }
-                    }
-
-                    if (state is UsersLoaded) {
-                      setState(() {
-                        page = state.users.page;
-                        perPage = state.users.perPage;
-                      });
-                    }
+                  onEditingComplete: () {
+                    context.read<UserBloc>().add(UserListLoadEvent(
+                          perPage: perPage,
+                          page: page,
+                          keyword: keywordController.text,
+                        ));
                   },
-                  buildWhen: (previous, current) => current is UsersLoaded,
-                  builder: (context, state) {
-                    if (state is UsersLoaded) {
-                      return SafeArea(
-                        top: false,
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: ListView.builder(
-                                padding: const EdgeInsets.all(5),
-                                itemCount: state.users.data.length,
-                                itemBuilder: (context, index) {
-                                  return buildUserInfo(
-                                    context,
-                                    customColors,
-                                    state.users.data[index],
-                                  );
-                                },
-                              ),
-                            ),
-                            if (state.users.lastPage != null && state.users.lastPage! > 1)
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                child: Pagination(
-                                  numOfPages: state.users.lastPage ?? 1,
-                                  selectedPage: page,
-                                  pagesVisible: 5,
-                                  onPageChanged: (selected) {
-                                    context.read<UserBloc>().add(UserListLoadEvent(
-                                          perPage: perPage,
-                                          page: selected,
-                                          keyword: keywordController.text,
-                                        ));
+                ),
+              ),
+              Expanded(
+                child: RefreshIndicator(
+                  color: customColors.linkColor,
+                  onRefresh: () async {
+                    context.read<UserBloc>().add(UserListLoadEvent(
+                          perPage: perPage,
+                          page: page,
+                          keyword: keywordController.text,
+                        ));
+                  },
+                  displacement: 20,
+                  child: BlocConsumer<UserBloc, UserState>(
+                    listener: (context, state) {
+                      if (state is UserOperationResult) {
+                        if (state.success) {
+                          showSuccessMessage(state.message ?? AppLocale.operateSuccess.getString(context));
+                          context.read<UserBloc>().add(UserListLoadEvent());
+                        } else {
+                          showErrorMessage(state.message ?? AppLocale.operateFailed.getString(context));
+                        }
+                      }
+
+                      if (state is UsersLoaded) {
+                        setState(() {
+                          page = state.users.page;
+                          perPage = state.users.perPage;
+                        });
+                      }
+                    },
+                    buildWhen: (previous, current) => current is UsersLoaded,
+                    builder: (context, state) {
+                      if (state is UsersLoaded) {
+                        return SafeArea(
+                          top: false,
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: ListView.builder(
+                                  padding: const EdgeInsets.all(5),
+                                  itemCount: state.users.data.length,
+                                  itemBuilder: (context, index) {
+                                    return buildUserInfo(
+                                      context,
+                                      customColors,
+                                      state.users.data[index],
+                                    );
                                   },
                                 ),
                               ),
-                          ],
-                        ),
-                      );
-                    }
+                              if (state.users.lastPage != null && state.users.lastPage! > 1)
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Pagination(
+                                    numOfPages: state.users.lastPage ?? 1,
+                                    selectedPage: page,
+                                    pagesVisible: 5,
+                                    onPageChanged: (selected) {
+                                      context.read<UserBloc>().add(UserListLoadEvent(
+                                            perPage: perPage,
+                                            page: selected,
+                                            keyword: keywordController.text,
+                                          ));
+                                    },
+                                  ),
+                                ),
+                            ],
+                          ),
+                        );
+                      }
 
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  },
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

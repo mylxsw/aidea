@@ -20,7 +20,6 @@ import 'package:askaide/page/admin/users.dart';
 import 'package:askaide/page/balance/web_payment_proxy.dart';
 import 'package:askaide/page/balance/web_payment_result.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
-import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/page/creative_island/draw/artistic_wordart.dart';
 import 'package:askaide/page/home.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
@@ -258,14 +257,24 @@ void main() async {
     ),
   ));
 
-  doWhenWindowReady(() {
-    final win = appWindow;
-    const initialSize = Size(850, 750);
-    win.size = initialSize;
-    win.alignment = Alignment.center;
-    win.title = "AIdea";
-    win.show();
-  });
+  if (PlatformTool.isDesktop()) {
+    doWhenWindowReady(() {
+      final win = appWindow;
+      const initialSize = Size(850, 750);
+      win.size = initialSize;
+      win.minSize = const Size(350, 650);
+      win.alignment = Alignment.center;
+      win.title = "AIdea";
+
+      if (PlatformTool.isWindows()) {
+        WidgetsBinding.instance.scheduleFrameCallback((timeStamp) {
+          appWindow.size = initialSize + const Offset(0, 1);
+        });
+      }
+
+      win.show();
+    });
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -320,7 +329,7 @@ class MyApp extends StatefulWidget {
       routes: [
         ShellRoute(
           builder: (context, state, child) {
-            return WindowFrameWidget(child: child);
+            return child;
           },
           routes: [
             GoRoute(

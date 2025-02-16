@@ -8,6 +8,7 @@ import 'package:askaide/page/component/verify_code_input.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -41,66 +42,69 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        title: Text(
-          AppLocale.modifyPassword.getString(context),
-          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
-        ),
-        centerTitle: true,
-      ),
+    return WindowFrameWidget(
       backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          title: Text(
+            AppLocale.modifyPassword.getString(context),
+            style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          centerTitle: true,
+        ),
         backgroundColor: customColors.backgroundColor,
-        enabled: false,
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            children: [
-              ColumnBlock(
-                innerPanding: 15,
-                padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
-                showDivider: false,
-                children: [
-                  PasswordField(
-                    controller: _passwordController,
-                    labelText: AppLocale.newPassword.getString(context),
-                    hintText: AppLocale.passwordInputTips.getString(context),
-                    inColumnBlock: false,
-                  ),
-                  VerifyCodeInput(
-                    inColumnBlock: false,
-                    controller: _verificationCodeController,
-                    onVerifyCodeSent: (id) {
-                      verifyCodeId = id;
-                    },
-                    sendVerifyCode: () {
-                      return APIServer().sendResetPasswordCodeForSignedUser();
-                    },
-                    sendCheck: () {
-                      return true;
-                    },
-                  ),
-                ],
-              ),
-              Container(
-                height: 45,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: customColors.linkColor,
-                  borderRadius: CustomSize.borderRadius,
+        body: BackgroundContainer(
+          setting: widget.setting,
+          backgroundColor: customColors.backgroundColor,
+          enabled: false,
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: [
+                ColumnBlock(
+                  innerPanding: 15,
+                  padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
+                  showDivider: false,
+                  children: [
+                    PasswordField(
+                      controller: _passwordController,
+                      labelText: AppLocale.newPassword.getString(context),
+                      hintText: AppLocale.passwordInputTips.getString(context),
+                      inColumnBlock: false,
+                    ),
+                    VerifyCodeInput(
+                      inColumnBlock: false,
+                      controller: _verificationCodeController,
+                      onVerifyCodeSent: (id) {
+                        verifyCodeId = id;
+                      },
+                      sendVerifyCode: () {
+                        return APIServer().sendResetPasswordCodeForSignedUser();
+                      },
+                      sendCheck: () {
+                        return true;
+                      },
+                    ),
+                  ],
                 ),
-                child: TextButton(
-                  onPressed: onResetSubmit,
-                  child: Text(
-                    AppLocale.ok.getString(context),
-                    style: const TextStyle(color: Colors.white, fontSize: 18),
+                Container(
+                  height: 45,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: customColors.linkColor,
+                    borderRadius: CustomSize.borderRadius,
+                  ),
+                  child: TextButton(
+                    onPressed: onResetSubmit,
+                    child: Text(
+                      AppLocale.ok.getString(context),
+                      style: const TextStyle(color: Colors.white, fontSize: 18),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

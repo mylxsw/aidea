@@ -1,4 +1,3 @@
-import 'package:askaide/helper/platform.dart';
 import 'package:flutter/material.dart';
 
 class CustomSize {
@@ -22,10 +21,6 @@ class CustomSize {
   }
 
   static double get toolbarHeight {
-    if (PlatformTool.isMacOS()) {
-      return kToolbarHeight + 30;
-    }
-
     return kToolbarHeight;
   }
 

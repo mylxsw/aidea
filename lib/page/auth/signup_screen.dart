@@ -13,6 +13,7 @@ import 'package:askaide/page/component/password_field.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -93,274 +94,276 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            if (context.canPop()) {
-              context.pop(_usernameController.text.trim());
-            } else {
-              context.go('/login?username=${_usernameController.text.trim()}');
-            }
-          },
+    return WindowFrameWidget(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop(_usernameController.text.trim());
+              } else {
+                context.go('/login?username=${_usernameController.text.trim()}');
+              }
+            },
+          ),
         ),
-      ),
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: BackgroundContainer(
-        setting: widget.settings,
-        enabled: false,
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400),
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  Center(
-                    child: SizedBox(
-                      width: 150,
-                      height: 150,
-                      child: Image.asset('assets/app.png'),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  AnimatedTextKit(
-                    animatedTexts: [
-                      ColorizeAnimatedText(
-                        'AIdea',
-                        textStyle: const TextStyle(fontSize: 20.0),
-                        colors: [
-                          Colors.purple,
-                          Colors.blue,
-                          Colors.yellow,
-                          Colors.red,
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 30),
-                  // 用户名
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
-                    child: TextFormField(
-                      controller: _usernameController,
-                      inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Color.fromARGB(255, 192, 192, 192)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: customColors.linkColor!),
-                        ),
-                        floatingLabelStyle: TextStyle(color: customColors.linkColor!),
-                        isDense: true,
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        labelText: AppLocale.account.getString(context),
-                        hintText: AppLocale.accountInputTips.getString(context),
-                        hintStyle: TextStyle(
-                          color: customColors.textfieldHintColor,
-                          fontSize: 15,
-                        ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        body: BackgroundContainer(
+          setting: widget.settings,
+          enabled: false,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Center(
+                      child: SizedBox(
+                        width: 150,
+                        height: 150,
+                        child: Image.asset('assets/app.png'),
                       ),
                     ),
-                  ),
-                  // 密码
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
-                    child: PasswordField(
-                      controller: _passwordController,
-                      labelText: AppLocale.password.getString(context),
-                      hintText: AppLocale.passwordInputTips.getString(context),
-                    ),
-                  ),
-                  // 邀请码
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
-                    child: TextFormField(
-                      controller: _inviteCodeController,
-                      inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Color.fromARGB(255, 192, 192, 192)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: customColors.linkColor!),
-                        ),
-                        floatingLabelStyle: TextStyle(color: customColors.linkColor!),
-                        isDense: true,
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        labelText: AppLocale.inviteCode.getString(context),
-                        hintText: AppLocale.inviteCodeInputTips.getString(context),
-                        hintStyle: TextStyle(
-                          color: customColors.textfieldHintColor,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                  ),
-                  // 验证码
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
-                    child: Row(children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _verificationCodeController,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.singleLineFormatter,
-                            FilteringTextInputFormatter.digitsOnly,
+                    const SizedBox(height: 10),
+                    AnimatedTextKit(
+                      animatedTexts: [
+                        ColorizeAnimatedText(
+                          'AIdea',
+                          textStyle: const TextStyle(fontSize: 20.0),
+                          colors: [
+                            Colors.purple,
+                            Colors.blue,
+                            Colors.yellow,
+                            Colors.red,
                           ],
-                          maxLength: 6,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            counterText: '',
-                            border: const OutlineInputBorder(),
-                            enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Color.fromARGB(255, 192, 192, 192)),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: customColors.linkColor!),
-                            ),
-                            floatingLabelStyle: TextStyle(color: customColors.linkColor!),
-                            isDense: true,
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            labelText: AppLocale.verifyCode.getString(context),
-                            hintText: AppLocale.verifyCodeInputTips.getString(context),
-                            hintStyle: TextStyle(
-                              color: customColors.textfieldHintColor,
-                              fontSize: 15,
-                            ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 30),
+                    // 用户名
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+                      child: TextFormField(
+                        controller: _usernameController,
+                        inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Color.fromARGB(255, 192, 192, 192)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: customColors.linkColor!),
+                          ),
+                          floatingLabelStyle: TextStyle(color: customColors.linkColor!),
+                          isDense: true,
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          labelText: AppLocale.account.getString(context),
+                          hintText: AppLocale.accountInputTips.getString(context),
+                          hintStyle: TextStyle(
+                            color: customColors.textfieldHintColor,
+                            fontSize: 15,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 20),
-                      SizedBox(
-                        width: 100,
-                        child: verifyCodeWaitSeconds > 0
-                            ? TextButton(
-                                onPressed: null,
-                                child: Text(
-                                  '$verifyCodeWaitSeconds ${AppLocale.retryInSeconds.getString(context)}',
-                                  style: TextStyle(
-                                    color: customColors.weakTextColor,
-                                    fontSize: 15,
+                    ),
+                    // 密码
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+                      child: PasswordField(
+                        controller: _passwordController,
+                        labelText: AppLocale.password.getString(context),
+                        hintText: AppLocale.passwordInputTips.getString(context),
+                      ),
+                    ),
+                    // 邀请码
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+                      child: TextFormField(
+                        controller: _inviteCodeController,
+                        inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Color.fromARGB(255, 192, 192, 192)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: customColors.linkColor!),
+                          ),
+                          floatingLabelStyle: TextStyle(color: customColors.linkColor!),
+                          isDense: true,
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          labelText: AppLocale.inviteCode.getString(context),
+                          hintText: AppLocale.inviteCodeInputTips.getString(context),
+                          hintStyle: TextStyle(
+                            color: customColors.textfieldHintColor,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // 验证码
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+                      child: Row(children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _verificationCodeController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.singleLineFormatter,
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            maxLength: 6,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              counterText: '',
+                              border: const OutlineInputBorder(),
+                              enabledBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Color.fromARGB(255, 192, 192, 192)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: customColors.linkColor!),
+                              ),
+                              floatingLabelStyle: TextStyle(color: customColors.linkColor!),
+                              isDense: true,
+                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                              labelText: AppLocale.verifyCode.getString(context),
+                              hintText: AppLocale.verifyCodeInputTips.getString(context),
+                              hintStyle: TextStyle(
+                                color: customColors.textfieldHintColor,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        SizedBox(
+                          width: 100,
+                          child: verifyCodeWaitSeconds > 0
+                              ? TextButton(
+                                  onPressed: null,
+                                  child: Text(
+                                    '$verifyCodeWaitSeconds ${AppLocale.retryInSeconds.getString(context)}',
+                                    style: TextStyle(
+                                      color: customColors.weakTextColor,
+                                      fontSize: 15,
+                                    ),
                                   ),
-                                ),
-                              )
-                            : TextButton(
-                                onPressed: () {
-                                  final username = _usernameController.text.trim();
+                                )
+                              : TextButton(
+                                  onPressed: () {
+                                    final username = _usernameController.text.trim();
 
-                                  final isEmail = emailValidator.hasMatch(username);
+                                    final isEmail = emailValidator.hasMatch(username);
 
-                                  final isPhoneNumber = phoneNumberValidator.hasMatch(username);
+                                    final isPhoneNumber = phoneNumberValidator.hasMatch(username);
 
-                                  if (_usernameController.text.trim() == '') {
-                                    showErrorMessage(AppLocale.accountRequired.getString(context));
-                                    return;
-                                  }
-
-                                  if (!isEmail && !isPhoneNumber) {
-                                    showErrorMessage(AppLocale.accountFormatError.getString(context));
-                                    return;
-                                  }
-
-                                  APIServer()
-                                      .sendSignupVerifyCode(
-                                    username,
-                                    verifyType: isEmail ? 'email' : 'sms',
-                                  )
-                                      .then((id) {
-                                    verifyCodeId = id;
-                                    setState(() {
-                                      verifyCodeWaitSeconds = 60;
-                                    });
-
-                                    if (timer != null) {
-                                      timer?.cancel();
-                                      timer = null;
+                                    if (_usernameController.text.trim() == '') {
+                                      showErrorMessage(AppLocale.accountRequired.getString(context));
+                                      return;
                                     }
 
-                                    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-                                      if (verifyCodeWaitSeconds <= 0) {
-                                        timer.cancel();
-                                        return;
+                                    if (!isEmail && !isPhoneNumber) {
+                                      showErrorMessage(AppLocale.accountFormatError.getString(context));
+                                      return;
+                                    }
+
+                                    APIServer()
+                                        .sendSignupVerifyCode(
+                                      username,
+                                      verifyType: isEmail ? 'email' : 'sms',
+                                    )
+                                        .then((id) {
+                                      verifyCodeId = id;
+                                      setState(() {
+                                        verifyCodeWaitSeconds = 60;
+                                      });
+
+                                      if (timer != null) {
+                                        timer?.cancel();
+                                        timer = null;
                                       }
 
-                                      setState(() {
-                                        verifyCodeWaitSeconds--;
+                                      timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+                                        if (verifyCodeWaitSeconds <= 0) {
+                                          timer.cancel();
+                                          return;
+                                        }
+
+                                        setState(() {
+                                          verifyCodeWaitSeconds--;
+                                        });
                                       });
-                                    });
 
-                                    showSuccessMessage(
-                                        '${AppLocale.verifyCodeSendSuccess.getString(context)}${isEmail ? AppLocale.email.getString(context) : AppLocale.phone.getString(context)}');
-                                  }).onError((error, stackTrace) {
-                                    setState(() {
-                                      verifyCodeWaitSeconds = 0;
-                                      timer?.cancel();
-                                    });
+                                      showSuccessMessage(
+                                          '${AppLocale.verifyCodeSendSuccess.getString(context)}${isEmail ? AppLocale.email.getString(context) : AppLocale.phone.getString(context)}');
+                                    }).onError((error, stackTrace) {
+                                      setState(() {
+                                        verifyCodeWaitSeconds = 0;
+                                        timer?.cancel();
+                                      });
 
-                                    showErrorMessage(resolveError(context, error!));
-                                  });
-                                },
-                                child: Text(
-                                  AppLocale.sendVerifyCode.getString(context),
-                                  style: TextStyle(
-                                    color: customColors.linkColor,
-                                    fontSize: 15,
+                                      showErrorMessage(resolveError(context, error!));
+                                    });
+                                  },
+                                  child: Text(
+                                    AppLocale.sendVerifyCode.getString(context),
+                                    style: TextStyle(
+                                      color: customColors.linkColor,
+                                      fontSize: 15,
+                                    ),
                                   ),
                                 ),
-                              ),
-                      ),
-                    ]),
-                  ),
-                  const SizedBox(height: 15),
-                  // 创建账号
-                  Container(
-                    height: 50,
-                    width: double.infinity,
-                    margin: const EdgeInsets.symmetric(horizontal: 15),
-                    decoration: BoxDecoration(color: customColors.linkColor, borderRadius: CustomSize.borderRadius),
-                    child: TextButton(
-                      onPressed: onCreateSubmit,
-                      child: Text(
-                        AppLocale.createAccount.getString(context),
-                        style: const TextStyle(color: Colors.white, fontSize: 20),
+                        ),
+                      ]),
+                    ),
+                    const SizedBox(height: 15),
+                    // 创建账号
+                    Container(
+                      height: 50,
+                      width: double.infinity,
+                      margin: const EdgeInsets.symmetric(horizontal: 15),
+                      decoration: BoxDecoration(color: customColors.linkColor, borderRadius: CustomSize.borderRadius),
+                      child: TextButton(
+                        onPressed: onCreateSubmit,
+                        child: Text(
+                          AppLocale.createAccount.getString(context),
+                          style: const TextStyle(color: Colors.white, fontSize: 20),
+                        ),
                       ),
                     ),
-                  ),
-                  // 直接登录
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Column(children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              if (context.canPop()) {
-                                context.pop(_usernameController.text.trim());
-                              } else {
-                                context.go('/login?username=${_usernameController.text.trim()}');
-                              }
-                            },
-                            child: Text(
-                              AppLocale.directSigninDueHasAccount.getString(context),
-                              style: TextStyle(
-                                color: customColors.linkColor,
-                                fontSize: 14,
+                    // 直接登录
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Column(children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                if (context.canPop()) {
+                                  context.pop(_usernameController.text.trim());
+                                } else {
+                                  context.go('/login?username=${_usernameController.text.trim()}');
+                                }
+                              },
+                              child: Text(
+                                AppLocale.directSigninDueHasAccount.getString(context),
+                                style: TextStyle(
+                                  color: customColors.linkColor,
+                                  fontSize: 14,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      _buildUserTermsAndPrivicy(customColors, context),
-                    ]),
-                  ),
-                ],
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        _buildUserTermsAndPrivicy(customColors, context),
+                      ]),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

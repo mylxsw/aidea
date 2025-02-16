@@ -2,6 +2,7 @@ import 'package:askaide/bloc/creative_island_bloc.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/column_block.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/page/creative_island/draw/components/content_preview.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
@@ -54,97 +55,100 @@ class _MyCreationItemPageState extends State<MyCreationItemPage> with SingleTick
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return BlocBuilder<CreativeIslandBloc, CreativeIslandState>(
-      buildWhen: (previous, current) =>
-          current is CreativeIslandHistoryItemLoaded || current is CreativeIslandHistoryItemLoading,
-      builder: (context, state) {
-        if (state is CreativeIslandHistoryItemLoaded) {
-          return Scaffold(
-            appBar: AppBar(
-              toolbarHeight: CustomSize.toolbarHeight,
-              leading: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-              title: Text(
-                state.item!.showBetaFeature ? '#${state.item!.id}' : '',
-                style: TextStyle(
-                  color: customColors.weakTextColor,
+    return WindowFrameWidget(
+      backgroundColor: customColors.backgroundColor,
+      child: BlocBuilder<CreativeIslandBloc, CreativeIslandState>(
+        buildWhen: (previous, current) =>
+            current is CreativeIslandHistoryItemLoaded || current is CreativeIslandHistoryItemLoading,
+        builder: (context, state) {
+          if (state is CreativeIslandHistoryItemLoaded) {
+            return Scaffold(
+              appBar: AppBar(
+                toolbarHeight: CustomSize.toolbarHeight,
+                leading: IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
+                title: Text(
+                  state.item!.showBetaFeature ? '#${state.item!.id}' : '',
+                  style: TextStyle(
+                    color: customColors.weakTextColor,
+                  ),
+                ),
+                actions: buildActions(state, context, customColors),
               ),
-              actions: buildActions(state, context, customColors),
-            ),
-            backgroundColor: customColors.backgroundColor,
-            body: BackgroundContainer(
-              setting: widget.setting,
-              enabled: false,
               backgroundColor: customColors.backgroundColor,
-              maxWidth: CustomSize.smallWindowSize,
-              child: SafeArea(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        child: state.item!.isSuccessful
-                            ? CreativeIslandContentPreview(
-                                result: IslandResult(
-                                  result: state.item!.images,
-                                  params: state.item!.params,
-                                ),
-                                customColors: customColors,
-                                item: state.item,
-                              )
-                            : _buildNotSuccessBox(state, customColors),
-                      ),
-                      ColumnBlock(
-                        innerPanding: 10,
-                        padding: const EdgeInsets.all(15),
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 10,
+              body: BackgroundContainer(
+                setting: widget.setting,
+                enabled: false,
+                backgroundColor: customColors.backgroundColor,
+                maxWidth: CustomSize.smallWindowSize,
+                child: SafeArea(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          child: state.item!.isSuccessful
+                              ? CreativeIslandContentPreview(
+                                  result: IslandResult(
+                                    result: state.item!.images,
+                                    params: state.item!.params,
+                                  ),
+                                  customColors: customColors,
+                                  item: state.item,
+                                )
+                              : _buildNotSuccessBox(state, customColors),
                         ),
-                        children: [
-                          if (state.item!.prompt != null && state.item!.prompt != '')
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  AppLocale.ideaPrompt.getString(context),
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: customColors.textfieldLabelColor,
+                        ColumnBlock(
+                          innerPanding: 10,
+                          padding: const EdgeInsets.all(15),
+                          margin: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 10,
+                          ),
+                          children: [
+                            if (state.item!.prompt != null && state.item!.prompt != '')
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    AppLocale.ideaPrompt.getString(context),
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: customColors.textfieldLabelColor,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 10),
-                                SelectableText(
-                                  state.item!.prompt ?? '',
-                                  style: TextStyle(
-                                    color: customColors.weakTextColor,
+                                  const SizedBox(height: 10),
+                                  SelectableText(
+                                    state.item!.prompt ?? '',
+                                    style: TextStyle(
+                                      color: customColors.weakTextColor,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          if (state.item!.arguments != null)
-                            ..._buildItemArguments(
-                              state.item!.creativeItemArguments,
-                              customColors,
-                            ),
-                        ],
-                      ),
-                    ],
+                                ],
+                              ),
+                            if (state.item!.arguments != null)
+                              ..._buildItemArguments(
+                                state.item!.creativeItemArguments,
+                                customColors,
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-        }
+            );
+          }
 
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      ),
     );
   }
 

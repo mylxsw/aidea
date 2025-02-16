@@ -18,6 +18,7 @@ import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -88,44 +89,47 @@ class _CharacterCreatePageState extends State<CharacterCreatePage> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          AppLocale.createRoom.getString(context),
-          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+    return WindowFrameWidget(
+      backgroundColor: customColors.backgroundColor,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            AppLocale.createRoom.getString(context),
+            style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          backgroundColor: customColors.backgroundColor,
+          centerTitle: true,
+          toolbarHeight: CustomSize.toolbarHeight,
         ),
         backgroundColor: customColors.backgroundColor,
-        centerTitle: true,
-        toolbarHeight: CustomSize.toolbarHeight,
-      ),
-      backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
-        enabled: false,
-        maxWidth: CustomSize.maxWindowSize,
-        backgroundColor: customColors.backgroundColor,
-        child: BlocListener<RoomBloc, RoomState>(
-          listenWhen: (previous, current) => current is RoomOperationResult,
-          listener: (context, state) {
-            if (state is RoomOperationResult) {
-              if (state.success) {
-                if (state.redirect != null) {
-                  context.push(state.redirect!).then((value) {
-                    if (context.mounted) {
-                      context.read<RoomBloc>().add(RoomsLoadEvent());
-                    }
-                  });
+        body: BackgroundContainer(
+          setting: widget.setting,
+          enabled: false,
+          maxWidth: CustomSize.maxWindowSize,
+          backgroundColor: customColors.backgroundColor,
+          child: BlocListener<RoomBloc, RoomState>(
+            listenWhen: (previous, current) => current is RoomOperationResult,
+            listener: (context, state) {
+              if (state is RoomOperationResult) {
+                if (state.success) {
+                  if (state.redirect != null) {
+                    context.push(state.redirect!).then((value) {
+                      if (context.mounted) {
+                        context.read<RoomBloc>().add(RoomsLoadEvent());
+                      }
+                    });
+                  } else {
+                    context.pop();
+                  }
                 } else {
-                  context.pop();
+                  showErrorMessageEnhanced(context, state.error ?? AppLocale.operateFailed.getString(context));
                 }
-              } else {
-                showErrorMessageEnhanced(context, state.error ?? AppLocale.operateFailed.getString(context));
               }
-            }
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: buildCustomCharacter(customColors, context),
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: buildCustomCharacter(customColors, context),
+            ),
           ),
         ),
       ),

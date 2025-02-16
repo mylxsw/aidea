@@ -9,6 +9,7 @@ import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/image.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/model/misc.dart';
 import 'package:askaide/repo/settings_repo.dart';
 import 'package:flutter/material.dart';
@@ -41,133 +42,136 @@ class _AdminRoomsPageState extends State<AdminRoomsPage> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        title: const Text(
-          'Characters',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
-        ),
-        centerTitle: true,
-      ),
+    return WindowFrameWidget(
       backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
-        enabled: false,
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          title: const Text(
+            'Characters',
+            style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          centerTitle: true,
+        ),
         backgroundColor: customColors.backgroundColor,
-        child: RefreshIndicator(
-          color: customColors.linkColor,
-          onRefresh: () async {
-            context.read<AdminRoomBloc>().add(AdminRoomsLoadEvent(userId: widget.userId));
-          },
-          displacement: 20,
-          child: BlocConsumer<AdminRoomBloc, AdminRoomState>(
-            listener: (context, state) {
-              if (state is AdminRoomOperationResult) {
-                if (state.success) {
-                  showSuccessMessage(AppLocale.operateSuccess.getString(context));
-                } else {
-                  showErrorMessage(AppLocale.operateFailed.getString(context));
-                }
-              }
+        body: BackgroundContainer(
+          setting: widget.setting,
+          enabled: false,
+          backgroundColor: customColors.backgroundColor,
+          child: RefreshIndicator(
+            color: customColors.linkColor,
+            onRefresh: () async {
+              context.read<AdminRoomBloc>().add(AdminRoomsLoadEvent(userId: widget.userId));
             },
-            buildWhen: (previous, current) => current is AdminRoomsLoaded,
-            builder: (context, state) {
-              if (state is AdminRoomsLoaded) {
-                return SafeArea(
-                  top: false,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(5),
-                    itemCount: state.rooms.length,
-                    itemBuilder: (context, index) {
-                      final room = state.rooms[index];
-                      return Container(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
-                        child: Material(
-                          borderRadius: CustomSize.borderRadius,
-                          color: customColors.columnBlockBackgroundColor,
-                          child: InkWell(
-                            borderRadius: CustomSize.borderRadiusAll,
-                            onTap: () {
-                              context.push(
-                                  '/admin/users/${widget.userId}/rooms/${room.id}/messages?room_type=${room.roomType ?? 1}');
-                            },
-                            child: Stack(
-                              children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    _buildAvatar(room),
-                                    Expanded(
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Expanded(
-                                                  child: Text(
-                                                    room.name,
-                                                    overflow: TextOverflow.ellipsis,
+            displacement: 20,
+            child: BlocConsumer<AdminRoomBloc, AdminRoomState>(
+              listener: (context, state) {
+                if (state is AdminRoomOperationResult) {
+                  if (state.success) {
+                    showSuccessMessage(AppLocale.operateSuccess.getString(context));
+                  } else {
+                    showErrorMessage(AppLocale.operateFailed.getString(context));
+                  }
+                }
+              },
+              buildWhen: (previous, current) => current is AdminRoomsLoaded,
+              builder: (context, state) {
+                if (state is AdminRoomsLoaded) {
+                  return SafeArea(
+                    top: false,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(5),
+                      itemCount: state.rooms.length,
+                      itemBuilder: (context, index) {
+                        final room = state.rooms[index];
+                        return Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(borderRadius: CustomSize.borderRadius),
+                          child: Material(
+                            borderRadius: CustomSize.borderRadius,
+                            color: customColors.columnBlockBackgroundColor,
+                            child: InkWell(
+                              borderRadius: CustomSize.borderRadiusAll,
+                              onTap: () {
+                                context.push(
+                                    '/admin/users/${widget.userId}/rooms/${room.id}/messages?room_type=${room.roomType ?? 1}');
+                              },
+                              child: Stack(
+                                children: [
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      _buildAvatar(room),
+                                      Expanded(
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      room.name,
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
                                                   ),
-                                                ),
-                                                Text(
-                                                  humanTime(room.lastActiveTime),
-                                                  style: TextStyle(
-                                                    color: customColors.weakLinkColor?.withAlpha(65),
-                                                    fontSize: 10,
+                                                  Text(
+                                                    humanTime(room.lastActiveTime),
+                                                    style: TextStyle(
+                                                      color: customColors.weakLinkColor?.withAlpha(65),
+                                                      fontSize: 10,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                if (room.roomType == 4)
-                                  Positioned(
-                                    right: 0,
-                                    top: 0,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: customColors.backgroundContainerColor,
-                                        borderRadius: const BorderRadius.only(
-                                          topRight: CustomSize.radius,
-                                          bottomLeft: CustomSize.radius,
-                                        ),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                      child: Text(
-                                        AppLocale.groupChat.getString(context),
-                                        style: TextStyle(
-                                          color: customColors.weakTextColor,
-                                          fontSize: 8,
-                                        ),
-                                      ),
-                                    ),
+                                    ],
                                   ),
-                              ],
+                                  if (room.roomType == 4)
+                                    Positioned(
+                                      right: 0,
+                                      top: 0,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: customColors.backgroundContainerColor,
+                                          borderRadius: const BorderRadius.only(
+                                            topRight: CustomSize.radius,
+                                            bottomLeft: CustomSize.radius,
+                                          ),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                        child: Text(
+                                          AppLocale.groupChat.getString(context),
+                                          style: TextStyle(
+                                            color: customColors.weakTextColor,
+                                            fontSize: 8,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                );
-              }
+                        );
+                      },
+                    ),
+                  );
+                }
 
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            },
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              },
+            ),
           ),
         ),
       ),

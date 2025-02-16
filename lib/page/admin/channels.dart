@@ -4,6 +4,7 @@ import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api/admin/channels.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
@@ -49,69 +50,72 @@ class _ChannelsPageState extends State<ChannelsPage> {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: CustomSize.toolbarHeight,
-        title: const Text(
-          'Channel',
-          style: TextStyle(fontSize: CustomSize.appBarTitleSize),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              context.push('/admin/channels/create').then((value) {
-                context.read<ChannelBloc>().add(ChannelsLoadEvent());
-              });
-            },
-          ),
-        ],
-      ),
+    return WindowFrameWidget(
       backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
-        enabled: false,
-        backgroundColor: customColors.backgroundColor,
-        child: RefreshIndicator(
-          color: customColors.linkColor,
-          onRefresh: () async {
-            context.read<ChannelBloc>().add(ChannelsLoadEvent());
-          },
-          displacement: 20,
-          child: BlocConsumer<ChannelBloc, ChannelState>(
-            listenWhen: (previous, current) => current is ChannelOperationResult,
-            listener: (context, state) {
-              if (state is ChannelOperationResult) {
-                if (state.success) {
-                  showSuccessMessage(state.message);
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: CustomSize.toolbarHeight,
+          title: const Text(
+            'Channel',
+            style: TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () {
+                context.push('/admin/channels/create').then((value) {
                   context.read<ChannelBloc>().add(ChannelsLoadEvent());
-                } else {
-                  showErrorMessage(state.message);
+                });
+              },
+            ),
+          ],
+        ),
+        backgroundColor: customColors.backgroundColor,
+        body: BackgroundContainer(
+          setting: widget.setting,
+          enabled: false,
+          backgroundColor: customColors.backgroundColor,
+          child: RefreshIndicator(
+            color: customColors.linkColor,
+            onRefresh: () async {
+              context.read<ChannelBloc>().add(ChannelsLoadEvent());
+            },
+            displacement: 20,
+            child: BlocConsumer<ChannelBloc, ChannelState>(
+              listenWhen: (previous, current) => current is ChannelOperationResult,
+              listener: (context, state) {
+                if (state is ChannelOperationResult) {
+                  if (state.success) {
+                    showSuccessMessage(state.message);
+                    context.read<ChannelBloc>().add(ChannelsLoadEvent());
+                  } else {
+                    showErrorMessage(state.message);
+                  }
                 }
-              }
-            },
-            buildWhen: (previous, current) => current is ChannelsLoaded,
-            builder: (context, state) {
-              if (state is ChannelsLoaded) {
-                return SafeArea(
-                  top: false,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(5),
-                    itemCount: state.channels.length,
-                    itemBuilder: (context, index) {
-                      final channel = state.channels[index];
+              },
+              buildWhen: (previous, current) => current is ChannelsLoaded,
+              builder: (context, state) {
+                if (state is ChannelsLoaded) {
+                  return SafeArea(
+                    top: false,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(5),
+                      itemCount: state.channels.length,
+                      itemBuilder: (context, index) {
+                        final channel = state.channels[index];
 
-                      return buildChannelItem(context, customColors, channel);
-                    },
-                  ),
+                        return buildChannelItem(context, customColors, channel);
+                      },
+                    ),
+                  );
+                }
+
+                return const Center(
+                  child: CircularProgressIndicator(),
                 );
-              }
-
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            },
+              },
+            ),
           ),
         ),
       ),

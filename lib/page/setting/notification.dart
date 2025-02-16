@@ -5,6 +5,7 @@ import 'package:askaide/page/component/background_container.dart';
 import 'package:askaide/page/component/loading.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/page/data/notification_datasource.dart';
 import 'package:askaide/repo/api/notification.dart';
 import 'package:askaide/repo/settings_repo.dart';
@@ -35,73 +36,76 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget build(BuildContext context) {
     var customColors = Theme.of(context).extension<CustomColors>()!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          AppLocale.notification.getString(context),
-          style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
-        ),
-        toolbarHeight: CustomSize.toolbarHeight,
-        centerTitle: true,
-      ),
+    return WindowFrameWidget(
       backgroundColor: customColors.backgroundColor,
-      body: BackgroundContainer(
-        setting: widget.setting,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            AppLocale.notification.getString(context),
+            style: const TextStyle(fontSize: CustomSize.appBarTitleSize),
+          ),
+          toolbarHeight: CustomSize.toolbarHeight,
+          centerTitle: true,
+        ),
         backgroundColor: customColors.backgroundColor,
-        enabled: false,
-        child: SafeArea(
-          top: false,
-          left: false,
-          right: false,
-          child: RefreshIndicator(
-            color: customColors.linkColor,
-            displacement: 20,
-            onRefresh: () {
-              return datasource.refresh();
-            },
-            child: LoadingMoreList(
-              ListConfig<NotifyMessage>(
-                itemBuilder: (context, item, index) {
-                  return NotifyMessageItem(
-                    message: item,
-                    customColors: customColors,
-                    onTap: () {
-                      context
-                          .push(Uri(path: '/article', queryParameters: {'id': item.articleId.toString()}).toString());
-                    },
-                  );
-                },
-                sourceList: datasource,
-                indicatorBuilder: (context, status) {
-                  String msg = '';
-                  switch (status) {
-                    case IndicatorStatus.noMoreLoad:
-                      msg = '';
-                      break;
-                    case IndicatorStatus.loadingMoreBusying:
-                      msg = 'Loading...';
-                      break;
-                    case IndicatorStatus.error:
-                      msg = 'Failed to load, please try again later.';
-                      break;
-                    case IndicatorStatus.empty:
-                      msg = 'No data';
-                      break;
-                    default:
-                      return const Center(child: LoadingIndicator());
-                  }
-                  return Container(
-                    padding: const EdgeInsets.all(15),
-                    alignment: Alignment.center,
-                    child: Text(
-                      msg,
-                      style: TextStyle(
-                        color: customColors.weakTextColor,
-                        fontSize: 14,
+        body: BackgroundContainer(
+          setting: widget.setting,
+          backgroundColor: customColors.backgroundColor,
+          enabled: false,
+          child: SafeArea(
+            top: false,
+            left: false,
+            right: false,
+            child: RefreshIndicator(
+              color: customColors.linkColor,
+              displacement: 20,
+              onRefresh: () {
+                return datasource.refresh();
+              },
+              child: LoadingMoreList(
+                ListConfig<NotifyMessage>(
+                  itemBuilder: (context, item, index) {
+                    return NotifyMessageItem(
+                      message: item,
+                      customColors: customColors,
+                      onTap: () {
+                        context
+                            .push(Uri(path: '/article', queryParameters: {'id': item.articleId.toString()}).toString());
+                      },
+                    );
+                  },
+                  sourceList: datasource,
+                  indicatorBuilder: (context, status) {
+                    String msg = '';
+                    switch (status) {
+                      case IndicatorStatus.noMoreLoad:
+                        msg = '';
+                        break;
+                      case IndicatorStatus.loadingMoreBusying:
+                        msg = 'Loading...';
+                        break;
+                      case IndicatorStatus.error:
+                        msg = 'Failed to load, please try again later.';
+                        break;
+                      case IndicatorStatus.empty:
+                        msg = 'No data';
+                        break;
+                      default:
+                        return const Center(child: LoadingIndicator());
+                    }
+                    return Container(
+                      padding: const EdgeInsets.all(15),
+                      alignment: Alignment.center,
+                      child: Text(
+                        msg,
+                        style: TextStyle(
+                          color: customColors.weakTextColor,
+                          fontSize: 14,
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
           ),
