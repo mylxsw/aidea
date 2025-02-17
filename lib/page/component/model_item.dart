@@ -375,6 +375,10 @@ class _ModelItemState extends State<ModelItem> {
       priceText += '${priceText == '' ? '' : ', '}${AppLocale.perRequest.getString(context)} ￠${item.request}';
     }
 
+    if (item.search > 0) {
+      priceText += '${priceText == '' ? '' : ', '}${AppLocale.perSearch.getString(context)} ￠${item.search}';
+    }
+
     return Row(
       children: [
         Text(

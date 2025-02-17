@@ -320,6 +320,7 @@ mixin AppLocale {
   static const String input = 'input';
   static const String output = 'output';
   static const String perRequest = 'per-request';
+  static const String perSearch = 'per-search';
   static const String info = 'info';
 
   static const String recently = 'recently';
@@ -423,7 +424,7 @@ mixin AppLocale {
     prompt: '角色设定',
     optional: '可选',
     search: '搜索',
-    reasoning: '推理',
+    reasoning: '深度思考',
     background: '背景',
     backgroundSetting: '背景图',
     roomSetting: '设置',
@@ -647,6 +648,7 @@ mixin AppLocale {
     input: '输入',
     output: '输出',
     perRequest: '每次',
+    perSearch: '每次搜索',
     info: '详情',
     recently: '最近',
     daysAgo: '天前',
@@ -977,6 +979,7 @@ mixin AppLocale {
     input: 'Input',
     output: 'Output',
     perRequest: 'Per',
+    perSearch: 'Per Search',
     info: 'Detail',
     recently: 'Recently',
     lastWeek: 'Last Week',

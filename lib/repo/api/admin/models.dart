@@ -73,6 +73,9 @@ class AdminModelMeta {
   bool? search;
   bool? reasoning;
 
+  double? temperature;
+  int? searchCount;
+  int? searchPrice;
   AdminModelMeta({
     this.vision,
     this.restricted,
@@ -89,6 +92,9 @@ class AdminModelMeta {
     this.category,
     this.search,
     this.reasoning,
+    this.temperature,
+    this.searchCount,
+    this.searchPrice,
   });
 
   factory AdminModelMeta.fromJson(Map<String, dynamic> json) {
@@ -108,6 +114,9 @@ class AdminModelMeta {
       category: json['category'],
       search: json['search'] ?? false,
       reasoning: json['reasoning'] ?? false,
+      temperature: json['temperature'] ?? 0.0,
+      searchCount: json['search_count'] ?? 0,
+      searchPrice: json['search_price'] ?? 0,
     );
   }
 
@@ -128,6 +137,9 @@ class AdminModelMeta {
       'category': category,
       'search': search,
       'reasoning': reasoning,
+      'temperature': temperature,
+      'search_count': searchCount,
+      'search_price': searchPrice,
     };
   }
 }
