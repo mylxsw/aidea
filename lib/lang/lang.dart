@@ -342,6 +342,7 @@ mixin AppLocale {
   static const String verifyCodeLogin = 'verify-code-login';
   static const String verifyCodeLoginTips = 'verify-code-login-tips';
   static const String usePasswordToSignin = 'use-password-to-signin';
+  static const String referenceDocuments = 'reference-documents';
 
   static const Map<String, dynamic> zh = {
     wechat: '微信',
@@ -668,6 +669,7 @@ mixin AppLocale {
     verifyCodeLogin: '验证码登录',
     verifyCodeLoginTips: '请输入验证码以完成操作。',
     usePasswordToSignin: '使用密码登录',
+    referenceDocuments: '参考文档',
   };
 
   static const Map<String, dynamic> en = {
@@ -1000,6 +1002,7 @@ mixin AppLocale {
     verifyCodeLogin: 'Use Verify Code',
     verifyCodeLoginTips: 'Please enter the verify code to complete the operation.',
     usePasswordToSignin: 'Use Password',
+    referenceDocuments: 'Reference Documents',
   };
 }
 

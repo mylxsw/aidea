@@ -409,6 +409,9 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
                     waitMessage.updateExtra({'thinking_time_consumed': cmd['time_consumed'] ?? 0});
                     isThinking = false;
                     break;
+                  case 'reference-documents':
+                    waitMessage.updateExtra({'reference-documents': cmd['data']});
+                    break;
                   default:
                 }
               } catch (e) {

@@ -116,8 +116,8 @@ dependencies:
   custom_sliding_segmented_control: ^1.7.5
   sqflite_common_ffi: ^2.2.5
   sqflite_common_ffi_web: ^0.4.0
-  flutter_markdown: ^0.6.17+3
-  markdown: ^7.1.1
+  flutter_markdown: ^0.7.6+2 
+  markdown: ^7.3.0
   fetch_api: 1.0.1
   web_socket_channel: ^2.4.0
   flutter_initicon: ^3.0.0+1

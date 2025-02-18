@@ -205,6 +205,16 @@ class _ChatPreviewState extends State<ChatPreview> {
     final reasoning = extra != null ? extra['reasoning'] ?? '' : '';
     final states = extra != null ? extra['states'] ?? [] : [];
 
+    var referenceDocuments = <ReferenceDocument>[];
+    try {
+      final referenceDocumentsData = extra != null ? extra['reference-documents'] ?? '[]' : '[]';
+      final List<dynamic> decodedDocs = jsonDecode(referenceDocumentsData);
+      referenceDocuments = decodedDocs.map((e) => ReferenceDocument.fromJson(e)).toList().cast<ReferenceDocument>();
+    } catch (e) {
+      print('------------> $e <-----------');
+      referenceDocuments = [];
+    }
+
     final stateWidgets = <Widget>[];
 
     if (states.isNotEmpty) {
@@ -527,6 +537,11 @@ class _ChatPreviewState extends State<ChatPreview> {
                               );
                             },
                           ),
+                        ),
+                      if (referenceDocuments.isNotEmpty)
+                        Container(
+                          margin: const EdgeInsets.only(left: 20),
+                          child: ReferenceDocumentWidget(referenceDocuments: referenceDocuments),
                         ),
                       if (widget.messageFooterBuilder != null) widget.messageFooterBuilder!(message),
                     ],
@@ -1077,5 +1092,78 @@ class ChatPreviewController extends ChangeNotifier {
 
   bool isMessageSelected(int id) {
     return _selectedMessageIds.contains(id);
+  }
+}
+
+class ReferenceDocument {
+  final String title;
+  final String source;
+  final String content;
+
+  ReferenceDocument({required this.title, required this.source, required this.content});
+
+  static fromJson(Map<String, dynamic> json) {
+    return ReferenceDocument(
+      title: json['title'] ?? '',
+      source: json['source'] ?? '',
+      content: json['content'] ?? '',
+    );
+  }
+}
+
+class ReferenceDocumentWidget extends StatelessWidget {
+  const ReferenceDocumentWidget({super.key, required this.referenceDocuments});
+
+  final List<ReferenceDocument> referenceDocuments;
+
+  @override
+  Widget build(BuildContext context) {
+    final customColors = Theme.of(context).extension<CustomColors>()!;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          AppLocale.referenceDocuments.getString(context),
+          style: TextStyle(
+            fontSize: 14,
+            color: customColors.weakTextColorLess,
+          ),
+        ),
+        const SizedBox(height: 10),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: referenceDocuments.length,
+          itemBuilder: (context, index) {
+            return Container(
+              padding: const EdgeInsets.only(left: 15, bottom: 8),
+              child: Row(
+                children: [
+                  Flexible(
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: GestureDetector(
+                        onTap: () {
+                          launchUrlString(referenceDocuments[index].source);
+                        },
+                        child: Text(
+                          '${index + 1}. ${referenceDocuments[index].title}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: customColors.weakTextColorLess,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
+    );
   }
 }

@@ -10,6 +10,7 @@ import 'package:askaide/page/component/enhanced_textfield.dart';
 import 'package:askaide/page/component/item_selector_search.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:askaide/page/component/windows.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
@@ -695,18 +696,23 @@ class _FullScreenDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        toolbarHeight: CustomSize.toolbarHeight,
-        actions: actions,
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => Navigator.of(context).pop(),
+    final customColors = Theme.of(context).extension<CustomColors>()!;
+    return WindowFrameWidget(
+      backgroundColor: customColors.backgroundColor,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+          toolbarHeight: CustomSize.toolbarHeight,
+          actions: actions,
+          leading: IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: child,
+        backgroundColor: customColors.backgroundColor,
+        body: SafeArea(
+          child: child,
+        ),
       ),
     );
   }
