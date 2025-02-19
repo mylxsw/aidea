@@ -15,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class LeftDrawer extends StatefulWidget {
   const LeftDrawer({super.key});
@@ -256,7 +255,7 @@ class _LeftDrawerState extends State<LeftDrawer> {
               ),
               Container(
                 height: 100,
-                padding: const EdgeInsets.only(left: 20, right: 20),
+                padding: const EdgeInsets.only(left: 20, right: 10),
                 child: buildAccountCard(context),
               ),
             ],
@@ -301,95 +300,6 @@ class _LeftDrawerState extends State<LeftDrawer> {
             },
           ),
         ),
-      ],
-    );
-  }
-
-  Widget buildSocialMedia(BuildContext context, CustomColors customColors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              "${AppLocale.socialMedia.getString(context)} ",
-              style: TextStyle(
-                color: customColors.weakTextColor,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Transform.rotate(
-              angle: 90 * 3.1415926535897932 / 180,
-              child: Icon(
-                Icons.turn_right,
-                color: customColors.weakTextColor,
-                size: 16,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            GestureDetector(
-              onTap: () {
-                launchUrlString(
-                  'https://ai.aicode.cc/social/home',
-                  mode: LaunchMode.externalApplication,
-                );
-              },
-              child: Image.asset('assets/app-256-transparent.png', width: 25),
-            ),
-            GestureDetector(
-              onTap: () {
-                launchUrlString(
-                  'https://weibo.com/code404',
-                  mode: LaunchMode.externalApplication,
-                );
-              },
-              child: Image.asset('assets/weibo.png', width: 25),
-            ),
-            GestureDetector(
-              onTap: () {
-                launchUrlString(
-                  'https://ai.aicode.cc/social/github',
-                  mode: LaunchMode.externalApplication,
-                );
-              },
-              child: Image.asset('assets/github.png', width: 25),
-            ),
-            GestureDetector(
-              onTap: () {
-                launchUrlString(
-                  'https://ai.aicode.cc/social/wechat-platform',
-                  mode: LaunchMode.externalApplication,
-                );
-              },
-              child: Image.asset('assets/wechat.png', width: 25),
-            ),
-            GestureDetector(
-              onTap: () {
-                launchUrlString(
-                  'https://ai.aicode.cc/social/x',
-                  mode: LaunchMode.externalApplication,
-                );
-              },
-              child: Image.asset('assets/x.png', width: 25),
-            ),
-            GestureDetector(
-              onTap: () {
-                launchUrlString(
-                  'https://ai.aicode.cc/social/xiaohongshu',
-                  mode: LaunchMode.externalApplication,
-                );
-              },
-              child: Image.asset('assets/xiaohongshu.png', width: 25),
-            ),
-          ],
-        ),
-        const SizedBox(height: 15),
       ],
     );
   }
