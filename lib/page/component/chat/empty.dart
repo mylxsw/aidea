@@ -51,9 +51,21 @@ class _EmptyPreviewState extends State<EmptyPreview> {
           Expanded(
             child: Container(
               alignment: Alignment.center,
-              child: Opacity(
-                opacity: 0.2,
-                child: Lottie.asset('assets/lottie/empty_status.json', width: 200, height: 200),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Opacity(
+                    opacity: 0.3,
+                    child: Lottie.asset('assets/lottie/empty_status.json', height: 150),
+                  ),
+                  // Text(
+                  //   AppLocale.welcomeToAskMe.getString(context),
+                  //   style: TextStyle(
+                  //     fontSize: 14,
+                  //     color: customColors.weakTextColor?.withOpacity(0.4),
+                  //   ),
+                  // ),
+                ],
               ),
             ),
           ),
