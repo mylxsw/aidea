@@ -47,7 +47,6 @@ git checkout v1.x
 ## 技术交流
 
 - 微信技术交流群：请添加微信号 `x-prometheus` 为好友，拉你进群。
-
 - 微信公众号
 
     <img src="https://github.com/mylxsw/aidea-server/assets/2330911/376a3b9f-eacd-45c6-9630-39eb720ba097" width="500" />
