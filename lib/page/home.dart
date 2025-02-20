@@ -500,17 +500,6 @@ class _NewHomePageState extends State<NewHomePage> {
                   },
                   toolsBuilder: () {
                     return [
-                      if (showSearch)
-                        ChatInputButton(
-                          text: AppLocale.search.getString(context),
-                          icon: Icons.language_outlined,
-                          onPressed: () {
-                            setState(() {
-                              enableSearch = !enableSearch;
-                            });
-                          },
-                          isActive: enableSearch,
-                        ),
                       if (showReasoning)
                         ChatInputButton(
                           text: AppLocale.reasoning.getString(context),
@@ -521,6 +510,17 @@ class _NewHomePageState extends State<NewHomePage> {
                             });
                           },
                           isActive: enableReasoning,
+                        ),
+                      if (showSearch)
+                        ChatInputButton(
+                          text: AppLocale.onlineSearch.getString(context),
+                          icon: Icons.language_outlined,
+                          onPressed: () {
+                            setState(() {
+                              enableSearch = !enableSearch;
+                            });
+                          },
+                          isActive: enableSearch,
                         ),
                     ];
                   },

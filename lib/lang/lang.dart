@@ -94,6 +94,7 @@ mixin AppLocale {
   static const String prompt = "prompt";
   static const String optional = "optional";
   static const String search = "search";
+  static const String onlineSearch = "online-search";
   static const String reasoning = "reasoning";
   static const String background = "background";
   static const String backgroundSetting = "background-setting";
@@ -425,6 +426,7 @@ mixin AppLocale {
     prompt: '角色设定',
     optional: '可选',
     search: '搜索',
+    onlineSearch: '联网搜索',
     reasoning: '深度思考',
     background: '背景',
     backgroundSetting: '背景图',
@@ -753,7 +755,8 @@ mixin AppLocale {
     prompt: 'Prompt',
     optional: 'Optional',
     search: 'Search',
-    reasoning: 'Reasoning',
+    onlineSearch: 'Search',
+    reasoning: 'DeepThink',
     background: 'Background',
     backgroundSetting: 'Background Setting',
     roomSetting: 'Setting',

@@ -533,7 +533,15 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                                                 ...modelChannels
                                                     .map(
                                                       (e) => SelectorItem(
-                                                        Text('${e.id == null ? '【System】' : ''}${e.name}'),
+                                                        Text(
+                                                          '${e.id == null ? '【Legacy】' : ''}${e.name}',
+                                                          style: e.id == null
+                                                              ? TextStyle(
+                                                                  color: customColors.weakTextColorLess,
+                                                                  decoration: TextDecoration.lineThrough,
+                                                                )
+                                                              : null,
+                                                        ),
                                                         e,
                                                       ),
                                                     )
@@ -585,6 +593,40 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                                             ),
                                           ),
                                         ),
+                                        if (enableReasoning)
+                                          EnhancedTextField(
+                                            labelWidth: 130,
+                                            labelFontSize: 12,
+                                            labelText: 'Reasoning Model',
+                                            customColors: customColors,
+                                            textAlignVertical: TextAlignVertical.top,
+                                            hintText: 'Optional',
+                                            maxLength: 100,
+                                            showCounter: false,
+                                            initValue: item.reasoningModel,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                providers[index].reasoningModel = value;
+                                              });
+                                            },
+                                            labelHelpWidget: InkWell(
+                                              onTap: () {
+                                                showBeautyDialog(
+                                                  context,
+                                                  type: QuickAlertType.info,
+                                                  text:
+                                                      'When set, the model is used if the user chooses to use Deep Thinking',
+                                                  confirmBtnText: AppLocale.gotIt.getString(context),
+                                                  showCancelBtn: false,
+                                                );
+                                              },
+                                              child: Icon(
+                                                Icons.help_outline,
+                                                size: 16,
+                                                color: customColors.weakLinkColor?.withAlpha(150),
+                                              ),
+                                            ),
+                                          ),
                                       ],
                                     ),
                                     trailing: Handle(
