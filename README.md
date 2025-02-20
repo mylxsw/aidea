@@ -29,6 +29,14 @@ git checkout v1.x
 搭建开发环境，用来编译和打包 APP，可以参考下面的文章，更多文章后面有时间了会持续更新。
 
 - [AIdea 项目开发环境部署教程（一）前端 Flutter 环境搭建](https://mp.weixin.qq.com/s/bgAIH6s7t5IREusK_WtpRg)
+- [AIdea 项目开发环境部署教程（二）服务端 Golang 环境搭建](https://mp.weixin.qq.com/s?__biz=MzA3NTU1NDk4Mg==&mid=2454663711&idx=1&sn=c2c66abc20f8e0900afe645ff1f552ac&chksm=88d55bd6bfa2d2c063ea15a4e8864c197009b49233c710b85725f1aa946836e15a26439c69a7&scene=178&cur_album_id=3204997940193296389#rd)
+- [AIdea 项目开发环境部署教程（三）Windows 编译环境搭建](https://mp.weixin.qq.com/s?__biz=MzA3NTU1NDk4Mg==&mid=2454663731&idx=1&sn=2aa4841daeb8dc4132e8abe63f585996&chksm=88d55bfabfa2d2ecce8224dcf23da6f911d3d8324121d141fd5c0324197c6f4845dd63639ac2&scene=178&cur_album_id=3204997940193296389#rd)
+- [Flutter 应用 Windows 安装包创建教程](https://mp.weixin.qq.com/s?__biz=MzA3NTU1NDk4Mg==&mid=2454663689&idx=1&sn=73c93edd9ddacb2d4c36061cc79be059&chksm=88d55bc0bfa2d2d6ecaa7979835431467105d9572953f1e96c0f735df3fe60d4f6d6137f041d&scene=178&cur_album_id=3204997940193296389#rd)
+
+> 有些小伙伴在编译的时候总是失败，非常令人抓狂，这并不是什么问题，而是 Flutter 特有的特性，随着 Flutter 版本的变化，编译失败是常态。
+> 保险起见，你可以参考我的本地环境配置：
+>
+> ![本地环境配置](./build-environment.png)
 
 ## 私有化部署
 
@@ -38,40 +46,14 @@ git checkout v1.x
 
 ## 技术交流
 
-- 微信技术交流群：
-
-    <img src="https://github.com/user-attachments/assets/379d0b66-b806-4ed4-ae2e-30fccd9de50e" width="400"/>
-
-    如果无法加入，请添加微信号 `x-prometheus` 为好友，拉你进群。
-
+- 微信技术交流群：请添加微信号 `x-prometheus` 为好友，拉你进群。
 - 微信公众号
 
     <img src="https://github.com/mylxsw/aidea-server/assets/2330911/376a3b9f-eacd-45c6-9630-39eb720ba097" width="500" />
 
 
-## APP 截图
-
-亮色系
-
-![image](https://github.com/mylxsw/aidea/assets/2330911/89fc3f6f-b110-45f4-9e9a-b43a7a2c011a)
-
-暗色系
-
-![image](https://github.com/mylxsw/aidea/assets/2330911/7c0167eb-4bd3-4dcb-8b7b-a6d22cebe3ae)
-
-
-## Star History
-
-<a href="https://star-history.com/#mylxsw/aidea&Date">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=mylxsw/aidea&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=mylxsw/aidea&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=mylxsw/aidea&type=Date" />
-  </picture>
-</a>
-
 ## License
 
 MIT
 
-Copyright (c) 2023, mylxsw
+Copyright (c) 2025, mylxsw

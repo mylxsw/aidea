@@ -31,13 +31,15 @@ build-dmg: build-macos
 	mkdir -p build/macos/Build/Products/Package && cp -r build/macos/Build/Products/Release/AIdea.app build/macos/Build/Products/Package
 	create-dmg --volname "AIdea Installer" \
 		--volicon "install.icns" \
-		--background "assets/background-dark-s1.jpg" \
+		--background "background.jpg" \
 		--window-pos 200 120 \
 		--window-size 600 320 \
 		--icon-size 100 \
 		--icon "AIdea.app" 170 130 \
 		--hide-extension "AIdea.app" \
 		--app-drop-link 430 130 \
+		--sandbox-safe \
+		--no-internet-enable \
 		"build/macos/Build/Products/Package/AIdea-Installer.dmg" \
 		"build/macos/Build/Products/Package"
 	open build/macos/Build/Products/Package/
