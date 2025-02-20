@@ -36,18 +36,13 @@ import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:go_router/go_router.dart';
-import 'package:quickalert/models/quickalert_type.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class HomePage extends StatefulWidget {
   final SettingRepository setting;
-  final bool showInitialDialog;
-  final int? reward;
   const HomePage({
     super.key,
     required this.setting,
-    this.showInitialDialog = false,
-    this.reward,
   });
 
   @override
@@ -173,45 +168,6 @@ class _HomePageState extends State<HomePage> {
         iconAndColor: iconAndColors[0],
       );
     });
-
-    if (widget.showInitialDialog) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showBeautyDialog(
-          context,
-          type: QuickAlertType.info,
-          text:
-              '恭喜您，账号创建成功！${(widget.reward != null && widget.reward! > 0) ? '\n\n为了庆祝这一时刻，我们向您的账户赠送了 ${widget.reward} 个智慧果。' : ''}',
-          confirmBtnText: '开始使用',
-          onConfirmBtnTap: () {
-            context.pop();
-          },
-        );
-      });
-    } else {
-      // 版本检查
-      APIServer().versionCheck().then((resp) {
-        final lastVersion = widget.setting.get('last_server_version');
-        if (resp.serverVersion == lastVersion && !resp.forceUpdate) {
-          return;
-        }
-
-        if (resp.hasUpdate) {
-          showBeautyDialog(
-            context,
-            type: QuickAlertType.success,
-            text: resp.message,
-            confirmBtnText: '去更新',
-            onConfirmBtnTap: () {
-              launchUrlString(resp.url, mode: LaunchMode.externalApplication);
-            },
-            cancelBtnText: '暂不更新',
-            showCancelBtn: true,
-          );
-        }
-
-        widget.setting.set('last_server_version', resp.serverVersion);
-      });
-    }
 
     super.initState();
   }

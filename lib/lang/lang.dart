@@ -346,6 +346,9 @@ mixin AppLocale {
   static const String referenceDocuments = 'reference-documents';
 
   static const String welcomeToAskMe = 'welcome-to-ask-me';
+  static const String startChat = 'start-chat';
+  static const String updateApp = 'update-app';
+  static const String notUpdateApp = 'not-update-app';
 
   static const Map<String, dynamic> zh = {
     wechat: '微信',
@@ -675,6 +678,9 @@ mixin AppLocale {
     usePasswordToSignin: '使用密码登录',
     referenceDocuments: '参考文档',
     welcomeToAskMe: '我可以帮你答疑、写作，请问我吧！',
+    startChat: '开始对话',
+    updateApp: '去更新',
+    notUpdateApp: '暂不更新',
   };
 
   static const Map<String, dynamic> en = {
@@ -1010,6 +1016,9 @@ mixin AppLocale {
     usePasswordToSignin: 'Use Password',
     referenceDocuments: 'Reference Documents',
     welcomeToAskMe: 'How can I help you today?',
+    startChat: 'Start Chat',
+    updateApp: 'Update Now',
+    notUpdateApp: 'Not Update',
   };
 }
 

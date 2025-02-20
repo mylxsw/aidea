@@ -12,11 +12,9 @@ class StopButton extends StatelessWidget {
 
     return TextButton.icon(
       style: ButtonStyle(
-        // minimumSize: MaterialStateProperty.all(const Size(0, 0)),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         iconColor: const WidgetStatePropertyAll(Colors.red),
-        backgroundColor:
-            WidgetStatePropertyAll(customColors.chatInputPanelBackground),
+        backgroundColor: WidgetStatePropertyAll(customColors.backgroundContainerColor),
       ),
       label: Text(
         label,
