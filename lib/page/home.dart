@@ -42,9 +42,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:askaide/repo/model/model.dart' as mm;
+import 'package:go_router/go_router.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class NewHomePage extends StatefulWidget {
   final SettingRepository settings;
+
+  final bool showInitialDialog;
+  final int? reward;
 
   /// 聊天内容窗口状态管理器
   final MessageStateManager stateManager;
@@ -52,6 +58,8 @@ class NewHomePage extends StatefulWidget {
     super.key,
     required this.settings,
     required this.stateManager,
+    this.showInitialDialog = false,
+    this.reward,
   });
 
   @override
@@ -104,6 +112,49 @@ class _NewHomePageState extends State<NewHomePage> {
 
     reloadModels(cache: false);
     initListeners();
+
+    showInitialDialog();
+  }
+
+  void showInitialDialog() {
+    if (widget.showInitialDialog) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showBeautyDialog(
+          context,
+          type: QuickAlertType.info,
+          text:
+              '恭喜您，账号创建成功！${(widget.reward != null && widget.reward! > 0) ? '\n\n为了庆祝这一时刻，我们向您的账户赠送了 ${widget.reward} 个智慧果。' : ''}',
+          confirmBtnText: AppLocale.startChat.getString(context),
+          onConfirmBtnTap: () {
+            context.pop();
+          },
+        );
+      });
+    } else {
+      // 版本检查
+      APIServer().versionCheck().then((resp) {
+        final lastVersion = widget.settings.get('last_server_version');
+        if (resp.serverVersion == lastVersion && !resp.forceUpdate) {
+          return;
+        }
+
+        if (resp.hasUpdate) {
+          showBeautyDialog(
+            context,
+            type: QuickAlertType.success,
+            text: resp.message,
+            confirmBtnText: AppLocale.updateApp.getString(context),
+            onConfirmBtnTap: () {
+              launchUrlString(resp.url, mode: LaunchMode.externalApplication);
+            },
+            cancelBtnText: AppLocale.notUpdateApp.getString(context),
+            showCancelBtn: true,
+          );
+        }
+
+        widget.settings.set('last_server_version', resp.serverVersion);
+      });
+    }
   }
 
   /// 重新加载页面
@@ -500,17 +551,6 @@ class _NewHomePageState extends State<NewHomePage> {
                   },
                   toolsBuilder: () {
                     return [
-                      if (showSearch)
-                        ChatInputButton(
-                          text: AppLocale.search.getString(context),
-                          icon: Icons.language_outlined,
-                          onPressed: () {
-                            setState(() {
-                              enableSearch = !enableSearch;
-                            });
-                          },
-                          isActive: enableSearch,
-                        ),
                       if (showReasoning)
                         ChatInputButton(
                           text: AppLocale.reasoning.getString(context),
@@ -521,6 +561,17 @@ class _NewHomePageState extends State<NewHomePage> {
                             });
                           },
                           isActive: enableReasoning,
+                        ),
+                      if (showSearch)
+                        ChatInputButton(
+                          text: AppLocale.onlineSearch.getString(context),
+                          icon: Icons.language_outlined,
+                          onPressed: () {
+                            setState(() {
+                              enableSearch = !enableSearch;
+                            });
+                          },
+                          isActive: enableSearch,
                         ),
                     ];
                   },

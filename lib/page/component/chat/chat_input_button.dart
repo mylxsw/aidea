@@ -29,12 +29,16 @@ class _ChatInputButtonState extends State<ChatInputButton> {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Row(
           children: [
-            Icon(widget.icon, color: widget.isActive ? customColors.linkColor : customColors.chatInputPanelText),
+            Icon(
+              widget.icon,
+              color: widget.isActive ? customColors.linkColor : customColors.chatInputPanelText,
+              size: 18,
+            ),
             const SizedBox(width: 4),
             Text(
               widget.text,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: widget.isActive ? customColors.linkColor : customColors.chatInputPanelText,
               ),

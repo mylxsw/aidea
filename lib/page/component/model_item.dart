@@ -87,7 +87,6 @@ class _ModelItemState extends State<ModelItem> {
             customColors,
             tag,
             tagTextColor: selectedTag == tag ? customColors.linkColor : null,
-            tagFontSize: 12,
           ),
         ),
       );
@@ -215,11 +214,11 @@ class _ModelItemState extends State<ModelItem> {
     return ListTile(
       leading: Stack(
         children: [
-          buildAvatar(avatarUrl: item.avatarUrl, size: 50),
+          buildAvatar(avatarUrl: item.avatarUrl, size: 48),
           if (item.userNoPermission)
             Container(
-              width: 50,
-              height: 50,
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.4),
                 borderRadius: CustomSize.borderRadiusAll,
@@ -375,6 +374,10 @@ class _ModelItemState extends State<ModelItem> {
       priceText += '${priceText == '' ? '' : ', '}${AppLocale.perRequest.getString(context)} ￠${item.request}';
     }
 
+    if (item.search > 0) {
+      priceText += '${priceText == '' ? '' : ', '}${AppLocale.perSearch.getString(context)} ￠${item.search}';
+    }
+
     return Row(
       children: [
         Text(
@@ -382,7 +385,7 @@ class _ModelItemState extends State<ModelItem> {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            fontSize: 10,
+            fontSize: 11,
             color:
                 widget.initValue == model.uid() ? customColors.linkColor : customColors.weakTextColor?.withAlpha(150),
           ),
@@ -450,7 +453,7 @@ class _ModelItemState extends State<ModelItem> {
       child: Text(
         "#$tag",
         style: TextStyle(
-          fontSize: tagFontSize ?? 10,
+          fontSize: tagFontSize ?? 11,
           color: tagTextColor ?? customColors.weakTextColor?.withAlpha(150),
         ),
       ),

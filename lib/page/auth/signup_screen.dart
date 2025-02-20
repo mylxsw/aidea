@@ -191,7 +191,6 @@ class _SignupScreenState extends State<SignupScreen> {
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: customColors.linkColor!),
                           ),
-                          floatingLabelStyle: TextStyle(color: customColors.linkColor!),
                           isDense: true,
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           labelText: AppLocale.inviteCode.getString(context),

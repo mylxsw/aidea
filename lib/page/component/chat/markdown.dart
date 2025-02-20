@@ -6,6 +6,7 @@
 // import 'package:markdown_widget/config/all.dart';
 // import 'package:markdown_widget/widget/all.dart';
 
+import 'package:askaide/page/component/chat/markdown/citation.dart';
 import 'package:askaide/page/component/chat/markdown/code.dart';
 import 'package:askaide/page/component/image_preview.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
@@ -69,6 +70,10 @@ class Markdown extends StatelessWidget {
             ),
           ),
         ),
+        a: TextStyle(
+          color: customColors.linkColor,
+          decoration: TextDecoration.none,
+        ),
       ),
       onTapLink: (text, href, title) {
         if (onUrlTap != null && href != null) onUrlTap!(href);
@@ -92,6 +97,7 @@ class Markdown extends StatelessWidget {
           mm.EmojiSyntax(),
           ...mm.ExtensionSet.gitHubFlavored.inlineSyntaxes,
           LatexInlineSyntax(),
+          CitationSyntax(),
         ],
       ),
       data: data,

@@ -37,7 +37,7 @@ class ThinkingCard extends StatelessWidget {
                   timeConsumed > 0
                       ? '$title (${AppLocale.timeConsume.getString(context)} ${timeConsumed.toStringAsFixed(1)}s)'
                       : title,
-                  style: TextStyle(fontSize: 12, color: customColors.weakTextColorLess),
+                  style: TextStyle(fontSize: 14, color: customColors.weakTextColorLess),
                 ),
                 AnimatedRotation(
                   duration: const Duration(milliseconds: 200),
@@ -56,12 +56,16 @@ class ThinkingCard extends StatelessWidget {
             child: Container(
               height: isExpanded ? null : 0,
               padding: const EdgeInsets.only(top: 8),
+              alignment: Alignment.topLeft,
+              width: double.infinity,
               child: Container(
                 padding: const EdgeInsets.only(left: 8),
+                alignment: Alignment.topLeft,
+                width: double.infinity,
                 child: Text(
                   content,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     color: customColors.weakTextColorLess,
                   ),
                 ),

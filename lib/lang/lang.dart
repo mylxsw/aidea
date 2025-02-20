@@ -94,6 +94,7 @@ mixin AppLocale {
   static const String prompt = "prompt";
   static const String optional = "optional";
   static const String search = "search";
+  static const String onlineSearch = "online-search";
   static const String reasoning = "reasoning";
   static const String background = "background";
   static const String backgroundSetting = "background-setting";
@@ -320,6 +321,7 @@ mixin AppLocale {
   static const String input = 'input';
   static const String output = 'output';
   static const String perRequest = 'per-request';
+  static const String perSearch = 'per-search';
   static const String info = 'info';
 
   static const String recently = 'recently';
@@ -341,6 +343,12 @@ mixin AppLocale {
   static const String verifyCodeLogin = 'verify-code-login';
   static const String verifyCodeLoginTips = 'verify-code-login-tips';
   static const String usePasswordToSignin = 'use-password-to-signin';
+  static const String referenceDocuments = 'reference-documents';
+
+  static const String welcomeToAskMe = 'welcome-to-ask-me';
+  static const String startChat = 'start-chat';
+  static const String updateApp = 'update-app';
+  static const String notUpdateApp = 'not-update-app';
 
   static const Map<String, dynamic> zh = {
     wechat: '微信',
@@ -423,7 +431,8 @@ mixin AppLocale {
     prompt: '角色设定',
     optional: '可选',
     search: '搜索',
-    reasoning: '推理',
+    onlineSearch: '联网搜索',
+    reasoning: '深度思考',
     background: '背景',
     backgroundSetting: '背景图',
     roomSetting: '设置',
@@ -647,6 +656,7 @@ mixin AppLocale {
     input: '输入',
     output: '输出',
     perRequest: '每次',
+    perSearch: '每次搜索',
     info: '详情',
     recently: '最近',
     daysAgo: '天前',
@@ -666,6 +676,11 @@ mixin AppLocale {
     verifyCodeLogin: '验证码登录',
     verifyCodeLoginTips: '请输入验证码以完成操作。',
     usePasswordToSignin: '使用密码登录',
+    referenceDocuments: '参考文档',
+    welcomeToAskMe: '我可以帮你答疑、写作，请问我吧！',
+    startChat: '开始对话',
+    updateApp: '去更新',
+    notUpdateApp: '暂不更新',
   };
 
   static const Map<String, dynamic> en = {
@@ -749,7 +764,8 @@ mixin AppLocale {
     prompt: 'Prompt',
     optional: 'Optional',
     search: 'Search',
-    reasoning: 'Reasoning',
+    onlineSearch: 'Search',
+    reasoning: 'DeepThink',
     background: 'Background',
     backgroundSetting: 'Background Setting',
     roomSetting: 'Setting',
@@ -977,6 +993,7 @@ mixin AppLocale {
     input: 'Input',
     output: 'Output',
     perRequest: 'Per',
+    perSearch: 'Per Search',
     info: 'Detail',
     recently: 'Recently',
     lastWeek: 'Last Week',
@@ -997,6 +1014,11 @@ mixin AppLocale {
     verifyCodeLogin: 'Use Verify Code',
     verifyCodeLoginTips: 'Please enter the verify code to complete the operation.',
     usePasswordToSignin: 'Use Password',
+    referenceDocuments: 'Reference Documents',
+    welcomeToAskMe: 'How can I help you today?',
+    startChat: 'Start Chat',
+    updateApp: 'Update Now',
+    notUpdateApp: 'Not Update',
   };
 }
 

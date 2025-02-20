@@ -250,17 +250,6 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
                           },
                           toolsBuilder: () {
                             return [
-                              if (showSearch)
-                                ChatInputButton(
-                                  text: AppLocale.search.getString(context),
-                                  icon: Icons.language_outlined,
-                                  onPressed: () {
-                                    setState(() {
-                                      enableSearch = !enableSearch;
-                                    });
-                                  },
-                                  isActive: enableSearch,
-                                ),
                               if (showReasoning)
                                 ChatInputButton(
                                   text: AppLocale.reasoning.getString(context),
@@ -271,6 +260,17 @@ class _CharacterChatPageState extends State<CharacterChatPage> {
                                     });
                                   },
                                   isActive: enableReasoning,
+                                ),
+                              if (showSearch)
+                                ChatInputButton(
+                                  text: AppLocale.onlineSearch.getString(context),
+                                  icon: Icons.language_outlined,
+                                  onPressed: () {
+                                    setState(() {
+                                      enableSearch = !enableSearch;
+                                    });
+                                  },
+                                  isActive: enableSearch,
                                 ),
                             ];
                           },

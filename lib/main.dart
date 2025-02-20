@@ -356,6 +356,8 @@ class MyApp extends StatefulWidget {
                     child: NewHomePage(
                       settings: settingRepo,
                       stateManager: messageStateManager,
+                      showInitialDialog: state.queryParameters['show_initial_dialog'] == 'true',
+                      reward: int.tryParse(state.queryParameters['reward'] ?? '0'),
                     ),
                   ),
                 );
@@ -417,11 +419,7 @@ class MyApp extends StatefulWidget {
                   providers: [
                     BlocProvider(create: (context) => ChatChatBloc(chatMsgRepo)),
                   ],
-                  child: HomePage(
-                    setting: settingRepo,
-                    showInitialDialog: state.queryParameters['show_initial_dialog'] == 'true',
-                    reward: int.tryParse(state.queryParameters['reward'] ?? '0'),
-                  ),
+                  child: HomePage(setting: settingRepo),
                 ),
               ),
             ),
