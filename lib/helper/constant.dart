@@ -97,4 +97,4 @@ const qiniuImageTypeThumbMedium = 'thumb_500';
 const cacheKeyLastModel = 'last-model';
 
 // 数据存储目录
-const homePathDirName = '.aidea-dev';
+const homePathDirName = '.aidea';
