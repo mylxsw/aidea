@@ -148,13 +148,13 @@ class AdminModelProvider {
   int? id;
   String? name;
   String? modelRewrite;
-  String? reasoningModel;
+  String? type;
 
   AdminModelProvider({
     this.id,
     this.name,
     this.modelRewrite,
-    this.reasoningModel,
+    this.type,
   });
 
   factory AdminModelProvider.fromJson(Map<String, dynamic> json) {
@@ -162,7 +162,7 @@ class AdminModelProvider {
       id: json['id'],
       name: json['name'],
       modelRewrite: json['model_rewrite'],
-      reasoningModel: json['reasoning_model'],
+      type: json['type'],
     );
   }
 
@@ -171,7 +171,7 @@ class AdminModelProvider {
       'id': id,
       'name': name,
       'model_rewrite': modelRewrite,
-      'reasoning_model': reasoningModel,
+      'type': type,
     };
   }
 }

@@ -523,40 +523,45 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                             ),
                                           ),
                                         ),
-                                        if (enableReasoning)
-                                          EnhancedTextField(
-                                            labelWidth: 130,
-                                            labelFontSize: 12,
-                                            labelText: 'Reasoning Model',
-                                            customColors: customColors,
-                                            textAlignVertical: TextAlignVertical.top,
-                                            hintText: 'Optional',
-                                            maxLength: 100,
-                                            showCounter: false,
-                                            initValue: item.reasoningModel,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                providers[index].reasoningModel = value;
-                                              });
-                                            },
-                                            labelHelpWidget: InkWell(
-                                              onTap: () {
-                                                showBeautyDialog(
-                                                  context,
-                                                  type: QuickAlertType.info,
-                                                  text:
-                                                      'When set, the model is used if the user chooses to use Deep Thinking',
-                                                  confirmBtnText: AppLocale.gotIt.getString(context),
-                                                  showCancelBtn: false,
-                                                );
-                                              },
-                                              child: Icon(
-                                                Icons.help_outline,
-                                                size: 16,
-                                                color: customColors.weakLinkColor?.withAlpha(150),
-                                              ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                const Text(
+                                                  'Deep Think Model',
+                                                  style: TextStyle(fontSize: 16),
+                                                ),
+                                                const SizedBox(width: 5),
+                                                InkWell(
+                                                  onTap: () {
+                                                    showBeautyDialog(
+                                                      context,
+                                                      type: QuickAlertType.info,
+                                                      text: 'Whether the model is an Deep Thinking model.',
+                                                      confirmBtnText: AppLocale.gotIt.getString(context),
+                                                      showCancelBtn: false,
+                                                    );
+                                                  },
+                                                  child: Icon(
+                                                    Icons.help_outline,
+                                                    size: 16,
+                                                    color: customColors.weakLinkColor?.withAlpha(150),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                          ),
+                                            CupertinoSwitch(
+                                              activeColor: customColors.linkColor,
+                                              value: providers[index].type == 'reasoning',
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  providers[index].type = value ? 'reasoning' : 'default';
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
                                       ],
                                     ),
                                     trailing: Handle(
@@ -816,7 +821,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                               Row(
                                 children: [
                                   const Text(
-                                    'Reasoning',
+                                    'Deep Think',
                                     style: TextStyle(fontSize: 16),
                                   ),
                                   const SizedBox(width: 5),
@@ -825,7 +830,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                       showBeautyDialog(
                                         context,
                                         type: QuickAlertType.info,
-                                        text: 'Whether to enable reasoning for the current model.',
+                                        text: 'Whether to enable Deep Think for the current model.',
                                         confirmBtnText: AppLocale.gotIt.getString(context),
                                         showCancelBtn: false,
                                       );
