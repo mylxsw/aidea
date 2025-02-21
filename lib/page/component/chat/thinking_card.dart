@@ -1,7 +1,9 @@
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/component/chat/markdown.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class ThinkingCard extends StatelessWidget {
   final String content;
@@ -62,11 +64,32 @@ class ThinkingCard extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 8),
                 alignment: Alignment.topLeft,
                 width: double.infinity,
-                child: Text(
-                  content,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: customColors.weakTextColorLess,
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        width: 3,
+                        margin: const EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          color: customColors.weakTextColorLess?.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(1.5),
+                        ),
+                      ),
+                      Expanded(
+                        child: Markdown(
+                          data: content,
+                          onUrlTap: (value) {
+                            launchUrlString(value);
+                          },
+                          textStyle: TextStyle(
+                            fontSize: 14,
+                            color: customColors.weakTextColorLess,
+                            height: 1.5,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

@@ -412,6 +412,9 @@ class ChatMessageBloc extends BlocExt<ChatMessageEvent, ChatMessageState> {
                   case 'reference-documents':
                     waitMessage.updateExtra({'reference-documents': cmd['data']});
                     break;
+                  case 'search-results':
+                    waitMessage.updateExtra({'search-results': cmd['data']});
+                    break;
                   default:
                 }
               } catch (e) {

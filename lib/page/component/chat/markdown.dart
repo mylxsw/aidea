@@ -23,11 +23,14 @@ class Markdown extends StatelessWidget {
   final TextStyle? textStyle;
   final cacheManager = DefaultCacheManager();
 
+  final List<String> citations;
+
   Markdown({
     super.key,
     required this.data,
     this.onUrlTap,
     this.textStyle,
+    this.citations = const [],
   });
 
   @override
@@ -45,6 +48,7 @@ class Markdown extends StatelessWidget {
     return md.MarkdownBody(
       shrinkWrap: true,
       selectable: false,
+      softLineBreak: true,
       styleSheetTheme: md.MarkdownStyleSheetBaseTheme.material,
       styleSheet: md.MarkdownStyleSheet(
         p: textStyle ?? TextStyle(fontSize: CustomSize.markdownTextSize, height: 1.5),
@@ -56,24 +60,12 @@ class Markdown extends StatelessWidget {
         ),
         codeblockPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         codeblockDecoration: const BoxDecoration(borderRadius: CustomSize.borderRadiusAll),
-        tableBorder: TableBorder.all(
-          color: customColors.weakTextColor!.withOpacity(0.5),
-          width: 1,
-        ),
+        tableBorder: TableBorder.all(color: customColors.weakTextColor!.withOpacity(0.5), width: 1),
         tableColumnWidth: const FlexColumnWidth(),
         blockquotePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
         blockquoteDecoration: BoxDecoration(
-          border: Border(
-            left: BorderSide(
-              color: customColors.weakTextColor!.withOpacity(0.4),
-              width: 4,
-            ),
-          ),
-        ),
-        a: TextStyle(
-          color: customColors.linkColor,
-          decoration: TextDecoration.none,
-        ),
+            border: Border(left: BorderSide(color: customColors.weakTextColor!.withOpacity(0.4), width: 4))),
+        a: TextStyle(color: customColors.weakLinkColor, decoration: TextDecoration.none),
       ),
       onTapLink: (text, href, title) {
         if (onUrlTap != null && href != null) onUrlTap!(href);
@@ -94,16 +86,17 @@ class Markdown extends StatelessWidget {
           LatexBlockSyntax(),
         ],
         <mm.InlineSyntax>[
+          CitationSyntax(citations: citations),
           mm.EmojiSyntax(),
           ...mm.ExtensionSet.gitHubFlavored.inlineSyntaxes,
           LatexInlineSyntax(),
-          CitationSyntax(),
         ],
       ),
       data: data,
       builders: {
         'code': CodeElementBuilder(customColors),
         'latex': LatexElementBuilder(),
+        'citation': CitationBuilder(onTap: onUrlTap),
       },
     );
   }

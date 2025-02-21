@@ -89,7 +89,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
   /// 温度
   double temperature = 0.0;
   // 搜索结果数量
-  int searchCount = 0;
+  int searchCount = 3;
 
   /// Tag
   final TextEditingController tagController = TextEditingController();
@@ -236,7 +236,8 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                     enableSearch = state.model.meta!.search ?? false;
                     enableReasoning = state.model.meta!.reasoning ?? false;
                     temperature = state.model.meta!.temperature ?? 0.0;
-                    searchCount = state.model.meta!.searchCount ?? 0;
+                    searchCount = state.model.meta!.searchCount ?? 3;
+                    searchCount = searchCount <= 3 ? 3 : searchCount;
 
                     setState(() {});
                   }
@@ -1005,10 +1006,10 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                                   children: [
                                     Expanded(
                                       child: Slider(
-                                        value: searchCount.toDouble(),
-                                        min: 0,
-                                        max: 5,
-                                        divisions: 5,
+                                        value: searchCount.toDouble() <= 3 ? 3.0 : searchCount.toDouble(),
+                                        min: 3,
+                                        max: 50,
+                                        divisions: 50 - 3,
                                         label: '$searchCount',
                                         activeColor: customColors.linkColor,
                                         onChanged: (value) {

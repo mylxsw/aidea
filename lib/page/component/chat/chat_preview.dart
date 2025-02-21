@@ -13,6 +13,7 @@ import 'package:askaide/page/component/chat/chat_share.dart';
 import 'package:askaide/page/component/chat/enhanced_selectable_text.dart';
 import 'package:askaide/page/component/chat/file_upload.dart';
 import 'package:askaide/page/component/chat/message_state_manager.dart';
+import 'package:askaide/page/component/chat/search_result.dart';
 import 'package:askaide/page/component/chat/thinking_card.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/file_preview.dart';
@@ -215,6 +216,15 @@ class _ChatPreviewState extends State<ChatPreview> {
       referenceDocuments = [];
     }
 
+    var searchResults = <ReferenceDocument>[];
+    try {
+      final searchResultsData = extra != null ? extra['search-results'] ?? '[]' : '[]';
+      final List<dynamic> decodedDocs = jsonDecode(searchResultsData);
+      searchResults = decodedDocs.map((e) => ReferenceDocument.fromJson(e)).toList().cast<ReferenceDocument>();
+    } catch (e) {
+      print('------------> $e <-----------');
+    }
+
     final stateWidgets = <Widget>[];
 
     if (states.isNotEmpty) {
@@ -353,10 +363,18 @@ class _ChatPreviewState extends State<ChatPreview> {
                           if (message.role == Role.sender && message.statusIsFailed())
                             buildErrorIndicator(message, state, context, index),
 
+                          // 搜索结果
+                          if (searchResults.isNotEmpty)
+                            Container(
+                              margin: const EdgeInsets.only(left: 10, top: 10),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              child: SearchResult(searchResults: searchResults),
+                            ),
+
                           // 消息过程状态
                           if (states.isNotEmpty)
                             Container(
-                              margin: const EdgeInsets.only(left: 10),
+                              margin: EdgeInsets.only(left: 10, top: searchResults.isEmpty ? 10 : 0),
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
@@ -441,6 +459,7 @@ class _ChatPreviewState extends State<ChatPreview> {
                                               ? Markdown(
                                                   data: text.trim(),
                                                   onUrlTap: (value) => onMarkdownUrlTap(value),
+                                                  citations: searchResults.map((e) => e.source).toList(),
                                                 )
                                               : SelectableText(
                                                   text,
@@ -1099,14 +1118,26 @@ class ReferenceDocument {
   final String title;
   final String source;
   final String content;
+  final String media;
+  final String icon;
+  final String index;
 
-  ReferenceDocument({required this.title, required this.source, required this.content});
+  ReferenceDocument(
+      {required this.title,
+      required this.source,
+      required this.content,
+      required this.media,
+      required this.icon,
+      required this.index});
 
   static fromJson(Map<String, dynamic> json) {
     return ReferenceDocument(
       title: json['title'] ?? '',
       source: json['source'] ?? '',
       content: json['content'] ?? '',
+      media: json['media'] ?? '',
+      icon: json['icon'] ?? '',
+      index: json['index'] ?? '',
     );
   }
 }

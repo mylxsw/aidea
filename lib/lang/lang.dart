@@ -349,6 +349,7 @@ mixin AppLocale {
   static const String startChat = 'start-chat';
   static const String updateApp = 'update-app';
   static const String notUpdateApp = 'not-update-app';
+  static const String searchedXWebPages = 'searched-x-web-pages';
 
   static const Map<String, dynamic> zh = {
     wechat: '微信',
@@ -681,6 +682,7 @@ mixin AppLocale {
     startChat: '开始对话',
     updateApp: '去更新',
     notUpdateApp: '暂不更新',
+    searchedXWebPages: '已搜索到 %s 个网页',
   };
 
   static const Map<String, dynamic> en = {
@@ -721,7 +723,7 @@ mixin AppLocale {
     text: 'Text',
     uploading: 'Uploading...',
     robotIsThinkingMessage: 'Thinking...',
-    thinkingProcess: 'Thinking, please be patient',
+    thinkingProcess: 'Deep thought',
     robotHasSomeError: 'There seems to be something wrong, Do you want to resend the message?',
     appName: 'AIdea',
     chatAnywhere: 'Chat',
@@ -1019,6 +1021,7 @@ mixin AppLocale {
     startChat: 'Start Chat',
     updateApp: 'Update Now',
     notUpdateApp: 'Not Update',
+    searchedXWebPages: 'Searched %s web pages',
   };
 }
 
