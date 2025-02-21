@@ -6,11 +6,18 @@ ipa:
 run:
 	flutter run --release 
 
-build-all: build-android ipa
+build-all: build-android ipa build-dmg
+	rm -fr build/release 
+	mkdir -p build/release
+	mv build/app/outputs/flutter-apk/app-release.apk build/release/aidea-android.apk
+	mv build/ios/ipa/askaide.ipa build/release/aidea-ios.ipa
+	mv build/macos/Build/Products/Package/AIdea-Installer.dmg build/release/aidea-macos.dmg
+	open build/release
 
 build-android:
 	flutter build apk --release --no-tree-shake-icons
-	# open build/app/outputs/flutter-apk
+
+build-and-sync-android: build-android 
 	mv build/app/outputs/flutter-apk/app-release.apk /Users/mylxsw/ResilioSync/ResilioSync/临时文件/aidea-release.apk
 
 build-macos:
@@ -59,4 +66,4 @@ deploy-web: build-web
 	ssh huawei-1 "cd /data/webroot && tar -zxvf web.tar.gz && rm -rf web.tar.gz app && mv web app"
 	rm -fr build/web.tar.gz
 
-.PHONY: run build-android build-macos ipa build-web-samehost build-web deploy-web build-dmg
+.PHONY: run build-android build-macos ipa build-web-samehost build-web deploy-web build-dmg build-all build-and-sync-android
