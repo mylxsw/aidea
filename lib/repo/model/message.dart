@@ -108,7 +108,7 @@ class Message {
     extra = jsonEncode(data);
   }
 
-  // 将值添加到附加信息的某个数组键中
+  /// 将值添加到附加信息的某个数组键中
   void pushExtra(String key, dynamic value) {
     var extraData = decodeExtra();
     extraData ??= <String, dynamic>{};
@@ -118,6 +118,14 @@ class Message {
     }
 
     extraData[key]!.add(value);
+    extra = jsonEncode(extraData);
+  }
+
+  /// 从附加信息的某个数组键中删除最后一个值
+  void popExtra(String key) {
+    var extraData = decodeExtra();
+    extraData ??= <String, dynamic>{};
+    extraData[key]!.removeLast();
     extra = jsonEncode(extraData);
   }
 

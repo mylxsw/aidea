@@ -226,36 +226,43 @@ class _ChatPreviewState extends State<ChatPreview> {
     }
 
     final stateWidgets = <Widget>[];
-
     if (states.isNotEmpty) {
       final lastState = states[states.length - 1];
       switch (lastState) {
-        case 'thinking':
-          if (reasoning != '') {
-            stateWidgets.add(ThinkingCard(
-              content: reasoning,
-              title: AppLocale.thinkingProcess.getString(context),
-              isExpanded: true,
-              onTap: (displayThinkingProcess) {},
-            ));
-          } else {
-            stateWidgets.add(Row(
-              children: [
-                Text(
-                  AppLocale.robotIsThinkingMessage.getString(context),
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: customColors.weakTextColorLess!,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                LoadingAnimationWidget.waveDots(
-                  color: customColors.weakTextColorLess!,
-                  size: 16,
-                ),
-              ],
-            ));
+        case 'searching':
+          if (index == 0) {
+            stateWidgets.add(const SearchResult(searchResults: [], isSearching: true));
           }
+          break;
+        case 'thinking':
+          if (index == 0) {
+            if (reasoning != '') {
+              stateWidgets.add(ThinkingCard(
+                content: reasoning,
+                title: AppLocale.thinkingProcess.getString(context),
+                isExpanded: true,
+                onTap: (displayThinkingProcess) {},
+              ));
+            } else {
+              stateWidgets.add(Row(
+                children: [
+                  Text(
+                    AppLocale.robotIsThinkingMessage.getString(context),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: customColors.weakTextColorLess!,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  LoadingAnimationWidget.waveDots(
+                    color: customColors.weakTextColorLess!,
+                    size: 16,
+                  ),
+                ],
+              ));
+            }
+          }
+          break;
         case 'thinking-done':
           if (reasoning != '') {
             final timeConsumed = extra != null ? extra['thinking_time_consumed'] ?? 0.0 : 0.0;
@@ -271,6 +278,7 @@ class _ChatPreviewState extends State<ChatPreview> {
               },
             ));
           }
+          break;
         default:
       }
     }

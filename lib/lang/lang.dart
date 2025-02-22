@@ -69,6 +69,7 @@ mixin AppLocale {
   static const String uploading = 'uploading';
   static const String robotIsThinkingMessage = 'robot-is-thinking-message';
   static const String thinkingProcess = 'thinking-process';
+  static const String robotIsSearchingMessage = 'robot-is-searching-message';
   static const String robotHasSomeError = 'robot-has-some-error';
   static const String questionExamples = 'question-examples';
   static const String noRecords = 'no-records';
@@ -390,6 +391,7 @@ mixin AppLocale {
     uploading: '上传中...',
     robotIsThinkingMessage: '正在思考中，请耐心等待',
     thinkingProcess: '深度思考',
+    robotIsSearchingMessage: '正在联网搜索',
     robotHasSomeError: '发送失败，重发该消息？',
     appName: 'AIdea',
     chatAnywhere: '聊一聊',
@@ -724,6 +726,7 @@ mixin AppLocale {
     uploading: 'Uploading...',
     robotIsThinkingMessage: 'Thinking...',
     thinkingProcess: 'Deep thought',
+    robotIsSearchingMessage: 'Searching',
     robotHasSomeError: 'There seems to be something wrong, Do you want to resend the message?',
     appName: 'AIdea',
     chatAnywhere: 'Chat',

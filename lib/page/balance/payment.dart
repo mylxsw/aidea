@@ -371,6 +371,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                   color: customColors.paymentItemTitleColor?.withOpacity(0.5),
                                 ),
                               ),
+                              const SizedBox(height: 10),
                               Markdown(
                                 data: state.note!,
                                 textStyle: TextStyle(

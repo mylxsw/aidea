@@ -1,3 +1,4 @@
+import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -62,14 +63,14 @@ class CitationBuilder extends MarkdownElementBuilder {
                   margin: const EdgeInsets.only(left: 4),
                   decoration: BoxDecoration(
                     color: customColors.weakTextColorLess,
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(CustomSize.radiusValue * 2),
                   ),
-                  padding: const EdgeInsets.all(4),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   child: Text(
                     text,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 12,
+                      fontSize: 10,
                     ),
                   ),
                 ),
