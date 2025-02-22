@@ -202,7 +202,6 @@ class ModelResolver {
 
     var contextMessages = recentMessages
         .where((e) => !e.isSystem() && !e.isInitMessage())
-        .where((e) => !e.statusIsFailed())
         .map((e) => e.role == Role.receiver
             ? ChatMessage(
                 role: OpenAIChatMessageRole.assistant,
