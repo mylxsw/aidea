@@ -51,6 +51,19 @@ git checkout v1.x
 
     <img src="https://github.com/mylxsw/aidea-server/assets/2330911/376a3b9f-eacd-45c6-9630-39eb720ba097" width="500" />
 
+## 产品截图
+
+移动端
+
+![移动端](./images/v2-mobile-preview.png)
+
+MacOS 端
+
+![MacOS 端](./images/v2-macos-preview.png)
+
+Windows 端
+
+![Windows 端](./images/v2-windows-preview.png)
 
 ## License
 
