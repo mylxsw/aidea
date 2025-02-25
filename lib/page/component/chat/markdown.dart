@@ -8,13 +8,15 @@
 
 import 'package:askaide/page/component/chat/markdown/citation.dart';
 import 'package:askaide/page/component/chat/markdown/code.dart';
+import 'package:askaide/page/component/chat/markdown/latex/latex_block_syntax.dart';
+import 'package:askaide/page/component/chat/markdown/latex/latex_element_builder.dart';
+import 'package:askaide/page/component/chat/markdown/latex/latex_inline_syntax.dart';
 import 'package:askaide/page/component/image_preview.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_markdown/flutter_markdown.dart' as md;
-import 'package:flutter_markdown_latex/flutter_markdown_latex.dart';
 import 'package:markdown/markdown.dart' as mm;
 
 class Markdown extends StatelessWidget {
@@ -22,6 +24,7 @@ class Markdown extends StatelessWidget {
   final Function(String value)? onUrlTap;
   final TextStyle? textStyle;
   final cacheManager = DefaultCacheManager();
+  final bool thinkingMode;
 
   final List<String> citations;
 
@@ -31,6 +34,7 @@ class Markdown extends StatelessWidget {
     this.onUrlTap,
     this.textStyle,
     this.citations = const [],
+    this.thinkingMode = false,
   });
 
   @override
@@ -45,28 +49,57 @@ class Markdown extends StatelessWidget {
     // }
 
     final customColors = Theme.of(context).extension<CustomColors>()!;
+
+    final style = thinkingMode
+        ? md.MarkdownStyleSheet(
+            p: TextStyle(fontSize: 14, color: customColors.weakTextColorLess, height: 1.5),
+            listBullet: TextStyle(fontSize: 14, color: customColors.weakTextColorLess, height: 1.5),
+            code: TextStyle(
+              fontSize: 14,
+              color: customColors.weakTextColorLess,
+              backgroundColor: Colors.transparent,
+            ),
+            codeblockPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            codeblockDecoration: const BoxDecoration(borderRadius: CustomSize.borderRadiusAll),
+            tableBorder: TableBorder.all(color: customColors.weakTextColorLess!.withOpacity(0.5), width: 1),
+            tableColumnWidth: const FlexColumnWidth(),
+            blockquotePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+            blockquoteDecoration: BoxDecoration(
+              border: Border(left: BorderSide(color: customColors.weakTextColorLess!.withOpacity(0.4), width: 4)),
+            ),
+            a: TextStyle(color: customColors.weakTextColorLess, decoration: TextDecoration.none),
+            h1: TextStyle(color: customColors.weakTextColorLess, height: 1.5),
+            h2: TextStyle(color: customColors.weakTextColorLess, height: 1.5),
+            h3: TextStyle(color: customColors.weakTextColorLess, height: 1.5),
+            h4: TextStyle(color: customColors.weakTextColorLess, height: 1.5),
+            h5: TextStyle(color: customColors.weakTextColorLess, height: 1.5),
+            h6: TextStyle(color: customColors.weakTextColorLess, height: 1.5),
+          )
+        : md.MarkdownStyleSheet(
+            p: textStyle ?? TextStyle(fontSize: CustomSize.markdownTextSize, height: 1.5),
+            listBullet: textStyle ?? TextStyle(fontSize: CustomSize.markdownTextSize, height: 1.5),
+            code: TextStyle(
+              fontSize: CustomSize.markdownCodeSize,
+              color: customColors.markdownCodeColor,
+              backgroundColor: Colors.transparent,
+            ),
+            codeblockPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            codeblockDecoration: const BoxDecoration(borderRadius: CustomSize.borderRadiusAll),
+            tableBorder: TableBorder.all(color: customColors.weakTextColor!.withOpacity(0.5), width: 1),
+            tableColumnWidth: const FlexColumnWidth(),
+            blockquotePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+            blockquoteDecoration: BoxDecoration(
+              border: Border(left: BorderSide(color: customColors.weakTextColor!.withOpacity(0.4), width: 4)),
+            ),
+            a: TextStyle(color: customColors.weakLinkColor, decoration: TextDecoration.none),
+          );
+
     return md.MarkdownBody(
       shrinkWrap: true,
       selectable: false,
       softLineBreak: true,
       styleSheetTheme: md.MarkdownStyleSheetBaseTheme.material,
-      styleSheet: md.MarkdownStyleSheet(
-        p: textStyle ?? TextStyle(fontSize: CustomSize.markdownTextSize, height: 1.5),
-        listBullet: textStyle ?? TextStyle(fontSize: CustomSize.markdownTextSize, height: 1.5),
-        code: TextStyle(
-          fontSize: CustomSize.markdownCodeSize,
-          color: customColors.markdownCodeColor,
-          backgroundColor: Colors.transparent,
-        ),
-        codeblockPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        codeblockDecoration: const BoxDecoration(borderRadius: CustomSize.borderRadiusAll),
-        tableBorder: TableBorder.all(color: customColors.weakTextColor!.withOpacity(0.5), width: 1),
-        tableColumnWidth: const FlexColumnWidth(),
-        blockquotePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-        blockquoteDecoration: BoxDecoration(
-            border: Border(left: BorderSide(color: customColors.weakTextColor!.withOpacity(0.4), width: 4))),
-        a: TextStyle(color: customColors.weakLinkColor, decoration: TextDecoration.none),
-      ),
+      styleSheet: style,
       onTapLink: (text, href, title) {
         if (onUrlTap != null && href != null) onUrlTap!(href);
       },
@@ -94,8 +127,8 @@ class Markdown extends StatelessWidget {
       ),
       data: data,
       builders: {
-        'code': CodeElementBuilder(customColors),
         'latex': LatexElementBuilder(),
+        'code': CodeElementBuilder(customColors),
         'citation': CitationBuilder(onTap: onUrlTap),
       },
     );

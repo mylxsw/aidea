@@ -82,11 +82,7 @@ class ThinkingCard extends StatelessWidget {
                           onUrlTap: (value) {
                             launchUrlString(value);
                           },
-                          textStyle: TextStyle(
-                            fontSize: 14,
-                            color: customColors.weakTextColorLess,
-                            height: 1.5,
-                          ),
+                          thinkingMode: true,
                         ),
                       ),
                     ],

@@ -807,22 +807,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.6+2"
-  flutter_markdown_latex:
-    dependency: "direct main"
-    description:
-      name: flutter_markdown_latex
-      sha256: "839e76a84abb3632ffcebbd450cf93c7e9894af65622527d23f0084cee1bfd04"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.4"
   flutter_math_fork:
     dependency: "direct main"
     description:
       name: flutter_math_fork
-      sha256: "94bee4642892a94939af0748c6a7de0ff8318feee588379dcdfea7dc5cba06c8"
+      sha256: "284bab89b2fbf1bc3a0baf13d011c1dd324d004e35d177626b77f2fc056366ac"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.2"
+    version: "0.7.3"
   flutter_native_splash:
     dependency: "direct main"
     description:
