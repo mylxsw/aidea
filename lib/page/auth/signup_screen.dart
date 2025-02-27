@@ -16,6 +16,7 @@ import 'package:askaide/page/component/theme/custom_theme.dart';
 import 'package:askaide/page/component/windows.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -242,12 +243,13 @@ class _SignupScreenState extends State<SignupScreen> {
                           child: verifyCodeWaitSeconds > 0
                               ? TextButton(
                                   onPressed: null,
-                                  child: Text(
+                                  child: AutoSizeText(
                                     '$verifyCodeWaitSeconds ${AppLocale.retryInSeconds.getString(context)}',
                                     style: TextStyle(
                                       color: customColors.weakTextColor,
                                       fontSize: 15,
                                     ),
+                                    maxLines: 1,
                                   ),
                                 )
                               : TextButton(

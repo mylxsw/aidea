@@ -4,6 +4,7 @@ import 'package:askaide/helper/helper.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/theme/custom_theme.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localization/flutter_localization.dart';
@@ -105,12 +106,13 @@ class _VerifyCodeInputState extends State<VerifyCodeInput> {
             child: verifyCodeWaitSeconds > 0
                 ? TextButton(
                     onPressed: null,
-                    child: Text(
+                    child: AutoSizeText(
                       '$verifyCodeWaitSeconds ${AppLocale.retryInSeconds.getString(context)}',
                       style: TextStyle(
                         color: customColors.weakTextColor,
                         fontSize: 15,
                       ),
+                      maxLines: 1,
                     ),
                   )
                 : TextButton(
