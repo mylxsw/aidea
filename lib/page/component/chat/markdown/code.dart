@@ -36,34 +36,40 @@ class CodeElementBuilder extends MarkdownElementBuilder {
 
     final multiLine = element.textContent.trim().split("\n").length > 1;
 
-    final child = SizedBox(
-      child: HighlightView(
-        // The original code to be highlighted
-        element.textContent,
+    final child = RichText(
+      text: TextSpan(
+        children: [
+          WidgetSpan(
+            child: HighlightView(
+              // The original code to be highlighted
+              element.textContent,
 
-        // Specify language
-        // It is recommended to give it a value for performance
-        language: language,
+              // Specify language
+              // It is recommended to give it a value for performance
+              language: language,
 
-        // Specify highlight theme
-        // All available themes are listed in `themes` folder
-        theme: codeTheme(),
+              // Specify highlight theme
+              // All available themes are listed in `themes` folder
+              theme: codeTheme(),
 
-        // Specify padding
-        padding: multiLine
-            ? const EdgeInsets.only(
-                top: 30,
-                bottom: 10,
-                left: 10,
-                right: 10,
-              )
-            : const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+              // Specify padding
+              padding: multiLine
+                  ? const EdgeInsets.only(
+                      top: 30,
+                      bottom: 10,
+                      left: 10,
+                      right: 10,
+                    )
+                  : const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
 
-        textStyle: const TextStyle(
-          fontSize: 13,
-          height: 1.5,
-          wordSpacing: 3,
-        ),
+              textStyle: TextStyle(
+                fontSize: multiLine ? CustomSize.markdownCodeSize : CustomSize.markdownTextSize,
+                height: 1.5,
+                wordSpacing: 3,
+              ),
+            ),
+          )
+        ],
       ),
     );
 
