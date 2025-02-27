@@ -61,6 +61,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
   final TextEditingController promptController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
   final TextEditingController searchPriceController = TextEditingController();
+  final TextEditingController testUserIdsController = TextEditingController();
 
   /// 用于控制是否显示高级选项
   bool showAdvancedOptions = false;
@@ -122,6 +123,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
     categoryController.dispose();
     tagController.dispose();
     searchPriceController.dispose();
+    testUserIdsController.dispose();
     super.dispose();
   }
 
@@ -147,7 +149,7 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
     outputPriceController.value = const TextEditingValue(text: '0');
     perRequestPriceController.value = const TextEditingValue(text: '0');
     searchPriceController.value = const TextEditingValue(text: '0');
-
+    testUserIdsController.value = const TextEditingValue(text: '');
     super.initState();
   }
 
@@ -238,6 +240,10 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                     temperature = state.model.meta!.temperature ?? 0.0;
                     searchCount = state.model.meta!.searchCount ?? 3;
                     searchCount = searchCount <= 3 ? 3 : searchCount;
+
+                    if (state.model.meta!.testUserIds != null) {
+                      testUserIdsController.value = TextEditingValue(text: state.model.meta!.testUserIds!.join(','));
+                    }
 
                     setState(() {});
                   }
@@ -1058,6 +1064,18 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
                             maxLength: 2000,
                             maxLines: 3,
                           ),
+                          EnhancedTextField(
+                            labelPosition: LabelPosition.top,
+                            labelText: 'Test User IDs',
+                            customColors: customColors,
+                            controller: testUserIdsController,
+                            textAlignVertical: TextAlignVertical.top,
+                            hintText:
+                                'Enter test user IDs, separated by commas.\nIf users are set here, the model is only visible to those users.',
+                            maxLines: 3,
+                            minLines: 2,
+                            showCounter: false,
+                          ),
                         ],
                       ),
                     const SizedBox(height: 15),
@@ -1122,6 +1140,15 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
       return;
     }
 
+    if (testUserIdsController.text.isNotEmpty) {
+      try {
+        testUserIdsController.text.split(',').where((e) => e.trim() != '').map((e) => int.parse(e.trim())).toList();
+      } catch (e) {
+        showErrorMessage('Test user IDs must be comma-separated integers');
+        return;
+      }
+    }
+
     if (avatarUrl != null && (!avatarUrl!.startsWith('http://') && !avatarUrl!.startsWith('https://'))) {
       final cancel = BotToast.showCustomLoading(
         toastBuilder: (cancel) {
@@ -1167,6 +1194,8 @@ class _AdminModelEditPageState extends State<AdminModelEditPage> {
         temperature: temperature,
         searchCount: searchCount,
         searchPrice: int.parse(searchPriceController.text),
+        testUserIds:
+            testUserIdsController.text.split(',').where((e) => e.trim() != '').map((e) => int.parse(e.trim())).toList(),
       ),
       status: modelEnabled ? 1 : 2,
       providers: ps,

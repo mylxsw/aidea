@@ -76,6 +76,8 @@ class AdminModelMeta {
   double? temperature;
   int? searchCount;
   int? searchPrice;
+  List<int>? testUserIds;
+
   AdminModelMeta({
     this.vision,
     this.restricted,
@@ -95,6 +97,7 @@ class AdminModelMeta {
     this.temperature,
     this.searchCount,
     this.searchPrice,
+    this.testUserIds,
   });
 
   factory AdminModelMeta.fromJson(Map<String, dynamic> json) {
@@ -117,6 +120,7 @@ class AdminModelMeta {
       temperature: json['temperature'] ?? 0.0,
       searchCount: json['search_count'] ?? 0,
       searchPrice: json['search_price'] ?? 0,
+      testUserIds: json['test_user_ids'] != null ? (json['test_user_ids'] as List).map((e) => e as int).toList() : [],
     );
   }
 
@@ -140,6 +144,7 @@ class AdminModelMeta {
       'temperature': temperature,
       'search_count': searchCount,
       'search_price': searchPrice,
+      'test_user_ids': testUserIds,
     };
   }
 }

@@ -11,6 +11,7 @@ import 'package:askaide/repo/api/admin/channels.dart';
 import 'package:askaide/repo/api/admin/models.dart';
 import 'package:askaide/repo/api_server.dart';
 import 'package:askaide/repo/settings_repo.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -275,7 +276,7 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
                     // 名称
                     Expanded(
                       child: Container(
-                        padding: const EdgeInsets.all(15),
+                        padding: const EdgeInsets.only(left: 15, right: 10, top: 25, bottom: 5),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -308,24 +309,39 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
                   right: 0,
                   top: 0,
                   child: Container(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(5),
                     width: MediaQuery.of(context).size.width / 2.0,
                     alignment: Alignment.centerRight,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          mod.providers.map((e) => searchChannel(e).display).join('|'),
-                          style: TextStyle(
-                            fontSize: 10,
-                            overflow: TextOverflow.ellipsis,
-                            color: customColors.weakTextColor,
-                          ),
-                        ),
-                      ],
+                    child: AutoSizeText(
+                      mod.providers.map((e) => searchChannel(e).display).toSet().join('|'),
+                      style: TextStyle(
+                        fontSize: 12,
+                        overflow: TextOverflow.ellipsis,
+                        color: customColors.weakTextColor,
+                      ),
+                      maxLines: 1,
+                      minFontSize: 6,
                     ),
                   ),
                 ),
+                if (mod.meta != null && mod.meta!.testUserIds != null && mod.meta!.testUserIds!.isNotEmpty)
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      width: MediaQuery.of(context).size.width / 2.0,
+                      alignment: Alignment.centerRight,
+                      child: const Text(
+                        'TEST',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 56, 119, 255),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -391,6 +407,6 @@ class _AdminModelsPageState extends State<AdminModelsPage> {
       desc += '\n';
     }
 
-    return desc + (mod.description ?? '');
+    return desc;
   }
 }
