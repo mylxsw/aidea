@@ -1,0 +1,12 @@
+{
+	"type": "module",
+	"devDependencies": {
+		"chalk": "^5.4.1",
+		"crypto": "^1.0.1",
+		"terser": "^5.39.0",
+		"glob": "^11.0.1",
+		"@babel/core": "^7.26.9",
+		"commander": "^13.1.0",
+		"@babel/preset-env": "^7.26.9"
+	}
+}
