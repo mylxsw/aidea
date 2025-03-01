@@ -142,7 +142,9 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
       child: SafeArea(
         bottom: false,
         child: Container(
-          margin: PlatformTool.isDesktopAndWeb() ? const EdgeInsets.all(8) : null,
+          margin: PlatformTool.isDesktopAndWeb()
+              ? EdgeInsets.only(left: 8, right: 8, bottom: PlatformTool.isWeb() ? 16 : 8)
+              : null,
           padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
           decoration: BoxDecoration(
             color: customColors.chatInputAreaBackground,
@@ -214,8 +216,10 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              if (widget.enableNotifier.value && (canUploadImage || canUploadFile))
+                              if (widget.enableNotifier.value && (canUploadImage || canUploadFile)) ...[
                                 buildUploadButtons(context, setting, customColors),
+                                const SizedBox(width: 8),
+                              ],
                               if (widget.toolsBuilder != null) ...widget.toolsBuilder!(),
                             ],
                           ),

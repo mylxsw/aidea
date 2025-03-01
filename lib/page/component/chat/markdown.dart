@@ -8,6 +8,7 @@
 
 import 'package:askaide/page/component/chat/markdown/citation.dart';
 import 'package:askaide/page/component/chat/markdown/code.dart';
+import 'package:askaide/page/component/chat/markdown/message_box.dart';
 import 'package:askaide/page/component/chat/markdown/latex/latex_block_syntax.dart';
 import 'package:askaide/page/component/chat/markdown/latex/latex_element_builder.dart';
 import 'package:askaide/page/component/chat/markdown/latex/latex_inline_syntax.dart';
@@ -27,6 +28,7 @@ class Markdown extends StatelessWidget {
   final bool thinkingMode;
 
   final List<String> citations;
+  final List<ExtensionPackage> extensionPackages;
 
   Markdown({
     super.key,
@@ -35,6 +37,7 @@ class Markdown extends StatelessWidget {
     this.textStyle,
     this.citations = const [],
     this.thinkingMode = false,
+    this.extensionPackages = const [],
   });
 
   @override
@@ -94,6 +97,35 @@ class Markdown extends StatelessWidget {
             a: TextStyle(color: customColors.weakLinkColor, decoration: TextDecoration.none),
           );
 
+    final blockSyntaxs = [
+      ...mm.ExtensionSet.gitHubFlavored.blockSyntaxes,
+      LatexBlockSyntax(),
+    ];
+
+    final inlineSyntaxs = [
+      ...mm.ExtensionSet.gitHubFlavored.inlineSyntaxes,
+      LatexInlineSyntax(),
+      MessageBoxSyntax(),
+      CitationSyntax(citations: citations),
+    ];
+
+    final builders = <String, md.MarkdownElementBuilder>{
+      'latex': LatexElementBuilder(),
+      'code': CodeElementBuilder(customColors),
+      'citation': CitationBuilder(onTap: onUrlTap),
+    };
+
+    for (final extensionPackage in extensionPackages) {
+      if (extensionPackage.inlineSyntax != null) {
+        inlineSyntaxs.add(extensionPackage.inlineSyntax!);
+      }
+
+      if (extensionPackage.blockSyntax != null) {
+        blockSyntaxs.add(extensionPackage.blockSyntax!);
+      }
+      builders[extensionPackage.tagName] = extensionPackage.elementBuilder;
+    }
+
     return md.MarkdownBody(
       shrinkWrap: true,
       selectable: false,
@@ -113,24 +145,9 @@ class Markdown extends StatelessWidget {
 
         return ClipRRect(borderRadius: CustomSize.borderRadiusAll, child: Image.network(uri.toString()));
       },
-      extensionSet: mm.ExtensionSet(
-        [
-          ...mm.ExtensionSet.gitHubFlavored.blockSyntaxes,
-          LatexBlockSyntax(),
-        ],
-        <mm.InlineSyntax>[
-          CitationSyntax(citations: citations),
-          mm.EmojiSyntax(),
-          ...mm.ExtensionSet.gitHubFlavored.inlineSyntaxes,
-          LatexInlineSyntax(),
-        ],
-      ),
+      extensionSet: mm.ExtensionSet(blockSyntaxs, inlineSyntaxs),
       data: data,
-      builders: {
-        'latex': LatexElementBuilder(),
-        'code': CodeElementBuilder(customColors),
-        'citation': CitationBuilder(onTap: onUrlTap),
-      },
+      builders: builders,
     );
   }
 }
@@ -292,3 +309,18 @@ class Markdown extends StatelessWidget {
 //     );
 //   }
 // }
+
+class ExtensionPackage {
+  final String tagName;
+  final mm.InlineSyntax? inlineSyntax;
+  final mm.BlockSyntax? blockSyntax;
+  final md.MarkdownElementBuilder elementBuilder;
+
+  ExtensionPackage({required this.tagName, this.inlineSyntax, this.blockSyntax, required this.elementBuilder});
+}
+
+final messageBoxPackage = ExtensionPackage(
+  tagName: 'message-box',
+  elementBuilder: MessageBoxBuilder(),
+  inlineSyntax: MessageBoxSyntax(),
+);

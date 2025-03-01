@@ -9,6 +9,7 @@ import 'package:askaide/helper/helper.dart';
 import 'package:askaide/helper/platform.dart';
 import 'package:askaide/lang/lang.dart';
 import 'package:askaide/page/component/attached_button_panel.dart';
+import 'package:askaide/page/component/avatar_style.dart';
 import 'package:askaide/page/component/chat/chat_share.dart';
 import 'package:askaide/page/component/chat/enhanced_selectable_text.dart';
 import 'package:askaide/page/component/chat/file_upload.dart';
@@ -468,6 +469,9 @@ class _ChatPreviewState extends State<ChatPreview> {
                                                   data: text.trim(),
                                                   onUrlTap: (value) => onMarkdownUrlTap(value),
                                                   citations: searchResults.map((e) => e.source).toList(),
+                                                  extensionPackages: [
+                                                    if (message.role == Role.receiver) messageBoxPackage
+                                                  ],
                                                 )
                                               : SelectableText(
                                                   text,
@@ -648,7 +652,7 @@ class _ChatPreviewState extends State<ChatPreview> {
   }
 
   Widget avatarWrap(Widget avatar) {
-    return avatar;
+    return AvatarStyle(child: avatar);
   }
 
   Widget buildAvatar(Message message) {

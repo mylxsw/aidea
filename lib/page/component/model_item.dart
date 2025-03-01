@@ -3,6 +3,7 @@ import 'package:askaide/helper/color.dart';
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/image.dart';
 import 'package:askaide/lang/lang.dart';
+import 'package:askaide/page/component/avatar_style.dart';
 import 'package:askaide/page/component/dialog.dart';
 import 'package:askaide/page/component/group_list_widget.dart';
 import 'package:askaide/page/component/random_avatar.dart';
@@ -214,7 +215,7 @@ class _ModelItemState extends State<ModelItem> {
     return ListTile(
       leading: Stack(
         children: [
-          buildAvatar(avatarUrl: item.avatarUrl, size: 48),
+          AvatarStyle(child: buildAvatar(avatarUrl: item.avatarUrl, size: 48)),
           if (item.userNoPermission)
             Container(
               width: 48,

@@ -1,6 +1,7 @@
 import 'package:askaide/helper/constant.dart';
 import 'package:askaide/helper/image.dart';
 import 'package:askaide/helper/model.dart';
+import 'package:askaide/page/component/avatar_style.dart';
 import 'package:askaide/page/component/random_avatar.dart';
 import 'package:askaide/page/component/theme/custom_size.dart';
 import 'package:askaide/repo/model/chat_history.dart';
@@ -30,7 +31,7 @@ class RoleAvatar extends StatefulWidget {
 class _RoleAvatarState extends State<RoleAvatar> {
   @override
   Widget build(BuildContext context) {
-    return _buildAvatar(context);
+    return AvatarStyle(child: _buildAvatar(context));
   }
 
   Widget _buildAvatar(BuildContext context) {

@@ -21,6 +21,7 @@ class _ChatInputButtonState extends State<ChatInputButton> {
 
     return IconButton(
       onPressed: widget.onPressed,
+      padding: const EdgeInsets.only(right: 8),
       icon: Container(
         decoration: BoxDecoration(
           color: widget.isActive ? customColors.linkColor?.withAlpha(100) : null,

@@ -97,9 +97,15 @@ class _LeftDrawerState extends State<LeftDrawer> {
                                     leading: RoleAvatar(
                                       avatarUrl: item.avatarUrl,
                                       name: item.name,
-                                      avatarSize: 25,
+                                      avatarSize: 30,
                                     ),
-                                    title: Text(item.name),
+                                    title: Text(
+                                      item.name,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
                                     onTap: () {
                                       context.push('/room/${item.id}/chat').whenComplete(reload);
                                     },

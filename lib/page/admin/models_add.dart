@@ -60,6 +60,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
   final TextEditingController categoryController = TextEditingController();
   final TextEditingController searchPriceController = TextEditingController();
   final TextEditingController testUserIdsController = TextEditingController();
+  final TextEditingController maxTokenPerMessageController = TextEditingController();
 
   /// 用于控制是否显示高级选项
   bool showAdvancedOptions = false;
@@ -119,6 +120,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
     tagController.dispose();
     searchPriceController.dispose();
     testUserIdsController.dispose();
+    maxTokenPerMessageController.dispose();
     super.dispose();
   }
 
@@ -134,13 +136,13 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
     });
 
     // 初始值设置
-    maxContextController.value = const TextEditingValue(text: '7500');
+    maxContextController.value = const TextEditingValue(text: '10000');
     inputPriceController.value = const TextEditingValue(text: '0');
     outputPriceController.value = const TextEditingValue(text: '0');
     perReqPriceController.value = const TextEditingValue(text: '0');
     searchPriceController.value = const TextEditingValue(text: '0');
     testUserIdsController.value = const TextEditingValue(text: '');
-
+    maxTokenPerMessageController.value = const TextEditingValue(text: '5000');
     providers.add(AdminModelProvider());
 
     super.initState();
@@ -367,8 +369,9 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                           ),
                         ),
                         EnhancedTextField(
-                          labelWidth: 120,
-                          labelText: 'Context Len',
+                          labelWidth: 150,
+                          labelFontSize: 12,
+                          labelText: 'Max Context Tokens',
                           customColors: customColors,
                           controller: maxContextController,
                           textAlignVertical: TextAlignVertical.top,
@@ -386,6 +389,181 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                             ),
                           ),
                         ),
+                        EnhancedTextField(
+                          labelWidth: 150,
+                          labelFontSize: 12,
+                          labelText: 'Max Token Per Message',
+                          customColors: customColors,
+                          controller: maxTokenPerMessageController,
+                          textAlignVertical: TextAlignVertical.top,
+                          hintText: 'Optional',
+                          showCounter: false,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          textDirection: TextDirection.rtl,
+                          suffixIcon: Container(
+                            width: 50,
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Token',
+                              style: TextStyle(color: customColors.weakTextColor, fontSize: 12),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    ColumnBlock(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Text(
+                                  'Vision',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 5),
+                                InkWell(
+                                  onTap: () {
+                                    showBeautyDialog(
+                                      context,
+                                      type: QuickAlertType.info,
+                                      text: 'Whether the current model supports visual capabilities.',
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
+                                      showCancelBtn: false,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.help_outline,
+                                    size: 16,
+                                    color: customColors.weakLinkColor?.withAlpha(150),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            CupertinoSwitch(
+                              activeColor: customColors.linkColor,
+                              value: supportVision,
+                              onChanged: (value) {
+                                setState(() {
+                                  supportVision = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Text(
+                                  'Deep Think',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 5),
+                                InkWell(
+                                  onTap: () {
+                                    showBeautyDialog(
+                                      context,
+                                      type: QuickAlertType.info,
+                                      text: 'Whether to enable Deep Think for the current model.',
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
+                                      showCancelBtn: false,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.help_outline,
+                                    size: 16,
+                                    color: customColors.weakLinkColor?.withAlpha(150),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            CupertinoSwitch(
+                              activeColor: customColors.linkColor,
+                              value: enableReasoning,
+                              onChanged: (value) {
+                                setState(() {
+                                  enableReasoning = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Text(
+                                  'Search',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 5),
+                                InkWell(
+                                  onTap: () {
+                                    showBeautyDialog(
+                                      context,
+                                      type: QuickAlertType.info,
+                                      text: 'Whether to enable search for the current model.',
+                                      confirmBtnText: AppLocale.gotIt.getString(context),
+                                      showCancelBtn: false,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.help_outline,
+                                    size: 16,
+                                    color: customColors.weakLinkColor?.withAlpha(150),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            CupertinoSwitch(
+                              activeColor: customColors.linkColor,
+                              value: enableSearch,
+                              onChanged: (value) {
+                                setState(() {
+                                  enableSearch = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        if (enableSearch)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Search Result Count', style: TextStyle(fontSize: 16)),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Slider(
+                                      value: searchCount.toDouble() <= 3 ? 3.0 : searchCount.toDouble(),
+                                      min: 3,
+                                      max: 50,
+                                      divisions: 50 - 3,
+                                      label: '$searchCount',
+                                      activeColor: customColors.linkColor,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          searchCount = value.toInt();
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  Text(
+                                    '$searchCount',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: customColors.weakTextColor,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
                       ],
                     ),
                     ImplicitlyAnimatedReorderableList<AdminModelProvider>(
@@ -640,6 +818,56 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                       ColumnBlock(
                         innerPanding: 5,
                         children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Enabled',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              CupertinoSwitch(
+                                activeColor: customColors.linkColor,
+                                value: modelEnabled,
+                                onChanged: (value) {
+                                  setState(() {
+                                    modelEnabled = value;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Temperature', style: TextStyle(fontSize: 16)),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Slider(
+                                      value: temperature,
+                                      min: 0.0,
+                                      max: 2.0,
+                                      divisions: 40,
+                                      label: '$temperature',
+                                      activeColor: customColors.linkColor,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          temperature = value;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  Text(
+                                    '$temperature',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: customColors.weakTextColor,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
                           EnhancedTextField(
                             labelText: 'Abbr.',
                             customColors: customColors,
@@ -657,45 +885,6 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                             hintText: 'Enter tags',
                             maxLength: 100,
                             showCounter: false,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  const Text(
-                                    'Vision',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                  const SizedBox(width: 5),
-                                  InkWell(
-                                    onTap: () {
-                                      showBeautyDialog(
-                                        context,
-                                        type: QuickAlertType.info,
-                                        text: 'Whether the current model supports visual capabilities.',
-                                        confirmBtnText: AppLocale.gotIt.getString(context),
-                                        showCancelBtn: false,
-                                      );
-                                    },
-                                    child: Icon(
-                                      Icons.help_outline,
-                                      size: 16,
-                                      color: customColors.weakLinkColor?.withAlpha(150),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              CupertinoSwitch(
-                                activeColor: customColors.linkColor,
-                                value: supportVision,
-                                onChanged: (value) {
-                                  setState(() {
-                                    supportVision = value;
-                                  });
-                                },
-                              ),
-                            ],
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -812,167 +1001,6 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
                                 onChanged: (value) {
                                   setState(() {
                                     restricted = value;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  const Text(
-                                    'Deep Think',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                  const SizedBox(width: 5),
-                                  InkWell(
-                                    onTap: () {
-                                      showBeautyDialog(
-                                        context,
-                                        type: QuickAlertType.info,
-                                        text: 'Whether to enable Deep Think for the current model.',
-                                        confirmBtnText: AppLocale.gotIt.getString(context),
-                                        showCancelBtn: false,
-                                      );
-                                    },
-                                    child: Icon(
-                                      Icons.help_outline,
-                                      size: 16,
-                                      color: customColors.weakLinkColor?.withAlpha(150),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              CupertinoSwitch(
-                                activeColor: customColors.linkColor,
-                                value: enableReasoning,
-                                onChanged: (value) {
-                                  setState(() {
-                                    enableReasoning = value;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Temperature', style: TextStyle(fontSize: 16)),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Slider(
-                                      value: temperature,
-                                      min: 0.0,
-                                      max: 2.0,
-                                      divisions: 40,
-                                      label: '$temperature',
-                                      activeColor: customColors.linkColor,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          temperature = value;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                  Text(
-                                    '$temperature',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: customColors.weakTextColor,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  const Text(
-                                    'Search',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                  const SizedBox(width: 5),
-                                  InkWell(
-                                    onTap: () {
-                                      showBeautyDialog(
-                                        context,
-                                        type: QuickAlertType.info,
-                                        text: 'Whether to enable search for the current model.',
-                                        confirmBtnText: AppLocale.gotIt.getString(context),
-                                        showCancelBtn: false,
-                                      );
-                                    },
-                                    child: Icon(
-                                      Icons.help_outline,
-                                      size: 16,
-                                      color: customColors.weakLinkColor?.withAlpha(150),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              CupertinoSwitch(
-                                activeColor: customColors.linkColor,
-                                value: enableSearch,
-                                onChanged: (value) {
-                                  setState(() {
-                                    enableSearch = value;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                          if (enableSearch)
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Search Result Count', style: TextStyle(fontSize: 16)),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Slider(
-                                        value: searchCount.toDouble() <= 3 ? 3.0 : searchCount.toDouble(),
-                                        min: 3,
-                                        max: 50,
-                                        divisions: 50 - 3,
-                                        label: '$searchCount',
-                                        activeColor: customColors.linkColor,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            searchCount = value.toInt();
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    Text(
-                                      '$searchCount',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: customColors.weakTextColor,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Enabled',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              CupertinoSwitch(
-                                activeColor: customColors.linkColor,
-                                value: modelEnabled,
-                                onChanged: (value) {
-                                  setState(() {
-                                    modelEnabled = value;
                                   });
                                 },
                               ),
@@ -1119,6 +1147,7 @@ class _AdminModelCreatePageState extends State<AdminModelCreatePage> {
         temperature: temperature,
         testUserIds:
             testUserIdsController.text.split(',').where((e) => e.trim() != '').map((e) => int.parse(e.trim())).toList(),
+        maxTokenPerMessage: int.parse(maxTokenPerMessageController.text),
       ),
       status: modelEnabled ? 1 : 2,
       providers: ps,

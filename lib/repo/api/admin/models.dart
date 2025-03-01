@@ -77,6 +77,7 @@ class AdminModelMeta {
   int? searchCount;
   int? searchPrice;
   List<int>? testUserIds;
+  int? maxTokenPerMessage;
 
   AdminModelMeta({
     this.vision,
@@ -98,6 +99,7 @@ class AdminModelMeta {
     this.searchCount,
     this.searchPrice,
     this.testUserIds,
+    this.maxTokenPerMessage,
   });
 
   factory AdminModelMeta.fromJson(Map<String, dynamic> json) {
@@ -121,6 +123,7 @@ class AdminModelMeta {
       searchCount: json['search_count'] ?? 0,
       searchPrice: json['search_price'] ?? 0,
       testUserIds: json['test_user_ids'] != null ? (json['test_user_ids'] as List).map((e) => e as int).toList() : [],
+      maxTokenPerMessage: json['max_token_per_message'] ?? 0,
     );
   }
 
@@ -145,6 +148,7 @@ class AdminModelMeta {
       'search_count': searchCount,
       'search_price': searchPrice,
       'test_user_ids': testUserIds,
+      'max_token_per_message': maxTokenPerMessage,
     };
   }
 }

@@ -71,6 +71,7 @@ class _EmptyPreviewState extends State<EmptyPreview> {
           ),
           Container(
             height: 60,
+            margin: const EdgeInsets.only(bottom: 8),
             alignment: Alignment.center,
             child: ListView.separated(
               controller: _scrollController,
