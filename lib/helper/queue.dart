@@ -24,8 +24,7 @@ class GracefulQueue<T> {
     _timer?.cancel();
   }
 
-  Future<void> listen(
-      Duration duration, Function(List<T> items) callback) async {
+  Future<void> listen(Duration duration, Function(List<T> items) callback) async {
     Completer<void> completer = Completer<void>();
     _timer = Timer.periodic(duration, (timer) {
       if (_queue.isNotEmpty) {
